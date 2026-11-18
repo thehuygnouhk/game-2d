@@ -1,0 +1,282 @@
+# Thiết kế Game Server
+
+> **Trạng thái:** Draft v0.1 · **Liên quan:** [system-architecture](system-architecture.md) · [network-protocol](network-protocol.md) · [combat](../game-design/04-combat-and-progression.md)
+
+## 1. Mô hình tiến trình
+
+- Một **tiến trình Node.js** (map host) quản lý nhiều **map instance** trong **một luồng chính** cho mỗi tiến trình (single-threaded event loop).
+- Mỗi map instance có **vòng lặp tick** độc lập, chạy ở **20 Hz** (50 ms) trên một bộ lập lịch chung.
+- Nếu một node cần nhiều lõi: chạy **nhiều tiến trình** (mỗi lõi một tiến trình, chia tập map khác nhau), không dùng bộ nhớ chia sẻ.
+- Tác vụ nặng (nén, báo cáo, mô phỏng cân bằng) chạy ở **Worker**, không nằm trong tiến trình map host.
+
+### 1.1 Bộ lập lịch tick
+
+```text
+loop:
+    now = hrtime()
+    while accumulator >= TICK_MS:
+        for map in activeMaps (ưu tiên theo số người):
+            map.tick(TICK_MS)
+        accumulator -= TICK_MS
+    sleep until next tick (setTimeout + setImmediate bù)
+```
+
+| Tham số | Giá trị |
+|---------|---------|
+| Tick | 50 ms (20 Hz) |
+| Ngân sách mỗi tick | ≤ 30 ms trung bình, p99 ≤ 45 ms |
+| Tick bị bỏ | Nếu trễ > 2 tick: bỏ qua cập nhật AI, **không** bỏ xử lý input |
+| Snapshot mạng | Mỗi **2 tick** (10 Hz); sự kiện quan trọng gửi ngay |
+| Map rỗng | Ngủ sau 30 s không có người; thức khi có người vào |
+
+## 2. Thực thể & thành phần (ECS nhẹ)
+
+| Thực thể | Thành phần chính |
+|----------|------------------|
+| **Player** | Transform, Velocity, Stats, Skills, Buffs, Inventory ref, Squire ref, Session |
+| **Monster** | Transform, Stats, AI, Threat, SpawnPoint, LootTable |
+| **Npc** | Transform, Dialog ref |
+| **Drop** | Transform, ItemInstance, OwnerLock, TTL |
+| **Projectile** | Transform, Velocity, Skill ref, Owner, TTL |
+| **Portal** | Transform, Destination |
+| **Squire** | Transform, Stats, AI (theo chủ) |
+
+Mỗi tick chạy các **system** theo thứ tự cố định:
+
+```mermaid
+flowchart LR
+    S1["1. Net input<br/>(hàng đợi lệnh)"] --> S2["2. Movement<br/>+ va chạm"]
+    S2 --> S3["3. AI<br/>quái, Squire"]
+    S3 --> S4["4. Skill & Combat<br/>sát thương"]
+    S4 --> S5["5. Status/Buff<br/>(DoT, hết hạn)"]
+    S5 --> S6["6. Spawn/Respawn"]
+    S6 --> S7["7. Loot, Drop TTL"]
+    S7 --> S8["8. Domain events<br/>(quest, achievement)"]
+    S8 --> S9["9. Replication<br/>(snapshot AOI)"]
+```
+
+## 3. Thế giới, Map, Khu, Instance
+
+```mermaid
+classDiagram
+    class World {
+      +realmId
+      +maps Map~mapId, MapDef~
+      +zones Map~key, Zone~
+      +instances Map~id, Instance~
+      +tick(dt)
+      +getOrCreateZone(mapId)
+    }
+    class Zone {
+      +mapId
+      +zoneNo
+      +entities
+      +aoiGrid
+      +capacity
+      +tick(dt)
+    }
+    class Instance {
+      +id
+      +def
+      +members
+      +expiresAt
+      +close()
+    }
+    World "1" --> "*" Zone
+    World "1" --> "*" Instance
+    Zone ..> AoiGrid
+```
+
+| Khái niệm | Mô tả |
+|-----------|-------|
+| **Zone** | Bản sao công khai của một map (khu 1…n); người chơi vào khu còn chỗ |
+| **Instance** | Bản sao riêng (hầm ngục, Squad Hall, Raid); ID duy nhất, có hạn dùng |
+| **Chuyển khu** | Chuyển người chơi sang Zone khác của cùng map, phải ngoài giao tranh |
+| **Chuyển map** | Qua portal: gỡ khỏi zone cũ, thêm vào zone mới, gửi `S_MAP_CHANGE` |
+| **Tự cân bằng** | Khi một zone > 80% sức chứa, mở zone mới; khi < 20% và có zone thưa, gộp sau 10 phút |
+
+## 4. Di chuyển & va chạm
+
+### 4.1 Mô hình
+
+- **Tile-based AABB**: kích thước hộp nhân vật 24×48 px; tile 32 px.
+- Vật lý rời rạc theo tick 50 ms; trọng lực `g = 1800 px/s²`, tốc nhảy ban đầu `-560 px/s` (cao ~3 ô).
+- **Nền một chiều** và **thang** là tile đặc biệt trong lớp collision của map.
+- Server **mô phỏng lại** chuyển động từ input (không tin vị trí client).
+
+### 4.2 Input & dự đoán
+
+Client gửi **`C_MOVE_INPUT`** gồm `{ seq, dir(-1/0/1), jump, down, tickClient }`, tối đa 20 gói/s. Server:
+
+1. Đưa vào hàng đợi theo `seq`, áp dụng ở tick kế tiếp.
+2. Gửi lại `lastProcessedSeq` trong snapshot.
+3. Nếu vị trí client lệch > **6 px** sau khi client tái mô phỏng, server gửi `S_CORRECTION`.
+
+### 4.3 Kiểm tra chống gian lận chuyển động
+
+| Kiểm tra | Điều kiện vi phạm |
+|----------|--------------------|
+| Tốc độ | Quãng đường > `maxSpeed × dt × 1.15` trong cửa sổ trượt 1s |
+| Bay/xuyên tường | Vị trí nằm trong tile đặc, hoặc ở không trung không do nhảy/bay hợp lệ |
+| Nhảy vô hạn | Số lần nhảy trên không vượt giới hạn hệ |
+| Teleport | Thay đổi vị trí > 400 px trong 1 tick không do skill dịch chuyển hợp lệ |
+
+Vi phạm đầu tiên: **kéo lại vị trí**. Lặp lại: ghi `suspicion` và tăng điểm nghi ngờ (xem [security](security-and-anticheat.md)).
+
+## 5. AOI (Area of Interest)
+
+- Lưới ô **512 × 512 px** trên mỗi zone.
+- Mỗi người chơi **quan sát 3×3 ô** quanh mình (tối đa ~1.536 × 1.536 px), chỉ gửi thực thể trong vùng này.
+- Khi thực thể đổi ô: gửi `S_ENTITY_SPAWN`/`S_ENTITY_DESPAWN` cho người quan sát liên quan.
+- Giới hạn: tối đa **40 thực thể** người chơi hiển thị (cài đặt người dùng), ưu tiên đồng đội, Squad, bạn bè.
+
+### 5.1 Snapshot delta
+
+- Snapshot chứa các thực thể **có thay đổi** kể từ snapshot trước của client đó.
+- Mỗi thực thể gửi: `id, x, y, vx, vy, state, facing, hp%` (lượng tử hóa), tối đa ~16 byte/thực thể.
+- Kích thước ước tính: 30 người + 30 quái ≈ 1 KB/snapshot, 10 Hz ≈ 10 KB/s/người (trước nén).
+
+## 6. Chiến đấu
+
+### 6.1 Kiểm tra `C_USE_SKILL`
+
+```text
+validate(player, skillId, target, seq):
+  - player.alive && !stunned/silenced
+  - skill đã học, cấp hợp lệ, GCD đã qua, cooldown skill đã qua
+  - đủ MP (hoặc Ý Chí / Spirit Gauge)
+  - target hợp lệ (tồn tại, cùng zone, phe phù hợp, PK cho phép)
+  - khoảng cách <= tầm + dung sai (50px)
+  - góc/hướng hợp lệ nếu kỹ năng định hướng
+  - seq chưa xử lý (idempotent)
+```
+
+### 6.2 Quy trình xử lý
+
+1. Trừ MP, đặt cooldown, phát `S_SKILL_CAST` cho AOI.
+2. Xác định mục tiêu (đơn, diện rộng, đường thẳng) bằng hình học phía server.
+3. Với mỗi mục tiêu: tính trúng, khắc hệ, chí mạng, giảm DEF (dùng `packages/shared/formulas`).
+4. Áp dụng sát thương/hồi máu/hiệu ứng; phát `S_DAMAGE`, `S_STATUS_APPLY`.
+5. Cập nhật **threat** quái, **hit log** (cho chia thưởng).
+6. Nếu chết: `S_ENTITY_DIED`, sinh drop, phát domain event `mob.killed`.
+
+### 6.3 Threat & mục tiêu quái
+
+`threat = sát thương × hệ số vai trò`. Hệ số: Thổ ×2, Hồi máu: hồi × 0,5 chia cho quái đang đánh người được hồi.
+
+## 7. Domain: Inventory, Shop, Trade, Market
+
+### 7.1 Hàng đợi tuần tự theo nhân vật
+
+Mọi thao tác thay đổi tài sản của một nhân vật được **tuần tự hóa** qua `CharacterActionQueue` (một queue/nhân vật), chống race condition (dùng cùng lúc 2 lần, mua và bán cùng lúc).
+
+### 7.2 Giao dịch quan trọng
+
+Thao tác **đổi tài sản có giá trị** đi qua **PostgreSQL transaction** (xem [database §6](database-schema.md)):
+
+| Thao tác | Khóa |
+|----------|------|
+| Mua/bán NPC | `characters.id FOR UPDATE` |
+| Giao dịch người chơi | Khóa cả hai nhân vật theo thứ tự `id` tăng dần (tránh deadlock) |
+| Cường hóa | `item_instances.id FOR UPDATE` + `characters.id FOR UPDATE` |
+| Ký gửi/mua chợ | Dòng `market_listings` + hai nhân vật |
+| Nạp Ngọc Mana | `accounts.id FOR UPDATE`, khóa idempotent theo `payment_orders` |
+
+Quy tắc: **ghi DB trước, rồi cập nhật bộ nhớ và gửi client**. Nếu transaction lỗi: hoàn tác bộ nhớ, trả mã lỗi.
+
+### 7.3 Idempotency
+
+Mỗi lệnh thay đổi tài sản có `idemKey` (UUID từ client). Server lưu 10 phút (Redis) để từ chối lặp.
+
+## 8. Lưu trữ (persistence)
+
+| Dữ liệu | Chiến lược | Chu kỳ |
+|---------|------------|--------|
+| Vị trí, HP/MP, EXP | **Write-behind** (dirty flag) | 60 s + khi thoát |
+| Điểm tiềm năng, kỹ năng | Ghi ngay | Tức thì |
+| Vật phẩm, tiền | **Giao dịch đồng bộ** | Tức thì |
+| Nhiệm vụ (tiến độ) | Write-behind, ghi ngay khi hoàn thành | 30 s |
+| Chat | Không lưu (chỉ log kiểm duyệt 30 ngày) | — |
+| Bảng xếp hạng | Redis zset, snapshot DB cuối mùa | Tức thì / ngày |
+
+- Khi ngắt kết nối: giữ người chơi trong thế giới **30 giây** (nhân vật đứng yên, có thể bị tấn công), rồi lưu và gỡ.
+- **Graceful shutdown:** từ chối đăng nhập mới, thông báo, lưu hết trạng thái, đóng kết nối.
+- **Sập đột ngột:** tối đa mất 60 s dữ liệu mềm; ledger đảm bảo tiền và vật phẩm không mất.
+
+## 9. Sự kiện miền (domain events)
+
+Event bus nội bộ (đồng bộ trong tick, hoặc queue nhẹ):
+
+| Sự kiện | Người nghe |
+|---------|------------|
+| `mob.killed` | Quest, Achievement, Loot, EXP, Dungeon |
+| `item.acquired` | Quest, Achievement |
+| `npc.talked` | Quest |
+| `map.entered` | Quest, Event |
+| `level.up` | Stats, Skill, Achievement, Squire |
+| `pvp.won` | Quest, Ranking |
+| `skill.used` | Quest |
+| `payment.completed` | Wallet, VIP, thông báo |
+
+Domain code **không** gọi trực tiếp lẫn nhau; chỉ qua bus (giảm phụ thuộc).
+
+## 10. Lập lịch (scheduler)
+
+| Job | Lịch | Xử lý |
+|-----|------|-------|
+| Reset hằng ngày | 00:00 UTC+7 | Nhiệm vụ ngày, lượt hầm ngục, giờ Auto Hunt |
+| Reset hằng tuần | T2 05:00 | Raid, nhiệm vụ tuần |
+| Boss thế giới | Theo lịch | Spawn, thông báo trước 5 phút |
+| Chiến Trường | 19:00, 21:30 | Mở hàng đợi, tạo instance |
+| Squad War | T7 20:00 | Ghép cặp, tạo instance |
+| Săn Linh Thạch Sao | T7 21:00 | Phân phối 7 viên |
+| Hết hạn chợ | Mỗi 1 phút | Trả hàng và thư |
+| Snapshot dữ liệu | Hằng ngày | Sao lưu logic, mô hình kinh tế |
+
+Scheduler dùng **khóa phân tán** (Redis) để chỉ một node chạy mỗi job.
+
+## 11. Phiên & kết nối lại
+
+```mermaid
+stateDiagram-v2
+    [*] --> Connecting
+    Connecting --> Authenticated: C_HELLO(ticket) hợp lệ
+    Authenticated --> InWorld: C_ENTER_WORLD
+    InWorld --> Disconnected: mất kết nối
+    Disconnected --> InWorld: C_RESUME(token) trong 30s
+    Disconnected --> Saved: quá 30s
+    InWorld --> Saved: đăng xuất
+    Saved --> [*]
+```
+
+- Mỗi tài khoản **một phiên**; đăng nhập mới → **kick** phiên cũ với `S_KICK(reason=DUPLICATE_LOGIN)`.
+- `resume token` đổi mỗi lần kết nối, TTL 30 s.
+
+## 12. Cấu hình và hot reload
+
+| Loại | Cách |
+|------|------|
+| Nội dung (`packages/content`) | Tải lúc khởi động; môi trường dev hỗ trợ **hot reload** |
+| Rate (EXP, drop) | Lưu `game_config` (DB), cập nhật qua Admin, đẩy xuống node qua Redis pub/sub |
+| Feature flag | Bảng `game_config` + cache; áp dụng không cần deploy |
+| Lịch sự kiện | Bảng `events` do Admin tạo |
+
+## 13. Ước tính dung lượng (cần xác minh bằng load test)
+
+| Tham số | Giả định |
+|---------|----------|
+| Người/khu | 30 |
+| Quái/khu | 40 |
+| Chi phí CPU mô phỏng | ≈ 0,15 ms/khu/tick khi 30 người + 40 quái (đơn giản) |
+| Chi phí mạng | ≈ 10 KB/s/người |
+| 1 tiến trình (1 lõi) | ≈ 80–100 khu hoạt động → **2.400–3.000 người** |
+| 5.000 CCU | ≈ 170 khu → **2–3 tiến trình map host** + dự phòng |
+
+> Số liệu trên là **giả thuyết** để lập kế hoạch. Bắt buộc **load test** từ Phase 1 (`tools/bot-client`, k6).
+
+## 14. Xử lý lỗi & log
+
+- Lỗi trong một tick của một zone: **bắt, ghi log, đánh dấu zone lỗi**, tiếp tục tick các zone khác. Zone lỗi 3 lần liên tiếp → di chuyển người chơi về Town và tạo lại zone.
+- Mọi log có `realmId, nodeId, zoneKey, characterId, requestId`.
+- Mức log: `error` (Sentry), `warn`, `info` (sự kiện kinh doanh), `debug` (dev).
+- Lỗi nghiêm trọng liên quan tài sản → **dừng người chơi đó** (kick) và ghi báo động.
