@@ -163,6 +163,131 @@ def build_tomes():
     save_gif(tc, os.path.join(pv, "huyen_thu.gif"), 140, scale=5)
 
 
+MOB_DATA = {
+    # id: (level, element, kind, ai, aggro, speed, skills, w, h, note)
+    "MOB001": ([1, 2], "PLANT", "NORMAL", "PASSIVE", 0, 40, ["MOBSKL_TACKLE"], 40, 40, "Nam Lun: nhay cham"),
+    "MOB002": ([2, 4], "NONE", "NORMAL", "PASSIVE", 0, 70, ["MOBSKL_KICK"], 44, 40, "Tho Dom: chay tron khi HP < 30%"),
+    "MOB003": ([4, 5], "NONE", "NORMAL", "AGGRESSIVE", 180, 90, ["MOBSKL_BITE"], 52, 36, "Cho Rung Non"),
+    "MOB004": ([5, 7], "EARTH", "NORMAL", "AGGRESSIVE", 240, 50, ["MOBSKL_THROW_ROCK"], 36, 56, "Lun Nem Da: nem da tam ngan"),
+    "MOB005": ([6, 7], "DARK", "NORMAL", "AGGRESSIVE", 200, 60, ["MOBSKL_INK_SPIT"], 52, 32, "Nhen Muc: gay Doc nhe"),
+    "MOB006": ([7, 8], "DARK", "NORMAL", "AGGRESSIVE", 220, 80, ["MOBSKL_DIVE"], 44, 36, "Doi Gieng: bay, lao xuong"),
+    "MOB007": ([8, 9], "EARTH", "NORMAL", "AGGRESSIVE", 140, 30, ["MOBSKL_SHELL_BASH"], 56, 34, "Rua Da Gieng: DEF cao"),
+}
+BOSS_DATA = {
+    # id: (level, element, kind, hp_mult_note, skills, w, h, where, note)
+    "BOSS001": (9, "NONE", "MINIBOSS", ["BSKL_PAGE_SWIPE", "BSKL_PAGE_STORM", "BSKL_TEAR_APART"], 110, 140,
+                "DG01 (instance)", "Trang Lac: 50% HP rach thanh 4 Manh Trang"),
+    "BOSS034": (5, "PLANT", "BOSS", ["BSKL_STOMP_WAVE", "BSKL_SUMMON_MUSHROOMS"], 90, 110, "M002 (theo gio)",
+                "Vua Nam Lun: goi 3 Nam Lun o 60% va 30% HP"),
+    "BOSS035": (8, "NONE", "BOSS", ["BSKL_HOWL_SUMMON", "BSKL_LUNGE"], 110, 80, "M003 (theo gio)",
+                "Cho Rung Dau Dan: hu goi 2 Cho Rung Non; lao can co vung bao hieu"),
+    "BOSS036": (10, "DARK", "BOSS", ["BSKL_DIVE_CIRCLE", "BSKL_CRYSTAL_WING"], 120, 90, "M004 (theo gio)",
+                "Doi Chua Gieng: bay cao, sa xuong theo vong tron bao hieu"),
+}
+EVENTS = {
+    "EVT_BOSS_034": ("BOSS034", ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00"], ["M002"], "RANDOM_ONE"),
+    "EVT_BOSS_035": ("BOSS035", ["11:00", "17:00", "21:00"], ["M003"], "RANDOM_ONE"),
+    "EVT_BOSS_036": ("BOSS036", ["12:30", "19:30"], ["M004"], "RANDOM_ONE"),
+}
+
+
+def build_content():
+    """Prototype content data (to move into packages/content in Phase 0)."""
+    d = {k: mk("content", k) for k in ("monsters", "bosses", "events")}
+    for mid, (lv, el, kind, ai, aggro, spd, skills, w, h, note) in MOB_DATA.items():
+        with open(os.path.join(d["monsters"], f"{mid.lower()}.yaml"), "w") as f:
+            f.write(f"""# {note} (prototype)
+id: {mid}
+nameKey: mob.{mid.lower()}.name
+level: [{lv[0]}, {lv[1]}]
+element: {el}
+kind: {kind}
+sprite: monsters/{mid.lower()}
+size: {{ w: {w}, h: {h} }}
+ai:
+  type: {ai}
+  aggroRange: {aggro}
+  leash: 600
+  moveSpeed: {spd}{chr(10) + "  flying: true" if mid == "MOB006" else ""}{chr(10) + "  fleeBelowHp: 0.3" if mid == "MOB002" else ""}
+skills: [ {", ".join(skills)} ]
+drops: DROP_R01_BASIC
+exp: formula                 # 8L + 10 (combat section 2.1)
+""")
+    for bid, (lv, el, kind, skills, w, h, where, note) in BOSS_DATA.items():
+        extra = ""
+        if bid == "BOSS001":
+            extra = "phases:\n  - { atHp: 0.5, action: SPLIT, into: BOSS001_SHARD, count: 4 }\ninstanceOnly: DG01\n"
+        if bid == "BOSS034":
+            extra = "phases:\n  - { atHp: 0.6, action: SUMMON, mob: MOB001, count: 3 }\n  - { atHp: 0.3, action: SUMMON, mob: MOB001, count: 3 }\n"
+        if bid == "BOSS035":
+            extra = "phases:\n  - { atHp: 0.7, action: SUMMON, mob: MOB003, count: 2 }\n  - { atHp: 0.35, action: SUMMON, mob: MOB003, count: 2 }\n"
+        with open(os.path.join(d["bosses"], f"{bid.lower()}.yaml"), "w") as f:
+            f.write(f"""# {note}; {where} (prototype)
+id: {bid}
+nameKey: boss.{bid.lower()}.name
+level: [{lv}, {lv}]
+element: {el}
+kind: {kind}                  # HP/EXP multiplier per combat section 2.1 (Boss x40, Mini-boss x10)
+sprite: bosses/{bid.lower()}
+size: {{ w: {w}, h: {h} }}
+skills: [ {", ".join(skills)} ]
+{extra}drops: DROP_{bid}
+enrageAfterMin: 10
+""")
+    for eid, (boss, times, maps, zones) in EVENTS.items():
+        with open(os.path.join(d["events"], f"{eid.lower()}.yaml"), "w") as f:
+            f.write(f"""# Boss theo gio Chuong 1 (maps section 5.1-5.2), prototype
+id: {eid}
+kind: WORLD_BOSS
+boss: {boss}
+schedule: {{ times: [{", ".join('"' + x + '"' for x in times)}], tz: "Asia/Ho_Chi_Minh" }}
+announceBeforeMin: 5
+maps: [ {", ".join(maps)} ]
+zones: {zones}
+despawnAfterMin: 30
+rewardMaxLevelGap: 10
+""")
+    with open(os.path.join(d["events"], "evt_r01_well_night.yaml"), "w") as f:
+        f.write("""# Dem Gieng Sang: moi toi thu Sau, Doi Chua Gieng xuat hien day hon o moi khu M004 (prototype)
+id: EVT_R01_WELL_NIGHT
+kind: WORLD_BOSS
+boss: BOSS036
+schedule: { weekly: { day: FRI, from: "20:00", to: "21:00", everyMin: 20 }, tz: "Asia/Ho_Chi_Minh" }
+announceBeforeMin: 5
+maps: [ M004 ]
+zones: ALL
+despawnAfterMin: 20
+rewardMaxLevelGap: 10
+""")
+
+
+def build_monsters():
+    from monsters import ANIMS, MONSTERS, monster_frames
+    pk, sh, pv = mk("piskel"), mk("sheets"), mk("preview")
+    lineup_small, boss_gifs = [], {}
+    for mid, (_, size, name, lv) in MONSTERS.items():
+        fr = monster_frames(mid)
+        seq = [f for a in ANIMS for f in fr[a]]
+        tag = "boss" if mid.startswith("BOSS") else "quai"
+        fn = f"{tag}_{mid.lower()}"
+        save_piskel(os.path.join(pk, fn + ".piskel"), f"{mid} {name} (Lv{lv})", [("Quai", seq)], fps=8,
+                    description="idle 1-4, move 5-8, attack 9-12, die 13-16")
+        sheet([fr[a] for a in ANIMS]).save(os.path.join(sh, fn + ".png"))
+        if size == 64:
+            lineup_small.append(fr)
+        else:
+            loop = fr["idle"] * 2 + fr["move"] * 2 + fr["attack"] * 2 + fr["die"]
+            save_gif(loop, os.path.join(pv, fn + ".gif"), 125, scale=2)
+    frames = []
+    for k in range(16):
+        cv = canvas(64 * 4, 64 * 2)
+        for j, fr in enumerate(lineup_small):
+            anim = ("idle", "move", "attack", "move")[k // 4]
+            over(cv, fr[anim][k % 4], (j % 4) * 64, (j // 4) * 64)
+        frames.append(cv)
+    save_gif(frames, os.path.join(pv, "quai_chuong1.gif"), 140, scale=3)
+
+
 def build_maps():
     from PIL import Image
 
@@ -182,6 +307,10 @@ def build_maps():
             f.write(f"{name}\tcol={c}\trow={r}\tw={w}\th={h}\tgid={r * 16 + c + MP.REGION_FIRSTGID}\n")
     npc_sprites = {key.split("_")[0]: layered_frames(spec, idle()[:1])[1][0] for key, spec in NPCS.items()}
     hero = layered_frames(HEROES["fire"], idle("sword")[:1])[1][0]
+    from monsters import monster_frames
+    mob_spr = {m: monster_frames(m) for m in ("MOB001", "MOB002", "MOB003", "MOB004", "MOB005", "MOB006", "MOB007",
+                                              "BOSS034", "BOSS035", "BOSS036")}
+    flying = {"MOB006": 27, "BOSS036": 54}
     for mid, B in build_region(S).items():
         name = mid.lower()
         bgs = dict(zip(("bg_far", "bg_mid", "bg_near"), MP.bg_rich(B.theme, B.h * 32, seed=int(mid[1:]))))
@@ -193,6 +322,16 @@ def build_maps():
         MP.write_tmj(B, os.path.join(root, f"{name}.tmj"), "tilesets/r01.png", S.cv.shape[1::-1], bg_names, B.h * 32)
         MP.write_yaml(B, os.path.join(root, f"{name}.yaml"), f"{name}.tmj")
         actors = [(npc_sprites[n["id"]], n["x"], n["y"]) for n in B.npcs if n["id"] in npc_sprites]
+        for s in B.spawns:  # up to 3 monsters per spawn, spread over the radius
+            fr = mob_spr[s["mob"]]
+            for k in range(min(3, s["count"])):
+                x = s["x"] + (k - 1) * min(s["radius"], 96) * 0.6
+                anim = ("idle", "move")[k % 2]
+                spr = fr[anim][k % 4] if k % 2 == 0 else fr[anim][k % 4][:, ::-1].copy()
+                actors.append((spr, x, s["y"] - (40 if s["mob"] in flying else 0), flying.get(s["mob"], 61)))
+        for b in B.boss_spawns:
+            spr = mob_spr[b["boss"]]["idle"][0][:, ::-1].copy()
+            actors.append((spr, b["x"], b["y"] - (60 if b["boss"] in flying else 0), flying.get(b["boss"], 125)))
         actors.append((hero, *B.player_spawn))
         full = MP.render(B, bgs, actors=actors)
         Image.fromarray(full, "RGBA").save(os.path.join(pvd, f"{name}.png"))
@@ -206,6 +345,14 @@ if __name__ == "__main__":
         build_maps()
         print("maps built into", OUT)
         sys.exit(0)
+    if len(sys.argv) > 2 and sys.argv[2] == "monsters":
+        build_monsters()
+        build_content()
+        build_maps()
+        print("monsters, content and maps built into", OUT)
+        sys.exit(0)
+    build_monsters()
+    build_content()
     build_maps()
     build_heroes()
     build_npcs()

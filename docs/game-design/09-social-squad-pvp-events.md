@@ -174,11 +174,12 @@ PvP quy mô lớn giống chiến trường Hắc/Bạch của Ninja School.
 
 | Tần suất | Sự kiện | Thời gian |
 |----------|---------|-----------|
-| Hằng ngày | Boss thế giới | Xem [maps §5.1](05-world-maps-monsters.md) |
+| Hằng ngày | Boss theo giờ (tân thủ R01 và boss thế giới) | Xem [maps §5.1](05-world-maps-monsters.md) |
 | Hằng ngày | Chiến Trường Lục–Xích | 19:00 / 21:30 |
 | Hằng ngày | Điểm danh Pháp Vệ | 00:00 làm mới |
 | Hằng tuần | Chiến Đội | T7 20:00 |
 | Hằng tuần | Raid | Reset T2 05:00 |
+| Hằng tuần | **Đêm Giếng Sáng** (R01) | T6 20:00–21:00: giếng làng sáng lên, **Dơi Chúa Giếng** xuất hiện mỗi 20 phút ở mọi khu M004 |
 | Hằng tuần | **Săn Trang Rời** | T7 21:00 (xem §9) |
 | Hằng tháng | **Lễ Tuyên Công** | Cuối tháng, chốt bảng xếp hạng |
 | Theo mùa | Lễ Hội (Xuân, Halloween, Giáng Sinh…) | Theo lịch |

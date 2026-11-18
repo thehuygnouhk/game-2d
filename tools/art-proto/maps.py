@@ -74,6 +74,7 @@ class MapBuilder:
         self.reserved = np.zeros((h, w), bool)  # cells used by big decor
         self.objects = []
         self.portals, self.npcs, self.spawns, self.safe, self.triggers = [], [], [], [], []
+        self.boss_spawns = []
         self.player_spawn = None
 
     # terrain ------------------------------------------------------
@@ -171,6 +172,10 @@ class MapBuilder:
         self.spawns.append(dict(mob=mob, x=self.px(tx), y=y, radius=radius_tiles * TS, count=count,
                                 respawnSec=respawn, note=note))
 
+    def boss_spawn(self, boss, tx, event, y_tile=None):
+        y = self.feet(tx) if y_tile is None else y_tile * TS
+        self.boss_spawns.append(dict(boss=boss, x=self.px(tx), y=y, event=event))
+
     # finalize -----------------------------------------------------
     def finalize(self):
         s = self.solid
@@ -251,6 +256,8 @@ def write_tmj(B, path, region_png, region_size, bg_names, bg_h):
         add("mob_spawn", s["mob"], s["x"], s["y"],
             props={"mob": s["mob"], "count": s["count"], "radius": s["radius"], "respawnSec": s["respawnSec"]},
             point=True)
+    for b in B.boss_spawns:
+        add("boss_spawn", b["boss"], b["x"], b["y"], props={"boss": b["boss"], "event": b["event"]}, point=True)
     for z in B.safe:
         add("zone_safe", "safe", *z)
     for (x, y, w, h, ev) in B.triggers:
@@ -287,6 +294,9 @@ def write_yaml(B, path, tmj_name):
         note = f"   # {s['note']}" if s["note"] else ""
         L.append(f"  - {{ mob: {s['mob']}, x: {s['x']}, y: {s['y']}, radius: {s['radius']}, count: {s['count']}, "
                  f"respawnSec: {s['respawnSec']} }}{note}")
+    L.append("bossSpawns:" + ("" if B.boss_spawns else " []"))
+    for b in B.boss_spawns:
+        L.append(f"  - {{ boss: {b['boss']}, x: {b['x']}, y: {b['y']}, event: {b['event']} }}   # theo gio, xem events/")
     L.append("skyZones: []")
     L.append("safeZones:" + ("" if B.safe else " []"))
     for z in B.safe:
@@ -318,8 +328,9 @@ def render(B, bgs, show=("ground", "decor", "fg"), actors=None):
     for name in ("ground", "decor"):
         draw_layer(name)
     if actors:
-        for (spr, x, y) in actors:
-            over(out, spr, int(x - 48), int(y - 89))
+        for (spr, x, y, *anchor) in actors:
+            ay = anchor[0] if anchor else 89
+            over(out, spr, int(x - spr.shape[1] // 2), int(y - ay))
     draw_layer("fg")
     return out
 
@@ -341,6 +352,9 @@ def annotate(img_rgba, B):
     for (x, y, w, h, ev) in B.triggers:
         d.rectangle([x, y, x + w, y + h], outline=(255, 160, 60), width=2)
         d.text((x + 4, y + 4), ev, fill=(255, 200, 120))
+    for b in B.boss_spawns:
+        d.ellipse([b["x"] - 9, b["y"] - 9, b["x"] + 9, b["y"] + 9], outline=(255, 210, 60), width=3)
+        d.text((b["x"] - 40, b["y"] - 150), f"{b['boss']} ({b['event']})", fill=(255, 230, 120))
     return im
 
 

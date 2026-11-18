@@ -1,0 +1,14 @@
+# Trang Lac: 50% HP rach thanh 4 Manh Trang; DG01 (instance) (prototype)
+id: BOSS001
+nameKey: boss.boss001.name
+level: [9, 9]
+element: NONE
+kind: MINIBOSS                  # HP/EXP multiplier per combat section 2.1 (Boss x40, Mini-boss x10)
+sprite: bosses/boss001
+size: { w: 110, h: 140 }
+skills: [ BSKL_PAGE_SWIPE, BSKL_PAGE_STORM, BSKL_TEAR_APART ]
+phases:
+  - { atHp: 0.5, action: SPLIT, into: BOSS001_SHARD, count: 4 }
+instanceOnly: DG01
+drops: DROP_BOSS001
+enrageAfterMin: 10

@@ -1,0 +1,16 @@
+# Rua Da Gieng: DEF cao (prototype)
+id: MOB007
+nameKey: mob.mob007.name
+level: [8, 9]
+element: EARTH
+kind: NORMAL
+sprite: monsters/mob007
+size: { w: 56, h: 34 }
+ai:
+  type: AGGRESSIVE
+  aggroRange: 140
+  leash: 600
+  moveSpeed: 30
+skills: [ MOBSKL_SHELL_BASH ]
+drops: DROP_R01_BASIC
+exp: formula                 # 8L + 10 (combat section 2.1)

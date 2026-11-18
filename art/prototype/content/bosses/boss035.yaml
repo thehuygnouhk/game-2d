@@ -1,0 +1,14 @@
+# Cho Rung Dau Dan: hu goi 2 Cho Rung Non; lao can co vung bao hieu; M003 (theo gio) (prototype)
+id: BOSS035
+nameKey: boss.boss035.name
+level: [8, 8]
+element: NONE
+kind: BOSS                  # HP/EXP multiplier per combat section 2.1 (Boss x40, Mini-boss x10)
+sprite: bosses/boss035
+size: { w: 110, h: 80 }
+skills: [ BSKL_HOWL_SUMMON, BSKL_LUNGE ]
+phases:
+  - { atHp: 0.7, action: SUMMON, mob: MOB003, count: 2 }
+  - { atHp: 0.35, action: SUMMON, mob: MOB003, count: 2 }
+drops: DROP_BOSS035
+enrageAfterMin: 10

@@ -92,7 +92,7 @@ Bản thử bố cục và đồ họa vùng R01 (M001–M004, file Tiled kèm �
 | **Chổi Bay** | Tăng tốc, đi nhanh trong map | Xem [companions](10-companions-and-mounts.md) |
 | **Điểm Lưu** | Nhân vật lưu tại town gần nhất sau khi vào | Tự động |
 
-## 4. Quái vật (49 loại) và Boss (26 cốt truyện + 4 boss thế giới)
+## 4. Quái vật (49 loại) và Boss (26 cốt truyện + 7 boss theo giờ)
 
 Cấp quái và hệ xác định công thức chỉ số ở [combat §5](04-combat-and-progression.md). Hệ quái: Hỏa, Thủy, Phong, Lôi, Thổ, Mộc, Ám, **Quang**, **Vô**.
 
@@ -189,7 +189,7 @@ Cấp quái và hệ xác định công thức chỉ số ở [combat §5](04-co
 
 | ID | Tên | Cấp | Loại | Map | Cơ chế chính |
 |----|-----|-----|------|-----|--------------|
-| BOSS001 | **Trang Lạc** | 9 | Mini | M004 | Rách thành 4 Mảnh Trang ở 50% HP |
+| BOSS001 | **Trang Lạc** | 9 | Mini (instance) | Hầm ngục DG01 (cửa vào ở M004) | Rách thành 4 Mảnh Trang ở 50% HP. Chỉ có trong instance riêng nên Q_MAIN_10 làm được bất cứ lúc nào; **không** đứng thường trực ngoài map |
 | BOSS002 | Lợn Rừng Chúa | 12 | Mini | M009 | Húc theo đường thẳng, vùng báo hiệu |
 | BOSS003 | Người Đá Nghiên Chúa | 22 | Mini | M011 | Đập đất, đá rơi |
 | BOSS004 | Kẻ Trộm Quyển | 24 | Boss | M011 | Hút MP, dịch chuyển |
@@ -216,16 +216,34 @@ Cấp quái và hệ xác định công thức chỉ số ở [combat §5](04-co
 | BOSS025 | Mực Nguyền | 99 | Boss | M030 | Lời nguyền, hồi máu theo sát thương gây ra |
 | BOSS026 | **Đại Trang Trắng** | 100 | Raid 15 | M031 | 4 pha, cơ chế cuối mùa |
 
-### 5.1 Boss thế giới (lịch cố định)
+### 5.1 Boss theo giờ (boss thế giới)
+
+Như Ngọc Rồng và Ninja School: boss **không** đứng sẵn trên map mà **xuất hiện theo giờ hoặc theo sự kiện**, có thông báo, rồi bỏ đi nếu không ai hạ. Quy tắc chung ở §5.2.
 
 | ID | Tên | Cấp | Map xuất hiện | Lịch | Ghi chú |
 |----|-----|-----|---------------|------|---------|
+| BOSS034 | **Vua Nấm Lùn** | 5 | M002 | Mỗi 2 giờ, 08:00–22:00 (giờ chẵn) | Boss tân thủ. Nhảy dậm tạo sóng nấm, gọi 3 Nấm Lùn ở 60% và 30% HP |
+| BOSS035 | **Chó Rừng Đầu Đàn** | 8 | M003 | 11:00, 17:00, 21:00 | Boss tân thủ. Hú gọi 2 Chó Rừng Non; lao cắn theo đường thẳng có vùng báo hiệu |
+| BOSS036 | **Dơi Chúa Giếng** | 10 | M004 | 12:30, 19:30; sự kiện **Đêm Giếng Sáng** (T6 20:00–21:00) mỗi 20 phút | Boss tân thủ. Bay cao ngoài tầm cận chiến, sà xuống theo vòng tròn báo hiệu; cánh pha lê phản 10% sát thương phép khi đang bay |
 | BOSS030 | Bò Rừng Khổng Lồ | 20 | M009–M011 | 12:00, 20:00 hàng ngày | Xuất hiện ngẫu nhiên 1 khu |
 | BOSS031 | Rắn Biển Khổng Lồ | 35 | M013–M016 | 13:00, 21:00 | |
 | BOSS032 | Gấu Rừng Cổ | 45 | M017–M018 | 19:00 | |
 | BOSS033 | Cự Nhân Chữ Cổ | 70 | M023–M025 | 20:30, T7–CN | Cần ≥ 20 người để hạ trong 10 phút |
 
 Thông báo toàn máy chủ trước **5 phút**. Phần thưởng gửi **qua thư** theo sát thương xếp hạng (xem [social](09-social-squad-pvp-events.md)).
+
+### 5.2 Quy tắc boss theo giờ
+
+| Quy tắc | Giá trị |
+|---------|---------|
+| Nơi xuất hiện | **1 khu ngẫu nhiên** của map, tại một trong các điểm `boss_spawn` của map đó ([content-pipeline §5.2](../workflows/content-pipeline.md)) |
+| Thông báo | Toàn máy chủ: 5 phút trước, khi xuất hiện ("… vừa xuất hiện tại *map*, khu *n*"), khi bị hạ (tên người hạ cuối) và khi bỏ đi |
+| Thời gian tồn tại | **30 phút**; hết giờ boss bỏ đi, không rơi gì. Cuồng nộ sau 10 phút ([combat](04-combat-and-progression.md)) |
+| Chỉ số | Boss tân thủ (BOSS034–036): hệ số **Boss ×40** để 3–5 người cấp thấp hạ được. Boss thế giới (BOSS030–033): hệ số **×200** |
+| Bảo vệ tân thủ | Người chơi **cao hơn boss quá 10 cấp** chỉ nhận EXP tham gia, **không** nhận vật phẩm, và không được tính hạng sát thương |
+| Phần thưởng | Theo hạng sát thương, gửi qua thư; người hạ cuối thêm 1 rương; ai gây ≥ 1% HP đều có quà tham gia |
+| Xem lịch | Bảng tin làng của **Cụ Trương (NPC040)** và mục *Lịch Boss* trên giao diện hiển thị lần xuất hiện kế tiếp |
+| Sự kiện | Khi có sự kiện (ví dụ **Đêm Giếng Sáng**), lịch dày hơn hoặc boss xuất hiện ở **mọi khu**; định nghĩa trong `events/*.yaml` |
 
 ## 6. Hầm Ngục & Raid
 
@@ -265,6 +283,8 @@ Thông báo toàn máy chủ trước **5 phút**. Phần thưởng gửi **qua 
 | Tham số | Giá trị |
 |---------|---------|
 | Điểm xuất hiện | Định nghĩa trong file map (`spawns[]`) |
+| **Khu cấp độ** | Như Ninja School: trong một map Field, các điểm sinh xếp theo **cấp tăng dần từ cổng vào tới cổng ra**; map kế tiếp bắt đầu đúng cấp map trước kết thúc. Mỗi vùng cấp có quái riêng |
+| Boss | Boss **không** nằm trong `spawns[]`. Boss cốt truyện ở hầm ngục (instance); boss theo giờ ở `events/` + điểm `boss_spawn` (§5.2) |
 | Mật độ | 6–12 quái/khu cho map Field, tối đa 40 |
 | Thời gian hồi | 8–20s (tăng 20% ở khu đông) |
 | Elite | 1 tinh anh mỗi 15 quái thường, xuất hiện ngẫu nhiên |

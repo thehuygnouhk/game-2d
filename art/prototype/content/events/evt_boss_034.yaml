@@ -1,0 +1,10 @@
+# Boss theo gio Chuong 1 (maps section 5.1-5.2), prototype
+id: EVT_BOSS_034
+kind: WORLD_BOSS
+boss: BOSS034
+schedule: { times: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00"], tz: "Asia/Ho_Chi_Minh" }
+announceBeforeMin: 5
+maps: [ M002 ]
+zones: RANDOM_ONE
+despawnAfterMin: 30
+rewardMaxLevelGap: 10

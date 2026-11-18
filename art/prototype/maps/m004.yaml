@@ -11,12 +11,15 @@ zoneCap: 30
 size: { widthTiles: 80, heightTiles: 24 }
 portals:
   - { id: P01, x: 48, y: 640, to: M003, toX: 2960, toY: 640 }
+  - { id: P03, x: 2288, y: 640, to: DG01, toX: 0, toY: 0 }
   - { id: P02, x: 2512, y: 640, to: M005, toX: 96, toY: 480 }
 npcs: []
 spawns:
-  - { mob: MOB006, x: 720, y: 320, radius: 256, count: 5, respawnSec: 12 }   # Doi Gieng, flying
-  - { mob: MOB007, x: 1328, y: 640, radius: 160, count: 5, respawnSec: 14 }   # Rua Da Gieng
-  - { mob: MOB006, x: 1680, y: 352, radius: 192, count: 3, respawnSec: 12 }   # Doi Gieng, flying
-  - { mob: BOSS001, x: 2288, y: 640, radius: 64, count: 1, respawnSec: 900 }   # Trang Lac (mini boss)
+  - { mob: MOB006, x: 400, y: 352, radius: 192, count: 4, respawnSec: 12 }   # khu Lv7-8: Doi Gieng (bay)
+  - { mob: MOB006, x: 784, y: 320, radius: 224, count: 4, respawnSec: 12 }   # khu Lv7-8: Doi Gieng (bay)
+  - { mob: MOB007, x: 1328, y: 640, radius: 160, count: 5, respawnSec: 14 }   # khu Lv8-9: Rua Da Gieng
+  - { mob: MOB007, x: 1776, y: 640, radius: 160, count: 5, respawnSec: 14 }   # khu Lv8-9: Rua Da Gieng
+bossSpawns:
+  - { boss: BOSS036, x: 2064, y: 640, event: EVT_BOSS_036 }   # theo gio, xem events/
 skyZones: []
 safeZones: []

@@ -1,0 +1,14 @@
+# Vua Nam Lun: goi 3 Nam Lun o 60% va 30% HP; M002 (theo gio) (prototype)
+id: BOSS034
+nameKey: boss.boss034.name
+level: [5, 5]
+element: PLANT
+kind: BOSS                  # HP/EXP multiplier per combat section 2.1 (Boss x40, Mini-boss x10)
+sprite: bosses/boss034
+size: { w: 90, h: 110 }
+skills: [ BSKL_STOMP_WAVE, BSKL_SUMMON_MUSHROOMS ]
+phases:
+  - { atHp: 0.6, action: SUMMON, mob: MOB001, count: 3 }
+  - { atHp: 0.3, action: SUMMON, mob: MOB001, count: 3 }
+drops: DROP_BOSS034
+enrageAfterMin: 10

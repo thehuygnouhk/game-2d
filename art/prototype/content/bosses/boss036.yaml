@@ -1,0 +1,11 @@
+# Doi Chua Gieng: bay cao, sa xuong theo vong tron bao hieu; M004 (theo gio) (prototype)
+id: BOSS036
+nameKey: boss.boss036.name
+level: [10, 10]
+element: DARK
+kind: BOSS                  # HP/EXP multiplier per combat section 2.1 (Boss x40, Mini-boss x10)
+sprite: bosses/boss036
+size: { w: 120, h: 90 }
+skills: [ BSKL_DIVE_CIRCLE, BSKL_CRYSTAL_WING ]
+drops: DROP_BOSS036
+enrageAfterMin: 10

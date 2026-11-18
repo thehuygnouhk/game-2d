@@ -83,7 +83,7 @@ Không có lựa chọn "tệ nhất". Đây chỉ là sự khác biệt nhỏ �
 3. Dùng **Bình HP** khi máu xuống thấp.
 4. Làm nhiệm vụ Thỏ Đốm, Thảo Dược. Bạn lên **Lv5** rất nhanh.
 5. Đấu tập với **Khôi**, học **Tụ Mana Chấn**.
-6. Tiếp tục tới **Rừng Mơ Non**, **Hang Giếng Cạn**, đánh **Trang Lạc** (Lv9).
+6. Tiếp tục tới **Rừng Mơ Non**, **Hang Giếng Cạn**, vào hầm ngục đánh **Trang Lạc** (Lv9). Ngoài ra Chương 1 có **3 boss theo giờ**: Vua Nấm Lùn (Đồng Hoa, 2 giờ một lần), Chó Rừng Đầu Đàn (Rừng Mơ Non, 11:00/17:00/21:00), Dơi Chúa Giếng (Hang Giếng Cạn, 12:30/19:30, dày hơn tối thứ Sáu). Xem lịch ở bảng tin của Cụ Trương.
 7. Đêm trước ngày lễ, bạn sẵn sàng cho **Lễ Khai Thư** ở **Lv10**.
 
 **Mẹo:** Luôn đọc mục tiêu nhiệm vụ. Nhấn **Đi tới** để không bị lạc.

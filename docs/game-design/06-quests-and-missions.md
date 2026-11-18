@@ -67,7 +67,7 @@ stateDiagram-v2
 | Q_MAIN_07 | Bao Tải Bị Lấy | 6 | Dân làng | Hạ 6 Lùn Ném Đá, nhặt Bao Tải Bị Lấy | 800 EXP, 300 Quan |
 | Q_MAIN_08 | Giếng Làng Cạn | 7 | Bà Mơ | Vào M004, hạ 8 Dơi Giếng | 1.000 EXP, 350 Quan |
 | Q_MAIN_09 | Tờ Giấy Trắng | 8 | Lam Nhi | Hạ 6 Rùa Đá Giếng, nhặt Mảnh Trang | 1.400 EXP, 400 Quan |
-| Q_MAIN_10 | **Trang Lạc** | 9 | Thầy Bạch Vân | Hạ BOSS001 (nhóm cho phép) | 2.000 EXP, 600 Quan, Áo Suối Mơ |
+| Q_MAIN_10 | **Trang Lạc** | 9 | Thầy Bạch Vân | Hạ BOSS001 trong hầm ngục DG01 (một mình hoặc nhóm) | 2.000 EXP, 600 Quan, Áo Suối Mơ |
 | Q_MAIN_11 | Đêm Trước Ngày Lễ | 9 | Thầy Bạch Vân | Cutscene với Thầy, Lam Nhi, Khôi | 1.200 EXP, mở khóa Lv10 |
 | Q_MAIN_12 | **Lễ Khai Thư** | 10 | Thầy Bạch Vân | Vào `I001`, chọn hệ phép | Huyền Thư Sơ Bản, Vũ khí hệ, 1 SP |
 

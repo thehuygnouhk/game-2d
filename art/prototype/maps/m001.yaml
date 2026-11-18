@@ -18,6 +18,7 @@ npcs:
   - { id: NPC003, x: 1008, y: 480 }
   - { id: NPC004, x: 1328, y: 352 }
 spawns: []
+bossSpawns: []
 skyZones: []
 safeZones:
   - { x: 0, y: 0, w: 2048, h: 576 }

@@ -74,6 +74,7 @@ npcs:
 spawns:
   - { mob: MOB001, x: 600,  y: 480, radius: 200, count: 6, respawnSec: 8 }
   - { mob: MOB002, x: 1500, y: 480, radius: 250, count: 6, respawnSec: 10 }
+bossSpawns: []                # điểm boss theo giờ: { boss, x, y, event } (maps §5.2)
 skyZones: []
 safeZones: []
 ```
@@ -217,6 +218,9 @@ boss: BOSS030
 schedule: { times: ["12:00", "20:00"], tz: "Asia/Ho_Chi_Minh" }
 announceBeforeMin: 5
 maps: [ M009, M010, M011 ]
+zones: RANDOM_ONE            # RANDOM_ONE | ALL (sự kiện)
+despawnAfterMin: 30
+rewardMaxLevelGap: 10        # cao hơn boss quá 10 cấp: không nhận vật phẩm
 ```
 
 ## 4. Quy tắc kiểm chứng (validator)
@@ -271,6 +275,7 @@ pnpm content:build             # tạo gói JSON + contentVersion (hash)
 | `zone_safe` | Vùng an toàn |
 | `zone_sky` | Vùng bay Chổi Vàng |
 | `zone_trigger` | `event` (cutscene, boss phase) |
+| `boss_spawn` | `boss`, `event`: điểm boss theo giờ có thể xuất hiện ([maps §5.2](../game-design/05-world-maps-monsters.md)) |
 
 Quy trình: vẽ trong Tiled → xuất `.tmj` → `pnpm map:check` (kiểm tra lớp, kích thước, tile) → liên kết với `maps/*.yaml`.
 

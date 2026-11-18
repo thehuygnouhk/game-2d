@@ -16,9 +16,12 @@ npcs:
   - { id: NPC003, x: 816, y: 448 }
   - { id: NPC004, x: 2256, y: 512 }
 spawns:
-  - { mob: MOB001, x: 336, y: 512, radius: 160, count: 6, respawnSec: 8 }   # Nam Lun
-  - { mob: MOB001, x: 432, y: 320, radius: 64, count: 2, respawnSec: 8 }   # Nam Lun on the island
-  - { mob: MOB002, x: 1680, y: 512, radius: 192, count: 6, respawnSec: 10 }   # Tho Dom
-  - { mob: MOB002, x: 1968, y: 320, radius: 64, count: 2, respawnSec: 10 }   # Tho Dom on the island
+  - { mob: MOB001, x: 336, y: 512, radius: 160, count: 6, respawnSec: 8 }   # khu Lv1-2: Nam Lun
+  - { mob: MOB001, x: 432, y: 320, radius: 64, count: 2, respawnSec: 8 }   # khu Lv1-2: Nam Lun tren dao co
+  - { mob: MOB002, x: 1680, y: 512, radius: 192, count: 6, respawnSec: 10 }   # khu Lv2-4: Tho Dom
+  - { mob: MOB002, x: 1968, y: 320, radius: 64, count: 2, respawnSec: 10 }   # khu Lv2-4: Tho Dom tren dao co
+  - { mob: MOB002, x: 2448, y: 384, radius: 160, count: 4, respawnSec: 10 }   # khu Lv2-4: Tho Dom
+bossSpawns:
+  - { boss: BOSS034, x: 1616, y: 512, event: EVT_BOSS_034 }   # theo gio, xem events/
 skyZones: []
 safeZones: []

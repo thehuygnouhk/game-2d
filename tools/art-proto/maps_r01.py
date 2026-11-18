@@ -84,10 +84,13 @@ def m002(S):
     B.player_spawn = (B.px(3), B.feet(3))
     B.npc("NPC003", 25)     # Lam Nhi (quest hub of the meadow)
     B.npc("NPC004", 70)     # Khoi (Q_MAIN_05 sparring)
-    B.spawn("MOB001", 10, 6, 5, 8, note="Nam Lun")
-    B.spawn("MOB001", 13, 2, 2, 8, y_tile=10, note="Nam Lun on the island")
-    B.spawn("MOB002", 52, 6, 6, 10, note="Tho Dom")
-    B.spawn("MOB002", 61, 2, 2, 10, y_tile=10, note="Tho Dom on the island")
+    # level zones left -> right: Lv1-2 Nam Lun, then Lv2-4 Tho Dom
+    B.spawn("MOB001", 10, 6, 5, 8, note="khu Lv1-2: Nam Lun")
+    B.spawn("MOB001", 13, 2, 2, 8, y_tile=10, note="khu Lv1-2: Nam Lun tren dao co")
+    B.spawn("MOB002", 52, 6, 6, 10, note="khu Lv2-4: Tho Dom")
+    B.spawn("MOB002", 61, 2, 2, 10, y_tile=10, note="khu Lv2-4: Tho Dom tren dao co")
+    B.spawn("MOB002", 76, 4, 5, 10, note="khu Lv2-4: Tho Dom")
+    B.boss_spawn("BOSS034", 50, "EVT_BOSS_034")
     B.portal("P01", 1, "M001", 0, 0)
     B.portal("P02", 88, "M003", 0, 0)
     return B
@@ -117,11 +120,14 @@ def m003(S):
     B.scatter(["fern", "mushrooms", "grass_tall_a", "rock", "flowers_b"], 0.35, seed=5)
     B.scatter(["fern", "grass_tall_a"], 0.12, seed=6, layer="fg")
     B.player_spawn = (B.px(3), B.feet(3))
-    B.spawn("MOB003", 20, 6, 6, 10, note="Cho Rung Non")
-    B.spawn("MOB004", 36, 5, 6, 12, note="Lun Nem Da, on the knoll")
-    B.spawn("MOB005", 52, 4, 3, 12, y_tile=12, note="Nhen Muc, on the planks")
-    B.spawn("MOB005", 70, 4, 5, 12, note="Nhen Muc")
-    B.spawn("MOB003", 86, 4, 5, 10, note="Cho Rung Non")
+    # level zones left -> right: Lv4-5 Cho Rung Non, Lv5-7 Lun Nem Da, Lv6-7 Nhen Muc
+    B.spawn("MOB003", 14, 6, 6, 10, note="khu Lv4-5: Cho Rung Non")
+    B.spawn("MOB003", 24, 4, 4, 10, note="khu Lv4-5: Cho Rung Non")
+    B.spawn("MOB004", 36, 5, 6, 12, note="khu Lv5-7: Lun Nem Da tren go")
+    B.spawn("MOB004", 52, 3, 3, 12, y_tile=12, note="khu Lv5-7: Lun Nem Da tren san go")
+    B.spawn("MOB005", 69, 5, 5, 12, note="khu Lv6-7: Nhen Muc")
+    B.spawn("MOB005", 84, 4, 4, 12, y_tile=14, note="khu Lv6-7: Nhen Muc tren san go")
+    B.boss_spawn("BOSS035", 58, "EVT_BOSS_035")
     B.portal("P01", 1, "M002", 0, 0)
     B.portal("P02", 94, "M004", 0, 0)
     return B
@@ -158,12 +164,14 @@ def m004(S):
     B.scatter(["mushrooms", "rock_cave" if "rock_cave" in S.index else "rock"], 0.2, seed=7,
               avoid=[(66, 75)])
     B.player_spawn = (B.px(3), B.feet(3))
-    B.spawn("MOB006", 22, 5, 8, 12, y_tile=10, note="Doi Gieng, flying")
-    B.spawn("MOB007", 41, 5, 5, 14, note="Rua Da Gieng")
-    B.spawn("MOB006", 52, 3, 6, 12, y_tile=11, note="Doi Gieng, flying")
-    B.spawn("BOSS001", 71, 1, 2, 900, note="Trang Lac (mini boss)")
-    B.triggers.append((60 * TS, 6 * TS, 19 * TS, 14 * TS, "boss_BOSS001"))
+    # level zones left -> right: Lv7-8 Doi Gieng (flying), Lv8-9 Rua Da Gieng
+    B.spawn("MOB006", 12, 4, 6, 12, y_tile=11, note="khu Lv7-8: Doi Gieng (bay)")
+    B.spawn("MOB006", 24, 4, 7, 12, y_tile=10, note="khu Lv7-8: Doi Gieng (bay)")
+    B.spawn("MOB007", 41, 5, 5, 14, note="khu Lv8-9: Rua Da Gieng")
+    B.spawn("MOB007", 55, 5, 5, 14, note="khu Lv8-9: Rua Da Gieng")
+    B.boss_spawn("BOSS036", 64, "EVT_BOSS_036")
     B.portal("P01", 1, "M003", 0, 0)
+    B.portal("P03", 71, "DG01", 0, 0)      # Trang Lac lives only in the DG01 instance
     B.portal("P02", 78, "M005", 96, 480)   # M005 Thuong Do is outside this prototype
     return B
 

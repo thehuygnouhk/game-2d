@@ -187,12 +187,12 @@ Chỉ số giữ nguyên. Nội tại đã đổi tên ở Bước 2: **Không L
 | **Đại Trang Trắng** | Mối đe dọa cuối | Raid Chương 8 |
 | **Cụ Tiễn** | Thợ làm tên cuối cùng | Dẫn hệ ẩn |
 
-Tên 40 NPC, 31 bản đồ, 49 quái và 30 boss **đã đặt ở Bước 2**, theo quy ước §5.1 và **giữ nguyên ID và chức năng**. Nơi lưu (nguồn chân lý của tên):
+Tên 40 NPC, 31 bản đồ, 49 quái và 30 boss **đã đặt ở Bước 2** (sau đó thêm 3 boss theo giờ của Chương 1, BOSS034–036, tổng 33), theo quy ước §5.1 và **giữ nguyên ID và chức năng**. Nơi lưu (nguồn chân lý của tên):
 
 | Nội dung | Tài liệu |
 |----------|----------|
 | 40 NPC, Tám Viện, phản diện | [characters §2–§7](../game-design/02-characters-and-npcs.md) |
-| 31 map, 49 quái, 30 boss, DG01–DG08, Raid | [maps §2, §4–§6](../game-design/05-world-maps-monsters.md) |
+| 31 map, 49 quái, 33 boss, DG01–DG08, Raid | [maps §2, §4–§6](../game-design/05-world-maps-monsters.md) |
 | 24 nhiệm vụ chính, nhiệm vụ ngày, tuần, Viện | [quests §4+](../game-design/06-quests-and-missions.md) |
 | Kỹ năng, nội tại, hệ ẩn | [classes](../game-design/03-origins-classes-skills.md) |
 | Thuật ngữ | [glossary](../glossary.md) |

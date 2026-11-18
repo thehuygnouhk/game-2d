@@ -1,0 +1,16 @@
+# Nhen Muc: gay Doc nhe (prototype)
+id: MOB005
+nameKey: mob.mob005.name
+level: [6, 7]
+element: DARK
+kind: NORMAL
+sprite: monsters/mob005
+size: { w: 52, h: 32 }
+ai:
+  type: AGGRESSIVE
+  aggroRange: 200
+  leash: 600
+  moveSpeed: 60
+skills: [ MOBSKL_INK_SPIT ]
+drops: DROP_R01_BASIC
+exp: formula                 # 8L + 10 (combat section 2.1)

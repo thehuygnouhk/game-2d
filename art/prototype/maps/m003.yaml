@@ -14,10 +14,13 @@ portals:
   - { id: P02, x: 3024, y: 640, to: M004, toX: 112, toY: 640 }
 npcs: []
 spawns:
-  - { mob: MOB003, x: 656, y: 640, radius: 192, count: 6, respawnSec: 10 }   # Cho Rung Non
-  - { mob: MOB004, x: 1168, y: 512, radius: 192, count: 5, respawnSec: 12 }   # Lun Nem Da, on the knoll
-  - { mob: MOB005, x: 1680, y: 384, radius: 96, count: 4, respawnSec: 12 }   # Nhen Muc, on the planks
-  - { mob: MOB005, x: 2256, y: 544, radius: 160, count: 4, respawnSec: 12 }   # Nhen Muc
-  - { mob: MOB003, x: 2768, y: 640, radius: 160, count: 4, respawnSec: 10 }   # Cho Rung Non
+  - { mob: MOB003, x: 464, y: 640, radius: 192, count: 6, respawnSec: 10 }   # khu Lv4-5: Cho Rung Non
+  - { mob: MOB003, x: 784, y: 640, radius: 128, count: 4, respawnSec: 10 }   # khu Lv4-5: Cho Rung Non
+  - { mob: MOB004, x: 1168, y: 512, radius: 192, count: 5, respawnSec: 12 }   # khu Lv5-7: Lun Nem Da tren go
+  - { mob: MOB004, x: 1680, y: 384, radius: 96, count: 3, respawnSec: 12 }   # khu Lv5-7: Lun Nem Da tren san go
+  - { mob: MOB005, x: 2224, y: 544, radius: 160, count: 5, respawnSec: 12 }   # khu Lv6-7: Nhen Muc
+  - { mob: MOB005, x: 2704, y: 448, radius: 128, count: 4, respawnSec: 12 }   # khu Lv6-7: Nhen Muc tren san go
+bossSpawns:
+  - { boss: BOSS035, x: 1872, y: 640, event: EVT_BOSS_035 }   # theo gio, xem events/
 skyZones: []
 safeZones: []

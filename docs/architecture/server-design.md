@@ -226,7 +226,7 @@ Domain code **không** gọi trực tiếp lẫn nhau; chỉ qua bus (giảm ph�
 |-----|------|-------|
 | Reset hằng ngày | 00:00 UTC+7 | Nhiệm vụ ngày, lượt hầm ngục, giờ Auto Hunt |
 | Reset hằng tuần | T2 05:00 | Raid, nhiệm vụ tuần |
-| Boss thế giới | Theo lịch | Spawn, thông báo trước 5 phút |
+| Boss theo giờ | Theo lịch / sự kiện | Spawn ở 1 khu ngẫu nhiên (sự kiện: mọi khu), thông báo trước 5 phút, bỏ đi sau 30 phút ([maps §5.2](../game-design/05-world-maps-monsters.md)) |
 | Chiến Trường | 19:00, 21:30 | Mở hàng đợi, tạo instance |
 | Chiến Đội | T7 20:00 | Ghép cặp, tạo instance |
 | Săn Trang Rời | T7 21:00 | Phân phối 7 viên |

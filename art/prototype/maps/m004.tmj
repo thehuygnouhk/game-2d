@@ -11,7 +11,7 @@
  "tilewidth": 32,
  "tileheight": 32,
  "nextlayerid": 9,
- "nextobjectid": 9,
+ "nextobjectid": 10,
  "layers": [
   {
    "id": 1,
@@ -5926,6 +5926,39 @@
     },
     {
      "id": 3,
+     "name": "P03",
+     "type": "portal",
+     "x": 2256,
+     "y": 544,
+     "width": 64,
+     "height": 96,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "id",
+       "type": "string",
+       "value": "P03"
+      },
+      {
+       "name": "to",
+       "type": "string",
+       "value": "DG01"
+      },
+      {
+       "name": "toX",
+       "type": "int",
+       "value": 0
+      },
+      {
+       "name": "toY",
+       "type": "int",
+       "value": 0
+      }
+     ]
+    },
+    {
+     "id": 4,
      "name": "P02",
      "type": "portal",
      "x": 2480,
@@ -5958,10 +5991,44 @@
      ]
     },
     {
-     "id": 4,
+     "id": 5,
      "name": "MOB006",
      "type": "mob_spawn",
-     "x": 720,
+     "x": 400,
+     "y": 352,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true,
+     "properties": [
+      {
+       "name": "mob",
+       "type": "string",
+       "value": "MOB006"
+      },
+      {
+       "name": "count",
+       "type": "int",
+       "value": 4
+      },
+      {
+       "name": "radius",
+       "type": "int",
+       "value": 192
+      },
+      {
+       "name": "respawnSec",
+       "type": "int",
+       "value": 12
+      }
+     ]
+    },
+    {
+     "id": 6,
+     "name": "MOB006",
+     "type": "mob_spawn",
+     "x": 784,
      "y": 320,
      "width": 0,
      "height": 0,
@@ -5977,12 +6044,12 @@
       {
        "name": "count",
        "type": "int",
-       "value": 5
+       "value": 4
       },
       {
        "name": "radius",
        "type": "int",
-       "value": 256
+       "value": 224
       },
       {
        "name": "respawnSec",
@@ -5992,7 +6059,7 @@
      ]
     },
     {
-     "id": 5,
+     "id": 7,
      "name": "MOB007",
      "type": "mob_spawn",
      "x": 1328,
@@ -6026,44 +6093,10 @@
      ]
     },
     {
-     "id": 6,
-     "name": "MOB006",
+     "id": 8,
+     "name": "MOB007",
      "type": "mob_spawn",
-     "x": 1680,
-     "y": 352,
-     "width": 0,
-     "height": 0,
-     "rotation": 0,
-     "visible": true,
-     "point": true,
-     "properties": [
-      {
-       "name": "mob",
-       "type": "string",
-       "value": "MOB006"
-      },
-      {
-       "name": "count",
-       "type": "int",
-       "value": 3
-      },
-      {
-       "name": "radius",
-       "type": "int",
-       "value": 192
-      },
-      {
-       "name": "respawnSec",
-       "type": "int",
-       "value": 12
-      }
-     ]
-    },
-    {
-     "id": 7,
-     "name": "BOSS001",
-     "type": "mob_spawn",
-     "x": 2288,
+     "x": 1776,
      "y": 640,
      "width": 0,
      "height": 0,
@@ -6074,40 +6107,46 @@
       {
        "name": "mob",
        "type": "string",
-       "value": "BOSS001"
+       "value": "MOB007"
       },
       {
        "name": "count",
        "type": "int",
-       "value": 1
+       "value": 5
       },
       {
        "name": "radius",
        "type": "int",
-       "value": 64
+       "value": 160
       },
       {
        "name": "respawnSec",
        "type": "int",
-       "value": 900
+       "value": 14
       }
      ]
     },
     {
-     "id": 8,
-     "name": "boss_BOSS001",
-     "type": "zone_trigger",
-     "x": 1920,
-     "y": 192,
-     "width": 608,
-     "height": 448,
+     "id": 9,
+     "name": "BOSS036",
+     "type": "boss_spawn",
+     "x": 2064,
+     "y": 640,
+     "width": 0,
+     "height": 0,
      "rotation": 0,
      "visible": true,
+     "point": true,
      "properties": [
+      {
+       "name": "boss",
+       "type": "string",
+       "value": "BOSS036"
+      },
       {
        "name": "event",
        "type": "string",
-       "value": "boss_BOSS001"
+       "value": "EVT_BOSS_036"
       }
      ]
     }

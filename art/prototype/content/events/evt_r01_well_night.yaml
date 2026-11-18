@@ -1,0 +1,10 @@
+# Dem Gieng Sang: moi toi thu Sau, Doi Chua Gieng xuat hien day hon o moi khu M004 (prototype)
+id: EVT_R01_WELL_NIGHT
+kind: WORLD_BOSS
+boss: BOSS036
+schedule: { weekly: { day: FRI, from: "20:00", to: "21:00", everyMin: 20 }, tz: "Asia/Ho_Chi_Minh" }
+announceBeforeMin: 5
+maps: [ M004 ]
+zones: ALL
+despawnAfterMin: 20
+rewardMaxLevelGap: 10

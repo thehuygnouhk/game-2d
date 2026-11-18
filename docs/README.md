@@ -35,7 +35,7 @@
 | 02 | [characters-and-npcs](game-design/02-characters-and-npcs.md) | Nhân vật gốc làm NPC, dịch vụ, phe, boss cốt truyện |
 | 03 | [origins-classes-skills](game-design/03-origins-classes-skills.md) | 3 Xuất thân, 7 hệ phép + Phong Ấn Xạ Thủ, 55 kỹ năng, Nhập Linh, Huyền Thư |
 | 04 | [combat-and-progression](game-design/04-combat-and-progression.md) | EXP, chỉ số, công thức sát thương, AI, boss, rơi đồ, chết, Auto Hunt |
-| 05 | [world-maps-monsters](game-design/05-world-maps-monsters.md) | 31 map, 49 quái, 30 boss (26 cốt truyện + 4 boss thế giới), hầm ngục, spawn |
+| 05 | [world-maps-monsters](game-design/05-world-maps-monsters.md) | 31 map, 49 quái, 33 boss (26 cốt truyện + 7 boss theo giờ), hầm ngục, spawn |
 | 06 | [quests-and-missions](game-design/06-quests-and-missions.md) | Chính tuyến, nhiệm vụ ngày/tuần, phe, thành tích |
 | 07 | [items-and-equipment](game-design/07-items-and-equipment.md) | Độ hiếm, 10 ô, set, cường hóa, khảm ngọc, tiêu hao |
 | 08 | [economy-and-monetization](game-design/08-economy-and-monetization.md) | Tiền tệ, faucet/sink, chợ, vòng quay, nạp, bảo vệ người chơi |

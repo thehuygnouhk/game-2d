@@ -201,7 +201,7 @@ assets/
 | Hạng mục | Số lượng |
 |----------|----------|
 | Nhân vật (3 xuất thân × 2 giới tính, paper-doll cơ bản) | 6 bộ + 10 kiểu tóc |
-| Quái | 7 (R01) + Trang Lạc |
+| Quái | 7 (R01) + Trang Lạc + 3 boss theo giờ R01 |
 | Map | 5 (M001–M005) |
 | NPC portrait | 8 |
 | Icon vật phẩm | 80 |

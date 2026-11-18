@@ -53,7 +53,7 @@ gantt
 |----------|----------|
 | Gameplay | Chiến đấu cơ bản, AI quái, rơi đồ, Hỏa & Thủy 3 kỹ năng đầu |
 | Hệ thống | Túi đồ, trang bị 4 ô, nhiệm vụ Chương 1, Lễ Khai Thư |
-| Nội dung | M001–M005, 7 quái R01, Trang Lạc, 12 nhiệm vụ |
+| Nội dung | M001–M005, 7 quái R01, Trang Lạc, 3 boss theo giờ R01, 12 nhiệm vụ |
 | Hạ tầng | Đăng ký/đăng nhập, lưu nhân vật, 1 realm dev |
 | **Tiêu chí hoàn thành** | Playtest 30 phút liền mạch với 20 người, không crash, load test 50 CCU, retention test nội bộ ≥ 60% hoàn thành Chương 1 |
 
@@ -100,7 +100,7 @@ gantt
 | 1 | 5 | 7 | 1 | 12 | 2 (3 kỹ năng) |
 | 2 | 19 | 28 | 12 | 48 | 7 |
 | 3 | 22 | 33 | 20 | 58 | 7 |
-| 4 | 31 | 49 | 26 + 4 boss thế giới | 90 | 7 + Phong Ấn Xạ Thủ |
+| 4 | 31 | 49 | 26 + 7 boss theo giờ | 90 | 7 + Phong Ấn Xạ Thủ |
 
 ## 5. Rủi ro & cách xử lý
 
