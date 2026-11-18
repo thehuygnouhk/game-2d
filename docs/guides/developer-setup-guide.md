@@ -136,7 +136,7 @@ Mục tiêu: hiểu pipeline nội dung.
 
 1. Tạo `packages/content/monsters/mob050.yaml` (Lv 3, hệ Mộc, AI PASSIVE).
 2. Thêm tên vào `packages/content/i18n/vi/mobs.json`.
-3. Đặt vào `spawns[]` của `maps/m002_hage_meadow.yaml`.
+3. Đặt vào `spawns[]` của `maps/m002_flower_meadow.yaml`.
 4. `pnpm content:validate monsters maps`.
 5. `pnpm dev`, đăng nhập `dev1`, dùng `/gm map M002`, quan sát quái xuất hiện.
 6. Đánh quái; kiểm tra EXP/Quan/drop khớp công thức ([combat §5](../game-design/04-combat-and-progression.md)).

@@ -68,7 +68,7 @@ stateDiagram-v2
 |-------|-------|
 | **Linh Hồn Thú** | Rơi từ quái hệ Mộc, Quang (0,5%) hoặc mua cửa hàng phe |
 | **Tứ Đại Nguyên Linh** | Phần thưởng tối cao: Salamander, Undine, Sylph, Gnome (Raid/Mùa Giải) |
-| **Sự kiện** | Tinh linh giới hạn |
+| **Sự kiện** | Linh Thú giới hạn |
 
 ### 2.2 Cơ chế
 

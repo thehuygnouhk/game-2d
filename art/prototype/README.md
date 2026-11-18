@@ -8,7 +8,8 @@ Toàn bộ được vẽ bằng code ở [`tools/art-proto`](../../tools/art-pro
 
 | Thư mục | Nội dung |
 |---------|----------|
-| `piskel/` | **File sửa được** trong Piskel: 8 nhân vật theo hệ, 8 NPC, 8 hiệu ứng chiêu, 1 bộ vật phẩm |
+| `piskel/` | **File sửa được** trong Piskel: 8 nhân vật theo hệ, 9 NPC, 8 hiệu ứng chiêu, 1 bộ vật phẩm, 1 tileset vùng R01 |
+| `maps/` | **4 bản đồ vùng R01 (Chương 1)** cho Tiled và Phaser: `.tmj`, `.yaml`, tileset, nền parallax, ảnh xem trước (§1.5) |
 | `sheets/` | Sprite sheet PNG nền trong suốt, dùng cho game hoặc mở bằng Aseprite/LibreSprite |
 | `preview/` | GIF xem nhanh: chiêu thức, di chuyển, NPC, Huyền Thư; ảnh tổng hợp vật phẩm |
 
@@ -41,7 +42,7 @@ Các lớp trong `.piskel` (từ sau ra trước, theo paper-doll ở [art-audio
 
 ### 1.2 NPC (idle 4 khung)
 
-`npc001_thay_bach_van`, `npc003_lam_nhi`, `npc004_khoi`, `npc005_chap_but_hac_minh`, `npc024_co_kim_thoa`, `npc040_cu_truong`, `npc042_tho_ren_tu`, `npc053_cu_tien`. Ngoại hình theo [characters](../../docs/game-design/02-characters-and-npcs.md).
+`npc001_thay_bach_van`, `npc002_ba_mo`, `npc003_lam_nhi`, `npc004_khoi`, `npc005_chap_but_hac_minh`, `npc024_co_kim_thoa`, `npc040_cu_truong`, `npc042_tho_ren_tu`, `npc053_cu_tien`. Ngoại hình theo [characters](../../docs/game-design/02-characters-and-npcs.md).
 
 ### 1.3 Hiệu ứng chiêu (khung 96×96)
 
@@ -61,6 +62,31 @@ Các lớp trong `.piskel` (từ sau ra trước, theo paper-doll ở [art-audio
 ### 1.4 Vật phẩm (icon 32×32)
 
 25 icon, thứ tự trong `sheets/vat_pham.txt`: vũ khí 8 hệ, bình HP, bình MP, Đồng Luyện 4 bậc, Hạt Nguyên (2 màu), Trang Rời, Quan, Nén Bạc, Lá Thuốc Cổ, Chổi Bay, Huyền Thư Sơ/Tu/Định Bản, Thẻ Kẹp Trang.
+
+### 1.5 Bản đồ vùng R01 – Làng Suối Mơ (Chương 1)
+
+Phong cách: địa hình kiểu game cuộn ngang mobile (vách đất bo tròn, cỏ phủ chờm mép, thác nước), kiến trúc **thị trấn châu Âu giả tưởng** (tầng trệt đá, tầng trên khung gỗ đua ra, mái đá vảy cá, tháp tròn mái nón, cờ hiệu mang huy hiệu riêng của vương quốc: quyển sách mở dưới ngôi sao sáu cánh). Không chép công trình cụ thể của tác phẩm nào.
+
+| Map | Loại | Kích thước (ô) | Nội dung | Đối tượng |
+|-----|------|----------------|----------|-----------|
+| `m001` Nhà Học Suối Mơ | Town | 64 × 18 | Nhà Học có tháp tròn và đồng hồ, giếng làng, hai nhà phố, gò đất, đảo cỏ | NPC001, 002, 003, 004, 040; cổng sang M002; cả map là vùng an toàn |
+| `m002` Đồng Hoa Suối Mơ | Field 1–4 | 90 × 20 | Đồi hoa, **thác nước giữa hai vách**, cối xay gió, 3 đảo cỏ | NPC003, 004; Nấm Lùn, Thỏ Đốm; cổng M001 ↔ M003 |
+| `m003` Rừng Mơ Non | Field 4–7 | 96 × 24 | Rừng cây lớn, hai gò, 3 sàn gỗ trên cao có thang dây | Chó Rừng Non, Lùn Ném Đá, Nhện Mực; cổng M002 ↔ M004 |
+| `m004` Hang Giếng Cạn | Field + Dungeon 7–9 | 80 × 24 | Hang đá, nhũ đá, pha lê, hố gai, ngách đá, hồ nước, bệ đá boss | Dơi Giếng, Rùa Đá Giếng, **Trang Lạc** (BOSS001) có vùng kích hoạt; cổng M003, M005 |
+
+Theo [content-pipeline §5](../../docs/workflows/content-pipeline.md):
+
+- **Lớp:** `bg_far`, `bg_mid`, `bg_near` (lớp ảnh, parallax 0,1 / 0,35 / 0,6, lặp ngang), `ground`, `decor`, `collision` (ẩn sẵn), `objects`, `fg`.
+- **Va chạm:** tileset `collision` đặt `firstgid = 1`, nên giá trị ô đúng quy ước `1` đặc, `2` nền một chiều, `3` thang, `4` nguy hiểm.
+- **Đối tượng:** `spawn_player`, `portal` (`id`, `to`, `toX`, `toY`), `npc`, `mob_spawn` (`mob`, `count`, `radius`, `respawnSec`), `zone_safe`, `zone_trigger` (`event`).
+- **YAML** cùng tên theo schema [content-pipeline §3.1](../../docs/workflows/content-pipeline.md). Cổng giữa các map đã nối toạ độ hai chiều; cổng M004 → M005 dùng toạ độ tạm vì M005 chưa vẽ.
+- Tileset được **nhúng** vào `.tmj` (Phaser không đọc tileset rời). `maps/tilesets/r01_index.txt` liệt kê tên và vị trí từng ô.
+
+**Đã kiểm tra:** nạp cả 4 map bằng **Phaser 3.80.1** trong Chromium headless: tạo được mọi lớp, đọc đúng tileset, đối tượng và số ô va chạm, vẽ ra không lỗi.
+
+**Xem:** `maps/preview/m00x_view.png` (một màn hình 960×540 có nhân vật), `m00x.png` (toàn map), `m00x_annotated.png` (đánh dấu cổng, NPC, vùng sinh quái, vùng boss).
+
+**Sửa:** mở `.tmj` bằng [Tiled](https://www.mapeditor.org) (miễn phí, cài trên máy) để kéo thả ô, dời cổng, NPC, vùng sinh quái. Sửa hình ô bằng Piskel qua `piskel/tileset_r01.piskel`, rồi xuất PNG ghi đè `maps/tilesets/r01.png`. Khi có `packages/content` (Phase 0), chuyển `.tmj`/`.yaml` vào `packages/content/maps`.
 
 ## 2. Sửa trong Piskel (chạy trên Chrome)
 
@@ -84,4 +110,4 @@ Cần Python 3, numpy, Pillow. Lệnh ghi đè thư mục này. **Nếu đã s�
 - Tay, chân, thân dựng từ hình khối nên dáng còn hơi cứng; hoạt ảnh nội suy theo góc khớp, chưa có nhấn nhá như vẽ tay.
 - Mới có idle, walk, run, attack, cast. Còn thiếu jump, hurt, die, ride_broom, emote theo [art-audio-direction §3.2](../../docs/game-design/12-art-audio-direction.md).
 - Một kiểu khuôn mặt chung; NPC phân biệt bằng tóc, râu, trang phục, đạo cụ.
-- Chưa có quái, boss, tileset bản đồ, giao diện.
+- Chưa có sprite quái và boss (bản đồ mới chỉ đánh dấu vùng sinh), chưa có giao diện. Bản đồ mới có vùng R01; ảnh xem trước trải nền ra cả chiều dài map nên thấy mặt trời lặp lại, còn trong game lớp xa chỉ trôi 10% nên không lặp.

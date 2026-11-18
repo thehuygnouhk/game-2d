@@ -285,10 +285,10 @@ Các file nội bộ **không** đưa vào bản phát hành hay gửi đối t�
 
 ### 10.3 Cách chạy
 
-Từ gốc repo (cần [ripgrep](https://github.com/BurntSushi/ripgrep)). Lệnh trả về **không dòng nào** là đạt:
+Từ gốc repo (cần [ripgrep](https://github.com/BurntSushi/ripgrep)). Lệnh trả về **không dòng nào** là đạt. Lệnh **không phân biệt hoa/thường** và bắt cả tên nằm trong định danh, đường dẫn (`m002_hage_meadow`, `yul_faucet`, `npc/lily`), vì ranh giới từ là "không phải chữ cái" chứ không phải `\b` (dấu `_` được coi là ranh giới):
 
 ```bash
-rg -n --glob '*.md' --glob '*.yaml' --glob '*.json' --glob '!docs/world-bible/**' --glob '!docs/product/reskin-spec.md' --glob '!docs/product/reskin-plan.md' --glob '!docs/product/legal-and-compliance.md' --glob '!CLAUDE.md' -e 'Black Clover|\bClover\b|\bHage\b|\bDiamond\b|\bSpade\b|\bHeart\b|Ma Đạo Thư|Grimoire|Phản Ma|Anti-Magic|Mana Skin|Mana Zone|Spirit Dive|Hiệp Sĩ Ma Pháp|Magic Knight|Vua Phép Thuật|Wizard King|\bYul\b|Ngọc Mana|Lễ Trao Sao|Linh Thạch Sao|Tinh Linh|lá cỏ|\b[345] lá\b|Mắt Mặt Trời|Midnight Sun|Bộ Ba Hắc Ám|Dark Triad|Golden Dawn|Black Bulls|Bò Đen|Bình Minh Vàng|Sư Tử Đỏ|Hoa Hồng Xanh|Đại Bàng Bạc|Công Xanh San Hô|Bọ Ngựa Xanh|Orca Tím|Hươu Nước|\b(Asta|Yuno|Julius|Novachrono|Yami|Sukehiro|Vangeance|Fuegoleon|Mereoleona|Vermillion|Roselei|Nozel|Noelle|Silva|Mimosa|Finral|Magna|Vanessa|Charmy|Gauche|Zora|Secre|Nacht|Liebe|Lily|Orsi|Zogratis|Dante|Vanica|Zenon|Lucius|Zagred|Megicula|Lucifero|Licht|Patry|Vetto|Fana|Rhya|Lumiere|Langris|Leopold|Rill|Nebra)\b' .
+rg -n -i --glob '!*.piskel' --glob '!docs/world-bible/**' --glob '!docs/product/reskin-spec.md' --glob '!docs/product/reskin-plan.md' --glob '!docs/product/legal-and-compliance.md' --glob '!CLAUDE.md' -e '(^|[^\p{L}])(black[ _-]?clover|clover|hage|diamond|spade|heart|ma đạo thư|grimoire|phản ma|anti[ _-]?magic|mana[ _-]?skin|mana[ _-]?zone|spirit[ _-]?dive|hiệp sĩ ma pháp|magic[ _-]?knight|vua phép thuật|wizard[ _-]?king|yul|ngọc mana|ngoc|lễ trao sao|linh thạch sao|tinh linh|lá cỏ|[345] lá|mắt mặt trời|midnight[ _-]?sun|bộ ba hắc ám|dark[ _-]?triad|golden[ _-]?dawn|black[ _-]?bulls|bò đen|bình minh vàng|sư tử đỏ|hoa hồng xanh|đại bàng bạc|công xanh san hô|bọ ngựa xanh|orca tím|hươu nước|asta|yuno|julius|novachrono|yami|sukehiro|vangeance|fuegoleon|mereoleona|vermillion|roselei|nozel|noelle|silva|mimosa|finral|magna|vanessa|charmy|gauche|zora|secre|nacht|liebe|lily|orsi|zogratis|dante|vanica|zenon|lucius|zagred|megicula|lucifero|licht|patry|vetto|fana|rhya|lumiere|langris|leopold|rill|nebra)([^\p{L}]|$)' .
 ```
 
 Danh sách B, cho nội dung game và hướng dẫn người chơi:
@@ -304,3 +304,4 @@ Kiểm tra bằng tay những gì lệnh không bắt được: **tình tiết**
 | Ngày | Phạm vi | Danh sách A | Danh sách B | Ghi chú |
 |------|---------|-------------|-------------|---------|
 | 2026-11-18 | Toàn bộ `*.md` ngoài phạm vi nội bộ (Draft v0.2) | **0 dòng** | Chỉ trong tài liệu thiết kế (so sánh cơ chế); **0** trong `player-guide.md` | Đối chứng: cùng mẫu bắt được 65 dòng ở `01-lore-and-story.md` của commit `6131e84` |
+| 2026-11-18 | Toàn repo, mẫu mới (không phân biệt hoa/thường, bắt trong định danh) | **0 dòng** sau khi sửa | — | Mẫu cũ bỏ sót 8 chỗ trong định danh và ví dụ YAML (`m002_hage_meadow`, `yul_faucet`, `ngoc_topup_vnd`, `BLACK_BULLS`, `GOLDEN_DAWN`, `npc/lily`, `ngocMana`, một chữ "Tinh linh"); đã sửa hết |

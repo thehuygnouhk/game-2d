@@ -27,6 +27,10 @@ NPCS = {
         name="Thầy Bạch Vân", uniform=outfit("robe", "#8a8f9c", sash="#4b5568"),
         hair=ramp("#e9edf2", light="#ffffff", dark="#b9c0cc", outline="#5d6470"), hair_style="topknot",
         iris="#6b7a8f", tall=1, bag=ramp("#6d5a3f"), vials=["#7bd389", "#e05d5d"], prop=_notebook),
+    "NPC002_ba_mo": dict(
+        name="Bà Mơ", uniform=outfit("robe", "#6d5a7a", sash="#3d3346"),
+        hair=ramp("#d8d8d8", light="#ffffff", outline="#6a6a6a"), hair_style="topknot", eyes="closed",
+        tall=-1, prop=_notebook),
     "NPC003_lam_nhi": dict(
         name="Lam Nhi", uniform=outfit("tunic", "#e07a5f", sash="#3d405b", pants="#3d405b"),
         hair=ramp("#6b3f26", light="#94603d", outline="#2e170c"), hair_style="braid", iris="#3fa34d",

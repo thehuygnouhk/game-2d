@@ -23,6 +23,8 @@ flowchart LR
 
 Đường nét đứt: có thể dịch chuyển nhanh bằng **Thẻ Kẹp Trang** của **Bác Tô (NPC020)** sau khi đã mở khóa vùng đó.
 
+Bản thử bố cục và đồ họa vùng R01 (M001–M004, file Tiled kèm ảnh xem trước): [art/prototype §1.5](../../art/prototype/README.md#15-bản-đồ-vùng-r01--làng-suối-mơ-chương-1).
+
 ### 1.1 Quy tắc chung
 
 | Quy tắc | Giá trị |

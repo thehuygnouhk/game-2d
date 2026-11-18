@@ -55,14 +55,14 @@ packages/content/
 ### 3.1 Map
 
 ```yaml
-# maps/m002_hage_meadow.yaml
+# maps/m002_flower_meadow.yaml
 id: M002
 nameKey: map.m002.name
 type: FIELD                  # TOWN | FIELD | DUNGEON | RAID | PVP | HALL
 region: R01
 levelRange: [1, 4]
-tmj: m002_hage_meadow.tmj
-bgm: audio/bgm/hage_meadow
+tmj: m002_flower_meadow.tmj
+bgm: audio/bgm/r01_flower_meadow
 pk: PEACE                    # PEACE | OPTIONAL | FORCED
 zoneCap: 30
 size: { widthTiles: 80, heightTiles: 20 }
@@ -158,8 +158,8 @@ steps:
   - id: S3
     choice:                    # lựa chọn một phe
       options:
-        - { id: BLACK_BULLS, nameKey: ..., sets: { faction: BLACK_BULLS } }
-        - { id: GOLDEN_DAWN, nameKey: ..., sets: { faction: GOLDEN_DAWN } }
+        - { id: HOUSE_HEAVEN, nameKey: ..., sets: { faction: HOUSE_HEAVEN } }   # Viện Càn
+        - { id: HOUSE_FIRE,   nameKey: ..., sets: { faction: HOUSE_FIRE } }     # Viện Ly
 rewards: { exp: 6000, soft: 2000 }
 ```
 
@@ -180,18 +180,18 @@ pity: { key: R01_EPIC, afterKills: 0 }
 ### 3.7 NPC và hội thoại
 
 ```yaml
-# npcs/npc001.yaml
-id: NPC001
-nameKey: npc.npc001.name
+# npcs/npc002.yaml
+id: NPC002
+nameKey: npc.npc002.name
 map: M001
 x: 640
 y: 480
-sprite: npc/lily
-portrait: ui/portrait/lily
+sprite: npc/npc002
+portrait: ui/portrait/npc002
 menu:
   - { id: QUEST, label: dlg.common.quest }
-  - { id: TALK,  label: dlg.npc001.talk,  dialogue: DLG_NPC001_TALK }
-  - { id: RENAME, label: dlg.npc001.rename, requires: { currency: PREMIUM, amount: 50 } }
+  - { id: TALK,  label: dlg.npc002.talk,  dialogue: DLG_NPC002_TALK }
+  - { id: RENAME, label: dlg.npc002.rename, requires: { currency: PREMIUM, amount: 50 } }
 ```
 
 ### 3.8 Cửa hàng

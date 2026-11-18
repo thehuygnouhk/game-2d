@@ -12,7 +12,10 @@ Công cụ vẽ pixel art bằng code để **thử phong cách** nhân vật, s
 | `items.py` | 25 icon vật phẩm 32×32 |
 | `vfx.py` | Hiệu ứng chiêu 8 hệ, hình nộm tập |
 | `demo.py` | Ghép nhân vật thi triển, đạn bay, trúng đích |
-| `build.py` | Xuất toàn bộ vào [`art/prototype`](../../art/prototype/README.md) |
+| `tiles_rich.py` | Tileset vùng R01: vách đất bo tròn, cỏ phủ chờm, thác nước, hang đá; nhà phố, Nhà Học có tháp tròn, cối xay gió, giếng, đèn đường |
+| `maps.py` | Bộ dựng map: chọn ô mép theo hàng xóm, xuất Tiled `.tmj` (tileset nhúng) và `.yaml`, nền parallax, ảnh xem trước |
+| `maps_r01.py` | Bố cục M001–M004 và nối cổng |
+| `build.py` | Xuất toàn bộ vào [`art/prototype`](../../art/prototype/README.md) (`build.py <thư mục> maps` để chỉ dựng bản đồ) |
 | `sample.py` | Bộ mẫu phong cách đầu tiên |
 
 Chạy (cần Python 3, numpy, Pillow):

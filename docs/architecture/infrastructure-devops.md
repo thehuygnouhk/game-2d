@@ -117,7 +117,7 @@ flowchart LR
 | API | `http_requests`, `http_latency`, `login_fail_rate` | 5xx > 1%, latency p95 > 500 ms |
 | DB | `pg_active_connections`, `slow_queries`, `replication_lag`, `deadlocks` | Lag > 30 s, deadlock > 0 |
 | Redis | `memory`, `evictions`, `latency` | Eviction > 0 |
-| Kinh tế | `yul_faucet`, `yul_sink`, `ngoc_topup_vnd`, `market_volume` | Sink < 85% faucet |
+| Kinh tế | `soft_faucet`, `soft_sink`, `premium_topup_vnd`, `market_volume` | Sink < 85% faucet |
 | Kinh doanh | `dau`, `ccu`, `d1/d7/d30`, `arpu`, `arppu`, `conversion` | Theo KPI |
 | Gian lận | `suspicion_events`, `captcha_triggered`, `dupe_detector` | Dupe > 0 → SEV1 |
 

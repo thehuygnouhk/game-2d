@@ -531,7 +531,7 @@ CREATE TABLE live_events (
 
 CREATE TABLE gift_codes (
   code             text PRIMARY KEY,
-  rewards          jsonb NOT NULL,                      -- {items:[{id,qty}], soft_currency, ngocMana}
+  rewards          jsonb NOT NULL,                      -- {items:[{id,qty}], soft_currency, premium_currency}
   max_total        integer,                             -- null = không giới hạn
   max_per_account  integer NOT NULL DEFAULT 1 CHECK (max_per_account > 0),
   redeemed_count   integer NOT NULL DEFAULT 0,

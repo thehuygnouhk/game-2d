@@ -94,8 +94,9 @@ def build_npcs():
                     description="idle 1-4")
         rows.append(flat)
     sheet(rows).save(os.path.join(sh, "npc_idle.png"))
+    n_rows = (len(rows) + 3) // 4
     for f in range(4):
-        cv = canvas(96 * 4, 96 * 2)
+        cv = canvas(96 * 4, 96 * n_rows)
         for k, row in enumerate(rows):
             over(cv, row[f], (k % 4) * 96, (k // 4) * 96)
         lineup.append(cv)
@@ -162,7 +163,50 @@ def build_tomes():
     save_gif(tc, os.path.join(pv, "huyen_thu.gif"), 140, scale=5)
 
 
+def build_maps():
+    from PIL import Image
+
+    import maps as MP
+    from maps_r01 import build_region
+    from tiles_rich import build_r01
+
+    root = mk("maps")
+    tsd, bgd, pvd = mk("maps", "tilesets"), mk("maps", "backgrounds"), mk("maps", "preview")
+    S = build_r01()
+    Image.fromarray(S.cv, "RGBA").save(os.path.join(tsd, "r01.png"))
+    Image.fromarray(MP.collision_tileset(), "RGBA").save(os.path.join(tsd, "collision.png"))
+    save_piskel(os.path.join(mk("piskel"), "tileset_r01.piskel"), "Tileset R01", [("Tileset", [S.cv])], fps=1,
+                description="O 32x32, 16 cot; thu tu o xem maps/tilesets/r01_index.txt")
+    with open(os.path.join(tsd, "r01_index.txt"), "w") as f:
+        for name, (c, r, w, h) in sorted(S.objects.items(), key=lambda kv: kv[1][1] * 16 + kv[1][0]):
+            f.write(f"{name}\tcol={c}\trow={r}\tw={w}\th={h}\tgid={r * 16 + c + MP.REGION_FIRSTGID}\n")
+    npc_sprites = {key.split("_")[0]: layered_frames(spec, idle()[:1])[1][0] for key, spec in NPCS.items()}
+    hero = layered_frames(HEROES["fire"], idle("sword")[:1])[1][0]
+    for mid, B in build_region(S).items():
+        name = mid.lower()
+        bgs = dict(zip(("bg_far", "bg_mid", "bg_near"), MP.bg_rich(B.theme, B.h * 32, seed=int(mid[1:]))))
+        bg_names = {}
+        for k, img in bgs.items():
+            fn = f"{name}_{k[3:]}.png"
+            Image.fromarray(img, "RGBA").save(os.path.join(bgd, fn))
+            bg_names[k] = f"backgrounds/{fn}"
+        MP.write_tmj(B, os.path.join(root, f"{name}.tmj"), "tilesets/r01.png", S.cv.shape[1::-1], bg_names, B.h * 32)
+        MP.write_yaml(B, os.path.join(root, f"{name}.yaml"), f"{name}.tmj")
+        actors = [(npc_sprites[n["id"]], n["x"], n["y"]) for n in B.npcs if n["id"] in npc_sprites]
+        actors.append((hero, *B.player_spawn))
+        full = MP.render(B, bgs, actors=actors)
+        Image.fromarray(full, "RGBA").save(os.path.join(pvd, f"{name}.png"))
+        MP.annotate(MP.render(B, bgs), B).save(os.path.join(pvd, f"{name}_annotated.png"))
+        sx = min(max(0, B.player_spawn[0] - 300), full.shape[1] - 960)
+        Image.fromarray(full[full.shape[0] - 540:, sx:sx + 960], "RGBA").save(os.path.join(pvd, f"{name}_view.png"))
+
+
 if __name__ == "__main__":
+    if len(sys.argv) > 2 and sys.argv[2] == "maps":
+        build_maps()
+        print("maps built into", OUT)
+        sys.exit(0)
+    build_maps()
     build_heroes()
     build_npcs()
     build_items()
