@@ -4,6 +4,8 @@
 >
 > **Quan trọng:** Đây là kế hoạch làm việc, **không phải tư vấn pháp lý**. Trước Closed Beta, hãy để **luật sư sở hữu trí tuệ** xem xét sản phẩm cuối cùng, không chỉ tài liệu này.
 
+> **Mức đã chọn (2026-11-18): giữ concept, đổi tên và 6 điểm nhận diện.** Xem [reskin-spec](reskin-spec.md). Tài liệu này mô tả khung đầy đủ (mức mạnh nhất); khi áp dụng, **theo mức đã chọn**. Trong tài liệu này, "World Bible" nghĩa là *tài liệu nguồn thiết kế của bản thương mại*, hiện là [reskin-spec](reskin-spec.md).
+
 ## 1. Kết luận ngắn
 
 **Đổi tên nhân vật và NPC là chưa đủ.** Thương mại hóa an toàn nghĩa là làm ra một **tác phẩm khác về thực chất**: thế giới, nhân vật, cốt truyện, tổ chức, hình ảnh và thuật ngữ đặc trưng đều phải do bạn sáng tạo. Cái giữ lại được là **cơ chế game** và **các ý tưởng chung**.
@@ -85,7 +87,7 @@ flowchart TD
 
 | Bước | Nội dung | Đầu ra |
 |------|----------|--------|
-| **1. World Bible** | Bối cảnh, **xung đột trung tâm**, 3–4 thế lực, khoảng 10 nhân vật chủ chốt (ngoại hình, tính cách, mục tiêu, quan hệ), hệ thống phép riêng, tên game. **Trạng thái: bản nháp v0.1 tại [world-bible](../world-bible/README.md), hướng văn hóa Việt, chờ duyệt** | Tài liệu 10–20 trang, được duyệt |
+| **1. World Bible** | Bối cảnh, **xung đột trung tâm**, 3–4 thế lực, khoảng 10 nhân vật chủ chốt (ngoại hình, tính cách, mục tiêu, quan hệ), hệ thống phép riêng, tên game. **Trạng thái: đặc tả mức vừa tại [reskin-spec](reskin-spec.md), chờ duyệt.** (World Bible văn hóa Việt là [phương án không chọn](../world-bible/README.md)) | Tài liệu 10–20 trang, được duyệt |
 | **2. Viết lại nội dung** | Chính tuyến, NPC, phản diện, tên map/boss/kỹ năng, từ World Bible. Giữ **chức năng** NPC (dịch chuyển, kho, chế tạo…), đổi **danh tính** | Bản mới của các file nội dung |
 | **3. Concept art** | Nhân vật, trang phục, biểu tượng thế lực, UI. Lưu **hồ sơ phát triển** (phác thảo, ngày, người làm) | Bộ concept, hồ sơ |
 | **4. Dữ liệu** | Sửa `packages/content` và `i18n`. ID nội dung (`M001`, `NPC001`, `SKL_FIRE_1`…) trung tính, giữ nguyên. **Định danh tiền tệ và vài khái niệm** (`yul`, `ngoc_mana`, `grimoire_leaves`, `ANTI`…) **chưa trung tính**, cần đổi trước khi viết mã ([nội bộ §9](../world-bible/99-internal-mapping-and-audit.md#9-việc-kỹ-thuật-phát-sinh)) | Bản dữ liệu mới, validator xanh |

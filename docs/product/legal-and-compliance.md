@@ -16,7 +16,7 @@ Black Clover (tác giả Yūki Tabata, nhà xuất bản và chủ sở hữu b�
 
 1. **Không sử dụng** hình ảnh, sprite, nhạc, lồng tiếng, logo từ anime/manga. Mọi tài sản phải **tự tạo** hoặc **có giấy phép**.
 2. **Thoại viết mới**, không sao chép thoại hoặc văn bản của nguyên tác.
-3. Tên "Black Clover" trong tiêu đề là **tên tạm** (xem [vision §9](vision-and-scope.md)). **Đã chọn hướng thương mại với IP gốc thay thế (reskin)**: World Bible gốc phải được chốt **trước khi sản xuất art** (Phase 0). Xem [reskin-plan](reskin-plan.md).
+3. Tên "Black Clover" trong tiêu đề là **tên tạm** (xem [vision §9](vision-and-scope.md)). **Đã chọn hướng thương mại với IP gốc thay thế (reskin), mức "giữ concept, đổi tên + 6 điểm nhận diện"**: đặc tả phải được duyệt **trước khi sản xuất art** (Phase 0). Mức này còn rủi ro trung bình, cần luật sư xem. Xem [reskin-spec](reskin-spec.md) và [reskin-plan](reskin-plan.md).
 4. Khuyến nghị **thiết kế lớp tên** (i18n key) để **thay toàn bộ tên IP** mà không sửa code.
 5. Bắt buộc có **dòng tuyên bố** trong README, màn hình đăng nhập, điều khoản.
 

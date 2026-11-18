@@ -11,10 +11,11 @@
 | [roadmap](product/roadmap.md) | 6 phase, mốc, tiêu chí hoàn thành, đội ngũ, rủi ro |
 | [legal-and-compliance](product/legal-and-compliance.md) | IP, quy định game, dữ liệu cá nhân, thanh toán, điều khoản |
 | [reskin-plan](product/reskin-plan.md) | **Kế hoạch thương mại với IP gốc thay thế:** cần đổi gì, giữ gì, quy trình, danh sách kiểm tra |
+| [reskin-spec](product/reskin-spec.md) | **Đặc tả mức đã chọn (nội bộ, chờ duyệt):** giữ concept, đổi tên + 6 điểm nhận diện, tám chương mới, thuật ngữ, việc kỹ thuật |
 
-## 1a. World Bible (`world-bible/`): thế giới gốc cho bản thương mại
+## 1a. World Bible văn hóa Việt (`world-bible/`): **phương án không chọn**
 
-> **Trạng thái: bản nháp v0.1, chờ duyệt.** Chưa thay các tài liệu thiết kế bên dưới; sau khi duyệt, nó là nguồn để viết lại chúng.
+> **Đã loại (2026-11-18):** thay đổi gần như toàn bộ thế giới. Hướng hiện hành là **giữ concept, đổi tên và 6 điểm nhận diện**, xem [reskin-spec](product/reskin-spec.md). Giữ lại để tham khảo, **không dùng làm nguồn nội dung**.
 
 | Tài liệu | Nội dung |
 |----------|----------|
@@ -98,7 +99,7 @@
 
 | Thông tin | Tài liệu chuẩn |
 |-----------|----------------|
-| Thế giới, nhân vật, cốt truyện **bản thương mại** (khi được duyệt) | [world-bible](world-bible/README.md) |
+| Thế giới, nhân vật, cốt truyện **bản thương mại** (khi được duyệt) | [reskin-spec](product/reskin-spec.md) |
 | Tên gọi, thuật ngữ (bản fan hiện tại) | [glossary](glossary.md) |
 | Công thức EXP, sát thương, quái | [04](game-design/04-combat-and-progression.md) |
 | Kỹ năng, khắc hệ | [03](game-design/03-origins-classes-skills.md) |
@@ -112,6 +113,6 @@
 ## 10. Những điều cần xác nhận trước khi chốt
 
 1. **Nguyên tác:** Tên và vai trò các nhân vật phản diện (Chương 6–8), danh sách 9 Đội và chi tiết các arc sau cần **đối chiếu với nguyên tác** nếu còn dùng cho bản fan ([lore §0](game-design/01-lore-and-story.md)). Bản thương mại sẽ **không** bám nguyên tác.
-2. **Pháp lý:** Hướng IP **đã chọn: reskin** ([reskin-plan](product/reskin-plan.md)). Việc còn lại là World Bible gốc, và **luật sư IP** duyệt cùng các giấy phép game online tại Việt Nam ([legal](product/legal-and-compliance.md)).
+2. **Pháp lý:** Hướng IP **đã chọn: reskin mức "đổi tên + 6 điểm nhận diện"** ([reskin-spec](product/reskin-spec.md)). Mức này **vẫn còn rủi ro trung bình** vì cùng concept; việc còn lại là duyệt đặc tả, đối chiếu độc lập, và **luật sư IP** duyệt cùng các giấy phép game online tại Việt Nam ([legal](product/legal-and-compliance.md)).
 3. **Cân bằng:** Mọi con số là điểm khởi đầu, cần mô phỏng và playtest.
 4. **Năng lực server:** Ước tính CCU trong [server-design §13](architecture/server-design.md) cần **load test** từ Phase 1.

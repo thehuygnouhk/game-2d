@@ -1,6 +1,8 @@
 # World Bible: Địa Linh Ký
 
-> **Trạng thái:** Draft v0.1, **chờ duyệt** · **Bước 1** của [kế hoạch reskin](../product/reskin-plan.md) · Hướng văn hóa: **Việt**
+> **Trạng thái: PHƯƠNG ÁN KHÔNG CHỌN (2026-11-18).** Bản này thay đổi gần như toàn bộ thế giới nên đã bị loại; hướng hiện hành là **giữ concept, đổi tên và 6 điểm nhận diện**, xem [reskin-spec](../product/reskin-spec.md). Giữ lại để **tham khảo** (một số ý có thể mượn), **không dùng làm nguồn nội dung**.
+>
+> *Trạng thái gốc:* Draft v0.1 · Hướng văn hóa: **Việt**
 > **Cập nhật:** 2026-11-18
 
 ## 1. Mục đích

@@ -125,9 +125,9 @@ Người chơi bắt đầu là một đứa trẻ ở **Làng Hage**. Họ nh�
 
 | # | Chủ đề | Mặc định hiện tại | Ai quyết định |
 |---|--------|-------------------|---------------|
-| D1 | Tên game chính thức | "Black Clover Online: Ma Đạo Thư" chỉ là **tên tạm của bản fan**. Bản thương mại cần **tên gốc**, không chứa "Clover", chốt khi viết World Bible ([reskin-plan](reskin-plan.md)) | Product owner |
+| D1 | Tên game chính thức | "Black Clover Online: Ma Đạo Thư" chỉ là **tên tạm của bản fan**. Bản thương mại cần **tên gốc**, không chứa "Clover". Đề xuất *Huyền Thư Ký*, chưa tra cứu nhãn hiệu ([reskin-spec §5](reskin-spec.md)) | Product owner |
 | D2 | Công nghệ client | TypeScript + Phaser 3 (web-first) | Tech lead |
 | D3 | Công nghệ server | Node.js + TypeScript, PostgreSQL, Redis | Tech lead |
 | D4 | Có cho Auto Hunt chính thức? | Có, giới hạn 3 giờ/ngày | Design |
 | D5 | Thương mại hóa hay phi lợi nhuận? | **Đã quyết:** thương mại, với **IP gốc thay thế (reskin)**. Xem [reskin-plan](reskin-plan.md) | Product owner |
-| D6 | Mức độ bám nguyên tác | Bản fan hiện tại là AU bám sát nguyên tác. **Bản thương mại không bám nguyên tác**: thế giới, nhân vật, cốt truyện viết mới từ World Bible | Narrative |
+| D6 | Mức độ bám nguyên tác | Bản fan hiện tại là AU bám sát nguyên tác. **Bản thương mại giữ concept nhưng không bám nguyên tác ở 6 điểm nhận diện**: cặp bạn thân, thứ tự arc, phản diện, dấu ấn số lá của sách phép, hệ ẩn, danh sách đội ([reskin-spec §3](reskin-spec.md)) | Narrative |
