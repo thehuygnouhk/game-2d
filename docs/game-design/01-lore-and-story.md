@@ -119,7 +119,7 @@ Ma lực là thứ quyết định giá trị của một người. Ở tuổi 1
 **Nhịp truyện:**
 1. Tàn Tích Biên Giới Spade: do thám, giải cứu Hiệp Sĩ mắc kẹt.
 2. Thành Phố Hoang Tàn: quái vật tạo bởi ma pháp cấm.
-3. Cung Điện Spade: **Raid 10 người** đánh Bộ Ba Hắc Ám, sau đó **Lucius Zogratis**.
+3. Cung Điện Spade: **Raid 10 người** đánh Bộ Ba Hắc Ám, sau đó **Lucius Zogratis**. Có **Chế độ Cốt Truyện** một người để hoàn thành chính tuyến.
 4. Người chơi nhận thanh kiếm đầu tiên của chuỗi Phản Ma (nếu đủ điều kiện).
 
 **Boss:** Bộ Ba Hắc Ám (BOSS019–021, raid), Lucius Zogratis (BOSS022). *Tên nhân vật phản diện cần đối chiếu lại nguyên tác trước khi phát hành.*
@@ -131,7 +131,7 @@ Ma lực là thứ quyết định giá trị của một người. Ở tuổi 1
 **Nhịp truyện:**
 1. Cổng Địa Ngục: chịu hiệu ứng **Ma Khí** (giảm hồi MP) trừ khi có vật phẩm kháng.
 2. Vực Sâu Ma Quỷ: gặp **Zagred**, **Megicula**, trùm cấp cao.
-3. Điện Ma Vương: **Raid 15 người** với **Lucifero** (boss cuối Mùa 1).
+3. Điện Ma Vương: **Raid 15 người** với **Lucifero** (boss cuối Mùa 1). Có **Chế độ Cốt Truyện** một người để hoàn thành chính tuyến.
 4. Lễ Phong Hiệp Sĩ: trao danh hiệu và mở **Mùa Giải Vua Phép Thuật** (endgame).
 
 **Boss:** Zagred (BOSS024), Megicula (BOSS025), Lucifero (BOSS026, raid).

@@ -38,7 +38,9 @@ Chi tiết và lý do: [system-architecture §5](docs/architecture/system-archit
 
 ## Quyết định đang mở
 
-Xem [vision §9](docs/product/vision-and-scope.md): tên chính thức, công nghệ, mức độ bám nguyên tác, hướng IP (xin giấy phép hay reskin), thương mại hóa hay phi lợi nhuận.
+**Đã quyết:** thương mại hóa với **IP gốc thay thế (reskin)**, xem [Kế hoạch Reskin](docs/product/reskin-plan.md). Bộ tài liệu hiện tại là **bản tham khảo nội bộ bám nguyên tác**; bản thương mại sẽ viết lại thế giới, nhân vật, cốt truyện từ một World Bible gốc.
+
+Còn mở (xem [vision §9](docs/product/vision-and-scope.md)): tên game gốc, nội dung World Bible, công nghệ.
 
 ## Đóng góp
 

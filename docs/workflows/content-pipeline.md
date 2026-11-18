@@ -372,7 +372,7 @@ flowchart LR
 
 | Công cụ | Mục đích |
 |---------|----------|
-| `tools/balance-sim ttk` | Thời gian hạ quái theo hệ/cấp/trang bị chuẩn |
+| `tools/balance-sim ttk` | Thời gian hạ quái theo hệ/cấp/trang bị chuẩn, **gồm kiểm tra solo cho mọi hệ** ([combat §11](../game-design/04-combat-and-progression.md)); CI báo lỗi nếu hệ nào vượt ngưỡng |
 | `tools/balance-sim exp` | Số quái/giờ cần lên cấp, so với mục tiêu |
 | `tools/balance-sim economy` | Faucet/sink, lạm phát theo tuần |
 | `tools/balance-sim enhance` | Chi phí kỳ vọng để đạt +N |

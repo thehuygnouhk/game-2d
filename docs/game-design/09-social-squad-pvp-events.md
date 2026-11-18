@@ -40,7 +40,7 @@
 | Chế độ nhặt đồ | Tự do / Luân phiên |
 | Bonus EXP | +10% mỗi thành viên thêm (xem [combat §2.3](04-combat-and-progression.md)) |
 | Hiển thị | Thanh HP thành viên, vị trí trên bản đồ nhỏ |
-| Tìm nhóm | Bảng *Tìm Nhóm Hầm Ngục* theo hầm ngục và vai trò (Tank/Hồi/DPS) |
+| Tìm nhóm | Bảng *Tìm Nhóm Hầm Ngục* theo hầm ngục (vai trò chỉ để tham khảo). **Không bắt buộc**: hầm ngục vào một mình được, xem [maps §6.1](05-world-maps-monsters.md) |
 | Nhóm Raid | Gộp nhiều nhóm tối đa 15 người trong Raid |
 
 ## 3. Đội Hiệp Sĩ (Squad do người chơi lập)

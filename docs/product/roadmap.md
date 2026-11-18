@@ -43,8 +43,9 @@ gantt
 | Kỹ thuật | Monorepo, CI, lint/test, Docker Compose, schema DB v0 |
 | Mạng | WebSocket skeleton, giao thức binary, tick loop 20 Hz |
 | Client | Phaser boot, tải map Tiled, di chuyển có dự đoán |
-| Nội dung | Style guide, giấy bút nhân vật mẫu, bảng màu |
-| **Tiêu chí hoàn thành** | 2 client cùng thấy nhau di chuyển trên M001, ping < 100 ms cục bộ, CI xanh |
+| Thế giới gốc | **World Bible** (thế giới, xung đột, nhân vật chủ chốt, tên game) theo [reskin-plan](reskin-plan.md). Chạy **song song** với phần kỹ thuật. **Art chỉ bắt đầu sau khi World Bible được duyệt** |
+| Nội dung | Style guide, nhân vật mẫu, bảng màu (sau khi có World Bible) |
+| **Tiêu chí hoàn thành** | 2 client cùng thấy nhau di chuyển trên M001, ping < 100 ms cục bộ, CI xanh; **World Bible gốc được duyệt** |
 
 ### Phase 1 — Vertical Slice (8 tuần)
 
@@ -108,7 +109,7 @@ gantt
 | Phạm vi phình | Cao | Cao | Cắt P2 trước, mỗi phase đóng băng tính năng |
 | Nghệ thuật nghẽn | Trung bình | Cao | Paper-doll tái dùng, nhờ ngoài làm VFX, palette swap |
 | Hiệu năng WebSocket | Trung bình | Cao | Load test từ Phase 1, giới hạn AOI |
-| Bản quyền IP | Cao | Rất cao | Xem [legal](legal-and-compliance.md); quyết định hướng đi trước Phase 3 |
+| Bản quyền IP | Cao | Rất cao | **Đã chọn reskin.** Chốt World Bible gốc ở Phase 0, trước khi sản xuất art; luật sư IP duyệt trước Closed Beta. Xem [reskin-plan](reskin-plan.md) |
 | Gian lận/bot | Cao | Cao | Anti-cheat từ Phase 2, log đầy đủ |
 | Lạm phát kinh tế | Trung bình | Cao | Mô phỏng + giám sát + công cụ điều chỉnh |
 | Mất nhân sự chủ chốt | Thấp | Cao | Tài liệu, review chéo, ADR |

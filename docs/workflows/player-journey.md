@@ -250,7 +250,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A["Tìm nhóm / tạo nhóm 3-5"] --> B["Đến cổng hầm ngục"]
+    A["Vào một mình hoặc tạo nhóm 1-5"] --> B["Đến cổng hầm ngục"]
     B --> C{"Còn lượt? Đủ cấp?"}
     C -- "Không" --> C1["Thông báo lý do"]
     C -- "Có" --> D["Server tạo Instance"]

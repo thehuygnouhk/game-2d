@@ -229,18 +229,31 @@ Thông báo toàn máy chủ trước **5 phút**. Phần thưởng gửi **qua 
 
 | ID | Tên | Nhóm | Cấp | Giới hạn vào | Boss cuối | Thưởng đặc trưng |
 |----|-----|------|-----|--------------|-----------|------------------|
-| DG01 | Hang Dơi Tập Sự | 1–3 | 9–12 | Không giới hạn (tutorial) | Slime Vua | Rương tân thủ |
-| DG02 | Mỏ Bỏ Hoang | 3–5 | 18–22 | 3 lượt/ngày | Golem Mỏ | Đá Mana, trang bị Tốt |
-| DG03 | Hang Rễ Cổ | 5 | 34–39 | 3 lượt/ngày | Cổ Thụ Hắc Ám | Nguyên liệu Mộc, Sách Kỹ Năng |
-| DG04 | Thủy Cung Tầng Sâu | 5 | 46–49 | 2 lượt/ngày | Hải Long Hộ Điện | Mảnh Ma Lực Cổ Đại |
-| DG05 | Doanh Trại Diamond | 5 | 56–59 | 2 lượt/ngày | Tướng Quân | Huy hiệu Diamond |
-| DG06 | Đền Tinh Linh Cổ | 5 | 70–74 | 2 lượt/ngày | Tinh Linh Hắc Hóa | Linh Thạch Ngọc |
-| DG07 | **Cung Điện Spade (Raid)** | 10 | 85–89 | 1 lượt/tuần | Dark Triad / Lucius | Set Spade, Mảnh Phản Ma |
-| DG08 | **Điện Ma Vương (Raid)** | 15 | 98–100 | 1 lượt/tuần | Lucifero | Vũ khí Thần Thoại |
+| DG01 | Hang Dơi Tập Sự | 1–5 (co giãn) | 9–12 | Không giới hạn (tutorial) | Slime Vua | Rương tân thủ |
+| DG02 | Mỏ Bỏ Hoang | 1–5 (co giãn) | 18–22 | 3 lượt/ngày | Golem Mỏ | Đá Mana, trang bị Tốt |
+| DG03 | Hang Rễ Cổ | 1–5 (co giãn) | 34–39 | 3 lượt/ngày | Cổ Thụ Hắc Ám | Nguyên liệu Mộc, Sách Kỹ Năng |
+| DG04 | Thủy Cung Tầng Sâu | 1–5 (co giãn) | 46–49 | 2 lượt/ngày | Hải Long Hộ Điện | Mảnh Ma Lực Cổ Đại |
+| DG05 | Doanh Trại Diamond | 1–5 (co giãn) | 56–59 | 2 lượt/ngày | Tướng Quân | Huy hiệu Diamond |
+| DG06 | Đền Tinh Linh Cổ | 1–5 (co giãn) | 70–74 | 2 lượt/ngày | Tinh Linh Hắc Hóa | Linh Thạch Ngọc |
+| DG07 | **Cung Điện Spade (Raid)** | 10 (Cốt Truyện: 1) | 85–89 | 1 lượt/tuần | Dark Triad / Lucius | Set Spade, Mảnh Phản Ma |
+| DG08 | **Điện Ma Vương (Raid)** | 15 (Cốt Truyện: 1) | 98–100 | 1 lượt/tuần | Lucifero | Vũ khí Thần Thoại |
 
 ### 6.1 Quy tắc hầm ngục
 
-- Khởi tạo **instance riêng** cho nhóm, đóng khi tất cả chết hoặc hết giờ (30–60 phút).
+- Khởi tạo **instance riêng** cho người chơi hoặc nhóm, đóng khi tất cả chết hoặc hết giờ (30–60 phút).
+- **Solo-first:** vào một mình được. Chỉ số quái/boss **co giãn theo số người *n* (1–5)**; thưởng mỗi người thay đổi theo *n*:
+
+| Số người *n* | HP quái/boss | ATK quái/boss | Thưởng mỗi người |
+|--------------|--------------|---------------|-------------------|
+| 1 | ×0,300 | ×0,70 | ×0,8 |
+| 2 | ×0,475 | ×0,775 | ×0,9 |
+| 3 | ×0,650 | ×0,85 | ×1,0 |
+| 4 | ×0,825 | ×0,925 | ×1,0 |
+| 5 | ×1,000 | ×1,00 | ×1,0 |
+
+  Công thức: HP ×(0,30 + 0,175·(*n*−1)), ATK ×(0,70 + 0,075·(*n*−1)). Đây là giá trị khởi điểm cần tinh chỉnh bằng mô phỏng.
+- **Raid** (DG07, DG08) có hai chế độ: **Raid** (10/15 người, có thưởng Raid) và **Cốt Truyện** (1 người, đủ để hoàn thành chính tuyến, không có thưởng Raid; **Mảnh Phản Ma** vẫn rơi với tỉ lệ thấp hơn). Nhờ vậy không ai bị chặn chính tuyến vì không có nhóm.
+- **Boss thế giới** BOSS033 (cần đông người) là nội dung tùy chọn, không nằm trên chính tuyến.
 - Khóa nhóm khi bắt đầu. Có thể vào lại trong 5 phút khi mất kết nối.
 - Chia thưởng theo cơ chế trong [combat §6](04-combat-and-progression.md).
 - Độ khó **Thường / Khó / Ác Mộng** (khóa theo Lực Chiến), quái +40% / +100% chỉ số, thưởng +50% / +150%.

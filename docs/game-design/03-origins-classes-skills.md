@@ -34,10 +34,12 @@ Chọn tại Lv10. Mỗi hệ có 1 vũ khí chuyên dụng và 7 kỹ năng (6 
 | **Thủy** | Thủy Pháp Sư | Đánh xa diện rộng | Trượng | MP +20% | **Triều Dâng**: mỗi 5 đòn, kỹ năng kế +15% và hồi 3% MP | Noelle |
 | **Phong** | Phong Kiếm Khách | Tốc độ, chí mạng | Đoản Kiếm | Tốc chạy +10%, Chí mạng +8% | **Gió Lướt**: sau khi lướt, 10% né 3s. Nhảy đôi | Yuno |
 | **Lôi** | Lôi Chiến Binh | Liên hoàn tốc đánh | Găng Tay | Tốc đánh +15% | **Chiến Ý**: mỗi đòn trúng +2% sát thương, tối đa 10 lớp | Luck |
-| **Thổ** | Thổ Hộ Vệ | Đỡ đòn | Búa & Khiên | HP +25%, DEF +20%, ATK −10% | **Da Đá**: giảm 8% sát thương nhận | Trưởng Lão Terra |
-| **Mộc** | Mộc Y Sư | Hồi máu, hỗ trợ | Trượng Hoa | Hồi máu +20%, MP +15%, ATK −15% | **Sinh Lực Hoa**: kỹ năng hồi máu thêm hồi liên tục 3s | Mimosa |
+| **Thổ** | Thổ Hộ Vệ | Bền bỉ, đỡ đòn, đánh chắc | Búa & Khiên | HP +25%, DEF +20%, ATK −5% | **Da Đá**: giảm 8% sát thương nhận | Trưởng Lão Terra |
+| **Mộc** | Mộc Thuật Sư | Bền bỉ: độc và tự hồi phục; hỗ trợ nhóm là phần cộng thêm | Trượng Hoa | HP +10%, MP +10%, hồi phục +20% (bản thân và đồng đội) | **Sinh Lực Hoa**: mỗi lần kỹ năng gây sát thương trúng, hồi 1% HP tối đa cho bản thân (tối đa 1 lần/giây); kỹ năng hồi máu thêm hồi liên tục 3s | Mimosa |
 | **Ám** | Ám Pháp Sư | Bất lợi hóa, hút máu | Đao | Sát thương chí mạng +20% | **Bóng Tối Nuốt Chửng**: hút 5% sát thương thành HP | Yami |
 | **Phản Ma** *(ẩn)* | Phản Ma Kiếm Sĩ | Sát thương đơn mục tiêu, khắc phép | Kiếm Phản Ma | Không dùng MP; dùng **Ý Chí** | **Phản Ma**: giảm 50% sát thương phép nhận, bỏ qua 35% DEF mục tiêu | Liebe |
+
+> **Nguyên tắc Solo-first.** Giống Ninja School và Ngọc Rồng, người chơi chủ yếu săn quái và làm nhiệm vụ **một mình**. Vì vậy **mọi hệ phải tự chơi trọn vẹn được**: không có kỹ năng nào vô dụng khi đi một mình, và kỹ năng hỗ trợ luôn có phần tác dụng lên **bản thân**. Đồng đội chỉ làm lối chơi **tốt hơn**, không phải điều kiện cần. Xem [combat §11](04-combat-and-progression.md).
 
 ### Vòng khắc hệ
 
@@ -144,23 +146,25 @@ Hệ số là **% ATK** ở cấp kỹ năng 1.
 |----|-----|------|-----|------------------|
 | SKL_EARTH_1 | Đá Phóng | Đơn, đạn | Xa | 110% ATK |
 | SKL_EARTH_2 | Địa Chấn | Diện nhỏ | Cận | 140% ATK, **Choáng** 0,5s |
-| SKL_EARTH_3 | Khiên Đất | Lá chắn 10s | — | Hấp thụ 300% ATK sát thương |
-| SKL_EARTH_4 | Khiêu Khích | Aggro 6s | Ngắn | Quái xung quanh nhắm vào mình, +30% DEF |
-| SKL_EARTH_5 | Giáp Gnome | Buff 20s | — | +40% DEF, phản 10% sát thương |
+| SKL_EARTH_3 | Khiên Đất | Lá chắn 10s + nổ | Cận | Hấp thụ 300% ATK sát thương; khi vỡ hoặc hết hạn nổ gây 200% ATK diện nhỏ |
+| SKL_EARTH_4 | Khiêu Khích | Aggro 6s + diện rộng | Ngắn | 120% ATK diện rộng; quái xung quanh nhắm vào mình, +30% DEF |
+| SKL_EARTH_5 | Giáp Gnome | Buff 20s | — | +40% DEF, +15% ATK, phản 10% sát thương |
 | SKL_EARTH_6 | Động Đất Cuồng Nộ | Diện rộng | Ngắn | 300% ATK, **Choáng** 1,5s |
 | SKL_EARTH_7 | **Spirit Dive: Gnome** | Biến thân 30s | — | Lá chắn 20% HP tối đa, aura khiêu khích, phản 25% sát thương |
 
-#### Mộc — Mộc Y Sư
+#### Mộc — Mộc Thuật Sư
+
+Mộc là hệ **bền bỉ**: gây sát thương bằng **Độc** và tự hồi phục, nên săn quái một mình rất ổn. Khi vào nhóm, các kỹ năng hồi và khiên **lan thêm sang đồng đội**. **Không có kỹ năng hồi sinh người khác.**
 
 | ID | Tên | Loại | Tầm | Hiệu ứng (cấp 1) |
 |----|-----|------|-----|------------------|
-| SKL_PLANT_1 | Gai Xanh | Đơn, đạn | Xa | 100% ATK |
-| SKL_PLANT_2 | Hồi Xuân | Hồi đơn | Ngắn | Hồi 150% ATK + hồi liên tục 3s |
-| SKL_PLANT_3 | Dây Leo Trói | Đơn | Ngắn | 120% ATK, **Trói** 3s |
-| SKL_PLANT_4 | Vườn Chữa Lành | Vùng hồi 8s | Ngắn | Hồi 60% ATK/giây cho đồng đội trong vùng |
-| SKL_PLANT_5 | Hoa Bảo Hộ | Lá chắn 15s | Ngắn | Hấp thụ 200% ATK cho 1 đồng đội |
-| SKL_PLANT_6 | Rừng Sinh Mệnh | Hồi diện rộng | Ngắn | Hồi 300% ATK cho cả nhóm, **giải hiệu ứng xấu** |
-| SKL_PLANT_7 | **Spirit Dive: Dryad** | Biến thân 30s | — | Hồi ×1,5; hồi sinh 1 đồng đội với 40% HP (1 lần) |
+| SKL_PLANT_1 | Gai Xanh | Đơn, đạn | Xa | 120% ATK, **Độc** 3s (30% ATK tổng) |
+| SKL_PLANT_2 | Hồi Xuân | Hồi bản thân + 1 đồng đội gần nhất | Ngắn | Hồi 150% ATK + 5% HP tối đa, hồi liên tục 3s |
+| SKL_PLANT_3 | Dây Leo Trói | Đơn | Ngắn | 160% ATK, **Trói** 3s |
+| SKL_PLANT_4 | Vườn Sinh Tử | Vùng 8s | Ngắn | Gây 60% ATK/giây và **Độc** lên kẻ địch trong vùng; bản thân và đồng đội trong vùng hồi 40% ATK/giây |
+| SKL_PLANT_5 | Hoa Bảo Hộ | Lá chắn 15s | Ngắn | Hấp thụ 200% ATK cho bản thân; trong nhóm lan thêm tới 2 đồng đội gần nhất |
+| SKL_PLANT_6 | Rừng Sinh Mệnh | Diện rộng | Ngắn | 340% ATK, sau đó hồi 200% ATK và **giải hiệu ứng xấu** cho bản thân và đồng đội trong vùng |
+| SKL_PLANT_7 | **Spirit Dive: Dryad** | Biến thân 30s | — | Sát thương Độc +40%, hồi 3% HP/giây cho bản thân và đồng đội gần; **Tái Sinh**: nếu HP về 0 trong lúc biến thân, tự hồi sinh 1 lần với 40% HP |
 
 #### Ám — Ám Pháp Sư
 

@@ -43,6 +43,7 @@
 | FR-WORLD-06 | Ngày/đêm, thời tiết hiển thị | P2 | 4 |
 | FR-WORLD-07 | Vùng Trời cho Chổi Bay | P2 | 4 |
 | FR-WORLD-08 | Instance cho hầm ngục, Squad Hall | P0 | 3 |
+| FR-WORLD-09 | Hầm ngục co giãn theo số người (1–5); Raid có Chế độ Cốt Truyện một người | P1 | 3 |
 
 ### 1.4 Chiến đấu & Kỹ năng (CMB)
 
@@ -58,6 +59,7 @@
 | FR-CMB-08 | Spirit Dive và Spirit Gauge | P1 | 4 |
 | FR-CMB-09 | Auto Hunt do server điều khiển | P1 | 3 |
 | FR-CMB-10 | Hệ ẩn Phản Ma | P1 | 4 |
+| FR-CMB-11 | **Solo-first:** mọi hệ phép phải tự cày quái và hoàn thành chính tuyến một mình (TTK solo ≤ 12 s; hệ bền bỉ ≥ 80% sát thương trung vị), kiểm chứng bằng `balance-sim`. Không có kỹ năng hồi sinh người khác | P0 | 2 |
 
 ### 1.5 Vật phẩm & Trang bị (ITM)
 

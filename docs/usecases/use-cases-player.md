@@ -265,9 +265,9 @@ flowchart LR
 
 | Mục | Nội dung |
 |-----|----------|
-| Tác nhân | Người chơi, nhóm |
-| Tiền điều kiện | Đủ cấp, còn lượt, có nhóm đủ số người tối thiểu |
-| Luồng chính | 1. Trưởng nhóm chọn hầm ngục và độ khó. 2. Mọi thành viên xác nhận. 3. Server tạo Instance. 4. Nhóm chiến đấu qua phòng, hạ boss. 5. Chia thưởng. 6. Đóng instance sau 60 giây. |
+| Tác nhân | Người chơi, nhóm (không bắt buộc) |
+| Tiền điều kiện | Đủ cấp, còn lượt. Hầm ngục: **1–5 người** (vào một mình được). Raid: đủ 10/15 người, hoặc chọn **Chế độ Cốt Truyện** (1 người) |
+| Luồng chính | 1. Người chơi (hoặc trưởng nhóm) chọn hầm ngục và độ khó. 2. Mọi thành viên (nếu có) xác nhận. 3. Server tạo Instance và **co giãn chỉ số quái theo số người**. 4. Chiến đấu qua phòng, hạ boss. 5. Chia thưởng. 6. Đóng instance sau 60 giây. |
 | Luồng thay thế | 4a. Cả nhóm chết/hết giờ → thất bại, mất lượt. 4b. Mất kết nối → giữ chỗ 5 phút. |
 | Hậu điều kiện | Lượt dùng ghi `character_lockouts`; thưởng giao |
 

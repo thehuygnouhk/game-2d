@@ -10,26 +10,21 @@ Black Clover (tác giả Yūki Tabata, nhà xuất bản và chủ sở hữu b�
 |----------------|--------|-------------|
 | **Dự án fan phi lợi nhuận**, không thu tiền, không quảng cáo, chỉ để học tập/cộng đồng | Trung bình | Ghi rõ "fan-made, không liên kết với chủ sở hữu", không dùng tài sản gốc, sẵn sàng gỡ khi có yêu cầu |
 | **Thương mại** (nạp thẻ, quảng cáo, bán vật phẩm) với IP gốc | **Rất cao** | **Phải có giấy phép (license)** từ chủ sở hữu; nếu không, đổi sang IP gốc |
-| **Thương mại với IP gốc thay thế** (Reskin) | Thấp | Đổi toàn bộ tên, nhân vật, biểu tượng; chỉ giữ ý tưởng chung (hệ phép, đội hiệp sĩ) |
+| **Thương mại với IP gốc thay thế** (Reskin) | Thấp đến trung bình, **tùy mức khác biệt thực chất** | **Hướng đã chọn.** Phải khác về **thực chất**, không chỉ đổi tên: nhân vật, cốt truyện, tổ chức, thiết kế hình ảnh, thuật ngữ đặc trưng đều phải làm mới. Chỉ giữ ý tưởng và cơ chế chung. Xem [reskin-plan](reskin-plan.md) |
 
 ### 1.1 Quy tắc dự án trong giai đoạn hiện tại
 
 1. **Không sử dụng** hình ảnh, sprite, nhạc, lồng tiếng, logo từ anime/manga. Mọi tài sản phải **tự tạo** hoặc **có giấy phép**.
 2. **Thoại viết mới**, không sao chép thoại hoặc văn bản của nguyên tác.
-3. Tên "Black Clover" trong tiêu đề là **tên tạm** (xem [vision §9](vision-and-scope.md)); trước Beta phải quyết định **xin license** hay **reskin**.
+3. Tên "Black Clover" trong tiêu đề là **tên tạm** (xem [vision §9](vision-and-scope.md)). **Đã chọn hướng thương mại với IP gốc thay thế (reskin)**: World Bible gốc phải được chốt **trước khi sản xuất art** (Phase 0). Xem [reskin-plan](reskin-plan.md).
 4. Khuyến nghị **thiết kế lớp tên** (i18n key) để **thay toàn bộ tên IP** mà không sửa code.
 5. Bắt buộc có **dòng tuyên bố** trong README, màn hình đăng nhập, điều khoản.
 
-### 1.2 Phương án Reskin (dự phòng)
+### 1.2 Reskin: đổi tên là chưa đủ
 
-| Thành phần BCO | Tên thay thế dự phòng |
-|----------------|------------------------|
-| Black Clover | (tên gốc của dự án) |
-| Ma Đạo Thư (Grimoire) | Sách Phép / Tuyển Tập Phép |
-| Hiệp Sĩ Phép Thuật | Hiệp Sĩ Ma Pháp |
-| Nhân vật gốc | Nhân vật tự sáng tạo cùng vai trò |
-| Phản Ma | Hệ Phá Phép |
-| Yul | Đồng tiền riêng |
+> **Đính chính:** bản trước của mục này gợi ý các tên thay thế dịch sát nghĩa ("Sách Phép", "Hiệp Sĩ Ma Pháp", "Hệ Phá Phép", "nhân vật tự sáng tạo cùng vai trò") và đánh giá rủi ro là "Thấp". Cách đó **không đủ**: dịch từ hay giữ nguyên vai trò, tính cách, trình tự cốt truyện vẫn tạo ra bản phái sinh. Đã bỏ bảng đó.
+
+Nguyên tắc: **ý tưởng và cơ chế dùng tự do; cách thể hiện cụ thể (nhân vật, cốt truyện, hình ảnh, văn bản, nhạc) và tên gọi thì phải làm mới.** Danh sách đầy đủ những thứ cần đổi, những thứ giữ được, quy trình và danh sách kiểm tra nằm ở [reskin-plan](reskin-plan.md).
 
 ## 2. Giấy phép và quản lý trò chơi điện tử tại Việt Nam
 

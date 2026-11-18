@@ -20,6 +20,8 @@ Người chơi bắt đầu là một đứa trẻ ở **Làng Hage**. Họ nh�
 | 3 | **Ma lực & Ma Đạo Thư** | Mỗi người một thuộc tính phép, một cuốn grimoire | 7 hệ phép + Phản Ma, tiến hóa Ma Đạo Thư 3 → 4 → 5 lá, Spirit Dive |
 | 4 | **Từ dân thường đến Vua Phép Thuật** | Hành trình thăng hạng rõ ràng | Hạng: Dân Thường → Tập Sự → Hiệp Sĩ → Tinh Anh → Đội Phó → Đội Trưởng → Ứng Viên Vua; hệ thống **Sao** (Star) |
 
+**Nguyên tắc đi kèm: Solo-first.** Trụ cột "Đồng đội" nghĩa là *đi cùng nhau thì mạnh hơn và vui hơn*, **không** nghĩa là bắt buộc phải có nhóm. Như Ninja School và Ngọc Rồng, người chơi tự săn quái, làm nhiệm vụ và hoàn thành cốt truyện một mình ở mọi hệ phép. Xem [combat §11](../game-design/04-combat-and-progression.md).
+
 ## 3. Đối tượng người chơi
 
 | Persona | Mô tả | Họ cần gì |
@@ -123,9 +125,9 @@ Người chơi bắt đầu là một đứa trẻ ở **Làng Hage**. Họ nh�
 
 | # | Chủ đề | Mặc định hiện tại | Ai quyết định |
 |---|--------|-------------------|---------------|
-| D1 | Tên game chính thức | "Black Clover Online: Ma Đạo Thư" (tên tạm) | Product owner |
+| D1 | Tên game chính thức | "Black Clover Online: Ma Đạo Thư" chỉ là **tên tạm của bản fan**. Bản thương mại cần **tên gốc**, không chứa "Clover", chốt khi viết World Bible ([reskin-plan](reskin-plan.md)) | Product owner |
 | D2 | Công nghệ client | TypeScript + Phaser 3 (web-first) | Tech lead |
 | D3 | Công nghệ server | Node.js + TypeScript, PostgreSQL, Redis | Tech lead |
 | D4 | Có cho Auto Hunt chính thức? | Có, giới hạn 3 giờ/ngày | Design |
-| D5 | Thương mại hóa hay phi lợi nhuận? | Chưa quyết, quyết định trước Beta | Product owner |
-| D6 | Mức độ bám nguyên tác | AU (vũ trụ song song), nhân vật chính tác là NPC | Narrative |
+| D5 | Thương mại hóa hay phi lợi nhuận? | **Đã quyết:** thương mại, với **IP gốc thay thế (reskin)**. Xem [reskin-plan](reskin-plan.md) | Product owner |
+| D6 | Mức độ bám nguyên tác | Bản fan hiện tại là AU bám sát nguyên tác. **Bản thương mại không bám nguyên tác**: thế giới, nhân vật, cốt truyện viết mới từ World Bible | Narrative |

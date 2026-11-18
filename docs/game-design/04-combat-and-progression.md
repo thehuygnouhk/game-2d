@@ -264,7 +264,7 @@ stateDiagram-v2
 | Chết do quái | Mất **2% EXP** của cấp hiện tại (không tụt cấp), hồi sinh miễn phí tại **thành gần nhất** |
 | Hồi sinh tại chỗ | Dùng **Lá Hồi Sinh** hoặc **5 Ngọc Mana** (hồi 50% HP, bất khả xâm phạm 3s) |
 | Chết do người chơi (Cờ PK) | Không mất EXP; người giết nhận Điểm Tội Lỗi nếu mục tiêu không bật cờ (xem [social](09-social-squad-pvp-events.md)) |
-| Chết trong hầm ngục | Hồi sinh theo **điểm lưu** hầm ngục, tối đa 3 lần/lượt nếu không có Mộc hồi sinh |
+| Chết trong hầm ngục | Hồi sinh theo **điểm lưu** hầm ngục, tối đa 3 lần/lượt (thêm bằng Lá Hồi Sinh). Không phụ thuộc hệ phép nào |
 | Chết ở boss thế giới | Phải chờ **15s** mới hồi sinh |
 
 ## 8. Auto Hunt (treo máy)
@@ -287,6 +287,48 @@ stateDiagram-v2
 
 ## 10. Cân bằng & Kiểm chứng
 
-- Mục tiêu **TTK**: quái thường cùng cấp **6–10 giây** với một người chơi đúng hệ, đủ đồ chuẩn cấp.
+- Mục tiêu **TTK**: quái thường cùng cấp **6–10 giây** với một người chơi **một mình**, đúng hệ, đủ đồ chuẩn cấp. Mức này áp dụng cho **mọi hệ** (xem §11).
 - Boss thường: **60–120 giây** nhóm 5 người.
 - Chạy mô phỏng (simulation) trong `tools/balance-sim`, dữ liệu lưu `packages/content`. Mọi chỉnh sửa số liệu phải kèm **báo cáo mô phỏng** trong PR.
+
+## 11. Nguyên tắc Solo-first
+
+Ninja School và Ngọc Rồng chủ yếu là game **chơi một mình**: săn quái, làm nhiệm vụ, nâng cấp đều tự làm được; nhóm chỉ để nhanh hơn, vui hơn hoặc đánh nội dung khó. BCO giữ nguyên tinh thần đó.
+
+### 11.1 Quy tắc
+
+1. **Mọi hệ phải solo được** toàn bộ việc cày quái Field và toàn bộ chính tuyến. Không hệ nào được thiết kế để *cần* người khác.
+2. **Kỹ năng hỗ trợ luôn có tác dụng lên bản thân** (hồi máu, khiên, buff). Phần lan sang đồng đội là **phần thưởng thêm**.
+3. **Không có kỹ năng hồi sinh người khác.** Hồi sinh do bản thân (Lá Hồi Sinh, Ngọc Mana, Tái Sinh của Dryad) hoặc do hệ thống.
+4. **Hầm Ngục co giãn theo số người (1–5)**, vào một mình được; **Raid** có *Chế độ Cốt Truyện* một người để hoàn thành chính tuyến. Chi tiết ở [maps §6](05-world-maps-monsters.md).
+5. **Nhóm vẫn có lợi**: +10% EXP mỗi người thêm, hạ boss nhanh hơn, nội dung Raid và boss thế giới khó chỉ dành cho nhóm lớn.
+6. **Hệ nặng về phòng thủ/hỗ trợ** (Thổ, Mộc) được **bù bằng khả năng sống sót** (ít tốn bình, ít phải nghỉ), không bị bắt chịu hạ quái chậm gấp nhiều lần.
+
+### 11.2 Ngưỡng chấp nhận
+
+| Chỉ số | Ngưỡng |
+|--------|--------|
+| TTK solo quái thường cùng cấp | 6–10 s với hệ sát thương; **không quá 12 s** với Thổ và Mộc |
+| Sát thương bền vững của hệ bền bỉ (Thổ, Mộc) | **≥ 80% trung vị** của 5 hệ sát thương (Hỏa, Thủy, Phong, Lôi, Ám) |
+| Số bình tiêu hao/giờ của hệ bền bỉ | **Thấp hơn** hệ sát thương cùng cấp |
+| Mọi kỹ năng ở cấp 1 | Có tác dụng khi chơi một mình |
+
+### 11.3 Số đo thiết kế hiện tại (mô hình thô)
+
+Ước lượng sát thương bền vững khi một mình, tính từ bảng kỹ năng cấp 1 ở [classes](03-origins-classes-skills.md), đơn vị "ATK mỗi giây". Mô hình bỏ qua GCD, MP, diện rộng và overkill nên **chỉ dùng để phát hiện hệ lệch quá lớn**, không dùng để cân bằng chi tiết.
+
+| Hệ | ATK/giây | % so với Hỏa | % so với trung vị |
+|----|----------|--------------|--------------------|
+| Hỏa | 2,72 | 100% | 130% |
+| Thủy | 2,27 | 83% | 109% |
+| Lôi | 2,09 | 77% | 100% |
+| Phong | 1,94 | 71% | 93% |
+| Ám | 1,73 | 64% | 83% |
+| Thổ (sau chỉnh) | 1,74 | 64% | 83% |
+| Mộc (sau chỉnh) | 1,71 | 63% | 82% |
+| *Thổ (thiết kế cũ)* | *1,12* | *41%* | *54%* |
+| *Mộc (thiết kế cũ)* | *0,84* | *31%* | *40%* |
+
+Thiết kế cũ của Mộc (chỉ 2 kỹ năng gây sát thương, ATK −15%) khiến hạ quái chậm khoảng **3,3 lần** so với Hỏa; Thổ chậm khoảng **2,4 lần**. Cả hai đã được chỉnh để đạt ≥ 80% trung vị.
+
+> **Việc cần làm:** Hỏa đang ở 130% trung vị, có thể cần giảm nhẹ. Quyết định sau khi có `balance-sim` thật, không sửa theo mô hình thô này.

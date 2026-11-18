@@ -14,7 +14,9 @@ Hướng dẫn cho Claude Code (và cộng tác viên) khi làm việc trong rep
 4. **Server-authoritative.** Không bao giờ tin dữ liệu từ client cho vị trí, sát thương, vật phẩm, tiền.
 5. **Mọi thay đổi tiền/vật phẩm** phải nằm trong một transaction DB, có `idemKey`, có dòng sổ cái (`currency_ledger`). Xem `docs/architecture/database-schema.md` §6.
 6. **Không dùng tài sản gốc của anime/manga** (ảnh, nhạc, thoại). Viết thoại mới, tạo art gốc. Tên IP chỉ nằm trong i18n để có thể reskin. Xem `docs/product/legal-and-compliance.md`.
-7. **Nội dung dạng dữ liệu** (map, quái, vật phẩm, nhiệm vụ) viết bằng YAML trong `packages/content`, có schema và validator. Xem `docs/workflows/content-pipeline.md`.
+   **Hướng đã chọn: thương mại với IP gốc thay thế (reskin).** Đổi tên là chưa đủ; xem `docs/product/reskin-plan.md`. Không thêm tên, nhân vật, địa danh hay tình tiết của Black Clover vào nội dung mới, và không bắt đầu sản xuất art trước khi World Bible gốc được duyệt.
+7. **Solo-first.** Mọi hệ phép phải tự chơi trọn vẹn một mình; kỹ năng hỗ trợ luôn có tác dụng lên bản thân; không có kỹ năng hồi sinh người khác. Xem `docs/game-design/04-combat-and-progression.md` §11.
+8. **Nội dung dạng dữ liệu** (map, quái, vật phẩm, nhiệm vụ) viết bằng YAML trong `packages/content`, có schema và validator. Xem `docs/workflows/content-pipeline.md`.
 
 ## Ngôn ngữ
 

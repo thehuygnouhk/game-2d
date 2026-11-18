@@ -37,7 +37,7 @@ Mỗi máy chủ có tối đa **3 nhân vật**. Bạn chọn:
 |-----------|-----------|---------|
 | **Dân Làng Hage** | Nhiều máu hơn; **Ý Chí Bất Khuất**: khi HP < 30% tăng ATK và DEF tạm thời | Người thích gánh chịu, chơi bền bỉ (hệ Thổ, Hỏa) |
 | **Quý Tộc** | Nhiều MP, sát thương kỹ năng cao hơn, hồi MP nhanh | Sát thương phép (Hỏa, Thủy, Ám, Lôi) |
-| **Hậu Duệ Tinh Linh** | Tự hồi máu, hồi máu nhận/gây ra cao hơn | Hỗ trợ (Mộc), tốc độ (Phong) |
+| **Hậu Duệ Tinh Linh** | Tự hồi máu, hồi máu nhận/gây ra cao hơn | Bền bỉ (Mộc), tốc độ (Phong) |
 
 Không có lựa chọn "tệ nhất". Đây chỉ là sự khác biệt nhỏ ở chỉ số.
 
@@ -98,8 +98,8 @@ Bạn chọn **một** trong bảy hệ phép. Bạn được **đổi miễn ph
 | **Thủy** | Đánh xa diện rộng | Thích đứng sau và quét cả bầy quái |
 | **Phong** | Tốc độ, chí mạng | Thích di chuyển linh hoạt, nhảy đôi |
 | **Lôi** | Liên hoàn tốc đánh | Thích bấm nhiều, đánh liên tục |
-| **Thổ** | Đỡ đòn | Thích bảo vệ đồng đội |
-| **Mộc** | Hồi máu, hỗ trợ | Thích giúp nhóm, cần đồng đội |
+| **Thổ** | Bền bỉ, đỡ đòn | Thích đứng vững giữa bầy quái, ít phải uống bình |
+| **Mộc** | Độc và tự hồi phục | Thích chiến đấu bền bỉ một mình; vào nhóm thì hồi và che chắn thêm cho đồng đội |
 | **Ám** | Bất lợi hóa, hút máu | Thích chiến thuật, xử lý boss |
 
 **Hệ ẩn Phản Ma:** mở ở cuối trò chơi (Lv80+). Không dùng MP, chuyên chém tan phép thuật.
@@ -124,7 +124,7 @@ Mỗi lần lên cấp bạn nhận **5 điểm**. Mở **Nhân vật (C)** đ�
 | Pháp sư (Thủy) | 20% | 30% | 40% | 5% | 5% |
 | Tốc độ (Phong) | 20% | 10% | 40% | 5% | 25% |
 | Đỡ đòn (Thổ) | 45% | 10% | 15% | 30% | 0% |
-| Hỗ trợ (Mộc) | 30% | 35% | 20% | 15% | 0% |
+| Bền bỉ (Mộc) | 30% | 20% | 35% | 10% | 5% |
 
 > Sai điểm không phải thảm họa: **Bình Rửa Tiềm Năng** cho phép cộng lại.
 
@@ -212,10 +212,12 @@ Kết bạn (O), nhận quà. **Thư (Grey)** lưu 30 ngày; quà khi túi đầ
 | Giật lag | Giảm số người hiển thị, chọn đồ họa Thấp, bật tiết kiệm pin |
 | Bị kẹt nhân vật | Dùng **Cuộn Dịch Chuyển** hoặc liên hệ hỗ trợ |
 | Hết MP | Dùng **Bình MP**, nghỉ ngoài giao tranh hồi 2%/s |
-| Boss quá khó | Tìm nhóm với **Thổ** (đỡ đòn) và **Mộc** (hồi máu); học báo hiệu vùng đỏ |
+| Boss quá khó | Thử đi nhóm (đông người hạ boss nhanh hơn); học cách né báo hiệu vùng đỏ |
 | Quên mật khẩu | Dùng **Quên mật khẩu** ở màn đăng nhập |
 
 ## 13. Câu hỏi thường gặp
+
+**Tôi chơi một mình được không?** Được. Mọi hệ phép đều tự săn quái và làm toàn bộ chính tuyến một mình, kể cả Mộc và Thổ. Hầm ngục vào một mình được (quái yếu đi theo số người), và Raid có *Chế độ Cốt Truyện* dành cho một người. Đi nhóm chỉ giúp nhanh hơn: +10% EXP mỗi người thêm, hạ boss nhanh hơn, và mở nội dung Raid.
 
 **Mất kết nối giữa chừng thì sao?** Nhân vật đứng yên tối đa 30 giây rồi được lưu. Đăng nhập lại để tiếp tục.
 
