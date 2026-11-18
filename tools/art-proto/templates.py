@@ -230,3 +230,85 @@ PAGE_FLIP = [
         "..OO.....",
     ],
 ]
+
+# ---------------------------------------------------------------- more hair
+
+HAIR_SHORT_FRONT = [  # neat short hair with a side part
+    "..........kkkkkkk",
+    "........kkhhhjjjhkk",
+    "......kkhhhhjJJjhhhkk",
+    ".....khhhhhhhjjhhhhhhk",
+    "....khhhhhhhhhhhhhhhhhk",
+    "...kHhhhhhhhhhhhhhhhhhhk",
+    "..kHHhhhhhhhhhhhhhhhhhhhk",
+    ".kHHhhhhhhhhhhhhhhhhhhhhhk",
+    ".kHHhhhhhhhhhhhhhhhhhhhhhk",
+    "kHHhhhhhhhhhHhhhhhhhhhhhhk",
+    "kHHhhhhhhhhHhhhhhhhhHhhhhhk",
+    "kHHhhhhhhhHhhhhhhhhHhhhhhhk",
+    ".kHhhhhhhHhhhhhhhhHhhhhhhk",
+    ".kHHhhhhhhhhhhhhhhhhhhhhk",
+    "..kHhhhhhhk...khhk..khk",
+    "..kHHhhhhk.....kk....k",
+    "...kHhhhk",
+    "...kHHhk",
+    "....kkk",
+]
+
+HAIR_TOPKNOT_FRONT = [  # hair pulled back into a bun, receding front
+    "......kkkk",
+    ".....kjJjhk",
+    ".....khjhhk",
+    "......khhk.kkkkkkk",
+    ".......kkkkhhjjjhhkk",
+    ".....kkhhhhhjJJjhhhhkk",
+    "....khhhhhhhhhhhhhhhhhk",
+    "...kHhhhhhhhhhhhhhhhhhhk",
+    "..kHHhhhhhhhhhhhhhhhhhhhk",
+    "..kHHhhhhhhhhhhhhhhhhhhhk",
+    ".kHHhhhhhhhhhhhhhhhhhhkk",
+    ".kHHhhhhhhhhhkkkkkkkkk",
+    ".kHHhhhhhhhk",
+    "..kHHhhhhk",
+    "..kHHhhhk",
+    "...kHhhk",
+    "...kkkk",
+]
+
+HAIR_BRAID_BACK = [
+    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+    "..kk",
+    ".khHk",
+    ".kHhk",
+    "..khHk",
+    "..kHhk",
+    "...khHk",
+    "...kHhk",
+    "....krk",
+    ".....k",
+]
+
+# ---------------------------------------------------------------- boots
+# anchor = ankle at (3, 4). O outline, b base, d dark, l light, g cuff.
+BOOT = [
+    ".OOOOO....",
+    ".OgggO....",
+    ".ObbdO....",
+    ".ObbdO....",
+    ".ObbbdO...",
+    "OlbbbbdOO.",
+    "ObbbbbbddO",
+    "OddddddddO",
+    ".OOOOOOOO.",
+]
+BOOT_LIFT = [  # toe pointing down when the foot is lifted
+    ".OOOOO..",
+    ".OgggO..",
+    ".ObbdO..",
+    ".ObbbdO.",
+    "OlbbbbdO",
+    "ObbbbbdO",
+    ".ObbbddO",
+    "..OdddO.",
+    "...OOO..",
+]

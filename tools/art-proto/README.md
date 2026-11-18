@@ -4,17 +4,21 @@ Công cụ vẽ pixel art bằng code để **thử phong cách** nhân vật, s
 
 | File | Nội dung |
 |------|----------|
-| `pix.py` | Hình cơ bản, tô bóng tự động, xuất sprite sheet và GIF |
-| `actors.py` | Khung xương (rig), tư thế (idle, walk, run, attack, cast), vũ khí, bản vẽ đầu tiên (đã thay) |
-| `templates.py` | Đầu, mắt, tóc, Huyền Thư chấm tay từng pixel |
-| `hero.py` | Nhân vật kiểu anime: đồng phục, áo choàng có huy hiệu quẻ, Huyền Thư 3 ấn bản |
-| `vfx.py` | Hiệu ứng Hỏa Cầu, vụ nổ, hình nộm tập |
-| `sample.py` | Xuất bộ mẫu GIF |
+| `pix.py` | Hình cơ bản, tô bóng tự động, lớp (paper-doll), xuất sprite sheet, GIF và file `.piskel` |
+| `actors.py` | Khung xương (rig), tư thế (idle, walk, run, attack, cast), vũ khí |
+| `templates.py` | Đầu, mắt, tóc, ủng, Huyền Thư chấm tay từng pixel |
+| `hero.py` | Bộ vẽ nhân vật theo lớp: đồng phục, áo dài, áo ngắn, áo choàng có huy hiệu quẻ, Huyền Thư 3 ấn bản |
+| `npcs.py` | 8 NPC |
+| `items.py` | 25 icon vật phẩm 32×32 |
+| `vfx.py` | Hiệu ứng chiêu 8 hệ, hình nộm tập |
+| `demo.py` | Ghép nhân vật thi triển, đạn bay, trúng đích |
+| `build.py` | Xuất toàn bộ vào [`art/prototype`](../../art/prototype/README.md) |
+| `sample.py` | Bộ mẫu phong cách đầu tiên |
 
 Chạy (cần Python 3, numpy, Pillow):
 
 ```bash
-python3 tools/art-proto/sample.py /tmp/art-sample
+python3 tools/art-proto/build.py
 ```
 
-Giới hạn đã biết: tay, chân, thân vẫn vẽ bằng hình khối nên còn cứng; hoạt ảnh nội suy bằng góc khớp. Không dùng tên, dáng nhân vật hay biểu tượng của tác phẩm khác (xem [reskin-spec §10](../../docs/product/reskin-spec.md#10-kiểm-tra-rò-rỉ-tên-ip)).
+Giới hạn đã biết: xem [art/prototype §4](../../art/prototype/README.md#4-giới-hạn-đã-biết). Không dùng tên, dáng nhân vật hay biểu tượng của tác phẩm khác (xem [reskin-spec §10](../../docs/product/reskin-spec.md#10-kiểm-tra-rò-rỉ-tên-ip)).

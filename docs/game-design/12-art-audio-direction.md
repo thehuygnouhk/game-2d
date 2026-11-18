@@ -7,6 +7,7 @@
 - **Chibi pixel art** (tỉ lệ ~3 đầu), tông màu rực rỡ nhưng có chiều sâu, gợi nhớ Ninja School/NRO.
 - **Dấu ấn riêng của HTK**: áo choàng Pháp Vệ có ấn của Viện, Huyền Thư lơ lửng với trang sách bay quanh khi dùng phép, mực và giấy làm hiệu ứng (đặc biệt Trang Trắng). **Không** vẽ theo dáng nhân vật, trang phục hay biểu tượng của tác phẩm khác.
 - **Nghệ thuật gốc.** Không dùng ảnh, sprite hay âm thanh trích từ anime/manga. Mọi tài sản do đội tạo hoặc có giấy phép rõ ràng.
+- **Bản thử phong cách:** [art/prototype](../../art/prototype/README.md) (vẽ bằng code, có file Piskel để sửa tay). Dùng để chốt hướng và dựng bản chơi thử, **không** thay art chính thức.
 
 ## 2. Bảng màu theo hệ
 

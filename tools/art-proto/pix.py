@@ -266,3 +266,67 @@ def dirv(deg):
     """Unit vector for a screen angle (0 = right, 90 = down)."""
     a = math.radians(deg)
     return math.cos(a), math.sin(a)
+
+
+# ---------------------------------------------------------------- layers
+
+class Layers:
+    """Named paper-doll layers, composited back to front in `order`."""
+
+    def __init__(self, w, h, order):
+        self.order = list(order)
+        self.c = {name: canvas(w, h) for name in self.order}
+
+    def __getitem__(self, name):
+        return self.c[name]
+
+    def flat(self):
+        out = canvas(*self.c[self.order[0]].shape[1::-1])
+        for name in self.order:
+            over(out, self.c[name])
+        return out
+
+
+def taper(grid, x0, y0, x1, y1, r0, r1):
+    """Capsule whose radius goes from r0 at (x0, y0) to r1 at (x1, y1)."""
+    dx, dy = x1 - x0, y1 - y0
+    ll = dx * dx + dy * dy or 1e-9
+    t = np.clip(((grid.px - x0) * dx + (grid.py - y0) * dy) / ll, 0, 1)
+    qx, qy = x0 + t * dx, y0 + t * dy
+    r = r0 + (r1 - r0) * t
+    return (grid.px - qx) ** 2 + (grid.py - qy) ** 2 <= r * r
+
+
+# ---------------------------------------------------------------- piskel
+
+def _png_data_url(frames):
+    import base64
+    import io
+    strip = np.concatenate(frames, axis=1)
+    buf = io.BytesIO()
+    Image.fromarray(strip, "RGBA").save(buf, "PNG")
+    return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
+
+
+def save_piskel(path, name, layers, fps=12, description=""):
+    """Write a Piskel (piskelapp.com) file, modelVersion 2.
+
+    layers: list of (layer_name, [frame arrays]) from back to front; every
+    layer must have the same number of frames and frame size.
+    """
+    import json
+    h, w = layers[0][1][0].shape[:2]
+    out_layers = []
+    for lname, frames in layers:
+        out_layers.append(json.dumps({
+            "name": lname,
+            "opacity": 1,
+            "frameCount": len(frames),
+            "chunks": [{"layout": [[i] for i in range(len(frames))],
+                        "base64PNG": _png_data_url(frames)}],
+        }))
+    doc = {"modelVersion": 2, "piskel": {"name": name, "description": description, "fps": fps,
+                                         "height": h, "width": w, "layers": out_layers,
+                                         "hiddenFrames": []}}
+    with open(path, "w") as f:
+        json.dump(doc, f)
