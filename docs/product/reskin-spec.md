@@ -1,7 +1,8 @@
 # Đặc tả Reskin (mức vừa): giữ concept, đổi tên và sáu điểm nhận diện
 
-> **FILE NỘI BỘ, KHÔNG PHÁT HÀNH** (có so sánh với nguyên tác) · **Trạng thái:** Draft v0.1, chờ duyệt
-> **Quyết định:** ngày 2026-11-18, chọn mức **"Đổi tên + 6 điểm nhận diện"** (thay cho World Bible văn hóa Việt, xem [world-bible](../world-bible/README.md), nay là phương án không chọn).
+> **FILE NỘI BỘ, KHÔNG PHÁT HÀNH** (có so sánh với nguyên tác) · **Trạng thái:** Draft v0.2. Mức reskin đã chốt; **Bước 2 đã áp dụng** lên toàn bộ tài liệu; các mục ở §9 chờ duyệt
+> **Quyết định:** ngày 2026-11-18, chọn mức **"Đổi tên + 6 điểm nhận diện"** (thay cho World Bible văn hóa Việt, xem [world-bible](../world-bible/README.md), nay là phương án không chọn). Cùng ngày, người phụ trách xác nhận giữ mức này và chuyển sang Bước 2.
+> **Bản fan cũ:** chỉ còn trong lịch sử git, commit `6131e84` trở về trước. Không sao chép nội dung từ đó.
 > **Liên quan:** [reskin-plan](reskin-plan.md) · [legal](legal-and-compliance.md)
 
 ## 1. Nguyên tắc của mức này
@@ -100,7 +101,7 @@ Giữ **dải cấp** của tám chương cũ. Đổi **vùng**, **sự kiện**
 
 | Ch | Tên | Cấp | Vùng (loại) | Diễn biến chính | Kẻ thù / cú lật |
 |----|-----|-----|-------------|-----------------|------------------|
-| 1 | **Làng Suối Mơ** | 1–9 | Làng | Học việc ở nhà học; một **trang trắng** xuất hiện trong giếng làng; **Thầy Bạch Vân tặng Huyền Thư Sơ Bản rồi mất tích** | Boss tân thủ (tên chốt ở Bước 2) |
+| 1 | **Làng Suối Mơ** | 1–9 | Làng | Học việc ở nhà học; một **trang trắng** xuất hiện trong giếng làng; **Thầy Bạch Vân tặng Huyền Thư Sơ Bản rồi mất tích** | Boss tân thủ **Trang Lạc** (BOSS001) |
 | 2 | **Thượng Đô** | 10–24 | Kinh đô, đồng bằng | Vào **Pháp Vệ Đoàn** qua **Mùa Tuyển Thư** (ba vòng: tìm sách, đấu, hộ tống); chọn **Đội**. Biết đến **Mười Hai Quyển Gốc** | Một Quyển bị đánh cắp; **Mặc Ảnh** lộ diện lần đầu |
 | 3 | **Thủy Điện Chìm** | 25–39 | **Đền dưới nước** (đưa lên sớm) | Đi theo dấu **Thầy** tới một kho lưu trữ chìm dưới biển; hub **Cảng Thư Khố** | Giữ Quyển Gốc đầu tiên; biết trang trắng **lan từ một Quyển bị sửa** |
 | 4 | **Rừng Thì Thầm** | 40–49 | **Rừng** (đưa xuống sau) | Hội Hiệu Đính bắt đầu **công khai** | **Sự kiện thế giới: Đêm Thư Cháy**, tấn công kho lưu trữ Thượng Đô; Chủ Biên chỉ được nhắc tên |
@@ -150,7 +151,7 @@ Giữ **dải cấp** của tám chương cũ. Đổi **vùng**, **sự kiện**
 | Tinh Linh Hộ Mệnh | **Linh Thú** |
 | Chổi Bay | **Chổi Bay** (giữ, là từ chung) |
 | Bảy Linh Thạch Sao | **Bảy Trang Rời** → triệu hồi **Tứ Đại Nguyên Linh** |
-| Vòng quay may mắn | Tên chốt ở Bước 2 |
+| Vòng quay may mắn | **Vòng Quay Chữ Vàng** (NPC024 Cô Kim Thoa) |
 
 ### 5.4 Ba xuất thân
 | Cũ | Mới |
@@ -159,7 +160,7 @@ Giữ **dải cấp** của tám chương cũ. Đổi **vùng**, **sự kiện**
 | Quý tộc | **Thế Gia** |
 | Hậu duệ tộc tinh linh | **Hậu Duệ Tộc Cổ Thư** |
 
-Nội tại và chỉ số giữ nguyên, chỉ đổi tên nội tại ở Bước 2.
+Chỉ số giữ nguyên. Nội tại đã đổi tên ở Bước 2: **Không Lùi Bước** (Dân Làng), **Gia Truyền** (Thế Gia), **Ấn Cổ Hộ Thân** (Hậu Duệ Tộc Cổ Thư). Xem [classes §2](../game-design/03-origins-classes-skills.md).
 
 ### 5.5 Hạng theo cấp
 | Cấp | Mới |
@@ -186,27 +187,41 @@ Nội tại và chỉ số giữ nguyên, chỉ đổi tên nội tại ở Bư�
 | **Đại Trang Trắng** | Mối đe dọa cuối | Raid Chương 8 |
 | **Cụ Tiễn** | Thợ làm tên cuối cùng | Dẫn hệ ẩn |
 
-Tên 40 NPC dịch vụ, 31 bản đồ và 30 boss được đặt ở **Bước 2**, theo quy ước §5.1 và **giữ chức năng** của từng ID.
+Tên 40 NPC, 31 bản đồ, 49 quái và 30 boss **đã đặt ở Bước 2**, theo quy ước §5.1 và **giữ nguyên ID và chức năng**. Nơi lưu (nguồn chân lý của tên):
+
+| Nội dung | Tài liệu |
+|----------|----------|
+| 40 NPC, Tám Viện, phản diện | [characters §2–§7](../game-design/02-characters-and-npcs.md) |
+| 31 map, 49 quái, 30 boss, DG01–DG08, Raid | [maps §2, §4–§6](../game-design/05-world-maps-monsters.md) |
+| 24 nhiệm vụ chính, nhiệm vụ ngày, tuần, Viện | [quests §4+](../game-design/06-quests-and-missions.md) |
+| Kỹ năng, nội tại, hệ ẩn | [classes](../game-design/03-origins-classes-skills.md) |
+| Thuật ngữ | [glossary](../glossary.md) |
 
 ## 7. Việc kỹ thuật phát sinh
 
-Định danh kỹ thuật phải **trung tính**. Danh sách cần đổi (trước khi viết mã):
+Định danh kỹ thuật phải **trung tính**. **Đã áp dụng ở Bước 2.** DDL đã chạy lại trên PostgreSQL 16 trống: 37 bảng, không lỗi.
 
-| Hiện tại | Đề xuất |
-|----------|---------|
+**Quy ước:** cột DB dùng `soft_currency` / `premium_currency` (và `funds_soft`, `price_soft`, `premium_amount`…); payload giao thức và YAML nội dung dùng `soft` / `premium`; tên hiển thị (Quan, Nén Bạc…) chỉ nằm trong i18n.
+
+| Cũ | Mới (đã áp dụng) |
+|----|------------------|
 | `currency_type`: `YUL`, `NGOC_MANA`, `SQUAD_POINT`, `STAR` | `SOFT`, `PREMIUM`, `GUILD_POINT`, `MERIT` |
-| Cột `*yul*`, `*ngoc_mana*` | `*soft*`, `*premium*` |
+| Cột `characters.yul`, `accounts.ngoc_mana`, `mails.ngoc_mana`, `*_yul` | `soft_currency`, `premium_currency`, `funds_soft`, `price_soft`… |
 | `characters.grimoire_leaves` (3–5) | `tome_edition` (CHECK 1–3) |
 | `item_type`: `GRIMOIRE` | `TOME` |
 | `origin_type`: `COMMONER`, `NOBLE`, `ELF` | `VILLAGER`, `NOBLE`, `ANCIENT` |
 | `class_type`: `ANTI`; `SKL_ANTI_*` | `ARCHER`; `SKL_ARCH_*` |
 | `E_NOT_ENOUGH_YUL`, `E_NOT_ENOUGH_GEM` | `E_NOT_ENOUGH_SOFT`, `E_NOT_ENOUGH_PREMIUM` |
 | `S_SPIRIT_GAUGE` | `S_LINK_GAUGE` |
-| `squads`, `C_SQUAD_*` (tùy chọn) | `guilds`, `C_GUILD_*` |
+| `squads`, `squad_*`, `C_SQUAD_*`, `owner_kind` `SQUAD` | `guilds`, `guild_*`, `C_GUILD_*`, `GUILD` (cho khớp `GUILD_POINT`) |
+| `Q_SQUAD`, thư mục nội dung `quests/squad/` | `Q_GUILD`, `quests/guild/` |
+| Redis `lb:{realm}:stars` | `lb:{realm}:merit` |
 
-Chi tiết số lượng: [world-bible/99 §9](../world-bible/99-internal-mapping-and-audit.md#9-việc-kỹ-thuật-phát-sinh) (khoảng 74 chỗ).
+Tên file `09-social-squad-pvp-events.md` giữ nguyên ("squad" là từ chung, đổi tên file chỉ làm gãy liên kết).
 
-## 8. Tác động lên tài liệu (Bước 2)
+## 8. Tác động lên tài liệu (Bước 2, đã áp dụng)
+
+Tất cả các mục dưới đây **đã làm** trong Draft v0.2.
 
 | Tài liệu | Việc |
 |----------|------|
@@ -222,19 +237,70 @@ Chi tiết số lượng: [world-bible/99 §9](../world-bible/99-internal-mappin
 
 ## 9. Danh sách duyệt
 
-| # | Quyết định | Mặc định | Duyệt |
-|---|-----------|----------|:-----:|
-| 1 | **Mức reskin** | Đổi tên + 6 điểm nhận diện | ✔ *(đã chọn)* |
-| 2 | **Hai bạn + người dẫn dắt** | Lam Nhi, Khôi, Thầy Bạch Vân (§3.1) | ☐ |
-| 3 | **Phản diện** | Hội Hiệu Đính, muốn "sửa" luật phép thuật (§3.3) | ☐ |
-| 4 | **Sách phép** | Huyền Thư, Sơ Bản/Tu Bản/Định Bản (§3.4) | ☐ |
-| 5 | **Hệ ẩn** | Phong Ấn Xạ Thủ (§3.5) | ☐ |
-| 6 | **Tổ chức** | Tám Viện theo Bát Quái (§3.6) | ☐ |
-| 7 | **Thứ tự tám chương** | §4 | ☐ |
-| 8 | **Phong cách đặt tên** | Việt/Hán-Việt nhẹ (§5.1) | ☐ |
-| 9 | **Tên game** | Huyền Thư Ký, cần tra cứu nhãn hiệu | ☐ |
+Mục 2–8 dùng giá trị mặc định và **đã áp dụng** lên tài liệu, nên đổi ý vẫn được (tên nằm trong i18n), nhưng phải sửa lại các tài liệu ở §6. Mục nào cần đổi thì ghi vào cột "Duyệt".
+
+| # | Quyết định | Mặc định | Trạng thái | Duyệt |
+|---|-----------|----------|-----------|:-----:|
+| 1 | **Mức reskin** | Đổi tên + 6 điểm nhận diện | Đã chọn, đã áp dụng | ✔ |
+| 2 | **Hai bạn + người dẫn dắt** | Lam Nhi, Khôi, Thầy Bạch Vân (§3.1) | Đã áp dụng | ☐ |
+| 3 | **Phản diện** | Hội Hiệu Đính, muốn "sửa" luật phép thuật (§3.3) | Đã áp dụng | ☐ |
+| 4 | **Sách phép** | Huyền Thư, Sơ Bản/Tu Bản/Định Bản (§3.4) | Đã áp dụng | ☐ |
+| 5 | **Hệ ẩn** | Phong Ấn Xạ Thủ (§3.5) | Đã áp dụng | ☐ |
+| 6 | **Tổ chức** | Tám Viện theo Bát Quái (§3.6) | Đã áp dụng | ☐ |
+| 7 | **Thứ tự tám chương** | §4 | Đã áp dụng | ☐ |
+| 8 | **Phong cách đặt tên** | Việt/Hán-Việt nhẹ (§5.1) | Đã áp dụng | ☐ |
+| 9 | **Tên game** | Huyền Thư Ký | Tên tạm, **chưa tra cứu nhãn hiệu** | ☐ |
 
 ### 9.1 Việc cần người thật
 - **Đối chiếu độc lập**: một người am hiểu nguyên tác đọc §3 và §4 để chỉ ra điểm còn giống ([world-bible/99 §10.4](../world-bible/99-internal-mapping-and-audit.md#104-quy-trình-kiểm-tra-độc-lập)).
 - **Tra cứu nhãn hiệu** tên game, tên miền, tên cửa hàng ứng dụng.
 - **Luật sư IP** xem toàn bộ trước Closed Beta, đặc biệt các điểm vẫn chung ở §1.1.
+
+## 10. Kiểm tra rò rỉ tên IP
+
+Mục đích: bảo đảm **không** tên riêng nào của tác phẩm mà concept tham khảo lọt vào tài liệu dùng chung, nội dung game, i18n hay tài liệu phát hành. Chạy **mỗi khi thêm hoặc đổi tên**, và trong CI khi có mã (quy tắc **V015** của [content-pipeline §4](../workflows/content-pipeline.md#4-quy-tắc-kiểm-chứng-validator)).
+
+### 10.1 Phạm vi
+
+| Được nhắc nguyên tác (nội bộ) | Không được nhắc |
+|-------------------------------|-----------------|
+| `docs/product/reskin-spec.md`, `reskin-plan.md`, `legal-and-compliance.md`, `CLAUDE.md`, `docs/world-bible/` | **Mọi file còn lại**: tài liệu, `packages/content/**` (YAML, `i18n/`, `dialogues/`), tên file asset, mô tả cửa hàng ứng dụng, tài liệu marketing |
+
+Các file nội bộ **không** đưa vào bản phát hành hay gửi đối tác.
+
+### 10.2 Danh sách cấm
+
+**Danh sách A: cấm ở mọi file ngoài phạm vi nội bộ.**
+
+| Nhóm | Từ |
+|------|----|
+| Tác phẩm | Black Clover, Clover (đứng riêng) |
+| Thuật ngữ và hệ thống | Ma Đạo Thư, Grimoire, Phản Ma, Anti-Magic, Mana Skin, Mana Zone, Spirit Dive, Hiệp Sĩ Ma Pháp, Magic Knight, Vua Phép Thuật, Wizard King, Yul, Ngọc Mana, Lễ Trao Sao, Linh Thạch Sao, Tinh Linh, "lá cỏ", "3/4/5 lá" |
+| Địa danh, tổ chức | Hage, Diamond, Spade, Heart (tên vương quốc), Mắt Mặt Trời (Midnight Sun), Bộ Ba Hắc Ám (Dark Triad), tên chín đội gốc và bản dịch Việt (Golden Dawn, Black Bulls, Bò Đen, Bình Minh Vàng, Sư Tử Đỏ, Hoa Hồng Xanh, Đại Bàng Bạc, Công Xanh San Hô, Bọ Ngựa Xanh, Orca Tím, Hươu Nước) |
+| Nhân vật | Asta, Yuno, Julius, Novachrono, Yami, Sukehiro, Vangeance, Fuegoleon, Mereoleona, Vermillion, Roselei, Nozel, Noelle, Silva, Mimosa, Finral, Magna, Vanessa, Charmy, Gauche, Zora, Secre, Nacht, Liebe, Lily, Orsi, Zogratis, Dante, Vanica, Zenon, Lucius, Zagred, Megicula, Lucifero, Licht, Patry, Vetto, Fana, Rhya, Lumiere, Langris, Leopold, Rill, Nebra |
+
+"Tinh Linh" bị cấm vì là từ của bản fan cũ; bản reskin dùng **Nguyên Linh**. Danh sách chưa đầy đủ: người đối chiếu độc lập (§9.1) bổ sung.
+
+**Danh sách B: tên game tham khảo cơ chế** (Ninja School, Ngọc Rồng, Dragon Ball, NRO, NSO). **Được** nhắc trong tài liệu thiết kế khi so sánh cơ chế (vision, glossary, game-design). **Cấm** trong nội dung game, i18n, hướng dẫn người chơi và tài liệu phát hành.
+
+### 10.3 Cách chạy
+
+Từ gốc repo (cần [ripgrep](https://github.com/BurntSushi/ripgrep)). Lệnh trả về **không dòng nào** là đạt:
+
+```bash
+rg -n --glob '*.md' --glob '*.yaml' --glob '*.json' --glob '!docs/world-bible/**' --glob '!docs/product/reskin-spec.md' --glob '!docs/product/reskin-plan.md' --glob '!docs/product/legal-and-compliance.md' --glob '!CLAUDE.md' -e 'Black Clover|\bClover\b|\bHage\b|\bDiamond\b|\bSpade\b|\bHeart\b|Ma Đạo Thư|Grimoire|Phản Ma|Anti-Magic|Mana Skin|Mana Zone|Spirit Dive|Hiệp Sĩ Ma Pháp|Magic Knight|Vua Phép Thuật|Wizard King|\bYul\b|Ngọc Mana|Lễ Trao Sao|Linh Thạch Sao|Tinh Linh|lá cỏ|\b[345] lá\b|Mắt Mặt Trời|Midnight Sun|Bộ Ba Hắc Ám|Dark Triad|Golden Dawn|Black Bulls|Bò Đen|Bình Minh Vàng|Sư Tử Đỏ|Hoa Hồng Xanh|Đại Bàng Bạc|Công Xanh San Hô|Bọ Ngựa Xanh|Orca Tím|Hươu Nước|\b(Asta|Yuno|Julius|Novachrono|Yami|Sukehiro|Vangeance|Fuegoleon|Mereoleona|Vermillion|Roselei|Nozel|Noelle|Silva|Mimosa|Finral|Magna|Vanessa|Charmy|Gauche|Zora|Secre|Nacht|Liebe|Lily|Orsi|Zogratis|Dante|Vanica|Zenon|Lucius|Zagred|Megicula|Lucifero|Licht|Patry|Vetto|Fana|Rhya|Lumiere|Langris|Leopold|Rill|Nebra)\b' .
+```
+
+Danh sách B, cho nội dung game và hướng dẫn người chơi:
+
+```bash
+rg -n -e 'Ninja School|Ngọc Rồng|Dragon Ball|\bNRO\b|\bNSO\b' docs/guides/player-guide.md packages/content
+```
+
+Kiểm tra bằng tay những gì lệnh không bắt được: **tình tiết** và **cấu trúc** giống nguyên tác (§3), tên **phiên âm** hoặc **dịch nghĩa** của nhân vật, và hình ảnh.
+
+### 10.4 Kết quả lần chạy gần nhất
+
+| Ngày | Phạm vi | Danh sách A | Danh sách B | Ghi chú |
+|------|---------|-------------|-------------|---------|
+| 2026-11-18 | Toàn bộ `*.md` ngoài phạm vi nội bộ (Draft v0.2) | **0 dòng** | Chỉ trong tài liệu thiết kế (so sánh cơ chế); **0** trong `player-guide.md` | Đối chứng: cùng mẫu bắt được 65 dòng ở `01-lore-and-story.md` của commit `6131e84` |

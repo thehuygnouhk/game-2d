@@ -152,7 +152,7 @@ Input được chuyển thành **Intent** (`MoveIntent`, `UseSkillIntent`, `Inte
 
 ```mermaid
 flowchart LR
-    Net["net/Dispatcher"] --> Store["state stores<br/>(player, inventory, quest, chat, party, squad)"]
+    Net["net/Dispatcher"] --> Store["state stores<br/>(player, inventory, quest, chat, party, guild)"]
     Store --> UI["ui/ (Preact)"]
     Store --> World["world/EntityManager"]
     UI -->|"Intent"| Intents["Intent bus"]

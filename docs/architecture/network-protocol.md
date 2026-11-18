@@ -154,7 +154,7 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 | 0x0308 | `S_ZONE_LIST` | S→C | `[{zoneNo, players, cap}]` |
 | 0x0309 | `C_REQUEST_ZONES` | C→S | — |
 | 0x030A | `S_CORRECTION` | S→C | xem §5.2 |
-| 0x030B | `C_TELEPORT` | C→S | `destId` (Finral) + `idemKey` |
+| 0x030B | `C_TELEPORT` | C→S | `destId` (Bác Tô) + `idemKey` |
 
 ### 6.4 Chiến đấu (0x04xx)
 
@@ -171,7 +171,7 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 | 0x0409 | `C_REVIVE` | C→S | `mode: TOWN|INPLACE` + `idemKey` |
 | 0x040A | `S_REVIVED` | S→C | `x, y, hp, mp` |
 | 0x040B | `C_AUTO_HUNT` | C→S | `on, config` |
-| 0x040C | `S_SPIRIT_GAUGE` | S→C | `value` |
+| 0x040C | `S_LINK_GAUGE` | S→C | `value` |
 | 0x040D | `S_BOSS_STATE` | S→C | `id, phase, hpPct, telegraphs[]` |
 
 ### 6.5 Vật phẩm (0x05xx)
@@ -179,7 +179,7 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 | Op | Tên | Hướng | Payload chính |
 |----|-----|-------|----------------|
 | 0x0501 | `S_INVENTORY_FULL` | S→C | toàn bộ túi, kho, trang bị |
-| 0x0502 | `S_INVENTORY_DELTA` | S→C | `add[], update[], remove[], yul` |
+| 0x0502 | `S_INVENTORY_DELTA` | S→C | `add[], update[], remove[], soft` |
 | 0x0503 | `C_MOVE_ITEM` | C→S | `from, to` |
 | 0x0504 | `C_USE_ITEM` | C→S | `instanceId` |
 | 0x0505 | `C_EQUIP` | C→S | `instanceId, slot?` |
@@ -214,7 +214,7 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 | 0x0702 | `C_SHOP_SELL` | C→S | `instanceId, qty` + `idemKey` |
 | 0x0703 | `C_TRADE_REQUEST` | C→S | `targetId` |
 | 0x0704 | `S_TRADE_STATE` | S→C | trạng thái cửa sổ giao dịch |
-| 0x0705 | `C_TRADE_UPDATE` | C→S | `items[], yul` |
+| 0x0705 | `C_TRADE_UPDATE` | C→S | `items[], soft` |
 | 0x0706 | `C_TRADE_CONFIRM` | C→S | `stage (1|2)` + `idemKey` |
 | 0x0707 | `C_TRADE_CANCEL` | C→S | — |
 | 0x0708 | `C_MARKET_QUERY` | C→S | `filter, sort, page` |
@@ -239,18 +239,18 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 | 0x0807 | `C_MAIL_LIST` | C→S | `page` |
 | 0x0808 | `S_MAIL_LIST` | S→C | `mails[]` |
 | 0x0809 | `C_MAIL_CLAIM` | C→S | `mailId` + `idemKey` |
-| 0x080A | `C_MAIL_SEND` | C→S | `to, subject, body, items[], yul` + `idemKey` |
+| 0x080A | `C_MAIL_SEND` | C→S | `to, subject, body, items[], soft` + `idemKey` |
 | 0x080B | `C_REPORT` | C→S | `targetId, category, message` |
 
-### 6.9 Squad (0x09xx)
+### 6.9 Đội (0x09xx)
 
 | Op | Tên | Hướng | Payload chính |
 |----|-----|-------|----------------|
-| 0x0901 | `C_SQUAD_OP` | C→S | `op (CREATE, INVITE, ACCEPT, LEAVE, KICK, PROMOTE, DISBAND, NOTICE)` + dữ liệu |
-| 0x0902 | `S_SQUAD_STATE` | S→C | thông tin Squad, thành viên, cấp, buff |
-| 0x0903 | `C_SQUAD_DONATE` | C→S | `yul` + `idemKey` |
-| 0x0904 | `C_SQUAD_BUFF` | C→S | `buffId` + `idemKey` |
-| 0x0905 | `C_SQUAD_BANK` | C→S | `op (PUT, TAKE)`, `instanceId` + `idemKey` |
+| 0x0901 | `C_GUILD_OP` | C→S | `op (CREATE, INVITE, ACCEPT, LEAVE, KICK, PROMOTE, DISBAND, NOTICE)` + dữ liệu |
+| 0x0902 | `S_GUILD_STATE` | S→C | thông tin Đội, thành viên, cấp, buff |
+| 0x0903 | `C_GUILD_DONATE` | C→S | `soft` + `idemKey` |
+| 0x0904 | `C_GUILD_BUFF` | C→S | `buffId` + `idemKey` |
+| 0x0905 | `C_GUILD_BANK` | C→S | `op (PUT, TAKE)`, `instanceId` + `idemKey` |
 
 ### 6.10 PvP & Sự kiện (0x0Axx)
 
@@ -258,7 +258,7 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 |----|-----|-------|----------------|
 | 0x0A01 | `C_DUEL_REQUEST` | C→S | `targetId` |
 | 0x0A02 | `S_DUEL_STATE` | S→C | trạng thái đếm ngược, kết quả |
-| 0x0A03 | `C_QUEUE` | C→S | `mode (ARENA, BATTLEFIELD, SQUAD_WAR)`, `join` |
+| 0x0A03 | `C_QUEUE` | C→S | `mode (ARENA, BATTLEFIELD, GUILD_WAR)`, `join` |
 | 0x0A04 | `S_MATCH_FOUND` | S→C | `matchId, mode, acceptBy` |
 | 0x0A05 | `C_PK_TOGGLE` | C→S | `on` |
 | 0x0A06 | `S_PK_STATE` | S→C | `state, sinPoints` |
@@ -313,8 +313,8 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 | 2005 | `E_DEAD` | Đang chết |
 | 2006 | `E_PK_NOT_ALLOWED` | Không được PK ở đây |
 | 3001 | `E_INVENTORY_FULL` | Túi đầy |
-| 3002 | `E_NOT_ENOUGH_YUL` | Không đủ Yul |
-| 3003 | `E_NOT_ENOUGH_GEM` | Không đủ Ngọc Mana |
+| 3002 | `E_NOT_ENOUGH_SOFT` | Không đủ Quan |
+| 3003 | `E_NOT_ENOUGH_PREMIUM` | Không đủ Nén Bạc |
 | 3004 | `E_ITEM_BOUND` | Vật phẩm bị khóa |
 | 3005 | `E_ITEM_NOT_FOUND` | Không tìm thấy vật phẩm |
 | 3006 | `E_LEVEL_REQUIRED` | Chưa đủ cấp |
@@ -322,7 +322,7 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 | 4002 | `E_QUEST_INCOMPLETE` | Chưa hoàn thành mục tiêu |
 | 5001 | `E_TRADE_FAILED` | Giao dịch thất bại/hủy |
 | 5002 | `E_MARKET_LISTING_GONE` | Mục đã bán/hết hạn |
-| 6001 | `E_SQUAD_NO_PERMISSION` | Không đủ quyền Squad |
+| 6001 | `E_GUILD_NO_PERMISSION` | Không đủ quyền Đội |
 | 9000 | `E_INTERNAL` | Lỗi máy chủ |
 
 ## 9. Ví dụ thông điệp (dạng JSON để dễ đọc)

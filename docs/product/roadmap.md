@@ -17,7 +17,7 @@
 
 ```mermaid
 gantt
-    title Lộ trình BCO (tuần)
+    title Lộ trình HTK (tuần)
     dateFormat  YYYY-MM-DD
     axisFormat  W%W
     section Phase 0
@@ -43,7 +43,7 @@ gantt
 | Kỹ thuật | Monorepo, CI, lint/test, Docker Compose, schema DB v0 |
 | Mạng | WebSocket skeleton, giao thức binary, tick loop 20 Hz |
 | Client | Phaser boot, tải map Tiled, di chuyển có dự đoán |
-| Đặc tả reskin | **[reskin-spec](reskin-spec.md)** (giữ concept, đổi tên + 6 điểm nhận diện): duyệt đặc tả, đặt tên 40 NPC, 31 bản đồ, 30 boss. Chạy **song song** với phần kỹ thuật. **Art chỉ bắt đầu sau khi đặc tả được duyệt** |
+| Đặc tả reskin | **[reskin-spec](reskin-spec.md)** (giữ concept, đổi tên + 6 điểm nhận diện). **Đã xong:** đặt tên 40 NPC, 31 bản đồ, 30 boss, đổi định danh kỹ thuật (Bước 2). **Còn lại:** duyệt các mục ở §9, đối chiếu độc lập, tra cứu nhãn hiệu. Chạy **song song** với phần kỹ thuật. **Art chỉ bắt đầu sau khi §9 được duyệt** |
 | Nội dung | Style guide, nhân vật mẫu, bảng màu (sau khi đặc tả được duyệt) |
 | **Tiêu chí hoàn thành** | 2 client cùng thấy nhau di chuyển trên M001, ping < 100 ms cục bộ, CI xanh; **đặc tả reskin được duyệt** |
 
@@ -52,8 +52,8 @@ gantt
 | Hạng mục | Chi tiết |
 |----------|----------|
 | Gameplay | Chiến đấu cơ bản, AI quái, rơi đồ, Hỏa & Thủy 3 kỹ năng đầu |
-| Hệ thống | Túi đồ, trang bị 4 ô, nhiệm vụ Chương 1, Lễ Nhận Ma Đạo Thư |
-| Nội dung | M001–M005, 7 quái R01, Slime Vua, 12 nhiệm vụ |
+| Hệ thống | Túi đồ, trang bị 4 ô, nhiệm vụ Chương 1, Lễ Khai Thư |
+| Nội dung | M001–M005, 7 quái R01, Trang Lạc, 12 nhiệm vụ |
 | Hạ tầng | Đăng ký/đăng nhập, lưu nhân vật, 1 realm dev |
 | **Tiêu chí hoàn thành** | Playtest 30 phút liền mạch với 20 người, không crash, load test 50 CCU, retention test nội bộ ≥ 60% hoàn thành Chương 1 |
 
@@ -71,7 +71,7 @@ gantt
 
 | Hạng mục | Chi tiết |
 |----------|----------|
-| Gameplay | Squad, Hầm Ngục, Boss thế giới, PK, Auto Hunt, Khảm ngọc, Chợ |
+| Gameplay | Đội, Hầm Ngục, Boss thế giới, PK, Auto Hunt, Khảm ngọc, Chợ |
 | Thương mại | Nạp **sandbox → production**, Thẻ Tháng |
 | Công cụ | Admin panel, GM tool, ledger, dashboard |
 | Bảo mật | Anti-cheat v1, rate limit, captcha |
@@ -81,7 +81,7 @@ gantt
 
 | Hạng mục | Chi tiết |
 |----------|----------|
-| Gameplay | Cấp 100, Chương 5–8, Raid, Chiến Trường, Squad War, Phản Ma, Spirit Dive |
+| Gameplay | Cấp 100, Chương 5–8, Raid, Chiến Trường, Chiến Đội, Phong Ấn Xạ Thủ, Nhập Linh |
 | Nền tảng | Android/iOS wrapper, tối ưu hiệu năng |
 | Vận hành | Sự kiện mùa, Battle Pass, hạn mức nạp theo độ tuổi |
 | Tuân thủ | Giấy phép, xác thực tài khoản, chính sách (xem [legal](legal-and-compliance.md)) |
@@ -100,7 +100,7 @@ gantt
 | 1 | 5 | 7 | 1 | 12 | 2 (3 kỹ năng) |
 | 2 | 19 | 28 | 12 | 48 | 7 |
 | 3 | 22 | 33 | 20 | 58 | 7 |
-| 4 | 31 | 49 | 26 + 4 boss thế giới | 90 | 7 + Phản Ma |
+| 4 | 31 | 49 | 26 + 4 boss thế giới | 90 | 7 + Phong Ấn Xạ Thủ |
 
 ## 5. Rủi ro & cách xử lý
 

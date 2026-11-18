@@ -8,7 +8,7 @@
 ```mermaid
 flowchart LR
     A["Nhận nhiệm vụ"] --> B["Đến map, đánh quái"]
-    B --> C["Nhận EXP, Yul, vật phẩm"]
+    B --> C["Nhận EXP, Quan, vật phẩm"]
     C --> D["Lên cấp: +Điểm Tiềm Năng, +SP"]
     D --> E["Nâng kỹ năng, cộng điểm"]
     E --> F["Cường hóa, khảm, đổi trang bị"]
@@ -16,7 +16,7 @@ flowchart LR
     G --> A
 ```
 
-Vòng ngắn (phút): đánh quái, nhặt đồ. Vòng trung (ngày): nhiệm vụ ngày, hầm ngục, boss. Vòng dài (tuần/mùa): Squad War, Chiến Trường, Mùa Giải.
+Vòng ngắn (phút): đánh quái, nhặt đồ. Vòng trung (ngày): nhiệm vụ ngày, hầm ngục, boss. Vòng dài (tuần/mùa): Chiến Đội, Chiến Trường, Mùa Giải.
 
 ## 2. Cấp độ & kinh nghiệm
 
@@ -79,7 +79,7 @@ Số quái cần giết mỗi cấp (cùng cấp): `≈ 6,3 × L`. Ở Lv50 kho�
 | Chỉ số | Ý nghĩa |
 |--------|---------|
 | **HP** | Máu |
-| **MP** | Mana (Phản Ma dùng Ý Chí) |
+| **MP** | Mana (Phong Ấn Xạ Thủ dùng Ý Chí) |
 | **ATK** | Sức đánh |
 | **DEF** | Phòng thủ |
 | **CRIT%** | Tỉ lệ chí mạng (gốc 5%, tối đa 50%) |
@@ -94,14 +94,14 @@ Số quái cần giết mỗi cấp (cùng cấp): `≈ 6,3 × L`. Ở Lv50 kho�
 | Tốc đánh | 1,0 đòn/s | Lôi +15%, tối đa 2,0 |
 | Tốc chạy | 180 px/s | Chổi Bay +30% |
 | Hồi HP | 0 | Ngoài giao tranh: 1% HP/5s |
-| Hồi MP | 2% MP/s ngoài giao tranh, 0,5%/s trong giao tranh | Quý Tộc +25% |
+| Hồi MP | 2% MP/s ngoài giao tranh, 0,5%/s trong giao tranh | Thế Gia +25% |
 | Giảm hồi chiêu | 0 | Tối đa 40% |
 | Kháng hiệu ứng | 0 | Tối đa 75% |
 
 ### 3.3 Điểm Tiềm Năng
 
 - **+5 điểm mỗi cấp** (Lv2–100), cộng 10 điểm khởi đầu: tổng **505** điểm.
-- Cộng điểm tại menu *Nhân vật*; không hoàn tác miễn phí, **Bình Rửa Tiềm Năng** (cửa hàng, 50 Ngọc Mana hoặc sự kiện) để reset.
+- Cộng điểm tại menu *Nhân vật*; không hoàn tác miễn phí, **Bình Rửa Tiềm Năng** (cửa hàng, 50 Nén Bạc hoặc sự kiện) để reset.
 
 | Chỉ số | Mỗi điểm | Giới hạn |
 |--------|----------|----------|
@@ -191,7 +191,7 @@ Thủy → Hỏa → Phong → Thổ → Lôi → Thủy (khắc ×1,25; bị kh
 
 ### 5.1 Công thức quái thường
 
-| Cấp | HP | ATK | DEF | EXP | Yul |
+| Cấp | HP | ATK | DEF | EXP | Quan |
 |-----|----|-----|-----|-----|-----|
 | 1 | 52 | 11 | 2 | 18 | 4 |
 | 10 | 726 | 40 | 25 | 90 | 40 |
@@ -205,7 +205,7 @@ Thủy → Hỏa → Phong → Thổ → Lôi → Thủy (khắc ×1,25; bị kh
 | 90 | 18.814 | 296 | 225 | 730 | 360 |
 | 100 | 22.030 | 328 | 250 | 810 | 400 |
 
-Công thức: `HP = round(30 + 22·L^1.5)`, `ATK = round(8 + 3.2·L)`, `DEF = round(2.5·L)`, `EXP = 8L + 10`, `Yul = 4L (±20%)`. Nhân theo loại ở §2.1.
+Công thức: `HP = round(30 + 22·L^1.5)`, `ATK = round(8 + 3.2·L)`, `DEF = round(2.5·L)`, `EXP = 8L + 10`, `Quan = 4L (±20%)`. Nhân theo loại ở §2.1.
 
 ### 5.2 Máy trạng thái AI
 
@@ -247,7 +247,7 @@ stateDiagram-v2
 
 | Loại | Xác suất |
 |------|----------|
-| Yul | 90% (số lượng ở §5.1) |
+| Quan | 90% (số lượng ở §5.1) |
 | Nguyên liệu | 25% |
 | Vật phẩm tiêu hao | 8% |
 | Trang bị **Tốt** (xanh lá) | 2% |
@@ -262,7 +262,7 @@ stateDiagram-v2
 | Tình huống | Hậu quả |
 |-----------|---------|
 | Chết do quái | Mất **2% EXP** của cấp hiện tại (không tụt cấp), hồi sinh miễn phí tại **thành gần nhất** |
-| Hồi sinh tại chỗ | Dùng **Lá Hồi Sinh** hoặc **5 Ngọc Mana** (hồi 50% HP, bất khả xâm phạm 3s) |
+| Hồi sinh tại chỗ | Dùng **Lá Hồi Sinh** hoặc **5 Nén Bạc** (hồi 50% HP, bất khả xâm phạm 3s) |
 | Chết do người chơi (Cờ PK) | Không mất EXP; người giết nhận Điểm Tội Lỗi nếu mục tiêu không bật cờ (xem [social](09-social-squad-pvp-events.md)) |
 | Chết trong hầm ngục | Hồi sinh theo **điểm lưu** hầm ngục, tối đa 3 lần/lượt (thêm bằng Lá Hồi Sinh). Không phụ thuộc hệ phép nào |
 | Chết ở boss thế giới | Phải chờ **15s** mới hồi sinh |
@@ -274,16 +274,16 @@ stateDiagram-v2
 | Mở khóa | Lv20 |
 | Hoạt động | Do **server** điều khiển, người chơi phải **trực tuyến** trong map |
 | Hành vi | Đánh quái gần nhất cùng khu, dùng kỹ năng theo thứ tự đã chọn, tự dùng bình khi HP < 40% |
-| Thời lượng | **3 giờ/ngày**, mua thêm bằng **Thẻ Auto** (sự kiện, Ngọc Mana) |
-| Hiệu quả | **70%** EXP và Yul so với đánh thủ công; không rơi trang bị Sử Thi |
+| Thời lượng | **3 giờ/ngày**, mua thêm bằng **Thẻ Auto** (sự kiện, Nén Bạc) |
+| Hiệu quả | **70%** EXP và Quan so với đánh thủ công; không rơi trang bị Sử Thi |
 | Dừng | Khi HP < 20% mà hết bình, khi bị PK, khi lên tới cấp mới phải cộng điểm, khi captcha bắt buộc |
-| Không dùng được | Trong hầm ngục, boss, PvP, Squad War |
+| Không dùng được | Trong hầm ngục, boss, PvP, Chiến Đội |
 
-## 9. Hệ thống Sao & Hạng
+## 9. Hệ thống Công Trạng & Hạng
 
-- **Sao (Star)** là điểm danh vọng, nhận từ thành tích: hạ boss lần đầu, hoàn thành chương, thắng PvP, xếp hạng Squad.
-- Sao quyết định **hạng thành tích** và thứ tự bảng xếp hạng cuối mùa **Lễ Trao Sao**.
-- Có 4 bảng xếp hạng: **Lực Chiến**, **Sao**, **Cấp độ**, **Squad**.
+- **Công Trạng** là điểm danh vọng, nhận từ thành tích: hạ boss lần đầu, hoàn thành chương, thắng PvP, xếp hạng Đội.
+- Công Trạng quyết định **hạng thành tích** và thứ tự bảng xếp hạng cuối mùa **Lễ Tuyên Công**.
+- Có 4 bảng xếp hạng: **Lực Chiến**, **Công Trạng**, **Cấp độ**, **Đội**.
 
 ## 10. Cân bằng & Kiểm chứng
 
@@ -293,13 +293,13 @@ stateDiagram-v2
 
 ## 11. Nguyên tắc Solo-first
 
-Ninja School và Ngọc Rồng chủ yếu là game **chơi một mình**: săn quái, làm nhiệm vụ, nâng cấp đều tự làm được; nhóm chỉ để nhanh hơn, vui hơn hoặc đánh nội dung khó. BCO giữ nguyên tinh thần đó.
+Ninja School và Ngọc Rồng chủ yếu là game **chơi một mình**: săn quái, làm nhiệm vụ, nâng cấp đều tự làm được; nhóm chỉ để nhanh hơn, vui hơn hoặc đánh nội dung khó. HTK giữ nguyên tinh thần đó.
 
 ### 11.1 Quy tắc
 
 1. **Mọi hệ phải solo được** toàn bộ việc cày quái Field và toàn bộ chính tuyến. Không hệ nào được thiết kế để *cần* người khác.
 2. **Kỹ năng hỗ trợ luôn có tác dụng lên bản thân** (hồi máu, khiên, buff). Phần lan sang đồng đội là **phần thưởng thêm**.
-3. **Không có kỹ năng hồi sinh người khác.** Hồi sinh do bản thân (Lá Hồi Sinh, Ngọc Mana, Tái Sinh của Dryad) hoặc do hệ thống.
+3. **Không có kỹ năng hồi sinh người khác.** Hồi sinh do bản thân (Lá Hồi Sinh, Nén Bạc, Tái Sinh của Dryad) hoặc do hệ thống.
 4. **Hầm Ngục co giãn theo số người (1–5)**, vào một mình được; **Raid** có *Chế độ Cốt Truyện* một người để hoàn thành chính tuyến. Chi tiết ở [maps §6](05-world-maps-monsters.md).
 5. **Nhóm vẫn có lợi**: +10% EXP mỗi người thêm, hạ boss nhanh hơn, nội dung Raid và boss thế giới khó chỉ dành cho nhóm lớn.
 6. **Hệ nặng về phòng thủ/hỗ trợ** (Thổ, Mộc) được **bù bằng khả năng sống sót** (ít tốn bình, ít phải nghỉ), không bị bắt chịu hạ quái chậm gấp nhiều lần.

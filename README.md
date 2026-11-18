@@ -1,24 +1,23 @@
-# Black Clover Online: Ma Đạo Thư (tên tạm)
+# Huyền Thư Ký (tên tạm)
 
-> Game nhập vai trực tuyến 2D cuộn ngang, cơ chế theo **Ninja School Online** và **Ngọc Rồng Online**, bối cảnh và cốt truyện lấy cảm hứng từ **Black Clover**.
+> Game nhập vai trực tuyến 2D cuộn ngang, cơ chế theo dòng game **Ninja School Online** và **Ngọc Rồng Online**: cày quái, nhiệm vụ NPC, nâng cấp trang bị, bang hội, săn boss.
 
-**Trạng thái dự án:** Giai đoạn **thiết kế**. Repo hiện chứa bộ tài liệu đầy đủ. Mã nguồn sẽ bắt đầu ở Phase 0 (xem [roadmap](docs/product/roadmap.md)).
-
-> **Tuyên bố:** Đây là dự án fan-made, **không liên kết** với tác giả hay chủ sở hữu bản quyền Black Clover. Mọi tên nhân vật, thế giới thuộc về chủ sở hữu tương ứng. Xem [Pháp lý & Tuân thủ](docs/product/legal-and-compliance.md) trước khi nghĩ đến phát hành thương mại.
+**Trạng thái dự án:** Giai đoạn **thiết kế**. Repo hiện chứa bộ tài liệu đầy đủ (bản reskin, Draft v0.2). Mã nguồn sẽ bắt đầu ở Phase 0 (xem [roadmap](docs/product/roadmap.md)).
 
 ## Tóm tắt game
 
-- Bạn lớn lên ở **Làng Hage** cùng Asta và Yuno, nhận **Ma Đạo Thư** ở Lv10, chọn một trong **7 hệ phép** (Hỏa, Thủy, Phong, Lôi, Thổ, Mộc, Ám) và một hệ ẩn **Phản Ma**.
-- Chạy nhảy trên map 2D, đánh quái, làm nhiệm vụ NPC, nâng cấp trang bị (+1…+16), khảm ngọc, nuôi **Hiệp Sĩ Tập Sự** (đệ tử), cưỡi **Chổi Bay**.
-- Lập **Đội Hiệp Sĩ** (bang hội), đánh **Hầm Ngục**, **Raid**, **Boss thế giới**, **Chiến Trường Vương Quốc**, săn **7 Linh Thạch Sao** để triệu hồi **Tứ Đại Tinh Linh**.
-- Cốt truyện **8 chương**, từ Nhà Thờ Hage đến **Cõi Quỷ** và Ngai Vua Phép Thuật. Cấp tối đa 100.
+- Ở **Vương quốc Lục Nguyên**, năm mười lăm tuổi mỗi người nhận một **Huyền Thư** (sách phép) tại **Lễ Khai Thư**. Bạn chọn một trong **7 hệ phép** (Hỏa, Thủy, Phong, Lôi, Thổ, Mộc, Ám); hệ ẩn **Phong Ấn Xạ Thủ** mở ở cuối game.
+- Bạn lớn lên ở **Làng Suối Mơ** cùng **Lam Nhi** và **Khôi**. Ngày nhận sách cũng là ngày **Thầy Bạch Vân** mất tích, để lại lời nhắn về **Mười Hai Quyển Gốc**.
+- Chạy nhảy trên map 2D, đánh quái, làm nhiệm vụ, cường hóa trang bị (+1…+16), khảm **Hạt Nguyên**, nuôi **Đệ Tử**, cưỡi **Chổi Bay**. **Mọi hệ chơi một mình được.**
+- Lập **Đội** (bang hội), đánh **Hầm Ngục**, **Raid**, **Boss thế giới**, **Chiến Trường Lục–Xích**, săn **7 Trang Rời** để triệu hồi **Tứ Đại Nguyên Linh**.
+- Cốt truyện **8 chương**: từ Làng Suối Mơ tới **Chương Trắng**, đối đầu **Hội Hiệu Đính**, những người muốn viết lại luật phép thuật cho "công bằng". Cấp tối đa 100, danh hiệu cuối **Ứng Viên Chấp Bút**.
 
 ## Bắt đầu đọc
 
 | Bạn là… | Đọc theo thứ tự |
 |---------|------------------|
 | **Người mới, muốn hiểu dự án** | [Tầm nhìn & Phạm vi](docs/product/vision-and-scope.md) → [Cốt truyện](docs/game-design/01-lore-and-story.md) → [Hướng dẫn người chơi](docs/guides/player-guide.md) |
-| **Game designer** | [docs/game-design/](docs/game-design/) từ `01` đến `12` |
+| **Game designer** | [docs/game-design/](docs/game-design/) từ `01` đến `12`, và [thuật ngữ](docs/glossary.md) |
 | **Developer** | [Kiến trúc hệ thống](docs/architecture/system-architecture.md) → [Server](docs/architecture/server-design.md) → [Giao thức](docs/architecture/network-protocol.md) → [Database](docs/architecture/database-schema.md) → [Thiết lập dev](docs/guides/developer-setup-guide.md) |
 | **QA / Producer** | [Yêu cầu](docs/product/requirements.md) → [Use case](docs/usecases/use-cases-player.md) → [Roadmap](docs/product/roadmap.md) → [Quy trình phát triển](docs/workflows/development-workflow.md) |
 | **GM / Vận hành** | [Hướng dẫn GM](docs/guides/admin-gm-guide.md) → [Use case quản trị](docs/usecases/use-cases-admin-system.md) → [Hạ tầng](docs/architecture/infrastructure-devops.md) |
@@ -36,12 +35,12 @@ Mục lục đầy đủ: [docs/README.md](docs/README.md).
 
 Chi tiết và lý do: [system-architecture §5](docs/architecture/system-architecture.md).
 
-## Quyết định đang mở
+## Hướng IP
 
-**Đã quyết:** thương mại hóa với **IP gốc thay thế (reskin)**, mức **giữ concept, đổi tên và 6 điểm nhận diện**, xem [Đặc tả Reskin](docs/product/reskin-spec.md) và [Kế hoạch Reskin](docs/product/reskin-plan.md). Bộ tài liệu thiết kế hiện tại là **bản tham khảo nội bộ bám nguyên tác**; bản thương mại sẽ được viết lại theo đặc tả sau khi được duyệt.
+Thương mại với **IP gốc thay thế**, mức **giữ concept, đổi tên và 6 điểm nhận diện** ([Đặc tả Reskin](docs/product/reskin-spec.md), nội bộ). Mức này vẫn còn **rủi ro trung bình** vì concept còn gần tác phẩm tham khảo: cần **đối chiếu độc lập** và **luật sư IP** trước Closed Beta ([Pháp lý](docs/product/legal-and-compliance.md)).
 
-Còn mở (xem [vision §9](docs/product/vision-and-scope.md)): duyệt đặc tả reskin, tên game, công nghệ.
+Còn mở (xem [vision §9](docs/product/vision-and-scope.md)): tên game chính thức (cần tra cứu nhãn hiệu), công nghệ.
 
 ## Đóng góp
 
-Mọi thay đổi qua Pull Request. Đọc [quy trình phát triển](docs/workflows/development-workflow.md). **Đổi cơ chế thì cập nhật tài liệu trong cùng PR.**
+Mọi thay đổi qua Pull Request. Đọc [quy trình phát triển](docs/workflows/development-workflow.md). **Đổi cơ chế thì cập nhật tài liệu trong cùng PR.** Tên mới phải qua kiểm tra rò rỉ tên IP ([reskin-spec §10](docs/product/reskin-spec.md)).

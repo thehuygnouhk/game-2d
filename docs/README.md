@@ -1,17 +1,17 @@
 # Mục lục tài liệu
 
-> Bộ tài liệu thiết kế cho **Black Clover Online: Ma Đạo Thư (BCO)**. Trạng thái toàn bộ: **Draft v0.1**, cập nhật 2026-11-18.
+> Bộ tài liệu thiết kế cho **Huyền Thư Ký (HTK)**. Trạng thái toàn bộ: **Draft v0.2 (bản reskin)**, cập nhật 2026-11-18.
 
 ## 1. Sản phẩm (`product/`)
 
 | Tài liệu | Nội dung |
 |----------|----------|
-| [vision-and-scope](product/vision-and-scope.md) | Tầm nhìn, trụ cột, đối tượng, **bảng đối chiếu cơ chế NS/NRO → BCO**, phạm vi, KPI, rủi ro, quyết định mở |
+| [vision-and-scope](product/vision-and-scope.md) | Tầm nhìn, trụ cột, đối tượng, **bảng đối chiếu cơ chế NS/NRO → HTK**, phạm vi, KPI, rủi ro, quyết định mở |
 | [requirements](product/requirements.md) | Yêu cầu chức năng (FR) và phi chức năng (NFR), truy vết |
 | [roadmap](product/roadmap.md) | 6 phase, mốc, tiêu chí hoàn thành, đội ngũ, rủi ro |
 | [legal-and-compliance](product/legal-and-compliance.md) | IP, quy định game, dữ liệu cá nhân, thanh toán, điều khoản |
 | [reskin-plan](product/reskin-plan.md) | **Kế hoạch thương mại với IP gốc thay thế:** cần đổi gì, giữ gì, quy trình, danh sách kiểm tra |
-| [reskin-spec](product/reskin-spec.md) | **Đặc tả mức đã chọn (nội bộ, chờ duyệt):** giữ concept, đổi tên + 6 điểm nhận diện, tám chương mới, thuật ngữ, việc kỹ thuật |
+| [reskin-spec](product/reskin-spec.md) | **Đặc tả mức đã chọn (nội bộ; Bước 2 đã áp dụng, chờ duyệt §9):** giữ concept, đổi tên + 6 điểm nhận diện, tám chương mới, thuật ngữ, việc kỹ thuật |
 
 ## 1a. World Bible văn hóa Việt (`world-bible/`): **phương án không chọn**
 
@@ -33,14 +33,14 @@
 |---|----------|----------|
 | 01 | [lore-and-story](game-design/01-lore-and-story.md) | Thế giới, 8 chương cốt truyện, chủ đề |
 | 02 | [characters-and-npcs](game-design/02-characters-and-npcs.md) | Nhân vật gốc làm NPC, dịch vụ, phe, boss cốt truyện |
-| 03 | [origins-classes-skills](game-design/03-origins-classes-skills.md) | 3 Xuất thân, 7 hệ phép + Phản Ma, 55 kỹ năng, Spirit Dive, Ma Đạo Thư |
+| 03 | [origins-classes-skills](game-design/03-origins-classes-skills.md) | 3 Xuất thân, 7 hệ phép + Phong Ấn Xạ Thủ, 55 kỹ năng, Nhập Linh, Huyền Thư |
 | 04 | [combat-and-progression](game-design/04-combat-and-progression.md) | EXP, chỉ số, công thức sát thương, AI, boss, rơi đồ, chết, Auto Hunt |
 | 05 | [world-maps-monsters](game-design/05-world-maps-monsters.md) | 31 map, 49 quái, 30 boss (26 cốt truyện + 4 boss thế giới), hầm ngục, spawn |
 | 06 | [quests-and-missions](game-design/06-quests-and-missions.md) | Chính tuyến, nhiệm vụ ngày/tuần, phe, thành tích |
 | 07 | [items-and-equipment](game-design/07-items-and-equipment.md) | Độ hiếm, 10 ô, set, cường hóa, khảm ngọc, tiêu hao |
 | 08 | [economy-and-monetization](game-design/08-economy-and-monetization.md) | Tiền tệ, faucet/sink, chợ, vòng quay, nạp, bảo vệ người chơi |
-| 09 | [social-squad-pvp-events](game-design/09-social-squad-pvp-events.md) | Chat, nhóm, Squad, Squad War, Chiến Trường, Đấu Trường, PK, sự kiện, 7 Linh Thạch |
-| 10 | [companions-and-mounts](game-design/10-companions-and-mounts.md) | Hiệp Sĩ Tập Sự, Tinh Linh Hộ Mệnh, Chổi Bay |
+| 09 | [social-squad-pvp-events](game-design/09-social-squad-pvp-events.md) | Chat, nhóm, Đội, Chiến Đội, Chiến Trường, Đấu Trường, PK, sự kiện, 7 Trang Rời |
+| 10 | [companions-and-mounts](game-design/10-companions-and-mounts.md) | Đệ Tử, Linh Thú, Chổi Bay |
 | 11 | [ui-ux-spec](game-design/11-ui-ux-spec.md) | Luồng màn hình, HUD, điều khiển, cửa sổ, tiếp cận |
 | 12 | [art-audio-direction](game-design/12-art-audio-direction.md) | Phong cách, sprite, paper-doll, bản đồ, VFX, âm thanh, dung lượng |
 
@@ -100,7 +100,7 @@
 | Thông tin | Tài liệu chuẩn |
 |-----------|----------------|
 | Thế giới, nhân vật, cốt truyện **bản thương mại** (khi được duyệt) | [reskin-spec](product/reskin-spec.md) |
-| Tên gọi, thuật ngữ (bản fan hiện tại) | [glossary](glossary.md) |
+| Tên gọi, thuật ngữ | [glossary](glossary.md) |
 | Công thức EXP, sát thương, quái | [04](game-design/04-combat-and-progression.md) |
 | Kỹ năng, khắc hệ | [03](game-design/03-origins-classes-skills.md) |
 | ID và danh sách map/quái/boss | [05](game-design/05-world-maps-monsters.md) |
@@ -112,7 +112,7 @@
 
 ## 10. Những điều cần xác nhận trước khi chốt
 
-1. **Nguyên tác:** Tên và vai trò các nhân vật phản diện (Chương 6–8), danh sách 9 Đội và chi tiết các arc sau cần **đối chiếu với nguyên tác** nếu còn dùng cho bản fan ([lore §0](game-design/01-lore-and-story.md)). Bản thương mại sẽ **không** bám nguyên tác.
+1. **Độc đáo:** cần một người đọc **độc lập**, am hiểu tác phẩm mà concept tham khảo, đối chiếu các tên, nhân vật và tình tiết mới ([reskin-spec §9.1](product/reskin-spec.md)). Mọi tên mới phải qua kiểm tra rò rỉ tên IP ([reskin-spec §10](product/reskin-spec.md)).
 2. **Pháp lý:** Hướng IP **đã chọn: reskin mức "đổi tên + 6 điểm nhận diện"** ([reskin-spec](product/reskin-spec.md)). Mức này **vẫn còn rủi ro trung bình** vì cùng concept; việc còn lại là duyệt đặc tả, đối chiếu độc lập, và **luật sư IP** duyệt cùng các giấy phép game online tại Việt Nam ([legal](product/legal-and-compliance.md)).
 3. **Cân bằng:** Mọi con số là điểm khởi đầu, cần mô phỏng và playtest.
 4. **Năng lực server:** Ước tính CCU trong [server-design §13](architecture/server-design.md) cần **load test** từ Phase 1.

@@ -24,8 +24,8 @@ flowchart LR
 packages/content/
 ├─ schema/                 # Zod schema cho từng loại (nguồn chân lý)
 ├─ maps/
-│   ├─ m001_church.yaml    # metadata + spawns + portals + npcs
-│   └─ m001_church.tmj     # Tiled (JSON) – đồ họa và collision
+│   ├─ m001_school.yaml    # metadata + spawns + portals + npcs
+│   └─ m001_school.tmj     # Tiled (JSON) – đồ họa và collision
 ├─ monsters/               # mob001.yaml ...
 ├─ bosses/
 ├─ npcs/
@@ -34,7 +34,7 @@ packages/content/
 ├─ skills/                 # theo hệ: fire.yaml, water.yaml...
 ├─ talents/
 ├─ quests/
-│   ├─ main/ side/ daily/ weekly/ faction/ squad/ event/
+│   ├─ main/ side/ daily/ weekly/ faction/ guild/ event/
 ├─ dialogues/
 ├─ drops/                  # bảng rơi
 ├─ shops/
@@ -70,7 +70,7 @@ portals:
   - { id: P01, x: 64,   y: 480, to: M001, toX: 2400, toY: 480 }
   - { id: P02, x: 2496, y: 480, to: M003, toX: 96,   toY: 480 }
 npcs:
-  - { id: NPC003, x: 1200, y: 480 }          # Asta
+  - { id: NPC003, x: 1200, y: 480 }          # Lam Nhi
 spawns:
   - { mob: MOB001, x: 600,  y: 480, radius: 200, count: 6, respawnSec: 8 }
   - { mob: MOB002, x: 1500, y: 480, radius: 250, count: 6, respawnSec: 10 }
@@ -160,7 +160,7 @@ steps:
       options:
         - { id: BLACK_BULLS, nameKey: ..., sets: { faction: BLACK_BULLS } }
         - { id: GOLDEN_DAWN, nameKey: ..., sets: { faction: GOLDEN_DAWN } }
-rewards: { exp: 6000, yul: 2000 }
+rewards: { exp: 6000, soft: 2000 }
 ```
 
 ### 3.6 Bảng rơi
@@ -168,7 +168,7 @@ rewards: { exp: 6000, yul: 2000 }
 ```yaml
 # drops/drop_r01_basic.yaml
 id: DROP_R01_BASIC
-yul: { chance: 0.9, formula: "4*L" }
+soft: { chance: 0.9, formula: "4*L" }
 entries:
   - { item: ITM05001, chance: 0.25, qty: [1, 2] }     # nguyên liệu
   - { item: ITM04001, chance: 0.08, qty: [1, 1] }     # Bình HP Nhỏ
@@ -191,7 +191,7 @@ portrait: ui/portrait/lily
 menu:
   - { id: QUEST, label: dlg.common.quest }
   - { id: TALK,  label: dlg.npc001.talk,  dialogue: DLG_NPC001_TALK }
-  - { id: RENAME, label: dlg.npc001.rename, requires: { currency: NGOC_MANA, amount: 50 } }
+  - { id: RENAME, label: dlg.npc001.rename, requires: { currency: PREMIUM, amount: 50 } }
 ```
 
 ### 3.8 Cửa hàng
@@ -237,6 +237,7 @@ maps: [ M009, M010, M011 ]
 | V012 | Tiled: đủ lớp bắt buộc (`ground`, `collision`, `objects`), không có tile ngoài tileset |
 | V013 | Bảng rơi: tổng xác suất hợp lý, không có vật phẩm cấp quá cao so với cấp quái |
 | V014 | Quest reward hợp lý theo cấp (cảnh báo nếu > 2× chuẩn) |
+| V015 | i18n, hội thoại và tên file asset **không chứa từ trong danh sách cấm** (tên riêng của tác phẩm khác). Danh sách lưu ngoài gói nội dung phát hành; quy trình ở [reskin-spec §10](../product/reskin-spec.md#10-kiểm-tra-rò-rỉ-tên-ip) (nội bộ) |
 
 Lệnh:
 
@@ -298,7 +299,7 @@ flowchart LR
 - `vi` là **nguồn**; `en` dịch sau. Thiếu `en` chỉ cảnh báo, thiếu `vi` là lỗi.
 - Không đặt nhiều câu trong một khóa nếu có thể tách.
 - Placeholder dùng `{name}`, `{count}`; kiểm tra số lượng placeholder khớp giữa `vi` và `en`.
-- Tên IP (nhân vật, địa danh gốc) **chỉ ở i18n**, để có thể **reskin** (xem [legal §1.2](../product/legal-and-compliance.md)).
+- Tên hiển thị (nhân vật, địa danh, kỹ năng, tiền tệ) **chỉ ở i18n**, không nằm trong ID, tên file hay mã nguồn, để đổi tên rẻ (xem [legal §1.2](../product/legal-and-compliance.md)). Mọi chuỗi i18n mới phải qua V015.
 
 ## 8. Quy trình thêm nội dung (checklist)
 

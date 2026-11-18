@@ -16,9 +16,9 @@ Black Clover (tác giả Yūki Tabata, nhà xuất bản và chủ sở hữu b�
 
 1. **Không sử dụng** hình ảnh, sprite, nhạc, lồng tiếng, logo từ anime/manga. Mọi tài sản phải **tự tạo** hoặc **có giấy phép**.
 2. **Thoại viết mới**, không sao chép thoại hoặc văn bản của nguyên tác.
-3. Tên "Black Clover" trong tiêu đề là **tên tạm** (xem [vision §9](vision-and-scope.md)). **Đã chọn hướng thương mại với IP gốc thay thế (reskin), mức "giữ concept, đổi tên + 6 điểm nhận diện"**: đặc tả phải được duyệt **trước khi sản xuất art** (Phase 0). Mức này còn rủi ro trung bình, cần luật sư xem. Xem [reskin-spec](reskin-spec.md) và [reskin-plan](reskin-plan.md).
-4. Khuyến nghị **thiết kế lớp tên** (i18n key) để **thay toàn bộ tên IP** mà không sửa code.
-5. Bắt buộc có **dòng tuyên bố** trong README, màn hình đăng nhập, điều khoản.
+3. **Đã chọn hướng thương mại với IP gốc thay thế (reskin), mức "giữ concept, đổi tên + 6 điểm nhận diện"**, và đã áp dụng lên toàn bộ tài liệu (Draft v0.2, tên tạm *Huyền Thư Ký*, chưa tra cứu nhãn hiệu). Các mục ở [reskin-spec §9](reskin-spec.md#9-danh-sách-duyệt) phải được duyệt **trước khi sản xuất art** (Phase 0). Mức này còn rủi ro trung bình, cần luật sư xem. Xem [reskin-spec](reskin-spec.md) và [reskin-plan](reskin-plan.md).
+4. Khuyến nghị **thiết kế lớp tên** (i18n key) để **thay toàn bộ tên hiển thị** mà không sửa code. Mọi tên mới phải qua [kiểm tra rò rỉ tên IP](reskin-spec.md#10-kiểm-tra-rò-rỉ-tên-ip).
+5. **Dòng tuyên bố "fan-made, không liên kết với chủ sở hữu"** chỉ áp dụng cho bản fan cũ (đã bỏ khỏi README). Bản reskin là IP gốc nên **không** nhắc tên tác phẩm tham khảo ở bất cứ đâu người chơi thấy; luật sư quyết định có cần tuyên bố nào khác trong điều khoản không.
 
 ### 1.2 Reskin: đổi tên là chưa đủ
 

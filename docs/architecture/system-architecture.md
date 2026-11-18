@@ -22,13 +22,13 @@ flowchart LR
     Pay["Cổng thanh toán"]
     Mail["Dịch vụ email"]
     CDN["CDN (tài nguyên tĩnh)"]
-    BCO["Hệ thống BCO"]
-    Player -->|"HTTPS + WSS"| BCO
+    HTK["Hệ thống HTK"]
+    Player -->|"HTTPS + WSS"| HTK
     Player -->|"tải asset"| CDN
-    GM -->|"HTTPS (Admin)"| BCO
-    Pay -->|"Webhook"| BCO
-    BCO -->|"khởi tạo thanh toán"| Pay
-    BCO -->|"SMTP/API"| Mail
+    GM -->|"HTTPS (Admin)"| HTK
+    Pay -->|"Webhook"| HTK
+    HTK -->|"khởi tạo thanh toán"| Pay
+    HTK -->|"SMTP/API"| Mail
 ```
 
 ## 3. Container (Level 2)
@@ -204,8 +204,8 @@ sequenceDiagram
     C->>G: C_SHOP_BUY(itemId, qty, idemKey)
     G->>G: Khóa hàng đợi nhân vật (serialize)
     G->>D: BEGIN
-    G->>D: SELECT yul FROM characters WHERE id=... FOR UPDATE
-    G->>D: UPDATE yul, INSERT item_instances, INSERT currency_ledger
+    G->>D: SELECT soft_currency FROM characters WHERE id=... FOR UPDATE
+    G->>D: UPDATE soft_currency, INSERT item_instances, INSERT currency_ledger
     G->>D: COMMIT
     G-->>C: S_INVENTORY_DELTA + S_STATS_UPDATE
 ```
@@ -264,7 +264,7 @@ apps/game-server/src/
 ├─ world/          # World, Map, Zone, Instance, AOI
 ├─ entities/       # Player, Monster, Npc, Drop, Projectile
 ├─ systems/        # movement, ai, combat, status, spawn, loot
-├─ domain/         # quest, inventory, shop, trade, market, squad, party, mail
+├─ domain/         # quest, inventory, shop, trade, market, guild, party, mail
 ├─ persistence/    # repositories, write-behind, transactions
 ├─ events/         # event bus nội bộ
 ├─ scheduler/      # cron job, boss, sự kiện

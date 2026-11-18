@@ -7,59 +7,59 @@
 
 | Tiền | Ký hiệu | Loại | Kiếm bằng | Giao dịch giữa người chơi? |
 |------|---------|------|-----------|-----------------------------|
-| **Yul** | Y | Mềm | Quái, nhiệm vụ, bán đồ, boss | **Có** |
-| **Ngọc Mana** | 💎 | Cao cấp | Nạp tiền, sự kiện (ít), thành tích, Thẻ Tháng | **Không** (khóa tài khoản) |
-| **Điểm Cống Hiến** | CH | Đội | Nhiệm vụ Đội, Squad War | Không |
-| **Huy hiệu Quân Công** | HQ | Chiến trường | Chiến Trường Vương Quốc, Đấu Trường | Không |
+| **Quan** | Y | Mềm | Quái, nhiệm vụ, bán đồ, boss | **Có** |
+| **Nén Bạc** | 💎 | Cao cấp | Nạp tiền, sự kiện (ít), thành tích, Thẻ Tháng | **Không** (khóa tài khoản) |
+| **Điểm Cống Hiến** | CH | Đội | Nhiệm vụ Đội, Chiến Đội | Không |
+| **Huy hiệu Quân Công** | HQ | Chiến trường | Chiến Trường Lục–Xích, Đấu Trường | Không |
 | **Danh Vọng Phe** | DV | Phe | Nhiệm vụ phe | Không |
-| **Sao** | ★ | Danh vọng | Thành tích | Không |
+| **Công Trạng** | ★ | Danh vọng | Thành tích | Không |
 
-**Nguyên tắc:** Ngọc Mana **không giao dịch** được giữa người chơi để chống mua bán tiền thật bên ngoài (RMT) và rửa tiền. Chợ Ký Gửi chỉ dùng **Yul**.
+**Nguyên tắc:** Nén Bạc **không giao dịch** được giữa người chơi để chống mua bán tiền thật bên ngoài (RMT) và rửa tiền. Chợ Ký Gửi chỉ dùng **Quan**.
 
-## 2. Nguồn thu và hố chi Yul (faucet & sink)
+## 2. Nguồn thu và hố chi Quan (faucet & sink)
 
-### 2.1 Nguồn Yul (faucet)
+### 2.1 Nguồn Quan (faucet)
 
 | Nguồn | Mức |
 |-------|-----|
 | Quái rơi | `4·L` mỗi quái (±20%) |
 | Nhiệm vụ chính/ngày | Cố định theo cấp |
 | Bán đồ cho NPC | 25% giá trị |
-| Boss, hầm ngục | Rương Yul |
+| Boss, hầm ngục | Rương Quan |
 | Điểm danh, sự kiện | Gói nhỏ |
 
-Ước tính thu nhập: **~1.200 × L Yul/giờ** săn quái. Lv50 ≈ 60.000 Y/h; Lv100 ≈ 120.000 Y/h.
+Ước tính thu nhập: **~1.200 × L Quan/giờ** săn quái. Lv50 ≈ 60.000 Quan/h; Lv100 ≈ 120.000 Quan/h.
 
 ### 2.2 Hố chi (sink)
 
 | Hố chi | Chi phí tiêu biểu | Tần suất |
 |--------|-------------------|----------|
 | Cường hóa | Xem [items §6](07-items-and-equipment.md) | Cao |
-| Nâng kỹ năng | 60.000 Y lên cấp 7 | Trung |
-| Dịch chuyển Finral | `50 × Lv_đích` | Cao |
-| Bình thuốc | 20–2.000 Y | Cao |
+| Nâng kỹ năng | 60.000 Quan lên cấp 7 | Trung |
+| Dịch chuyển Bác Tô | `50 × Lv_đích` | Cao |
+| Bình thuốc | 20–2.000 Quan | Cao |
 | Phí giao dịch / Ký gửi | 5% giá bán | Cao |
-| Phí lập Squad | 50.000 Y | 1 lần |
-| Nâng cấp Squad | Tăng theo cấp | Thấp |
+| Phí lập Đội | 50.000 Quan | 1 lần |
+| Nâng cấp Đội | Tăng theo cấp | Thấp |
 | Mở rộng túi/kho | Tăng dần | Thấp |
-| Vòng quay (vé Yul) | 1.000 Y/lượt | Trung |
+| Vòng quay (vé Quan) | 1.000 Quan/lượt | Trung |
 | Chế tạo | Xem [items §9](07-items-and-equipment.md) | Trung |
 
-**Mục tiêu:** tổng Yul bị rút ≥ **85–95%** tổng Yul sinh ra mỗi tuần. Nếu vượt, bật sink sự kiện hoặc giảm drop.
+**Mục tiêu:** tổng Quan bị rút ≥ **85–95%** tổng Quan sinh ra mỗi tuần. Nếu vượt, bật sink sự kiện hoặc giảm drop.
 
 ## 3. Cửa hàng NPC
 
 | NPC | Bán |
 |-----|-----|
 | Bác Theo (NPC041, M006) | Bình HP/MP, Cuộn Dịch Chuyển, trang bị Thường |
-| Charmy (NPC025, M015) | Thức ăn buff |
-| Gordon (NPC027) | Thảo dược, thuốc giải độc |
-| Zora (NPC030) | Bẫy, vật phẩm chiến đấu |
-| Magna (NPC022) | Vũ khí Hỏa tầm thấp |
+| Bà Hai Bánh (NPC025, M015) | Thức ăn buff |
+| Lang Tám (NPC027) | Thảo dược, thuốc giải độc |
+| Chú Thợ Bẫy (NPC030) | Bẫy, vật phẩm chiến đấu |
+| Trưởng Bến Lưu Mãnh (NPC022) | Vũ khí Hỏa tầm thấp |
 | Cửa hàng phe | Trang bị, trang phục (dùng Danh Vọng) |
-| Cửa hàng Đội | Buff Squad, vật phẩm Đội (dùng Điểm Cống Hiến) |
+| Cửa hàng Đội | Buff Đội, vật phẩm Đội (dùng Điểm Cống Hiến) |
 | Cửa hàng Huy hiệu | Trang bị PvP (dùng HQ) |
-| Cửa hàng Ngọc Mana | Tiện ích, thẩm mỹ (xem §6) |
+| Cửa hàng Nén Bạc | Tiện ích, thẩm mỹ (xem §6) |
 
 - Giá mua cố định, **giá bán lại 25%** giá trị.
 - **Mua lại (buy-back)** vật phẩm vừa bán trong 30 phút.
@@ -69,7 +69,7 @@
 ### 4.1 Giao dịch trực tiếp
 
 - Mở cửa sổ giao dịch (cùng map, khoảng cách ≤ 300 px, **Lv ≥ 10**).
-- Mỗi bên đặt tối đa 8 vật phẩm + Yul, hai bên phải **xác nhận hai lần** (xác nhận → khóa → xác nhận lại).
+- Mỗi bên đặt tối đa 8 vật phẩm + Quan, hai bên phải **xác nhận hai lần** (xác nhận → khóa → xác nhận lại).
 - Server thực hiện **một transaction**: nếu bất kỳ bước lỗi, hủy toàn bộ.
 - **Không** giao dịch vật phẩm khóa.
 - Mọi giao dịch ghi log (`trade_logs`) để kiểm tra.
@@ -78,7 +78,7 @@
 
 | Quy tắc | Giá trị |
 |---------|---------|
-| Đơn vị tiền | Chỉ **Yul** |
+| Đơn vị tiền | Chỉ **Quan** |
 | Phí đăng | 1% giá niêm yết (không hoàn) |
 | Phí bán | 5% giá bán |
 | Thời hạn | 48 giờ |
@@ -89,29 +89,29 @@
 | Tìm kiếm | Theo tên, sắp xếp theo giá |
 | Chống thao túng | Giới hạn mua tối đa 100 vật phẩm/giờ; cảnh báo giá bất thường |
 
-## 5. Vòng Quay Sợi Chỉ Định Mệnh (NPC024 Vanessa)
+## 5. Vòng Quay Chữ Vàng (NPC024 Cô Kim Thoa)
 
 | Tham số | Giá trị |
 |---------|---------|
-| Vé quay | 1.000 Y, hoặc **Vé Chỉ Vàng** từ sự kiện/thành tích. **Không** bán bằng Ngọc Mana trực tiếp |
-| Giải thưởng | Yul, Đá Mana, Bình, nguyên liệu, ngọc cấp thấp, trang phục thử |
+| Vé quay | 1.000 Quan, hoặc **Vé Chỉ Vàng** từ sự kiện/thành tích. **Không** bán bằng Nén Bạc trực tiếp |
+| Giải thưởng | Quan, Đồng Luyện, Bình, nguyên liệu, ngọc cấp thấp, trang phục thử |
 | **Tỉ lệ công khai** | Hiển thị đầy đủ trong UI |
 | Pity | 100 lượt đảm bảo 1 giải **Hiếm** |
 | Loại trừ | Không có trang bị Sử Thi trở lên, không có vật phẩm tăng sức mạnh độc quyền |
 
 | Nhóm giải | Xác suất |
 |-----------|----------|
-| Yul (500–5.000) | 45% |
+| Quan (500–5.000) | 45% |
 | Bình, thức ăn | 25% |
 | Nguyên liệu | 18% |
 | Ngọc cấp 1–2 | 8% |
-| Đá Mana Trung/Cao | 3% |
+| Đồng Luyện Trung/Cao | 3% |
 | Trang phục thử (7 ngày) | 0,9% |
 | Giải đặc biệt hàng tháng | 0,1% |
 
-## 6. Ngọc Mana — tiện ích, không phải sức mạnh độc quyền
+## 6. Nén Bạc — tiện ích, không phải sức mạnh độc quyền
 
-### 6.1 Có thể mua bằng Ngọc Mana
+### 6.1 Có thể mua bằng Nén Bạc
 
 | Nhóm | Ví dụ | Chi phí |
 |------|-------|---------|
@@ -123,7 +123,7 @@
 | Tăng tốc | Cuộn EXP ×2 (30 phút) | 20 💎 |
 | Slot | Thêm slot nhân vật, Squire phụ | 100–500 💎 |
 
-### 6.2 Không được bán bằng Ngọc Mana
+### 6.2 Không được bán bằng Nén Bạc
 
 - Trang bị Sử Thi trở lên hoặc **ô khảm** cao.
 - Vũ khí Mùa Giải.
@@ -132,11 +132,11 @@
 
 Mục tiêu: người **không nạp** vẫn đạt Lv100 và trang bị cao nhất với cùng sự kiện/nhiệm vụ, tốn thời gian hơn khoảng **20–30%**.
 
-## 7. Nạp Ngọc Mana
+## 7. Nạp Nén Bạc
 
 ### 7.1 Gói nạp (mẫu, có thể điều chỉnh theo thị trường)
 
-| Gói | Giá (VND) | Ngọc Mana cơ bản | Thưởng nạp lần đầu |
+| Gói | Giá (VND) | Nén Bạc cơ bản | Thưởng nạp lần đầu |
 |-----|-----------|------------------|---------------------|
 | Nhỏ | 20.000 | 200 | ×2 (lần đầu mỗi gói) |
 | Vừa | 50.000 | 520 | ×2 |
@@ -153,9 +153,9 @@ Mục tiêu: người **không nạp** vẫn đạt Lv100 và trang bị cao nh�
 
 | Sản phẩm | Giá | Nội dung |
 |----------|-----|----------|
-| **Giấy Phép Hiệp Sĩ** (Thẻ Tháng) | 50.000 VND / 30 ngày | 300 💎 ngay + 20 💎/ngày × 30 ngày + 1 giờ Auto/ngày |
-| **Hành Trình Hiệp Sĩ** (Battle Pass mùa) | 100.000 VND / mùa | Thưởng thẩm mỹ, vật phẩm tiện ích; phiên bản miễn phí vẫn có thưởng |
-| **Cấp Quý Tộc** (VIP) | Theo tổng nạp tích lũy | 10 bậc, quyền lợi tiện ích (ô túi, giờ Auto, quà ngày), **không** thêm chỉ số chiến đấu |
+| **Giấy Phép Pháp Vệ** (Thẻ Tháng) | 50.000 VND / 30 ngày | 300 💎 ngay + 20 💎/ngày × 30 ngày + 1 giờ Auto/ngày |
+| **Hành Trình Pháp Vệ** (Battle Pass mùa) | 100.000 VND / mùa | Thưởng thẩm mỹ, vật phẩm tiện ích; phiên bản miễn phí vẫn có thưởng |
+| **Cấp Thế Gia** (VIP) | Theo tổng nạp tích lũy | 10 bậc, quyền lợi tiện ích (ô túi, giờ Auto, quà ngày), **không** thêm chỉ số chiến đấu |
 
 ### 7.4 Giới hạn bảo vệ người chơi
 
@@ -171,21 +171,21 @@ Mục tiêu: người **không nạp** vẫn đạt Lv100 và trang bị cao nh�
 
 | Chỉ số | Cách đo | Ngưỡng cảnh báo |
 |--------|---------|-----------------|
-| Tổng Yul lưu hành | Tổng `characters.yul` + Chợ | Tăng > 8%/tuần |
+| Tổng Quan lưu hành | Tổng `characters.soft_currency` + Chợ | Tăng > 8%/tuần |
 | Tỉ lệ faucet/sink | Log `currency_ledger` | Sink < 85% faucet |
-| Giá trung bình Đá Mana | Giá Chợ | Tăng > 30%/tuần |
-| Hệ số Gini | Phân bố Yul | > 0,85 |
-| Số giao dịch bất thường | Cùng cặp người chơi, giá chênh | Chuyển > 10 triệu Y/ngày |
+| Giá trung bình Đồng Luyện | Giá Chợ | Tăng > 30%/tuần |
+| Hệ số Gini | Phân bố Quan | > 0,85 |
+| Số giao dịch bất thường | Cùng cặp người chơi, giá chênh | Chuyển > 10 triệu Quan/ngày |
 | Doanh thu / ARPU / ARPPU | Dashboard nạp | Theo KPI |
 
-**Công cụ điều chỉnh** (qua cấu hình, không cần deploy): tỉ lệ rơi Yul và đồ, giá NPC, phí Chợ, sự kiện sink (ví dụ *Cuộc Đấu Giá Đặc Biệt*), tạm dừng drop vật phẩm gây lạm phát.
+**Công cụ điều chỉnh** (qua cấu hình, không cần deploy): tỉ lệ rơi Quan và đồ, giá NPC, phí Chợ, sự kiện sink (ví dụ *Cuộc Đấu Giá Đặc Biệt*), tạm dừng drop vật phẩm gây lạm phát.
 
 ## 9. Chính sách chống gian lận kinh tế
 
 | Rủi ro | Biện pháp |
 |--------|-----------|
 | Nhân bản vật phẩm | Mọi chuyển vật phẩm trong **một transaction DB**, khóa dòng (`SELECT … FOR UPDATE`), ràng buộc duy nhất |
-| Bán tiền thật (RMT) | Giới hạn giao dịch người mới, theo dõi chuyển Yul bất thường, khóa tài khoản |
+| Bán tiền thật (RMT) | Giới hạn giao dịch người mới, theo dõi chuyển Quan bất thường, khóa tài khoản |
 | Bot farm | Phát hiện hành vi, captcha, giới hạn Auto Hunt, xem [security](../architecture/security-and-anticheat.md) |
 | Lợi dụng lỗi | Cơ chế **rollback** tài khoản/nhân vật theo log (xem [admin guide](../guides/admin-gm-guide.md)) |
 | Gian lận thanh toán | Webhook chữ ký, đối soát hằng ngày, khóa tài khoản chargeback |

@@ -138,7 +138,7 @@ flowchart LR
 |-----------|----------|
 | Tổng quan realm | CCU, DAU, zone, tick, ping, lỗi |
 | Hiệu năng game server | Tick theo node, đồ thị zone nóng |
-| Kinh tế | Faucet/sink, giá chợ, tổng Yul |
+| Kinh tế | Faucet/sink, giá chợ, tổng Quan |
 | Doanh thu | Nạp, ARPU, ARPPU, chuyển đổi |
 | Bảo mật | Nghi ngờ, captcha, khóa, báo cáo |
 | Chi phí | Tài nguyên theo dịch vụ |

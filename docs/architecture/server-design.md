@@ -90,7 +90,7 @@ classDiagram
 | Khái niệm | Mô tả |
 |-----------|-------|
 | **Zone** | Bản sao công khai của một map (khu 1…n); người chơi vào khu còn chỗ |
-| **Instance** | Bản sao riêng (hầm ngục, Squad Hall, Raid); ID duy nhất, có hạn dùng |
+| **Instance** | Bản sao riêng (hầm ngục, Sảnh Đội, Raid); ID duy nhất, có hạn dùng |
 | **Chuyển khu** | Chuyển người chơi sang Zone khác của cùng map, phải ngoài giao tranh |
 | **Chuyển map** | Qua portal: gỡ khỏi zone cũ, thêm vào zone mới, gửi `S_MAP_CHANGE` |
 | **Tự cân bằng** | Khi một zone > 80% sức chứa, mở zone mới; khi < 20% và có zone thưa, gộp sau 10 phút |
@@ -128,7 +128,7 @@ Vi phạm đầu tiên: **kéo lại vị trí**. Lặp lại: ghi `suspicion` v
 - Lưới ô **512 × 512 px** trên mỗi zone.
 - Mỗi người chơi **quan sát 3×3 ô** quanh mình (tối đa ~1.536 × 1.536 px), chỉ gửi thực thể trong vùng này.
 - Khi thực thể đổi ô: gửi `S_ENTITY_SPAWN`/`S_ENTITY_DESPAWN` cho người quan sát liên quan.
-- Giới hạn: tối đa **40 thực thể** người chơi hiển thị (cài đặt người dùng), ưu tiên đồng đội, Squad, bạn bè.
+- Giới hạn: tối đa **40 thực thể** người chơi hiển thị (cài đặt người dùng), ưu tiên đồng đội, Đội, bạn bè.
 
 ### 5.1 Snapshot delta
 
@@ -144,7 +144,7 @@ Vi phạm đầu tiên: **kéo lại vị trí**. Lặp lại: ghi `suspicion` v
 validate(player, skillId, target, seq):
   - player.alive && !stunned/silenced
   - skill đã học, cấp hợp lệ, GCD đã qua, cooldown skill đã qua
-  - đủ MP (hoặc Ý Chí / Spirit Gauge)
+  - đủ MP (hoặc Ý Chí / Thanh Nhập Linh)
   - target hợp lệ (tồn tại, cùng zone, phe phù hợp, PK cho phép)
   - khoảng cách <= tầm + dung sai (50px)
   - góc/hướng hợp lệ nếu kỹ năng định hướng
@@ -180,7 +180,7 @@ Thao tác **đổi tài sản có giá trị** đi qua **PostgreSQL transaction*
 | Giao dịch người chơi | Khóa cả hai nhân vật theo thứ tự `id` tăng dần (tránh deadlock) |
 | Cường hóa | `item_instances.id FOR UPDATE` + `characters.id FOR UPDATE` |
 | Ký gửi/mua chợ | Dòng `market_listings` + hai nhân vật |
-| Nạp Ngọc Mana | `accounts.id FOR UPDATE`, khóa idempotent theo `payment_orders` |
+| Nạp Nén Bạc | `accounts.id FOR UPDATE`, khóa idempotent theo `payment_orders` |
 
 Quy tắc: **ghi DB trước, rồi cập nhật bộ nhớ và gửi client**. Nếu transaction lỗi: hoàn tác bộ nhớ, trả mã lỗi.
 
@@ -228,8 +228,8 @@ Domain code **không** gọi trực tiếp lẫn nhau; chỉ qua bus (giảm ph�
 | Reset hằng tuần | T2 05:00 | Raid, nhiệm vụ tuần |
 | Boss thế giới | Theo lịch | Spawn, thông báo trước 5 phút |
 | Chiến Trường | 19:00, 21:30 | Mở hàng đợi, tạo instance |
-| Squad War | T7 20:00 | Ghép cặp, tạo instance |
-| Săn Linh Thạch Sao | T7 21:00 | Phân phối 7 viên |
+| Chiến Đội | T7 20:00 | Ghép cặp, tạo instance |
+| Săn Trang Rời | T7 21:00 | Phân phối 7 viên |
 | Hết hạn chợ | Mỗi 1 phút | Trả hàng và thư |
 | Snapshot dữ liệu | Hằng ngày | Sao lưu logic, mô hình kinh tế |
 

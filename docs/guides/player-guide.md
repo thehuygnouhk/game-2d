@@ -3,11 +3,11 @@
 > **Dành cho:** người mới và người chơi quay lại · **Phiên bản tài liệu:** Draft v0.1
 > Các con số trong hướng dẫn là giá trị thiết kế khởi điểm, có thể thay đổi qua các bản cập nhật. Xem thêm [Câu hỏi thường gặp](#13-câu-hỏi-thường-gặp).
 
-## 1. Chào mừng đến với Black Clover Online: Ma Đạo Thư
+## 1. Chào mừng đến với Huyền Thư Ký
 
-Bạn là một đứa trẻ lớn lên ở **Nhà Thờ Làng Hage**, cùng **Asta** và **Yuno**. Ngày bạn nhận **Ma Đạo Thư**, cuộc hành trình trở thành **Hiệp Sĩ Phép Thuật** bắt đầu. Bạn sẽ đánh quái, làm nhiệm vụ, lập **Đội Hiệp Sĩ** cùng bạn bè, săn boss và đi tới **Ngai Vua Phép Thuật**.
+Bạn lớn lên ở **Làng Suối Mơ**, học chữ và học thuốc ở nhà học của **Thầy Bạch Vân**, cùng hai người bạn **Lam Nhi** và **Khôi**. Ngày bạn nhận **Huyền Thư** cũng là ngày thầy biến mất. Để tìm thầy, bạn lên Thượng Đô, vào **Pháp Vệ Đoàn**, đánh quái, làm nhiệm vụ, lập **Đội** cùng bạn bè, săn boss và lần theo dấu **Mười Hai Quyển Gốc**.
 
-Nếu bạn từng chơi **Ninja School** hay **Ngọc Rồng Online**, bạn sẽ thấy rất quen: chạy trên bản đồ 2D, đánh quái, nhận nhiệm vụ từ NPC, nâng cấp trang bị, nhiều **Khu** cho mỗi bản đồ.
+Bạn sẽ chạy nhảy trên bản đồ 2D, đánh quái, nhận nhiệm vụ từ NPC, nâng cấp trang bị, và mỗi bản đồ có nhiều **Khu** để không quá đông.
 
 ## 2. Bắt đầu
 
@@ -35,9 +35,9 @@ Mỗi máy chủ có tối đa **3 nhân vật**. Bạn chọn:
 
 | Xuất thân | Điểm mạnh | Hợp với |
 |-----------|-----------|---------|
-| **Dân Làng Hage** | Nhiều máu hơn; **Ý Chí Bất Khuất**: khi HP < 30% tăng ATK và DEF tạm thời | Người thích gánh chịu, chơi bền bỉ (hệ Thổ, Hỏa) |
-| **Quý Tộc** | Nhiều MP, sát thương kỹ năng cao hơn, hồi MP nhanh | Sát thương phép (Hỏa, Thủy, Ám, Lôi) |
-| **Hậu Duệ Tinh Linh** | Tự hồi máu, hồi máu nhận/gây ra cao hơn | Bền bỉ (Mộc), tốc độ (Phong) |
+| **Dân Làng** | Nhiều máu hơn; **Không Lùi Bước**: khi HP < 30% tăng ATK và DEF tạm thời | Người thích gánh chịu, chơi bền bỉ (hệ Thổ, Hỏa) |
+| **Thế Gia** | Nhiều MP, sát thương kỹ năng cao hơn, hồi MP nhanh | Sát thương phép (Hỏa, Thủy, Ám, Lôi) |
+| **Hậu Duệ Tộc Cổ Thư** | Tự hồi máu, hồi máu nhận/gây ra cao hơn | Bền bỉ (Mộc), tốc độ (Phong) |
 
 Không có lựa chọn "tệ nhất". Đây chỉ là sự khác biệt nhỏ ở chỉ số.
 
@@ -52,10 +52,10 @@ Không có lựa chọn "tệ nhất". Đây chỉ là sự khác biệt nhỏ �
 | **S / ↓** | Xuống nền mỏng |
 | **J** hoặc chuột trái | Đánh thường |
 | **1–6** | Kỹ năng |
-| **Q / E / R** | Bình HP / Bình MP / Lá Thảo Dược |
+| **Q / E / R** | Bình HP / Bình MP / Lá Thuốc Cổ |
 | **F** | Nói chuyện, nhặt đồ, đi qua cổng |
 | **Tab** | Chọn quái gần nhất |
-| **I, C, K, L, M, P, O** | Túi đồ, Nhân vật, Kỹ năng, Nhiệm vụ, Bản đồ, Squad, Bạn bè |
+| **I, C, K, L, M, P, O** | Túi đồ, Nhân vật, Kỹ năng, Nhiệm vụ, Bản đồ, Đội, Bạn bè |
 | **Enter** | Mở chat |
 
 ### 3.2 Điện thoại
@@ -78,19 +78,19 @@ Không có lựa chọn "tệ nhất". Đây chỉ là sự khác biệt nhỏ �
 
 ## 5. Mười phút đầu tiên (Chương 1)
 
-1. Nói chuyện **Sơ Lily** trong nhà thờ, nhận nhiệm vụ đầu.
-2. Ra **Đồng Cỏ Hage**, đánh **Slime Cỏ**, nhặt vật phẩm.
+1. Nói chuyện **Thầy Bạch Vân** ở nhà học, nhận nhiệm vụ đầu.
+2. Ra **Đồng Hoa Suối Mơ**, đánh **Nấm Lùn**, nhặt vật phẩm.
 3. Dùng **Bình HP** khi máu xuống thấp.
-4. Làm nhiệm vụ Thỏ Mana, Thảo Dược. Bạn lên **Lv5** rất nhanh.
-5. Gặp **Asta**, học **Tụ Mana Chấn**.
-6. Tiếp tục tới Rừng Nhỏ, Hang Dơi, đánh **Slime Vua** (Lv9).
-7. Đêm trước ngày lễ, bạn sẵn sàng cho **Lễ Nhận Ma Đạo Thư** ở **Lv10**.
+4. Làm nhiệm vụ Thỏ Đốm, Thảo Dược. Bạn lên **Lv5** rất nhanh.
+5. Đấu tập với **Khôi**, học **Tụ Mana Chấn**.
+6. Tiếp tục tới **Rừng Mơ Non**, **Hang Giếng Cạn**, đánh **Trang Lạc** (Lv9).
+7. Đêm trước ngày lễ, bạn sẵn sàng cho **Lễ Khai Thư** ở **Lv10**.
 
 **Mẹo:** Luôn đọc mục tiêu nhiệm vụ. Nhấn **Đi tới** để không bị lạc.
 
-## 6. Lễ Nhận Ma Đạo Thư — chọn hệ phép (Lv10)
+## 6. Lễ Khai Thư — chọn hệ phép (Lv10)
 
-Bạn chọn **một** trong bảy hệ phép. Bạn được **đổi miễn phí trong 24 giờ đầu**, sau đó đổi tốn **100 Ngọc Mana**.
+Bạn chọn **một** trong bảy hệ phép. Bạn được **đổi miễn phí trong 24 giờ đầu**, sau đó đổi tốn **100 Nén Bạc**.
 
 | Hệ | Vai trò | Hợp với bạn nếu… |
 |----|---------|------------------|
@@ -102,7 +102,7 @@ Bạn chọn **một** trong bảy hệ phép. Bạn được **đổi miễn ph
 | **Mộc** | Độc và tự hồi phục | Thích chiến đấu bền bỉ một mình; vào nhóm thì hồi và che chắn thêm cho đồng đội |
 | **Ám** | Bất lợi hóa, hút máu | Thích chiến thuật, xử lý boss |
 
-**Hệ ẩn Phản Ma:** mở ở cuối trò chơi (Lv80+). Không dùng MP, chuyên chém tan phép thuật.
+**Hệ ẩn Phong Ấn Xạ Thủ:** mở ở cuối trò chơi (Lv80+). Xạ thủ tầm xa, không dùng MP, bắn **Ấn Tiễn** xuyên giáp và gỡ hiệu ứng có lợi của đối thủ.
 
 ### 6.1 Khắc hệ
 
@@ -129,16 +129,16 @@ Mỗi lần lên cấp bạn nhận **5 điểm**. Mở **Nhân vật (C)** đ�
 > Sai điểm không phải thảm họa: **Bình Rửa Tiềm Năng** cho phép cộng lại.
 
 ### 7.2 Kỹ năng
-Từ Lv10 bạn nhận **1 Điểm Kỹ Năng/cấp**. Nâng kỹ năng bằng **Điểm Kỹ Năng + Yul**. Ưu tiên kỹ năng bạn **dùng nhiều nhất**. Không đủ điểm nâng tất cả, nên chọn kỹ năng cốt lõi.
+Từ Lv10 bạn nhận **1 Điểm Kỹ Năng/cấp**. Nâng kỹ năng bằng **Điểm Kỹ Năng + Quan**. Ưu tiên kỹ năng bạn **dùng nhiều nhất**. Không đủ điểm nâng tất cả, nên chọn kỹ năng cốt lõi.
 
 ### 7.3 Trang bị
-- Bạn có **10 ô trang bị** (vũ khí, Ma Đạo Thư, mũ, áo, quần, găng, giày, áo choàng, bùa, nhẫn).
+- Bạn có **10 ô trang bị** (vũ khí, Huyền Thư, mũ, áo, quần, găng, giày, áo choàng, bùa, nhẫn).
 - Màu viền cho biết độ hiếm: Trắng < Xanh lá < Xanh dương < Tím < Cam < Đỏ.
 - Mặc đủ **bộ (set)** để nhận thêm bonus (2/4/6 mảnh).
 - Lực Chiến cao hơn khi đổi trang bị nghĩa là đồ tốt hơn.
 
 ### 7.4 Cường hóa
-Thợ Rèn Gren (Khu Chợ Kinh Đô) nâng trang bị từ **+1 đến +16**.
+Thợ Rèn Tư (Chợ Thượng Đô) nâng trang bị từ **+1 đến +16**.
 - **+1…+3:** chắc chắn thành công.
 - **+4…+8:** có thể thất bại nhưng **không mất gì ngoài tài nguyên**.
 - **+9 trở lên:** thất bại giảm **1 cấp**; dùng **Bùa Bảo Hộ** để an toàn.
@@ -146,59 +146,59 @@ Thợ Rèn Gren (Khu Chợ Kinh Đô) nâng trang bị từ **+1 đến +16**.
 - Trang bị **không bao giờ bị phá hủy**.
 
 ### 7.5 Khảm ngọc
-Khảm **Linh Thạch Ngọc** vào khe để thêm sát thương hệ hoặc chỉ số. Ghép 3 ngọc cùng cấp để lên ngọc cao hơn.
+Khảm **Hạt Nguyên** vào khe để thêm sát thương hệ hoặc chỉ số. Ghép 3 ngọc cùng cấp để lên ngọc cao hơn.
 
-### 7.6 Ma Đạo Thư
-Mặc định **3 lá**. Hoàn thành chuỗi **Lá Thứ Tư** ở Lv50 để lên **4 lá** (mạnh hơn, có thêm khe ngọc). **5 lá** dành cho hệ Phản Ma.
+### 7.6 Huyền Thư
+Mặc định là **Sơ Bản**. Hoàn thành chuỗi **Tu Chỉnh** ở Lv50 để lên **Tu Bản** (mạnh hơn, có thêm khe ngọc). **Định Bản** dành cho hệ Phong Ấn Xạ Thủ.
 
 ## 8. Việc nên làm mỗi ngày
 
-- [ ] **Điểm danh Hiệp Sĩ** (nhận quà)
-- [ ] Nhận và làm **10 nhiệm vụ ngày** tại Bảng Nhiệm Vụ (Trụ Sở Hiệp Sĩ)
-- [ ] Làm **nhiệm vụ Squad**
+- [ ] **Điểm danh Pháp Vệ** (nhận quà)
+- [ ] Nhận và làm **10 nhiệm vụ ngày** tại Bảng Nhiệm Vụ (Trụ Sở Pháp Vệ)
+- [ ] Làm **nhiệm vụ Đội**
 - [ ] Tham gia **boss thế giới** (12:00, 20:00…)
 - [ ] Làm **hầm ngục** với đồng đội (có giới hạn lượt/ngày)
-- [ ] **Chiến Trường Vương Quốc** (19:00, 21:30; Lv50+)
+- [ ] **Chiến Trường Lục–Xích** (19:00, 21:30; Lv50+)
 - [ ] Cường hóa, dọn túi đồ
 
 ### Hằng tuần
-- **Raid**, **Squad War (T7 20:00)**, **Săn Linh Thạch Sao (T7 21:00)**, nhiệm vụ tuần.
+- **Raid**, **Chiến Đội (T7 20:00)**, **Săn Trang Rời (T7 21:00)**, nhiệm vụ tuần.
 
 ## 9. Chơi cùng bạn bè
 
 ### 9.1 Nhóm (tối đa 5)
 Mời bạn vào nhóm: nhận **thêm EXP** (+10% mỗi người). Chia đồ: **Tự do** hoặc **Luân phiên**.
 
-### 9.2 Đội Hiệp Sĩ (Squad)
-Từ **Lv20** bạn có thể **gia nhập** hoặc **lập** Squad (50.000 Yul). Lợi ích: chat riêng, buff, nhiệm vụ, kho Đội, **Squad War**. Mỗi Squad có **Đội Trưởng, Đội Phó**, Hiệp Sĩ Tinh Anh và thành viên.
+### 9.2 Đội (bang hội)
+Từ **Lv20** bạn có thể **gia nhập** hoặc **lập** Đội (50.000 Quan). Lợi ích: chat riêng, buff, nhiệm vụ, kho Đội, **Chiến Đội**. Mỗi Đội có **Đội Trưởng, Đội Phó**, Pháp Vệ Tinh Anh và thành viên.
 
 ### 9.3 Bạn bè, thư
-Kết bạn (O), nhận quà. **Thư (Grey)** lưu 30 ngày; quà khi túi đầy sẽ gửi về thư.
+Kết bạn (O), nhận quà. **Thư (Bác Phu Trạm)** lưu 30 ngày; quà khi túi đầy sẽ gửi về thư.
 
 ## 10. PvP và PK
 
 - Mặc định bạn ở trạng thái **Hòa Bình**: **không ai tấn công bạn** và bạn cũng không tấn công được ai.
 - Bật **Cờ PK** (chỉ ở map cấp ≥ 30) để đánh người cũng bật cờ.
 - **Không nên** giết người yếu hơn nhiều cấp hoặc giết một người nhiều lần: bạn sẽ nhận **Điểm Tội Lỗi** (tên đỏ, bị chặn vào thành, có thể bị giam).
-- **Đấu Trường Hiệp Sĩ (1v1)** và **Chiến Trường Vương Quốc** là nơi PvP an toàn, có thưởng.
+- **Đấu Trường Pháp Vệ (1v1)** và **Chiến Trường Lục–Xích** là nơi PvP an toàn, có thưởng.
 - Sát thương PvP được giảm **40%** để trận đấu công bằng.
 
 ## 11. Tiền và giao dịch
 
 | Tiền | Công dụng | Cách có |
 |------|-----------|---------|
-| **Yul** | Mua đồ, cường hóa, dịch chuyển | Đánh quái, nhiệm vụ, bán đồ |
-| **Ngọc Mana** | Tiện ích: mở rộng túi, hồi sinh, đổi hệ, trang phục | Nạp, sự kiện, thành tích |
-| **Điểm Cống Hiến** | Cửa hàng Squad | Hoạt động Squad |
+| **Quan** | Mua đồ, cường hóa, dịch chuyển | Đánh quái, nhiệm vụ, bán đồ |
+| **Nén Bạc** | Tiện ích: mở rộng túi, hồi sinh, đổi hệ, trang phục | Nạp, sự kiện, thành tích |
+| **Điểm Cống Hiến** | Cửa hàng Đội | Hoạt động Đội |
 
 - **Giao dịch trực tiếp**: mở với người chơi ở gần, hai bên **xác nhận hai lần**.
-- **Chợ Ký Gửi** (Lv20+): đăng bán, mua bằng **Yul**. Phí đăng 1%, phí bán 5%.
-- **Ngọc Mana không giao dịch được** giữa người chơi.
+- **Chợ Ký Gửi** (Lv20+): đăng bán, mua bằng **Quan**. Phí đăng 1%, phí bán 5%.
+- **Nén Bạc không giao dịch được** giữa người chơi.
 
 ### Cảnh giác lừa đảo
 - **Không bao giờ** đưa mật khẩu, mã OTP cho bất kỳ ai, kể cả "GM".
-- GM **không** yêu cầu bạn chuyển Yul/vật phẩm.
-- **Không** mua bán Yul/Ngọc Mana/tài khoản bằng tiền thật ngoài game: bạn sẽ bị khóa và mất tài sản.
+- GM **không** yêu cầu bạn chuyển Quan/vật phẩm.
+- **Không** mua bán Quan/Nén Bạc/tài khoản bằng tiền thật ngoài game: bạn sẽ bị khóa và mất tài sản.
 - Chỉ nạp qua **kênh chính thức trong game**.
 - Kiểm tra kỹ cửa sổ giao dịch **trước khi xác nhận lần hai**.
 
@@ -207,7 +207,7 @@ Kết bạn (O), nhận quà. **Thư (Grey)** lưu 30 ngày; quà khi túi đầ
 | Tình huống | Gợi ý |
 |-----------|-------|
 | Chết quá nhiều | Mang nhiều **Bình HP**, mặc đúng bộ, chú ý hệ khắc |
-| Túi đầy | Dùng **Bán nhanh** vật phẩm rác, cất vào **Kho** (Secre) |
+| Túi đầy | Dùng **Bán nhanh** vật phẩm rác, cất vào **Kho** (Bà Thủ Kho) |
 | Không thấy bạn bè | Bạn ở **Khu** khác: đổi khu bằng menu Khu |
 | Giật lag | Giảm số người hiển thị, chọn đồ họa Thấp, bật tiết kiệm pin |
 | Bị kẹt nhân vật | Dùng **Cuộn Dịch Chuyển** hoặc liên hệ hỗ trợ |
@@ -223,9 +223,9 @@ Kết bạn (O), nhận quà. **Thư (Grey)** lưu 30 ngày; quà khi túi đầ
 
 **Tôi có mất EXP khi chết không?** Có, mất **2%** EXP cấp hiện tại khi chết do quái ở khu vực thường, **không tụt cấp**. Hầm ngục và Chiến Trường không mất.
 
-**Có thể đổi hệ phép không?** Có. Miễn phí trong 24 giờ đầu, sau đó 100 Ngọc Mana, cách nhau 30 ngày.
+**Có thể đổi hệ phép không?** Có. Miễn phí trong 24 giờ đầu, sau đó 100 Nén Bạc, cách nhau 30 ngày.
 
-**Có thể chơi mà không nạp không?** Có. Ngọc Mana chủ yếu cho tiện ích và thẩm mỹ. Trang bị mạnh nhất kiếm được bằng hoạt động trong game.
+**Có thể chơi mà không nạp không?** Có. Nén Bạc chủ yếu cho tiện ích và thẩm mỹ. Trang bị mạnh nhất kiếm được bằng hoạt động trong game.
 
 **Auto Hunt có tính phí không?** Mở ở Lv20, **3 giờ/ngày** miễn phí, hiệu quả 70% so với tự đánh, không rơi trang bị Sử Thi. Thêm giờ qua **Thẻ Auto**.
 

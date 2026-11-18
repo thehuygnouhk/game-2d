@@ -30,7 +30,7 @@
 | Refresh token | Ngẫu nhiên, **băm** khi lưu, quay vòng mỗi lần dùng, hủy được |
 | Ticket vào game | Ngẫu nhiên 128 bit, **30 giây**, **dùng một lần**, gắn `accountId + characterId + IP băm` |
 | Khóa tài khoản | 5 lần sai/10 phút → chờ tăng dần; cảnh báo email khi đăng nhập thiết bị lạ |
-| 2FA | TOTP tùy chọn; **bắt buộc** cho tài khoản có số dư Ngọc Mana lớn (tùy chính sách) |
+| 2FA | TOTP tùy chọn; **bắt buộc** cho tài khoản có số dư Nén Bạc lớn (tùy chính sách) |
 | Một phiên | Đăng nhập mới đá phiên cũ |
 | Đặt lại mật khẩu | Link ngẫu nhiên, 30 phút, một lần; thu hồi mọi refresh token |
 | Cookie | `HttpOnly`, `Secure`, `SameSite=Lax` (REST web) |
@@ -77,7 +77,7 @@
 | **Dupe qua race condition** | Hàng đợi thao tác theo nhân vật + `FOR UPDATE` + `idemKey` |
 | **Lặp lệnh mua/bán** | `idemKey` + sổ cái chỉ mục duy nhất |
 | **Rút ngắn cường hóa** | RNG ở server, `version` khóa lạc quan |
-| **RMT** (bán tiền thật) | Giới hạn giao dịch cho tài khoản mới, theo dõi chuyển Yul lớn, cảnh báo cặp giao dịch bất thường, Ngọc Mana không giao dịch được |
+| **RMT** (bán tiền thật) | Giới hạn giao dịch cho tài khoản mới, theo dõi chuyển Quan lớn, cảnh báo cặp giao dịch bất thường, Nén Bạc không giao dịch được |
 | **Thao túng chợ** | Giới hạn mua số lượng lớn, biên độ giá, cảnh báo giá bất thường |
 
 ### 5.4 Điểm nghi ngờ (suspicion score)
@@ -111,7 +111,7 @@ Mỗi người chơi có điểm nghi ngờ 0–100 trong bộ nhớ và Redis:
 | Thời gian phản ứng | Phản ứng với sự kiện < 100 ms nhất quán |
 
 **Biện pháp:**
-- **Captcha** (kiểu "kéo thả Ma Đạo Thư vào đúng hệ", dễ với người, khó với bot) khi nghi ngờ hoặc khi Auto Hunt chạm mốc giờ.
+- **Captcha** (kiểu "kéo thả Huyền Thư vào đúng hệ", dễ với người, khó với bot) khi nghi ngờ hoặc khi Auto Hunt chạm mốc giờ.
 - Giới hạn **Auto Hunt** chính thức (3 giờ/ngày) để giảm nhu cầu bot.
 - **Honeypot**: quái/vật phẩm không nhìn thấy với người chơi, chỉ bot sẽ tương tác.
 - Quét hàng loạt log định kỳ (Worker) → danh sách tài khoản nghi ngờ gửi GM.
@@ -123,7 +123,7 @@ Mỗi người chơi có điểm nghi ngờ 0–100 trong bộ nhớ và Redis:
 | Webhook giả mạo | Xác minh **chữ ký HMAC**; chỉ chấp nhận từ IP/phạm vi của nhà cung cấp |
 | Gửi lặp webhook | `payment_events (provider, event_id)` duy nhất; xử lý idempotent |
 | Sai số tiền | So sánh `amount` webhook với `payment_orders.amount_vnd` |
-| Chargeback | Trạng thái `CHARGEBACK`, thu hồi Ngọc Mana (có thể âm số dư → khóa), cảnh báo |
+| Chargeback | Trạng thái `CHARGEBACK`, thu hồi Nén Bạc (có thể âm số dư → khóa), cảnh báo |
 | Tài khoản bị chiếm để nạp | Cảnh báo email, hạn mức, 2FA |
 | Dữ liệu thẻ | **Không lưu** số thẻ/CVV; dùng cổng thanh toán hosted |
 | Đối soát | Hằng ngày so khớp báo cáo nhà cung cấp với `payment_orders` |
@@ -134,7 +134,7 @@ Mỗi người chơi có điểm nghi ngờ 0–100 trong bộ nhớ và Redis:
 |----------|----------|
 | Vai trò | `SUPPORT` (đọc, mute), `GM` (khóa, tặng nhỏ), `ADMIN` (cấu hình, sự kiện), `SUPERADMIN` (mọi quyền, nhân sự) |
 | Xác thực | Tên đăng nhập + mật khẩu + **MFA bắt buộc**, truy cập qua VPN/allowlist IP |
-| Hành động nhạy cảm | Cần **hai người duyệt** (vd tặng Ngọc Mana > 1.000, rollback) |
+| Hành động nhạy cảm | Cần **hai người duyệt** (vd tặng Nén Bạc > 1.000, rollback) |
 | Audit | Mọi hành động ghi `gm_audit_logs` (bất biến, không xóa) |
 | Tách dữ liệu | GM chỉ thấy dữ liệu cá nhân tối thiểu cần thiết |
 | Phiên | Hết hạn 30 phút không hoạt động |

@@ -5,7 +5,7 @@
 ## 1. Phong cách tổng thể
 
 - **Chibi pixel art** (tỉ lệ ~3 đầu), tông màu rực rỡ nhưng có chiều sâu, gợi nhớ Ninja School/NRO.
-- Giữ **dấu ấn Black Clover**: áo choàng Hiệp Sĩ, biểu tượng Đội, Ma Đạo Thư lơ lửng, hiệu ứng ma lực nhiều màu.
+- **Dấu ấn riêng của HTK**: áo choàng Pháp Vệ có ấn của Viện, Huyền Thư lơ lửng với trang sách bay quanh khi dùng phép, mực và giấy làm hiệu ứng (đặc biệt Trang Trắng). **Không** vẽ theo dáng nhân vật, trang phục hay biểu tượng của tác phẩm khác.
 - **Nghệ thuật gốc.** Không dùng ảnh, sprite hay âm thanh trích từ anime/manga. Mọi tài sản do đội tạo hoặc có giấy phép rõ ràng.
 
 ## 2. Bảng màu theo hệ
@@ -20,7 +20,7 @@
 | Mộc | Xanh lá | `#5CB85C` | `#C7F9CC` |
 | Ám | Tím đậm | `#5B3E96` | `#1B1233` |
 | Quang (quái) | Vàng trắng | `#FFF3B0` | `#FFFFFF` |
-| Phản Ma | Đen/đỏ | `#1A1A1A` | `#C1121F` |
+| Phong Ấn Xạ Thủ | Đen/đỏ | `#1A1A1A` | `#C1121F` |
 
 ### 2.1 Màu theo độ hiếm
 
@@ -73,8 +73,8 @@ Thứ tự lớp (từ sau ra trước):
 8. Helm
 9. Gloves
 10. Weapon
-11. Grimoire (lơ lửng, vòng lặp riêng)
-12. Aura / hiệu ứng Spirit Dive
+11. Huyền Thư (lơ lửng, vòng lặp riêng)
+12. Aura / hiệu ứng Nhập Linh
 
 Mỗi lớp có tập hoạt ảnh chung **bộ xương (rig)** với mốc neo (anchor) cho từng khung để căn chỉnh. Mỗi trang bị chỉ cần vẽ **một lần theo khung chuẩn**.
 
@@ -103,21 +103,21 @@ Mỗi lớp có tập hoạt ảnh chung **bộ xương (rig)** với mốc neo 
 
 | Vùng | Mood | Màu |
 |------|------|-----|
-| R01 Làng Hage | Ấm áp, nông thôn | Vàng nâu, xanh lá |
-| R02 Kinh Đô | Hoàng gia, đông đúc | Vàng, xanh hoàng gia |
+| R01 Làng Suối Mơ | Ấm áp, nông thôn | Vàng nâu, xanh lá |
+| R02 Thượng Đô | Hoàng gia, đông đúc | Vàng, xanh hoàng gia |
 | R03 Đồng Bằng | Mở, gió | Xanh lá, trời xanh |
-| R04 Rừng Phù Thủy | Bí ẩn, sương | Xanh lục tối, tím |
-| R05 Thủy Cung | Dưới nước | Xanh dương, xanh ngọc |
-| R06 Biên Giới Diamond | Lạnh, kết tinh | Trắng, xanh nhạt |
-| R07 Rừng Tinh Linh | Thần tiên | Xanh lá sáng, vàng ánh |
-| R08 Spade | Hoang tàn, đen | Xám, đỏ sẫm |
-| R09 Cõi Quỷ | Địa ngục | Đỏ, đen, tím |
+| R04 Duyên Hải | Biển, dưới nước, kho sách chìm | Xanh dương, xanh ngọc |
+| R05 Rừng Thì Thầm | Bí ẩn, cây thì thầm chữ | Xanh lục tối, tím |
+| R06 Biên Giới Xích Sa | Nóng, cát đỏ, căng thẳng | Đỏ cam, vàng cát |
+| R07 Di Tích Tộc Cổ Thư | Cổ kính, trang nghiêm | Nâu giấy cũ, vàng ánh |
+| R08 Bạch Lĩnh | Im lặng, trắng xóa | Trắng, xám nhạt, đỏ sẫm |
+| R09 Chương Trắng | Trống rỗng, siêu thực | Trắng giấy, đen mực, tím |
 
 ## 6. Hiệu ứng kỹ năng (VFX)
 
 - Spritesheet ≤ 12 khung/hiệu ứng, 60–120 ms mỗi khung.
 - Mỗi hệ có **ngôn ngữ hình ảnh** riêng: lửa (đốm bay lên), nước (sóng/vòng), gió (đường cong), sét (tia zig-zag), đất (mảnh vỡ), mộc (lá/hoa), ám (khói tím).
-- Spirit Dive: hào quang lớn quanh nhân vật, đổi màu bảng màu hệ, **ảnh hưởng nhẹ đến ánh sáng bản đồ**.
+- Nhập Linh: hào quang lớn quanh nhân vật, đổi màu bảng màu hệ, **ảnh hưởng nhẹ đến ánh sáng bản đồ**.
 - Hiệu ứng toàn màn hình (flash, rung) **giới hạn** và có tùy chọn tắt.
 
 ## 7. UI
@@ -146,15 +146,15 @@ Mỗi lớp có tập hoạt ảnh chung **bộ xương (rig)** với mốc neo 
 
 | Vùng | Mood | Nhạc cụ gợi ý |
 |------|------|---------------|
-| Làng Hage | Dịu, hoài niệm | Đàn guitar, sáo |
-| Kinh Đô | Hùng tráng | Kèn đồng, dàn dây |
+| Làng Suối Mơ | Dịu, hoài niệm | Đàn guitar, sáo |
+| Thượng Đô | Hùng tráng | Kèn đồng, dàn dây |
 | Đồng Bằng | Phiêu lưu | Violin, trống |
-| Rừng Phù Thủy | Bí ẩn | Dàn dây trầm, chuông |
-| Thủy Cung | Mơ màng | Piano, synth |
-| Diamond | Căng thẳng | Trống, đồng |
-| Rừng Tinh Linh | Thần thánh | Hợp xướng, hạc cầm |
-| Spade | U ám | Dàn dây, organ |
-| Cõi Quỷ | Dồn dập | Trống, đàn ghi-ta méo |
+| Duyên Hải | Mơ màng, sóng | Piano, synth, tiếng sóng |
+| Rừng Thì Thầm | Bí ẩn | Dàn dây trầm, chuông, tiếng thì thầm |
+| Xích Sa | Căng thẳng | Trống, đồng, nhạc cụ dây kiểu sa mạc |
+| Di Tích Tộc Cổ Thư | Cổ kính | Hợp xướng, đàn tranh |
+| Bạch Lĩnh | Lặng | Piano thưa, dàn dây |
+| Chương Trắng | Siêu thực | Âm thanh đảo ngược, trống |
 | Boss | Căng thẳng | Dồn dập, nhịp nhanh |
 | Chiến trường | Hùng tráng | Trống trận |
 
@@ -164,7 +164,7 @@ Mỗi lớp có tập hoạt ảnh chung **bộ xương (rig)** với mốc neo 
 |------|---------------------|
 | Nhân vật | bước chân, nhảy, đáp, bị đánh, chết, lên cấp |
 | Chiến đấu | đòn thường, chí mạng, miss, cast, trúng theo hệ (7) |
-| UI | bấm nút, mở/đóng cửa sổ, nhận vật phẩm, nhận Yul, thất bại |
+| UI | bấm nút, mở/đóng cửa sổ, nhận vật phẩm, nhận Quan, thất bại |
 | Môi trường | gió, nước, lửa trại, chim, tiếng chợ |
 | Sự kiện | còi cảnh báo boss, chuông, trống |
 
@@ -200,7 +200,7 @@ assets/
 | Hạng mục | Số lượng |
 |----------|----------|
 | Nhân vật (3 xuất thân × 2 giới tính, paper-doll cơ bản) | 6 bộ + 10 kiểu tóc |
-| Quái | 7 (R01) + Slime Vua |
+| Quái | 7 (R01) + Trang Lạc |
 | Map | 5 (M001–M005) |
 | NPC portrait | 8 |
 | Icon vật phẩm | 80 |

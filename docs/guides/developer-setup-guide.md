@@ -72,7 +72,7 @@ File `.env` (không commit). Mẫu `.env.example`:
 
 | Biến | Mặc định | Ý nghĩa |
 |------|----------|---------|
-| `DATABASE_URL` | `postgresql://bco:bco@localhost:5432/bco` | Kết nối PostgreSQL |
+| `DATABASE_URL` | `postgresql://htk:htk@localhost:5432/htk` | Kết nối PostgreSQL |
 | `REDIS_URL` | `redis://localhost:6379` | Kết nối Redis |
 | `JWT_SECRET` | `change-me` | Khóa ký token (**đổi ở mọi môi trường thật**) |
 | `API_PORT` | `3000` | |
@@ -139,7 +139,7 @@ Mục tiêu: hiểu pipeline nội dung.
 3. Đặt vào `spawns[]` của `maps/m002_hage_meadow.yaml`.
 4. `pnpm content:validate monsters maps`.
 5. `pnpm dev`, đăng nhập `dev1`, dùng `/gm map M002`, quan sát quái xuất hiện.
-6. Đánh quái; kiểm tra EXP/Yul/drop khớp công thức ([combat §5](../game-design/04-combat-and-progression.md)).
+6. Đánh quái; kiểm tra EXP/Quan/drop khớp công thức ([combat §5](../game-design/04-combat-and-progression.md)).
 7. `pnpm sim:exp` để xem ảnh hưởng.
 8. Mở PR (`content(monsters): thêm MOB050`).
 

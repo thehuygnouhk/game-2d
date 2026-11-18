@@ -28,9 +28,9 @@ flowchart TD
     Menu --> Skill["Kỹ năng"]
     Menu --> Quest["Nhiệm vụ"]
     Menu --> Map["Bản đồ thế giới"]
-    Menu --> Squad["Đội Hiệp Sĩ"]
+    Menu --> Squad["Đội"]
     Menu --> Social["Bạn bè / Thư"]
-    Menu --> Shop["Cửa hàng Ngọc Mana"]
+    Menu --> Shop["Cửa hàng Nén Bạc"]
     Menu --> Settings["Cài đặt"]
 ```
 
@@ -81,7 +81,7 @@ flowchart TD
 | 1–6 | Kỹ năng |
 | Q | Bình HP nhanh |
 | E | Bình MP nhanh |
-| R | Lá Thảo Dược |
+| R | Lá Thuốc Cổ |
 | Tab | Chọn mục tiêu gần nhất |
 | F | Tương tác (NPC, nhặt, cổng) |
 | B / I | Túi đồ |
@@ -89,7 +89,7 @@ flowchart TD
 | K | Kỹ năng |
 | L | Nhiệm vụ |
 | M | Bản đồ |
-| P | Squad |
+| P | Đội |
 | O | Bạn bè |
 | Enter | Chat |
 | Esc | Menu/đóng cửa sổ |
@@ -111,12 +111,12 @@ NPC hiện **hộp thoại + menu dọc tối đa 5 mục**:
 
 ```text
 ┌──────────────────────────────────────────┐
-│ [Chân dung]  Cha Orsi                    │
+│ [Chân dung]  Thầy Bạch Vân               │
 │ "Con đã sẵn sàng cho ngày lễ chưa?"      │
 │ ───────────────────────────────────────  │
 │  ▸ Nhận nhiệm vụ                         │
 │  ▸ Trả nhiệm vụ                          │
-│  ▸ Giải thích về Ma Đạo Thư              │
+│  ▸ Giải thích về Huyền Thư               │
 │  ▸ Đóng                                  │
 └──────────────────────────────────────────┘
 ```
@@ -138,7 +138,7 @@ NPC hiện **hộp thoại + menu dọc tối đa 5 mục**:
 - Màu viền theo độ hiếm; biểu tượng khóa/khóa tài khoản/hết hạn.
 
 ### 6.3 Kỹ năng
-- Danh sách 7 kỹ năng của hệ; chi tiết cấp hiện tại và cấp kế tiếp; nút *Nâng cấp* hiển thị SP/Yul cần.
+- Danh sách 7 kỹ năng của hệ; chi tiết cấp hiện tại và cấp kế tiếp; nút *Nâng cấp* hiển thị SP/Quan cần.
 - Kéo kỹ năng lên **hotbar**.
 
 ### 6.4 Nhiệm vụ
@@ -146,10 +146,10 @@ NPC hiện **hộp thoại + menu dọc tối đa 5 mục**:
 - Nhiệm vụ chính ghim; bấm **Đi tới** để tự chạy tới NPC/map (auto-path).
 
 ### 6.5 Bản đồ
-- Bản đồ thế giới (R01–R09), điểm đã mở khóa sáng, nút **Dịch chuyển (Finral)** khi ở Town.
+- Bản đồ thế giới (R01–R09), điểm đã mở khóa sáng, nút **Dịch chuyển (Bác Tô)** khi ở Town.
 - Bản đồ nhỏ góc phải: vị trí người chơi, NPC (vàng), quái (đỏ), đồng đội (xanh), cổng.
 
-### 6.6 Squad, Bạn bè, Thư, Cửa hàng Ngọc Mana
+### 6.6 Đội, Bạn bè, Thư, Cửa hàng Nén Bạc
 - Mỗi cửa sổ có tiêu đề, tab và thanh đóng thống nhất; cửa sổ chồng tối đa 2.
 
 ## 7. Phản hồi chiến đấu

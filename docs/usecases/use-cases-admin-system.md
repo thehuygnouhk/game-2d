@@ -70,8 +70,8 @@ flowchart LR
 | Khóa tạm (≤ 7 ngày) | — | ✔ | ✔ | ✔ |
 | Khóa dài/vĩnh viễn | — | — | ✔ | ✔ |
 | Gửi thư không đính kèm | ✔ | ✔ | ✔ | ✔ |
-| Tặng vật phẩm/Yul (≤ ngưỡng) | — | ✔ | ✔ | ✔ |
-| Tặng Ngọc Mana | — | — | ✔ (duyệt đôi) | ✔ |
+| Tặng vật phẩm/Quan (≤ ngưỡng) | — | ✔ | ✔ | ✔ |
+| Tặng Nén Bạc | — | — | ✔ (duyệt đôi) | ✔ |
 | Rollback nhân vật | — | — | ✔ (duyệt đôi) | ✔ |
 | Cấu hình rate/flag | — | — | ✔ | ✔ |
 | Tạo sự kiện | — | — | ✔ | ✔ |
@@ -86,7 +86,7 @@ flowchart LR
 |-----|----------|
 | Tác nhân | Support, GM, Admin |
 | Tiền điều kiện | Đã đăng nhập Admin có MFA |
-| Luồng chính | 1. Nhập tên nhân vật/tài khoản/ID. 2. Hệ thống hiển thị hồ sơ (cấp, hệ, vị trí, Squad, trạng thái). 3. Mở các tab: **Túi đồ**, **Sổ cái**, **Giao dịch**, **Nhiệm vụ**, **Đăng nhập**, **Báo cáo**. |
+| Luồng chính | 1. Nhập tên nhân vật/tài khoản/ID. 2. Hệ thống hiển thị hồ sơ (cấp, hệ, vị trí, Đội, trạng thái). 3. Mở các tab: **Túi đồ**, **Sổ cái**, **Giao dịch**, **Nhiệm vụ**, **Đăng nhập**, **Báo cáo**. |
 | Luồng thay thế | Không tìm thấy → gợi ý tìm gần đúng |
 | Hậu điều kiện | Mỗi lượt xem dữ liệu nhạy cảm ghi vào `gm_audit_logs` |
 | Quy tắc | Che email/IP với vai trò thấp |
@@ -106,7 +106,7 @@ flowchart LR
 | Mục | Nội dung |
 |-----|----------|
 | Tác nhân | GM, Admin |
-| Luồng chính | 1. Chọn đối tượng (một người, danh sách, toàn máy chủ, theo điều kiện). 2. Soạn tiêu đề, nội dung, đính kèm (vật phẩm, Yul, Ngọc Mana). 3. Xem trước. 4. Gửi. 5. Worker phân phối thư. |
+| Luồng chính | 1. Chọn đối tượng (một người, danh sách, toàn máy chủ, theo điều kiện). 2. Soạn tiêu đề, nội dung, đính kèm (vật phẩm, Quan, Nén Bạc). 3. Xem trước. 4. Gửi. 5. Worker phân phối thư. |
 | Luồng thay thế | Vượt ngưỡng → yêu cầu duyệt thứ hai |
 | Hậu điều kiện | Thư tạo; ledger ghi lý do `GM_GRANT`; audit |
 
@@ -126,7 +126,7 @@ flowchart LR
 | Tác nhân | Admin (duyệt đôi) |
 | Tiền điều kiện | Có snapshot hợp lệ trong `character_snapshots` |
 | Luồng chính | 1. Chọn nhân vật, lý do (lỗi/dupe). 2. Chọn snapshot (tự động hằng ngày, trước bảo trì). 3. Xem **so sánh trước/sau** (vật phẩm, tiền, nhiệm vụ). 4. Duyệt thứ hai. 5. Kick nhân vật, tạo snapshot "pre-rollback", áp dụng. 6. Gửi thư giải thích. |
-| Luồng thay thế | Cần thu hồi một phần → chọn từng mục (vật phẩm, Yul) |
+| Luồng thay thế | Cần thu hồi một phần → chọn từng mục (vật phẩm, Quan) |
 | Hậu điều kiện | Dữ liệu nhân vật khôi phục; audit; bồi thường nếu do lỗi hệ thống |
 
 ### A-07 — Cấu hình rate và feature flag
@@ -143,7 +143,7 @@ flowchart LR
 | Mục | Nội dung |
 |-----|----------|
 | Tác nhân | Admin |
-| Luồng chính | 1. Chọn mẫu sự kiện (boss, EXP ×2, shop giới hạn, Linh Thạch Sao…). 2. Đặt thời gian, phạm vi, thưởng. 3. Xem trước thông báo. 4. Lưu vào `live_events`. 5. Scheduler kích hoạt đúng giờ. |
+| Luồng chính | 1. Chọn mẫu sự kiện (boss, EXP ×2, shop giới hạn, Trang Rời…). 2. Đặt thời gian, phạm vi, thưởng. 3. Xem trước thông báo. 4. Lưu vào `live_events`. 5. Scheduler kích hoạt đúng giờ. |
 | Hậu điều kiện | Sự kiện chạy tự động; có nút **dừng khẩn cấp** |
 
 ### A-09 — Thông báo & Bảo trì
@@ -169,7 +169,7 @@ flowchart LR
 | Mục | Nội dung |
 |-----|----------|
 | Tác nhân | Admin |
-| Nội dung | CCU, DAU/MAU, retention, doanh thu, ARPU/ARPPU, phễu, kinh tế (faucet/sink, Yul lưu hành, giá chợ), top người nạp, cảnh báo bất thường |
+| Nội dung | CCU, DAU/MAU, retention, doanh thu, ARPU/ARPPU, phễu, kinh tế (faucet/sink, Quan lưu hành, giá chợ), top người nạp, cảnh báo bất thường |
 | Quy tắc | Dữ liệu cá nhân được che hoặc băm |
 
 ### A-13 — Triển khai nội dung

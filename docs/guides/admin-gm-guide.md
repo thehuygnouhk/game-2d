@@ -8,7 +8,7 @@
 1. **Công bằng:** Không dùng quyền GM để chơi hay giúp người quen.
 2. **Quyền riêng tư:** Chỉ xem dữ liệu cần thiết cho việc xử lý; không chia sẻ ra ngoài.
 3. **Dấu vết:** Mọi hành động đều được ghi vào `gm_audit_logs`. Không có "hành động không dấu vết".
-4. **Hai người duyệt** với hành động nhạy cảm (Ngọc Mana, rollback, khóa vĩnh viễn).
+4. **Hai người duyệt** với hành động nhạy cảm (Nén Bạc, rollback, khóa vĩnh viễn).
 5. **Không bao giờ** hỏi người chơi mật khẩu, OTP.
 6. **Phản hồi trung thực:** Không hứa điều không thể thực hiện.
 
@@ -27,7 +27,7 @@
 | Module | Chức năng |
 |--------|-----------|
 | **Tổng quan** | CCU, DAU, trạng thái realm, cảnh báo |
-| **Tra cứu** | Tài khoản, nhân vật, Squad, vật phẩm, giao dịch |
+| **Tra cứu** | Tài khoản, nhân vật, Đội, vật phẩm, giao dịch |
 | **Hồ sơ nhân vật** | Chỉ số, túi đồ, kỹ năng, nhiệm vụ, sổ cái, lịch sử đăng nhập |
 | **Xử phạt** | Mute, khóa, lịch sử, kháng cáo |
 | **Báo cáo** | Hàng đợi báo cáo người chơi |
@@ -70,8 +70,8 @@ Lệnh gõ ở khung chat, bắt đầu bằng `/gm`. Chỉ tài khoản GM có 
 | Lệnh | Quyền | Mô tả |
 |------|-------|-------|
 | `/gm give item <tên> <itemId> <số lượng> <lý do>` | GM (theo ngưỡng) | Tặng vật phẩm |
-| `/gm give yul <tên> <số> <lý do>` | GM (theo ngưỡng) | Tặng Yul |
-| `/gm give gem <tài khoản> <số> <lý do>` | Admin (duyệt đôi) | Tặng Ngọc Mana |
+| `/gm give soft <tên> <số> <lý do>` | GM (theo ngưỡng) | Tặng Quan |
+| `/gm give premium <tài khoản> <số> <lý do>` | Admin (duyệt đôi) | Tặng Nén Bạc |
 | `/gm take item <tên> <instanceId> <lý do>` | GM | Thu hồi vật phẩm (ghi ledger) |
 | `/gm quest set <tên> <questId> <trạng thái>` | GM | Đặt trạng thái nhiệm vụ (khắc phục lỗi) |
 | `/gm snapshot <tên> [lý do]` | GM | Tạo snapshot thủ công |
@@ -119,7 +119,7 @@ Lệnh gõ ở khung chat, bắt đầu bằng `/gm`. Chỉ tài khoản GM có 
 3. Xử phạt, ghi lý do và bằng chứng.
 4. Phản hồi người báo cáo (không tiết lộ chi tiết hình phạt).
 
-### 5.3 "Tôi bị mất vật phẩm / Yul"
+### 5.3 "Tôi bị mất vật phẩm / Quan"
 1. Tra **Sổ cái** và **trade_logs** của nhân vật 7 ngày.
 2. Xác định nguyên nhân: tự bán, giao dịch, chợ, thư hết hạn, lỗi game.
 3. Nếu **lỗi hệ thống**: tạo issue, hoàn trả (vật phẩm đúng instance nếu còn), gửi thư giải thích.
@@ -156,7 +156,7 @@ Xem [infrastructure §7](../architecture/infrastructure-devops.md) và [A-09](..
 ### 5.9 Bồi thường
 | Tình huống | Gợi ý bồi thường |
 |-----------|-------------------|
-| Bảo trì khẩn kéo dài ≥ 2 giờ | Gói quà nhỏ (Bình, Thẻ Auto, 10 Ngọc Mana) |
+| Bảo trì khẩn kéo dài ≥ 2 giờ | Gói quà nhỏ (Bình, Thẻ Auto, 10 Nén Bạc) |
 | Lỗi làm mất EXP/vật phẩm | Hoàn đúng giá trị, kèm 1 gói xin lỗi |
 | Sự cố nghiêm trọng (SEV1) | Bồi thường toàn server theo quyết định Admin |
 

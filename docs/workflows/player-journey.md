@@ -14,13 +14,13 @@ flowchart TD
     E --> F{"Có nhân vật?"}
     F -- "Chưa" --> G["Tạo nhân vật<br/>(xuất thân, ngoại hình)"]
     F -- "Rồi" --> H["Chọn nhân vật"]
-    G --> I["Chương 1: Làng Hage<br/>Lv1-9 hướng dẫn"]
+    G --> I["Chương 1: Làng Suối Mơ<br/>Lv1-9 hướng dẫn"]
     H --> J["Vào thế giới"]
-    I --> K["Lv10: Lễ Nhận Ma Đạo Thư<br/>chọn hệ phép"]
-    K --> L["Chương 2: Kinh Đô, Kỳ thi<br/>mở Squad Lv20"]
+    I --> K["Lv10: Lễ Khai Thư<br/>chọn hệ phép"]
+    K --> L["Chương 2: Thượng Đô, Kỳ thi<br/>mở Đội Lv20"]
     L --> M["Vòng lặp chính"]
     J --> M
-    M --> N["Endgame: Raid, PvP,<br/>Mùa giải Vua Phép Thuật"]
+    M --> N["Endgame: Raid, PvP,<br/>Mùa giải Chấp Bút"]
 ```
 
 ## 2. Hành trình theo giai đoạn (cấp độ)
@@ -28,22 +28,22 @@ flowchart TD
 | Giai đoạn | Cấp | Mục tiêu người chơi | Tính năng mở | Cảm xúc chủ đạo |
 |-----------|-----|---------------------|--------------|-----------------|
 | **Tân thủ** | 1–9 | Học điều khiển, đánh quái, nhận đồ | Đòn thường, Tụ Mana Chấn, nhiệm vụ | Tò mò, ấm áp |
-| **Thức tỉnh** | 10 | Chọn hệ phép | Kỹ năng hệ, Ma Đạo Thư | Phấn khích |
-| **Khám phá** | 10–24 | Vào Kinh Đô, vượt kỳ thi | Chợ, Cường hóa, Cổng, Auto Hunt (Lv20), Squad (Lv20) | Hoài bão |
-| **Kết nối** | 25–39 | Gia nhập Đội, Bò Đen, Mana Skin | Squire (Lv25), nhóm, Hầm Ngục DG02–03 | Thuộc về |
-| **Thử thách** | 40–59 | Hầm ngục, chiến tranh | Khảm ngọc, Chiến Trường, Squad War | Hồi hộp |
-| **Tinh thông** | 60–89 | Tinh Linh, Spade, raid | Linh Thạch Sao, Raid, Phản Ma | Làm chủ |
-| **Huyền thoại** | 90–100 | Cõi Quỷ, Lucifero | Spirit Dive đầy đủ, Mùa Giải | Vinh quang |
+| **Thức tỉnh** | 10 | Chọn hệ phép | Kỹ năng hệ, Huyền Thư | Phấn khích |
+| **Khám phá** | 10–24 | Vào Thượng Đô, vượt kỳ thi | Chợ, Cường hóa, Cổng, Auto Hunt (Lv20), Đội (Lv20) | Hoài bão |
+| **Kết nối** | 25–39 | Gia nhập Đội, Viện Khảm, Khải Thể | Squire (Lv25), nhóm, Hầm Ngục DG02–03 | Thuộc về |
+| **Thử thách** | 40–59 | Hầm ngục, chiến tranh | Khảm ngọc, Chiến Trường, Chiến Đội | Hồi hộp |
+| **Tinh thông** | 60–89 | Tộc Cổ Thư, Bạch Lĩnh, raid | Trang Rời, Raid, Phong Ấn Xạ Thủ | Làm chủ |
+| **Huyền thoại** | 90–100 | Chương Trắng, Đại Trang Trắng | Nhập Linh đầy đủ, Mùa Giải | Vinh quang |
 
 ## 3. 10 phút đầu tiên
 
 ```mermaid
 flowchart LR
-    T0["0:00<br/>Tạo nhân vật"] --> T1["1:00<br/>Gặp Sơ Lily<br/>(Q_MAIN_01)"]
-    T1 --> T2["2:30<br/>Đánh Slime Cỏ<br/>(Q_MAIN_02)"]
+    T0["0:00<br/>Tạo nhân vật"] --> T1["1:00<br/>Gặp Thầy Bạch Vân<br/>(Q_MAIN_01)"]
+    T1 --> T2["2:30<br/>Đánh Nấm Lùn<br/>(Q_MAIN_02)"]
     T2 --> T3["4:00<br/>Nhặt đồ, dùng bình<br/>Lên Lv2-3"]
     T3 --> T4["6:00<br/>Làm nhiệm vụ thỏ,<br/>thảo dược"]
-    T4 --> T5["8:00<br/>Gặp Asta<br/>học Tụ Mana Chấn"]
+    T4 --> T5["8:00<br/>Đấu tập với Khôi<br/>học Tụ Mana Chấn"]
     T5 --> T6["10:00<br/>Lv5, thấy Rừng Nhỏ<br/>nút Nhiệm vụ nhấp nháy"]
 ```
 
@@ -62,7 +62,7 @@ flowchart TD
     I -- "Không" --> E{"Có sự kiện?<br/>Boss, Chiến Trường"}
     E -- "Có" --> X["Tham gia sự kiện"]
     E -- "Không" --> G["Hầm ngục / nhóm"]
-    X --> W["Nhận thưởng, Sao"]
+    X --> W["Nhận thưởng, Công Trạng"]
     G --> W
     W --> L{"Lên cấp?"}
     L -- "Có" --> P["Cộng điểm, nâng kỹ năng"]
@@ -74,9 +74,9 @@ flowchart TD
 
 | Chu kỳ | Hoạt động chính |
 |--------|-----------------|
-| **Hằng ngày** | Điểm danh, 10 nhiệm vụ ngày, boss thế giới, Chiến Trường, hầm ngục, Squad |
-| **Hằng tuần** | Raid, Squad War (T7), Săn Linh Thạch Sao (T7), nhiệm vụ tuần |
-| **Hằng tháng** | Lễ Trao Sao, đua bảng xếp hạng |
+| **Hằng ngày** | Điểm danh, 10 nhiệm vụ ngày, boss thế giới, Chiến Trường, hầm ngục, Đội |
+| **Hằng tuần** | Raid, Chiến Đội (T7), Săn Trang Rời (T7), nhiệm vụ tuần |
+| **Hằng tháng** | Lễ Tuyên Công, đua bảng xếp hạng |
 | **Mùa (3 tháng)** | Đấu Trường mùa, Battle Pass, phần thưởng độc quyền |
 
 ## 5. Luồng chức năng chi tiết
@@ -101,7 +101,7 @@ sequenceDiagram
     end
     S-->>P: S_QUEST_UPDATE (READY)
     P->>S: C_QUEST_TURNIN (idemKey)
-    S->>S: Ghi DB (EXP, Yul, vật phẩm) trong 1 transaction
+    S->>S: Ghi DB (EXP, Quan, vật phẩm) trong 1 transaction
     S-->>P: Thưởng + S_QUEST_UPDATE (COMPLETED)
 ```
 
@@ -119,7 +119,7 @@ flowchart TD
     F --> G["Trừ HP mục tiêu, áp hiệu ứng"]
     G --> H{"Mục tiêu chết?"}
     H -- "Không" --> A
-    H -- "Có" --> I["Chia EXP, Yul, rơi đồ"]
+    H -- "Có" --> I["Chia EXP, Quan, rơi đồ"]
     I --> J["Sự kiện: mob.killed → quest/achievement"]
 ```
 
@@ -145,7 +145,7 @@ flowchart TD
     A["Chọn trang bị"] --> B["Xem tỉ lệ, chi phí, pity"]
     B --> C{"Dùng Bùa Bảo Hộ?"}
     C --> D["Xác nhận"]
-    D --> E["Server: kiểm tra Yul, nguyên liệu"]
+    D --> E["Server: kiểm tra Quan, nguyên liệu"]
     E --> F["Trừ tài nguyên (transaction)"]
     F --> G{"RNG ≤ tỉ lệ + pity?"}
     G -- "Thành công" --> H["+1 cấp, reset pity"]
@@ -168,7 +168,7 @@ sequenceDiagram
     B->>S: Chấp nhận
     S-->>A: S_TRADE_STATE (mở cửa sổ)
     S-->>B: S_TRADE_STATE (mở cửa sổ)
-    A->>S: C_TRADE_UPDATE (vật phẩm, Yul)
+    A->>S: C_TRADE_UPDATE (vật phẩm, Quan)
     B->>S: C_TRADE_UPDATE
     A->>S: C_TRADE_CONFIRM(stage 1)
     B->>S: C_TRADE_CONFIRM(stage 1)
@@ -187,13 +187,13 @@ flowchart LR
     A["Người bán<br/>niêm yết"] --> B["Phí 1%<br/>vật phẩm sang MARKET"]
     B --> C["Hiển thị trên Chợ<br/>48 giờ"]
     C --> D{"Người mua?"}
-    D -- "Mua" --> E["Chuyển vật phẩm cho người mua<br/>Yul cho người bán - 5% phí<br/>qua Thư"]
+    D -- "Mua" --> E["Chuyển vật phẩm cho người mua<br/>Quan cho người bán - 5% phí<br/>qua Thư"]
     D -- "Hết hạn" --> F["Trả vật phẩm qua Thư"]
     C --> G["Người bán hủy"]
     G --> F
 ```
 
-### 5.7 Nạp Ngọc Mana
+### 5.7 Nạp Nén Bạc
 
 ```mermaid
 sequenceDiagram
@@ -209,12 +209,12 @@ sequenceDiagram
     P->>PG: Thanh toán
     PG->>W: Webhook (chữ ký)
     W->>W: Xác minh chữ ký, idempotent
-    W->>A: Cập nhật đơn PAID, cộng Ngọc Mana (transaction)
+    W->>A: Cập nhật đơn PAID, cộng Nén Bạc (transaction)
     A-->>C: Thông báo qua WS/notify
-    C-->>P: "Đã cộng X Ngọc Mana"
+    C-->>P: "Đã cộng X Nén Bạc"
 ```
 
-### 5.8 Săn 7 Linh Thạch Sao
+### 5.8 Săn 7 Trang Rời
 
 ```mermaid
 flowchart TD
@@ -225,25 +225,25 @@ flowchart TD
     L --> F
     K -- "Không" --> A{"Đủ 7 viên?"}
     A -- "Chưa" --> F
-    A -- "Rồi" --> Z["Đến Đàn Tế Tinh Linh (M024)"]
-    Z --> C["Triệu hồi Tứ Đại Tinh Linh"]
+    A -- "Rồi" --> Z["Đến Đài Nguyên Linh (M024)"]
+    Z --> C["Triệu hồi Tứ Đại Nguyên Linh"]
     C --> W["Chọn 1 điều ước"]
     W --> E["Đá biến mất, cooldown 7 ngày"]
 ```
 
-### 5.9 Gia nhập Squad
+### 5.9 Gia nhập Đội
 
 ```mermaid
 flowchart TD
-    A["Mở Squad (P)"] --> B{"Đã có Squad?"}
-    B -- "Rồi" --> C["Xem Squad hiện tại"]
+    A["Mở Đội (P)"] --> B{"Đã có Đội?"}
+    B -- "Rồi" --> C["Xem Đội hiện tại"]
     B -- "Chưa" --> D["Duyệt danh sách / nhận lời mời"]
     D --> E["Gửi đơn / chấp nhận lời mời"]
-    E --> F{"Đã rời Squad < 24h?"}
+    E --> F{"Đã rời Đội < 24h?"}
     F -- "Có" --> G["Chờ hết thời gian"]
     F -- "Không" --> H["Chờ Đội Trưởng/Phó duyệt"]
-    H --> I["Vào Squad: nhận buff, nhiệm vụ Đội"]
-    A --> J["Hoặc: Thư Ký Đội → Lập Squad<br/>(Lv20, 50.000 Yul)"]
+    H --> I["Vào Đội: nhận buff, nhiệm vụ Đội"]
+    A --> J["Hoặc: Cô Ký Đội → Lập Đội<br/>(Lv20, 50.000 Quan)"]
 ```
 
 ### 5.10 Hầm ngục
@@ -273,7 +273,7 @@ flowchart TD
 | Đăng nhập trên thiết bị khác | Phiên cũ bị đá, thiết bị mới vào |
 | Tên nhân vật trùng | Báo lỗi và gợi ý tên thay thế |
 | Spam chat | Mute tự động 5 phút |
-| Chết khi đang mang Linh Thạch | Viên rơi nếu bị PK hạ; nếu do quái thì giữ |
+| Chết khi đang mang Trang Rời | Viên rơi nếu bị PK hạ; nếu do quái thì giữ |
 
 ## 7. Điểm rơi rủi ro bỏ cuộc (churn) và biện pháp
 
@@ -281,7 +281,7 @@ flowchart TD
 |-----------|--------|-----------|
 | Lv1–5 | Không hiểu cơ chế | Chỉ dẫn bong bóng, tăng tốc EXP |
 | Lv10 | Chọn hệ sai | Cho **đổi miễn phí 24 giờ**, gợi ý theo vai trò |
-| Lv20–30 | Cày chán | Nhiệm vụ ngày + Squad + Auto Hunt |
+| Lv20–30 | Cày chán | Nhiệm vụ ngày + Đội + Auto Hunt |
 | Lv40–50 | Tường sức mạnh | Cường hóa có pity, Hầm Ngục, nhiệm vụ tuần |
-| Lv60+ | Thiếu mục tiêu | Raid, Chiến Trường, Mùa Giải, Sao |
+| Lv60+ | Thiếu mục tiêu | Raid, Chiến Trường, Mùa Giải, Công Trạng |
 | Endgame | Hết nội dung | Mùa mới mỗi 3 tháng |

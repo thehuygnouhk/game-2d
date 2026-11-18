@@ -10,7 +10,7 @@
 | Tên | `snake_case`, bảng số nhiều |
 | Khóa chính | `uuid` (`gen_random_uuid()`) cho thực thể nghiệp vụ; `bigint identity` cho log/ledger |
 | Thời gian | `timestamptz` (UTC); cột `created_at`, `updated_at` |
-| Tiền | `bigint`, đơn vị nhỏ nhất (Yul, Ngọc Mana là số nguyên), có `CHECK (>= 0)` |
+| Tiền | `bigint`, đơn vị nhỏ nhất (Quan, Nén Bạc là số nguyên), có `CHECK (>= 0)` |
 | Xóa | **Xóa mềm** (`deleted_at`) cho tài khoản, nhân vật; cứng cho dữ liệu tạm |
 | Enum | Kiểu `ENUM` PostgreSQL cho tập ổn định; chuỗi (`text`) cho ID nội dung |
 | Tham chiếu nội dung | ID nội dung tĩnh (map, item template, quest) là `text`, **không FK** (validator kiểm tra khi tải) |
@@ -28,7 +28,7 @@ erDiagram
     ACCOUNTS ||--o{ GIFT_CODE_REDEMPTIONS : "đổi mã"
     GIFT_CODES ||--o{ GIFT_CODE_REDEMPTIONS : "được đổi"
     REALMS ||--o{ CHARACTERS : "chứa"
-    REALMS ||--o{ SQUADS : "chứa"
+    REALMS ||--o{ GUILDS : "chứa"
     CHARACTERS ||--o{ CHARACTER_SKILLS : "học"
     CHARACTERS ||--o{ CHARACTER_QUESTS : "làm"
     CHARACTERS ||--o{ CHARACTER_ACHIEVEMENTS : "đạt"
@@ -40,8 +40,8 @@ erDiagram
     CHARACTERS ||--o{ MOUNTS : "có"
     CHARACTERS ||--o{ FRIENDS : "kết bạn"
     CHARACTERS ||--o{ MARKET_LISTINGS : "bán"
-    SQUADS ||--o{ SQUAD_MEMBERS : "gồm"
-    CHARACTERS ||--o| SQUAD_MEMBERS : "thuộc"
+    GUILDS ||--o{ GUILD_MEMBERS : "gồm"
+    CHARACTERS ||--o| GUILD_MEMBERS : "thuộc"
     MAILS ||--o{ ITEM_INSTANCES : "đính kèm"
     MARKET_LISTINGS ||--|| ITEM_INSTANCES : "niêm yết"
     SQUIRES ||--o{ SQUIRE_SKILLS : "học"
@@ -52,16 +52,16 @@ erDiagram
 
 ```sql
 CREATE TYPE account_status   AS ENUM ('ACTIVE', 'SUSPENDED', 'BANNED', 'DELETED');
-CREATE TYPE origin_type      AS ENUM ('COMMONER', 'NOBLE', 'ELF');
-CREATE TYPE class_type       AS ENUM ('NONE', 'FIRE', 'WATER', 'WIND', 'BOLT', 'EARTH', 'PLANT', 'DARK', 'ANTI');
+CREATE TYPE origin_type      AS ENUM ('VILLAGER', 'NOBLE', 'ANCIENT');
+CREATE TYPE class_type       AS ENUM ('NONE', 'FIRE', 'WATER', 'WIND', 'BOLT', 'EARTH', 'PLANT', 'DARK', 'ARCHER');
 CREATE TYPE gender_type      AS ENUM ('M', 'F');
 CREATE TYPE pk_state_type    AS ENUM ('PEACE', 'FLAGGED');
-CREATE TYPE item_location    AS ENUM ('BAG', 'EQUIP', 'BANK', 'MAIL', 'MARKET', 'SQUAD_BANK', 'TRADE');
+CREATE TYPE item_location    AS ENUM ('BAG', 'EQUIP', 'BANK', 'MAIL', 'MARKET', 'GUILD_BANK', 'TRADE');
 CREATE TYPE quest_status     AS ENUM ('ACCEPTED', 'IN_PROGRESS', 'READY', 'COMPLETED', 'ABANDONED', 'FAILED');
-CREATE TYPE currency_type    AS ENUM ('YUL', 'NGOC_MANA', 'SQUAD_POINT', 'BADGE', 'STAR');
-CREATE TYPE owner_kind       AS ENUM ('CHARACTER', 'ACCOUNT', 'SQUAD');
+CREATE TYPE currency_type    AS ENUM ('SOFT', 'PREMIUM', 'GUILD_POINT', 'BADGE', 'MERIT');
+CREATE TYPE owner_kind       AS ENUM ('CHARACTER', 'ACCOUNT', 'GUILD');
 CREATE TYPE friend_status    AS ENUM ('PENDING', 'ACCEPTED', 'BLOCKED');
-CREATE TYPE squad_role       AS ENUM ('LEADER', 'VICE', 'ELITE', 'MEMBER');
+CREATE TYPE guild_role       AS ENUM ('LEADER', 'VICE', 'ELITE', 'MEMBER');
 CREATE TYPE listing_status   AS ENUM ('ACTIVE', 'SOLD', 'EXPIRED', 'CANCELLED');
 CREATE TYPE payment_status   AS ENUM ('PENDING', 'PAID', 'FAILED', 'REFUNDED', 'CHARGEBACK');
 CREATE TYPE sanction_kind    AS ENUM ('MUTE', 'BAN');
@@ -75,21 +75,21 @@ CREATE TYPE report_status    AS ENUM ('OPEN', 'REVIEWING', 'ACTIONED', 'DISMISSE
 
 ```sql
 CREATE TABLE accounts (
-  id               uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  username         text NOT NULL,
-  email            text NOT NULL,
-  password_hash    text NOT NULL,                       -- argon2id
-  status           account_status NOT NULL DEFAULT 'ACTIVE',
-  ngoc_mana        bigint NOT NULL DEFAULT 0 CHECK (ngoc_mana >= 0),
-  vip_total_vnd    bigint NOT NULL DEFAULT 0 CHECK (vip_total_vnd >= 0),
-  birth_date       date,                                -- phục vụ hạn mức theo tuổi
+  id                uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  username          text NOT NULL,
+  email             text NOT NULL,
+  password_hash     text NOT NULL,                      -- argon2id
+  status            account_status NOT NULL DEFAULT 'ACTIVE',
+  premium_currency  bigint NOT NULL DEFAULT 0 CHECK (premium_currency >= 0),
+  vip_total_vnd     bigint NOT NULL DEFAULT 0 CHECK (vip_total_vnd >= 0),
+  birth_date        date,                               -- phục vụ hạn mức theo tuổi
   phone_verified_at timestamptz,
   two_factor_secret text,
-  locale           text NOT NULL DEFAULT 'vi',
-  created_at       timestamptz NOT NULL DEFAULT now(),
-  updated_at       timestamptz NOT NULL DEFAULT now(),
-  last_login_at    timestamptz,
-  deleted_at       timestamptz
+  locale            text NOT NULL DEFAULT 'vi',
+  created_at        timestamptz NOT NULL DEFAULT now(),
+  updated_at        timestamptz NOT NULL DEFAULT now(),
+  last_login_at     timestamptz,
+  deleted_at        timestamptz
 );
 CREATE UNIQUE INDEX accounts_username_uq ON accounts (lower(username));
 CREATE UNIQUE INDEX accounts_email_uq    ON accounts (lower(email));
@@ -119,57 +119,57 @@ CREATE TABLE realms (
 
 ```sql
 CREATE TABLE characters (
-  id               uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  account_id       uuid NOT NULL REFERENCES accounts(id),
-  realm_id         smallint NOT NULL REFERENCES realms(id),
-  name             text NOT NULL,
-  gender           gender_type NOT NULL,
-  appearance       jsonb NOT NULL DEFAULT '{}'::jsonb,   -- hair, color, face
-  origin           origin_type NOT NULL,
-  class            class_type NOT NULL DEFAULT 'NONE',
-  level            smallint NOT NULL DEFAULT 1 CHECK (level BETWEEN 1 AND 200),
-  exp              bigint NOT NULL DEFAULT 0 CHECK (exp >= 0),
-  yul              bigint NOT NULL DEFAULT 0 CHECK (yul >= 0),
-  stars            integer NOT NULL DEFAULT 0 CHECK (stars >= 0),
+  id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  account_id         uuid NOT NULL REFERENCES accounts(id),
+  realm_id           smallint NOT NULL REFERENCES realms(id),
+  name               text NOT NULL,
+  gender             gender_type NOT NULL,
+  appearance         jsonb NOT NULL DEFAULT '{}'::jsonb,   -- hair, color, face
+  origin             origin_type NOT NULL,
+  class              class_type NOT NULL DEFAULT 'NONE',
+  level              smallint NOT NULL DEFAULT 1 CHECK (level BETWEEN 1 AND 200),
+  exp                bigint NOT NULL DEFAULT 0 CHECK (exp >= 0),
+  soft_currency      bigint NOT NULL DEFAULT 0 CHECK (soft_currency >= 0),
+  merit              integer NOT NULL DEFAULT 0 CHECK (merit >= 0),
 
   -- điểm
-  stat_points      integer NOT NULL DEFAULT 10 CHECK (stat_points >= 0),
-  skill_points     integer NOT NULL DEFAULT 0 CHECK (skill_points >= 0),
-  talent_points    integer NOT NULL DEFAULT 0 CHECK (talent_points >= 0),
-  pts_hp           integer NOT NULL DEFAULT 0 CHECK (pts_hp >= 0),
-  pts_mp           integer NOT NULL DEFAULT 0 CHECK (pts_mp >= 0),
-  pts_atk          integer NOT NULL DEFAULT 0 CHECK (pts_atk >= 0),
-  pts_def          integer NOT NULL DEFAULT 0 CHECK (pts_def >= 0),
-  pts_crit         integer NOT NULL DEFAULT 0 CHECK (pts_crit >= 0),
+  stat_points        integer NOT NULL DEFAULT 10 CHECK (stat_points >= 0),
+  skill_points       integer NOT NULL DEFAULT 0 CHECK (skill_points >= 0),
+  talent_points      integer NOT NULL DEFAULT 0 CHECK (talent_points >= 0),
+  pts_hp             integer NOT NULL DEFAULT 0 CHECK (pts_hp >= 0),
+  pts_mp             integer NOT NULL DEFAULT 0 CHECK (pts_mp >= 0),
+  pts_atk            integer NOT NULL DEFAULT 0 CHECK (pts_atk >= 0),
+  pts_def            integer NOT NULL DEFAULT 0 CHECK (pts_def >= 0),
+  pts_crit           integer NOT NULL DEFAULT 0 CHECK (pts_crit >= 0),
 
   -- trạng thái tức thời
-  hp               integer NOT NULL DEFAULT 1,
-  mp               integer NOT NULL DEFAULT 1,
-  map_id           text NOT NULL DEFAULT 'M001',
-  pos_x            real NOT NULL DEFAULT 0,
-  pos_y            real NOT NULL DEFAULT 0,
-  home_map_id      text NOT NULL DEFAULT 'M001',
+  hp                 integer NOT NULL DEFAULT 1,
+  mp                 integer NOT NULL DEFAULT 1,
+  map_id             text NOT NULL DEFAULT 'M001',
+  pos_x              real NOT NULL DEFAULT 0,
+  pos_y              real NOT NULL DEFAULT 0,
+  home_map_id        text NOT NULL DEFAULT 'M001',
 
   -- xã hội & PK
-  pk_state         pk_state_type NOT NULL DEFAULT 'PEACE',
-  sin_points       integer NOT NULL DEFAULT 0 CHECK (sin_points >= 0),
-  squad_id         uuid,                                 -- FK thêm sau (vòng phụ thuộc)
-  chapter          smallint NOT NULL DEFAULT 1,
-  grimoire_leaves  smallint NOT NULL DEFAULT 3 CHECK (grimoire_leaves BETWEEN 3 AND 5),
-  class_changed_at timestamptz,
+  pk_state           pk_state_type NOT NULL DEFAULT 'PEACE',
+  sin_points         integer NOT NULL DEFAULT 0 CHECK (sin_points >= 0),
+  guild_id           uuid,                               -- FK thêm sau (vòng phụ thuộc)
+  chapter            smallint NOT NULL DEFAULT 1,
+  tome_edition       smallint NOT NULL DEFAULT 1 CHECK (tome_edition BETWEEN 1 AND 3),
+  class_changed_at   timestamptz,
   auto_seconds_today integer NOT NULL DEFAULT 0,
-  play_seconds     bigint NOT NULL DEFAULT 0,
-  flags            jsonb NOT NULL DEFAULT '{}'::jsonb,   -- tutorial, cutscene đã xem
+  play_seconds       bigint NOT NULL DEFAULT 0,
+  flags              jsonb NOT NULL DEFAULT '{}'::jsonb,   -- tutorial, cutscene đã xem
 
-  version          integer NOT NULL DEFAULT 0,
-  created_at       timestamptz NOT NULL DEFAULT now(),
-  updated_at       timestamptz NOT NULL DEFAULT now(),
-  last_online_at   timestamptz,
-  deleted_at       timestamptz
+  version            integer NOT NULL DEFAULT 0,
+  created_at         timestamptz NOT NULL DEFAULT now(),
+  updated_at         timestamptz NOT NULL DEFAULT now(),
+  last_online_at     timestamptz,
+  deleted_at         timestamptz
 );
 CREATE UNIQUE INDEX characters_name_uq ON characters (realm_id, lower(name)) WHERE deleted_at IS NULL;
 CREATE INDEX characters_account_idx ON characters (account_id) WHERE deleted_at IS NULL;
-CREATE INDEX characters_squad_idx   ON characters (squad_id);
+CREATE INDEX characters_guild_idx   ON characters (guild_id);
 CREATE INDEX characters_level_idx   ON characters (realm_id, level DESC, exp DESC);
 
 CREATE TABLE character_skills (
@@ -231,7 +231,7 @@ CREATE TABLE item_instances (
   template_id      text NOT NULL,                       -- ITM01101
   qty              integer NOT NULL DEFAULT 1 CHECK (qty > 0),
   location         item_location NOT NULL,
-  holder_id        uuid NOT NULL,                       -- character / account / squad / mail / listing / trade
+  holder_id        uuid NOT NULL,                       -- character / account / guild / mail / listing / trade
   slot             integer,
   rarity           smallint NOT NULL DEFAULT 0 CHECK (rarity BETWEEN 0 AND 5),
   enhance_level    smallint NOT NULL DEFAULT 0 CHECK (enhance_level BETWEEN 0 AND 16),
@@ -247,7 +247,7 @@ CREATE TABLE item_instances (
 CREATE INDEX item_instances_holder_idx ON item_instances (holder_id, location);
 CREATE UNIQUE INDEX item_instances_slot_uq
   ON item_instances (holder_id, location, slot)
-  WHERE slot IS NOT NULL AND location IN ('BAG', 'EQUIP', 'BANK', 'SQUAD_BANK');
+  WHERE slot IS NOT NULL AND location IN ('BAG', 'EQUIP', 'BANK', 'GUILD_BANK');
 
 CREATE TABLE mails (
   id                     uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -256,8 +256,8 @@ CREATE TABLE mails (
   sender_label           text NOT NULL DEFAULT 'SYSTEM',
   subject                text NOT NULL,
   body                   text NOT NULL DEFAULT '',
-  yul                    bigint NOT NULL DEFAULT 0 CHECK (yul >= 0),
-  ngoc_mana              bigint NOT NULL DEFAULT 0 CHECK (ngoc_mana >= 0),
+  soft_currency          bigint NOT NULL DEFAULT 0 CHECK (soft_currency >= 0),
+  premium_currency       bigint NOT NULL DEFAULT 0 CHECK (premium_currency >= 0),
   read_at                timestamptz,
   claimed_at             timestamptz,
   expires_at             timestamptz NOT NULL,
@@ -267,7 +267,7 @@ CREATE INDEX mails_recipient_idx ON mails (recipient_character_id, created_at DE
 CREATE INDEX mails_expire_idx    ON mails (expires_at) WHERE claimed_at IS NULL;
 ```
 
-### 4.4 Xã hội & Squad
+### 4.4 Xã hội & Đội
 
 ```sql
 CREATE TABLE friends (
@@ -279,47 +279,47 @@ CREATE TABLE friends (
   CHECK (character_id <> other_id)
 );
 
-CREATE TABLE squads (
+CREATE TABLE guilds (
   id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   realm_id            smallint NOT NULL REFERENCES realms(id),
   name                text NOT NULL,
   emblem              jsonb NOT NULL DEFAULT '{}'::jsonb,
   level               smallint NOT NULL DEFAULT 1 CHECK (level BETWEEN 1 AND 10),
-  funds_yul           bigint NOT NULL DEFAULT 0 CHECK (funds_yul >= 0),
+  funds_soft          bigint NOT NULL DEFAULT 0 CHECK (funds_soft >= 0),
   contribution        bigint NOT NULL DEFAULT 0 CHECK (contribution >= 0),
-  stars               integer NOT NULL DEFAULT 0,
+  merit               integer NOT NULL DEFAULT 0,
   leader_character_id uuid NOT NULL,
   notice              text NOT NULL DEFAULT '',
   buffs               jsonb NOT NULL DEFAULT '{}'::jsonb,   -- {buffId: expiresAt}
   created_at          timestamptz NOT NULL DEFAULT now(),
   disbanded_at        timestamptz
 );
-CREATE UNIQUE INDEX squads_name_uq ON squads (realm_id, lower(name)) WHERE disbanded_at IS NULL;
+CREATE UNIQUE INDEX guilds_name_uq ON guilds (realm_id, lower(name)) WHERE disbanded_at IS NULL;
 
-CREATE TABLE squad_members (
-  squad_id     uuid NOT NULL REFERENCES squads(id) ON DELETE CASCADE,
+CREATE TABLE guild_members (
+  guild_id     uuid NOT NULL REFERENCES guilds(id) ON DELETE CASCADE,
   character_id uuid NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
-  role         squad_role NOT NULL DEFAULT 'MEMBER',
+  role         guild_role NOT NULL DEFAULT 'MEMBER',
   contribution bigint NOT NULL DEFAULT 0 CHECK (contribution >= 0),
   joined_at    timestamptz NOT NULL DEFAULT now(),
-  PRIMARY KEY (squad_id, character_id)
+  PRIMARY KEY (guild_id, character_id)
 );
-CREATE UNIQUE INDEX squad_members_char_uq ON squad_members (character_id);
+CREATE UNIQUE INDEX guild_members_char_uq ON guild_members (character_id);
 
 ALTER TABLE characters
-  ADD CONSTRAINT characters_squad_fk FOREIGN KEY (squad_id) REFERENCES squads(id) ON DELETE SET NULL;
+  ADD CONSTRAINT characters_guild_fk FOREIGN KEY (guild_id) REFERENCES guilds(id) ON DELETE SET NULL;
 
-CREATE TABLE squad_applications (
-  squad_id     uuid NOT NULL REFERENCES squads(id) ON DELETE CASCADE,
+CREATE TABLE guild_applications (
+  guild_id     uuid NOT NULL REFERENCES guilds(id) ON DELETE CASCADE,
   character_id uuid NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
   message      text NOT NULL DEFAULT '',
   created_at   timestamptz NOT NULL DEFAULT now(),
-  PRIMARY KEY (squad_id, character_id)
+  PRIMARY KEY (guild_id, character_id)
 );
 
-CREATE TABLE squad_logs (
+CREATE TABLE guild_logs (
   id         bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  squad_id   uuid NOT NULL REFERENCES squads(id) ON DELETE CASCADE,
+  guild_id   uuid NOT NULL REFERENCES guilds(id) ON DELETE CASCADE,
   actor_id   uuid,
   action     text NOT NULL,
   payload    jsonb NOT NULL DEFAULT '{}'::jsonb,
@@ -335,26 +335,26 @@ CREATE TABLE market_listings (
   realm_id            smallint NOT NULL REFERENCES realms(id),
   seller_character_id uuid NOT NULL REFERENCES characters(id),
   item_instance_id    uuid NOT NULL UNIQUE REFERENCES item_instances(id),
-  price_yul           bigint NOT NULL CHECK (price_yul > 0),
-  listing_fee_yul     bigint NOT NULL DEFAULT 0,
+  price_soft          bigint NOT NULL CHECK (price_soft > 0),
+  listing_fee_soft    bigint NOT NULL DEFAULT 0,
   status              listing_status NOT NULL DEFAULT 'ACTIVE',
   buyer_character_id  uuid REFERENCES characters(id),
   created_at          timestamptz NOT NULL DEFAULT now(),
   expires_at          timestamptz NOT NULL,
   sold_at             timestamptz
 );
-CREATE INDEX market_active_idx ON market_listings (realm_id, status, price_yul) WHERE status = 'ACTIVE';
+CREATE INDEX market_active_idx ON market_listings (realm_id, status, price_soft) WHERE status = 'ACTIVE';
 CREATE INDEX market_expire_idx ON market_listings (expires_at) WHERE status = 'ACTIVE';
 
 CREATE TABLE trade_logs (
-  id        bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  realm_id  smallint NOT NULL,
-  a_id      uuid NOT NULL,
-  b_id      uuid NOT NULL,
-  a_items   jsonb NOT NULL DEFAULT '[]'::jsonb,
-  b_items   jsonb NOT NULL DEFAULT '[]'::jsonb,
-  a_yul     bigint NOT NULL DEFAULT 0,
-  b_yul     bigint NOT NULL DEFAULT 0,
+  id         bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  realm_id   smallint NOT NULL,
+  a_id       uuid NOT NULL,
+  b_id       uuid NOT NULL,
+  a_items    jsonb NOT NULL DEFAULT '[]'::jsonb,
+  b_items    jsonb NOT NULL DEFAULT '[]'::jsonb,
+  a_soft     bigint NOT NULL DEFAULT 0,
+  b_soft     bigint NOT NULL DEFAULT 0,
   created_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX trade_logs_a_idx ON trade_logs (a_id, created_at DESC);
@@ -427,26 +427,26 @@ CREATE TABLE mounts (
 
 ```sql
 CREATE TABLE payment_products (
-  id            text PRIMARY KEY,                       -- 'PK_20K'
-  name          text NOT NULL,
-  price_vnd     integer NOT NULL CHECK (price_vnd > 0),
-  ngoc_mana     integer NOT NULL CHECK (ngoc_mana > 0),
-  first_bonus   boolean NOT NULL DEFAULT true,
-  active        boolean NOT NULL DEFAULT true
+  id             text PRIMARY KEY,                      -- 'PK_20K'
+  name           text NOT NULL,
+  price_vnd      integer NOT NULL CHECK (price_vnd > 0),
+  premium_amount integer NOT NULL CHECK (premium_amount > 0),
+  first_bonus    boolean NOT NULL DEFAULT true,
+  active         boolean NOT NULL DEFAULT true
 );
 
 CREATE TABLE payment_orders (
-  id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  account_id    uuid NOT NULL REFERENCES accounts(id),
-  product_id    text NOT NULL REFERENCES payment_products(id),
-  amount_vnd    integer NOT NULL CHECK (amount_vnd > 0),
-  ngoc_mana     integer NOT NULL CHECK (ngoc_mana > 0),
-  provider      text NOT NULL,
-  provider_ref  text,
-  status        payment_status NOT NULL DEFAULT 'PENDING',
-  raw           jsonb NOT NULL DEFAULT '{}'::jsonb,
-  created_at    timestamptz NOT NULL DEFAULT now(),
-  paid_at       timestamptz
+  id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  account_id     uuid NOT NULL REFERENCES accounts(id),
+  product_id     text NOT NULL REFERENCES payment_products(id),
+  amount_vnd     integer NOT NULL CHECK (amount_vnd > 0),
+  premium_amount integer NOT NULL CHECK (premium_amount > 0),
+  provider       text NOT NULL,
+  provider_ref   text,
+  status         payment_status NOT NULL DEFAULT 'PENDING',
+  raw            jsonb NOT NULL DEFAULT '{}'::jsonb,
+  created_at     timestamptz NOT NULL DEFAULT now(),
+  paid_at        timestamptz
 );
 CREATE UNIQUE INDEX payment_orders_provider_uq ON payment_orders (provider, provider_ref) WHERE provider_ref IS NOT NULL;
 CREATE INDEX payment_orders_account_idx ON payment_orders (account_id, created_at DESC);
@@ -531,7 +531,7 @@ CREATE TABLE live_events (
 
 CREATE TABLE gift_codes (
   code             text PRIMARY KEY,
-  rewards          jsonb NOT NULL,                      -- {items:[{id,qty}], yul, ngocMana}
+  rewards          jsonb NOT NULL,                      -- {items:[{id,qty}], soft_currency, ngocMana}
   max_total        integer,                             -- null = không giới hạn
   max_per_account  integer NOT NULL DEFAULT 1 CHECK (max_per_account > 0),
   redeemed_count   integer NOT NULL DEFAULT 0,
@@ -552,7 +552,7 @@ CREATE INDEX gift_redemptions_idx ON gift_code_redemptions (code, account_id);
 
 CREATE TABLE season_results (
   season_id    text NOT NULL,
-  board        text NOT NULL,                           -- POWER, STAR, ARENA, SQUAD
+  board        text NOT NULL,                           -- POWER, MERIT, ARENA, GUILD
   rank         integer NOT NULL,
   owner_id     uuid NOT NULL,
   score        bigint NOT NULL,
@@ -586,11 +586,11 @@ CREATE INDEX character_snapshots_idx ON character_snapshots (character_id, creat
 
 ```sql
 BEGIN;
--- 1. Khóa nhân vật, kiểm tra đủ Yul
-SELECT yul FROM characters WHERE id = $1 FOR UPDATE;
+-- 1. Khóa nhân vật, kiểm tra đủ Quan
+SELECT soft_currency FROM characters WHERE id = $1 FOR UPDATE;
 
--- 2. Trừ Yul (CHECK yul >= 0 sẽ chặn nếu thiếu)
-UPDATE characters SET yul = yul - $price, version = version + 1, updated_at = now()
+-- 2. Trừ Quan (CHECK soft_currency >= 0 sẽ chặn nếu thiếu)
+UPDATE characters SET soft_currency = soft_currency - $price, version = version + 1, updated_at = now()
 WHERE id = $1;
 
 -- 3. Cấp vật phẩm
@@ -599,7 +599,7 @@ VALUES ($tpl, $qty, 'BAG', $1, $slot, $rarity, $bound);
 
 -- 4. Ghi sổ cái (idem_key chống lặp)
 INSERT INTO currency_ledger (owner_kind, owner_id, currency, delta, balance_after, reason, ref_type, ref_id, idem_key)
-VALUES ('CHARACTER', $1, 'YUL', -$price, $balance_after, 'SHOP_BUY', 'SHOP', $shopId, $idem);
+VALUES ('CHARACTER', $1, 'SOFT', -$price, $balance_after, 'SHOP_BUY', 'SHOP', $shopId, $idem);
 COMMIT;
 ```
 
@@ -608,14 +608,14 @@ COMMIT;
 ```sql
 BEGIN;
 -- Khóa theo thứ tự id tăng dần để tránh deadlock
-SELECT id, yul FROM characters WHERE id IN ($a, $b) ORDER BY id FOR UPDATE;
+SELECT id, soft_currency FROM characters WHERE id IN ($a, $b) ORDER BY id FOR UPDATE;
 -- Xác minh quyền sở hữu và chưa bị khóa
 SELECT id FROM item_instances WHERE id = ANY($itemsA) AND holder_id = $a AND location = 'TRADE' FOR UPDATE;
 SELECT id FROM item_instances WHERE id = ANY($itemsB) AND holder_id = $b AND location = 'TRADE' FOR UPDATE;
 -- Chuyển chủ và slot
 UPDATE item_instances SET holder_id = $b, location = 'BAG', slot = NULL WHERE id = ANY($itemsA);
 UPDATE item_instances SET holder_id = $a, location = 'BAG', slot = NULL WHERE id = ANY($itemsB);
--- Chuyển Yul, ghi sổ cái, ghi trade_logs
+-- Chuyển Quan, ghi sổ cái, ghi trade_logs
 COMMIT;
 ```
 
@@ -624,15 +624,15 @@ COMMIT;
 ```sql
 BEGIN;
 SELECT enhance_level, pity_counter, version FROM item_instances WHERE id = $item AND holder_id = $char FOR UPDATE;
-SELECT yul FROM characters WHERE id = $char FOR UPDATE;
--- Trừ Yul + nguyên liệu (ledger), áp dụng kết quả RNG (do server tạo)
+SELECT soft_currency FROM characters WHERE id = $char FOR UPDATE;
+-- Trừ Quan + nguyên liệu (ledger), áp dụng kết quả RNG (do server tạo)
 UPDATE item_instances
 SET enhance_level = $new_level, pity_counter = $new_pity, version = version + 1, updated_at = now()
 WHERE id = $item AND version = $expected_version;   -- khóa lạc quan
 COMMIT;
 ```
 
-### 6.4 Cộng Ngọc Mana từ webhook (idempotent)
+### 6.4 Cộng Nén Bạc từ webhook (idempotent)
 
 ```sql
 BEGIN;
@@ -640,11 +640,11 @@ INSERT INTO payment_events (provider, event_id, payload) VALUES ($p, $eid, $payl
 ON CONFLICT (provider, event_id) DO NOTHING;
 -- Nếu 0 dòng được chèn → đã xử lý, thoát
 UPDATE payment_orders SET status = 'PAID', paid_at = now()
-WHERE id = $order AND status = 'PENDING' RETURNING account_id, ngoc_mana;
+WHERE id = $order AND status = 'PENDING' RETURNING account_id, premium_amount;
 -- Nếu RETURNING có dòng:
-UPDATE accounts SET ngoc_mana = ngoc_mana + $amount, vip_total_vnd = vip_total_vnd + $vnd WHERE id = $acc;
+UPDATE accounts SET premium_currency = premium_currency + $amount, vip_total_vnd = vip_total_vnd + $vnd WHERE id = $acc;
 INSERT INTO currency_ledger (owner_kind, owner_id, currency, delta, balance_after, reason, ref_type, ref_id)
-VALUES ('ACCOUNT', $acc, 'NGOC_MANA', $amount, $balance_after, 'TOPUP', 'PAYMENT_ORDER', $order);
+VALUES ('ACCOUNT', $acc, 'PREMIUM', $amount, $balance_after, 'TOPUP', 'PAYMENT_ORDER', $order);
 COMMIT;
 ```
 
@@ -658,7 +658,7 @@ COMMIT;
 | `online:{realm}` | set | — | Nhân vật trực tuyến |
 | `zone:{map}:{n}:count` | string | — | Số người trong khu |
 | `registry:zone:{map}:{n}` | string | — | Node đang chạy khu |
-| `lb:{realm}:power` / `star` / `level` | zset | — | Bảng xếp hạng |
+| `lb:{realm}:power` / `merit` / `level` | zset | — | Bảng xếp hạng |
 | `rl:{ip|acc}:{op}` | string | giây | Giới hạn tốc độ |
 | `idem:{owner}:{key}` | string | 10 phút | Idempotency lệnh tài sản |
 | `lock:char:{id}` | string | 5 s | Khóa thao tác nhân vật xuyên node |
@@ -672,7 +672,7 @@ COMMIT;
 
 | Tĩnh (file `packages/content`) | Động (PostgreSQL) |
 |-------------------------------|-------------------|
-| Map, quái, boss, NPC, vật phẩm mẫu, nhiệm vụ, kỹ năng, bảng rơi, cửa hàng NPC | Nhân vật, instance vật phẩm, tiến độ nhiệm vụ, Squad, chợ, thanh toán |
+| Map, quái, boss, NPC, vật phẩm mẫu, nhiệm vụ, kỹ năng, bảng rơi, cửa hàng NPC | Nhân vật, instance vật phẩm, tiến độ nhiệm vụ, Đội, chợ, thanh toán |
 | Phiên bản hóa theo Git, kiểm chứng bằng schema | Sao lưu hằng ngày, migration có kiểm soát |
 
 Liên kết bằng ID văn bản (`ITM01101`, `Q_MAIN_02`); khi tải, server kiểm tra **mọi ID động có tồn tại trong nội dung**. ID biến mất → đưa vào danh sách **"mồ côi"** và báo động.
@@ -686,7 +686,7 @@ Chạy hằng đêm (Worker), báo cáo vào dashboard:
 | Tổng tiền | `SUM(delta)` ledger của một chủ ≠ số dư hiện tại |
 | Vật phẩm mồ côi | `item_instances.holder_id` không tồn tại ở bảng chủ tương ứng |
 | Vật phẩm trùng slot | Vi phạm chỉ mục duy nhất (đã chặn) |
-| Squad | Thành viên > sức chứa; không có Đội Trưởng |
+| Đội | Thành viên > sức chứa; không có Đội Trưởng |
 | Chợ | Listing ACTIVE nhưng vật phẩm không ở `MARKET` |
 | Thanh toán | `payment_orders` PAID nhưng không có dòng ledger |
 

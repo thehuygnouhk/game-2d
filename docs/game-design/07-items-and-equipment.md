@@ -7,15 +7,15 @@
 | Nhóm | Mã loại | Dải ID | Ví dụ |
 |------|---------|--------|-------|
 | Vũ khí | `WEAPON` | ITM01xxx | Kiếm, Trượng, Đoản Kiếm, Găng, Búa & Khiên, Trượng Hoa, Đao |
-| Ma Đạo Thư | `GRIMOIRE` | ITM02xxx | Ma Đạo Thư 3/4/5 lá |
+| Huyền Thư | `TOME` | ITM02xxx | Huyền Thư Sơ/Tu/Định Bản |
 | Giáp & phụ kiện | `ARMOR` | ITM03xxx | Mũ, Áo, Quần, Găng, Giày, Áo Choàng, Bùa, Nhẫn |
-| Tiêu hao | `CONSUMABLE` | ITM04xxx | Bình HP/MP, Lá Thảo Dược, thức ăn |
-| Nguyên liệu | `MATERIAL` | ITM05xxx | Đá Mana, mảnh, rơi từ quái |
-| Linh Thạch Ngọc | `GEM` | ITM06xxx | Ngọc khảm |
-| Nhiệm vụ | `QUEST` | ITM07xxx | Bao Tải Bị Cướp, Thảo Dược Hage |
+| Tiêu hao | `CONSUMABLE` | ITM04xxx | Bình HP/MP, Lá Thuốc Cổ, thức ăn |
+| Nguyên liệu | `MATERIAL` | ITM05xxx | Đồng Luyện, mảnh, rơi từ quái |
+| Hạt Nguyên | `GEM` | ITM06xxx | Ngọc khảm |
+| Nhiệm vụ | `QUEST` | ITM07xxx | Bao Tải Bị Cướp, Thảo Dược Suối Mơ |
 | Thú / Đồng hành | `COMPANION` | ITM08xxx | Khế Ước Thạch, Chổi Bay, Linh Hồn Thú |
 | Thẩm mỹ | `COSMETIC` | ITM09xxx | Trang phục Đội, huy hiệu, danh hiệu |
-| Sự kiện / Khác | `MISC` | ITM10xxx | Vé Quay, Thẻ Auto, Linh Thạch Sao |
+| Sự kiện / Khác | `MISC` | ITM10xxx | Vé Quay, Thẻ Auto, Trang Rời |
 
 ## 2. Độ hiếm
 
@@ -45,13 +45,13 @@
 | # | Ô | Loại chỉ số chính | Ghi chú |
 |---|----|-------------------|---------|
 | 1 | Vũ khí | ATK | Theo hệ phép; không mặc được vũ khí hệ khác |
-| 2 | **Ma Đạo Thư** | ATK, MP | Phẩm 3/4/5 lá, xem [classes §6](03-origins-classes-skills.md) |
+| 2 | **Huyền Thư** | ATK, MP | Ấn bản Sơ/Tu/Định, xem [classes §6](03-origins-classes-skills.md) |
 | 3 | Mũ / Mặt nạ | DEF, MP | |
 | 4 | Áo | DEF, HP | |
 | 5 | Quần | DEF, HP | |
 | 6 | Găng tay | ATK, CRIT | |
 | 7 | Giày | DEF, tốc chạy | |
-| 8 | Áo Choàng Hiệp Sĩ | HP, EVA | Biểu tượng Đội hiển thị trên lưng |
+| 8 | Áo Choàng Pháp Vệ | HP, EVA | Biểu tượng Đội hiển thị trên lưng |
 | 9 | Bùa (Amulet) | Dòng phụ ngẫu nhiên | |
 | 10 | Nhẫn | Dòng phụ ngẫu nhiên | |
 
@@ -64,7 +64,7 @@ Trang bị có cấp yêu cầu `L`. Chỉ số gốc **trước** hệ số đ�
 | Ô | Chỉ số chính | Công thức |
 |---|-------------|-----------|
 | Vũ khí | ATK | `4·L + 10` |
-| Ma Đạo Thư | ATK / MP | `1,5·L + 5` / `8·L + 20` |
+| Huyền Thư | ATK / MP | `1,5·L + 5` / `8·L + 20` |
 | Mũ | DEF / MP | `1,0·L + 2` / `6·L` |
 | Áo | DEF / HP | `1,6·L + 4` / `18·L + 40` |
 | Quần | DEF / HP | `1,2·L + 3` / `12·L + 30` |
@@ -76,18 +76,18 @@ Chỉ số cuối = `gốc × hệ số độ hiếm × (1 + 0,06 × cấp cư�
 
 ## 5. Các bậc Set theo cấp
 
-Mỗi bậc set có 6 mảnh (Vũ khí, Mũ, Áo, Quần, Găng, Giày). Chủ đề đặt theo các Đội Hiệp Sĩ.
+Mỗi bậc set có 6 mảnh (Vũ khí, Mũ, Áo, Quần, Găng, Giày). Chủ đề đặt theo các Đội.
 
 | Bậc | Tên set | Cấp | Nguồn chính |
 |-----|---------|-----|-------------|
-| S1 | **Dân Làng Hage** | 1–9 | Nhiệm vụ chương 1, quái R01 |
-| S2 | **Hiệp Sĩ Tập Sự** | 10–19 | Kỳ thi, quái R03 |
-| S3 | **Bò Đen** | 20–34 | Chương 3, hầm ngục DG02–03 |
-| S4 | **Sư Tử Đỏ** | 35–49 | Chương 4, DG04 |
-| S5 | **Hoa Hồng Xanh** | 50–64 | Chương 5, DG05 |
-| S6 | **Đại Bàng Bạc** | 65–79 | Chương 6, DG06 |
-| S7 | **Bình Minh Vàng** | 80–94 | Raid Spade, Chương 7 |
-| S8 | **Vua Phép Thuật** | 95–100 | Raid Điện Ma Vương, Mùa Giải |
+| S1 | **Dân Làng** | 1–9 | Nhiệm vụ chương 1, quái R01 |
+| S2 | **Thư Lại** | 10–19 | Kỳ thi, quái R03 |
+| S3 | **Viện Khảm** | 20–34 | Chương 3, hầm ngục DG02–03 |
+| S4 | **Viện Tốn** | 35–49 | Chương 4, DG04 |
+| S5 | **Viện Chấn** | 50–64 | Chương 5, DG05 |
+| S6 | **Viện Cấn** | 65–79 | Chương 6, DG06 |
+| S7 | **Viện Càn** | 80–94 | Raid Bạch Lĩnh, Chương 7 |
+| S8 | **Chấp Bút** | 95–100 | Raid Lòng Chương Trắng, Mùa Giải |
 
 ### 5.1 Bonus set
 
@@ -101,9 +101,9 @@ Ba mảnh đầu của set bất kỳ cùng hệ được tính **Set kích ho�
 
 ## 6. Cường hóa (+1 → +16)
 
-NPC042 **Thợ Rèn Gren** (M006).
+NPC042 **Thợ Rèn Tư** (M006).
 
-| Cấp | Tỉ lệ thành công | Yul | Đá Mana | Thất bại |
+| Cấp | Tỉ lệ thành công | Quan | Đồng Luyện | Thất bại |
 |-----|-------------------|-----|---------|----------|
 | +1 | 100% | 200 | 1 Sơ | — |
 | +2 | 100% | 300 | 1 Sơ | — |
@@ -122,16 +122,16 @@ NPC042 **Thợ Rèn Gren** (M006).
 | +15 | 10% | 58.385 | 2 Tinh | −1 cấp |
 | +16 | 5% | 87.578 | 2 Tinh | −1 cấp |
 
-- Công thức Yul: `200 × 1,5^(n−1)`.
+- Công thức Quan: `200 × 1,5^(n−1)`.
 - **Không bao giờ phá hủy trang bị.** Thất bại tối đa giảm 1 cấp.
 - **Bùa Bảo Hộ** (cửa hàng, sự kiện): thất bại không giảm cấp.
-- **Ý Chí Bất Khuất (pity):** sau mỗi lần thất bại liên tiếp, tỉ lệ +5% (tối đa +25%), reset khi thành công.
+- **Không Lùi Bước (pity):** sau mỗi lần thất bại liên tiếp, tỉ lệ +5% (tối đa +25%), reset khi thành công.
 - Bonus cường hóa: `+6%` chỉ số gốc mỗi cấp (tối đa +96% ở +16).
 - Cường hóa **trực tiếp trên đồ đang mặc**, server tính trong **một transaction** (xem [database](../architecture/database-schema.md)).
 
-## 7. Khảm Linh Thạch Ngọc
+## 7. Khảm Hạt Nguyên
 
-NPC043 **Thợ Khảm Linh**. Ngọc rơi từ hầm ngục và chế tạo.
+NPC043 **Thợ Khảm**. Ngọc rơi từ hầm ngục và chế tạo.
 
 | Loại ngọc | Hiệu ứng mỗi cấp ngọc (1–5) |
 |-----------|------------------------------|
@@ -142,13 +142,13 @@ NPC043 **Thợ Khảm Linh**. Ngọc rơi từ hầm ngục và chế tạo.
 | Ngọc Phòng Thủ | +8 DEF × cấp |
 | Ngọc Chí Mạng | +0,5% CRIT × cấp |
 
-- Ghép **3 ngọc cùng loại, cùng cấp** → 1 ngọc cấp kế (tốn Yul).
-- Gỡ ngọc: **Henry (NPC029)**, mất 30% ngọc (trừ khi dùng Bùa Gỡ Ngọc).
+- Ghép **3 ngọc cùng loại, cùng cấp** → 1 ngọc cấp kế (tốn Quan).
+- Gỡ ngọc: **Thợ Đóng Sách Bình (NPC029)**, mất 30% ngọc (trừ khi dùng Bùa Gỡ Ngọc).
 - Khảm ngọc không có tỉ lệ thất bại.
 
 ## 8. Vật phẩm tiêu hao
 
-| Vật phẩm | Hiệu ứng | Hồi chiêu | Giá (Yul) |
+| Vật phẩm | Hiệu ứng | Hồi chiêu | Giá (Quan) |
 |----------|----------|-----------|-----------|
 | Bình HP Nhỏ | Hồi 150 HP | 8s | 20 |
 | Bình HP Vừa | Hồi 600 HP | 8s | 80 |
@@ -156,43 +156,43 @@ NPC043 **Thợ Khảm Linh**. Ngọc rơi từ hầm ngục và chế tạo.
 | Bình HP Đặc Biệt | Hồi 6.000 HP | 8s | 800 |
 | Bình HP Tối Thượng | Hồi 15.000 HP | 8s | 2.000 |
 | Bình MP (5 bậc) | Tương tự: 80 / 300 / 1.000 / 3.000 / 8.000 MP | 8s | ×0,8 giá HP |
-| **Lá Thảo Dược Tinh Linh** | **Hồi đầy HP và MP** | **30s**, tối đa 10 mỗi ngày dùng | Không bán (nhiệm vụ, sự kiện) |
+| **Lá Thuốc Cổ** | **Hồi đầy HP và MP** | **30s**, tối đa 10 mỗi ngày dùng | Không bán (nhiệm vụ, sự kiện) |
 | Lá Hồi Sinh | Hồi sinh tại chỗ, 50% HP | 60s | 1.000 |
 | Cuộn Dịch Chuyển | Về thành gần nhất | 5 phút | 200 |
-| Bùa Bảo Hộ | Chống giảm cấp cường hóa | — | 10 Ngọc Mana hoặc sự kiện |
-| Bình Rửa Tiềm Năng | Reset điểm tiềm năng | — | 50 Ngọc Mana |
-| Cuộn EXP ×2 | EXP ×2 trong 30 phút | — | 20 Ngọc Mana |
-| Thẻ Auto | +1 giờ Auto Hunt | — | Thưởng/10 Ngọc Mana |
+| Bùa Bảo Hộ | Chống giảm cấp cường hóa | — | 10 Nén Bạc hoặc sự kiện |
+| Bình Rửa Tiềm Năng | Reset điểm tiềm năng | — | 50 Nén Bạc |
+| Cuộn EXP ×2 | EXP ×2 trong 30 phút | — | 20 Nén Bạc |
+| Thẻ Auto | +1 giờ Auto Hunt | — | Thưởng/10 Nén Bạc |
 
-### 8.1 Thức ăn của Charmy (NPC025)
+### 8.1 Thức ăn của Bà Hai Bánh (NPC025)
 
 Buff 30 phút, không cộng dồn cùng loại:
 
 | Món | Hiệu ứng |
 |-----|----------|
-| Bánh Mật Bông | +5% EXP |
+| Bánh Mật Ong | +5% EXP |
 | Súp Mana | +10% MP, hồi MP +10% |
-| Thịt Nướng Sư Tử | +8% ATK |
+| Thịt Nướng Than Hồng | +8% ATK |
 | Cá Chiên Biển | +8% DEF |
-| Bữa Tiệc Bò Đen | +5% EXP, +5% ATK, +5% DEF |
+| Mâm Cơm Bến Cảng | +5% EXP, +5% ATK, +5% DEF |
 
-## 9. Chế tạo (Henry)
+## 9. Chế tạo (Thợ Đóng Sách Bình)
 
 | Công thức | Nguyên liệu | Kết quả |
 |-----------|-------------|---------|
-| Bình HP Vừa ×10 | 20 Thảo Dược, 200 Yul | 10 Bình HP Vừa |
-| Đá Mana Trung | 3 Đá Mana Sơ, 500 Yul | 1 Đá Mana Trung |
-| Ngọc cấp 2 | 3 Ngọc cấp 1, 1.000 Yul | 1 Ngọc cấp 2 |
-| Set Đội (S3) | Nguyên liệu quái, 20.000 Yul | 1 mảnh set |
-| Chổi Bay Bạc | 50 Mảnh Chổi, 100.000 Yul | Chổi Bay Bạc |
+| Bình HP Vừa ×10 | 20 Thảo Dược, 200 Quan | 10 Bình HP Vừa |
+| Đồng Luyện Trung | 3 Đồng Luyện Sơ, 500 Quan | 1 Đồng Luyện Trung |
+| Ngọc cấp 2 | 3 Ngọc cấp 1, 1.000 Quan | 1 Ngọc cấp 2 |
+| Set Đội (S3) | Nguyên liệu quái, 20.000 Quan | 1 mảnh set |
+| Chổi Bay Bạc | 50 Mảnh Chổi, 100.000 Quan | Chổi Bay Bạc |
 
 ## 10. Túi đồ & Kho
 
 | Mục | Mặc định | Tối đa | Mở rộng |
 |-----|----------|--------|---------|
-| Túi đồ | 30 ô | 90 ô | Secre (NPC031): +10 ô/lần, giá tăng dần (Yul), một phần cần Ngọc Mana |
+| Túi đồ | 30 ô | 90 ô | Bà Thủ Kho (NPC031): +10 ô/lần, giá tăng dần (Quan), một phần cần Nén Bạc |
 | Kho (tài khoản) | 30 ô | 120 ô | Tương tự |
-| Kho Đội | 100 ô | 300 ô | Theo cấp Squad |
+| Kho Đội | 100 ô | 300 ô | Theo cấp Đội |
 | Số lượng chồng (stack) | Tiêu hao 999, nguyên liệu 9999, trang bị 1 | | |
 
 Chức năng: sắp xếp tự động, khóa vật phẩm (chống bán nhầm), bán nhanh vật phẩm rác theo độ hiếm.
