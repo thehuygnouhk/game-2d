@@ -16,7 +16,9 @@ Hướng dẫn cho Claude Code (và cộng tác viên) khi làm việc trong rep
 6. **Không dùng tài sản gốc của anime/manga** (ảnh, nhạc, thoại). Viết thoại mới, tạo art gốc. Tên IP chỉ nằm trong i18n để có thể reskin. Xem `docs/product/legal-and-compliance.md`.
    **Hướng đã chọn: thương mại với IP gốc thay thế (reskin).** Đổi tên là chưa đủ; xem `docs/product/reskin-plan.md`. Không thêm tên, nhân vật, địa danh hay tình tiết của Black Clover vào nội dung mới, và không bắt đầu sản xuất art trước khi World Bible gốc được duyệt.
 7. **Solo-first.** Mọi hệ phép phải tự chơi trọn vẹn một mình; kỹ năng hỗ trợ luôn có tác dụng lên bản thân; không có kỹ năng hồi sinh người khác. Xem `docs/game-design/04-combat-and-progression.md` §11.
-8. **Nội dung dạng dữ liệu** (map, quái, vật phẩm, nhiệm vụ) viết bằng YAML trong `packages/content`, có schema và validator. Xem `docs/workflows/content-pipeline.md`.
+8. **World Bible.** Thế giới gốc cho bản thương mại nằm ở `docs/world-bible/` (hướng văn hóa Việt; **bản nháp chờ duyệt**). Nội dung mới phải theo đó, không theo thiết kế bám nguyên tác. File `docs/world-bible/99-internal-mapping-and-audit.md` là **nội bộ**, không phát hành.
+9. **Định danh kỹ thuật trung tính.** Tên bảng, cột, enum, opcode, mã lỗi **không chứa tên riêng của IP** (ví dụ không dùng `yul`, `ngoc_mana`, `grimoire_*`); dùng `soft`, `premium`, `vessel_tier`… và đưa tên hiển thị vào i18n. Danh sách cần đổi: `docs/world-bible/99-internal-mapping-and-audit.md` §9.
+10. **Nội dung dạng dữ liệu** (map, quái, vật phẩm, nhiệm vụ) viết bằng YAML trong `packages/content`, có schema và validator. Xem `docs/workflows/content-pipeline.md`.
 
 ## Ngôn ngữ
 

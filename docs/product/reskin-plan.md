@@ -85,10 +85,10 @@ flowchart TD
 
 | Bước | Nội dung | Đầu ra |
 |------|----------|--------|
-| **1. World Bible** | Bối cảnh, **xung đột trung tâm**, 3–4 thế lực, khoảng 10 nhân vật chủ chốt (ngoại hình, tính cách, mục tiêu, quan hệ), hệ thống phép riêng, tên game | Tài liệu 10–20 trang, được duyệt |
+| **1. World Bible** | Bối cảnh, **xung đột trung tâm**, 3–4 thế lực, khoảng 10 nhân vật chủ chốt (ngoại hình, tính cách, mục tiêu, quan hệ), hệ thống phép riêng, tên game. **Trạng thái: bản nháp v0.1 tại [world-bible](../world-bible/README.md), hướng văn hóa Việt, chờ duyệt** | Tài liệu 10–20 trang, được duyệt |
 | **2. Viết lại nội dung** | Chính tuyến, NPC, phản diện, tên map/boss/kỹ năng, từ World Bible. Giữ **chức năng** NPC (dịch chuyển, kho, chế tạo…), đổi **danh tính** | Bản mới của các file nội dung |
 | **3. Concept art** | Nhân vật, trang phục, biểu tượng thế lực, UI. Lưu **hồ sơ phát triển** (phác thảo, ngày, người làm) | Bộ concept, hồ sơ |
-| **4. Dữ liệu** | Sửa `packages/content` và `i18n`. ID kỹ thuật (`M001`, `NPC001`, `SKL_FIRE_1`…) **đã trung tính**, giữ nguyên | Bản dữ liệu mới, validator xanh |
+| **4. Dữ liệu** | Sửa `packages/content` và `i18n`. ID nội dung (`M001`, `NPC001`, `SKL_FIRE_1`…) trung tính, giữ nguyên. **Định danh tiền tệ và vài khái niệm** (`yul`, `ngoc_mana`, `grimoire_leaves`, `ANTI`…) **chưa trung tính**, cần đổi trước khi viết mã ([nội bộ §9](../world-bible/99-internal-mapping-and-audit.md#9-việc-kỹ-thuật-phát-sinh)) | Bản dữ liệu mới, validator xanh |
 | **5. Tên** | Tra cứu nhãn hiệu (Cục Sở hữu trí tuệ Việt Nam và thị trường mục tiêu), tên miền, tên trên cửa hàng ứng dụng; tránh "Clover", "Bull", "Grimoire" kèm lá | Báo cáo tra cứu |
 | **6. Rà soát nhận diện** | Cho người **ngoài dự án**, biết Black Clover, xem nhân vật/cốt truyện/tên. Áp dụng [phép thử](#2-phép-thử-nhận-diện) | Danh sách điểm giống cần sửa |
 | **7. Pháp lý** | Luật sư IP duyệt sản phẩm; kiểm tra hợp đồng chuyển giao quyền (họa sĩ, nhạc sĩ, biên kịch, freelancer), giấy phép phông và thư viện | Xác nhận bằng văn bản |
@@ -98,7 +98,7 @@ flowchart TD
 Mỗi sprite, chân dung, logo và đoạn thoại làm cho phiên bản cũ đều phải bỏ đi khi reskin. Vì vậy:
 
 - **World Bible và tên game được chốt trước khi vẽ bất cứ thứ gì.** Đã thêm vào [roadmap Phase 0](roadmap.md).
-- Phần **kỹ thuật** (client, server, DB, giao thức) **không phụ thuộc IP**, nên chạy song song, **không làm chậm lộ trình**.
+- Phần **kỹ thuật** (client, server, DB, giao thức) **gần như không phụ thuộc IP** (chỉ cần đổi một số định danh trước khi viết mã), nên chạy song song, **không làm chậm lộ trình**.
 - Chỉ phần **nội dung và art** chờ World Bible.
 
 ## 6. Cách tổ chức tài liệu và repo
@@ -108,7 +108,7 @@ Mỗi sprite, chân dung, logo và đoạn thoại làm cho phiên bản cũ đ�
 | Coi bộ tài liệu hiện tại là **bản tham khảo nội bộ** (fan edition), **không** phát hành | Nó ghi rõ nguồn cảm hứng và bám nguyên tác |
 | **Viết lại** các file nội dung từ World Bible thay vì sửa từng chỗ | Sửa chữa không xóa được sự tương đồng về cấu trúc và tính cách |
 | Khi bắt đầu viết bản thương mại, tách thành thư mục/nhánh riêng (ví dụ `archive/fan-edition/`) hoặc repo riêng; bản thương mại **không chứa** tên và chi tiết IP gốc | Giữ ranh giới rõ ràng giữa hai bản |
-| Giữ ID kỹ thuật trung tính, đưa mọi tên hiển thị vào i18n | Đã làm; giúp thay tên không đụng mã nguồn |
+| Giữ định danh kỹ thuật trung tính, đưa mọi tên hiển thị vào i18n | **Làm được một phần.** ID nội dung đã trung tính; định danh tiền tệ và vài khái niệm trong DB và giao thức còn mang tên IP gốc (khoảng 74 chỗ), cần đổi, xem [nội bộ §9](../world-bible/99-internal-mapping-and-audit.md#9-việc-kỹ-thuật-phát-sinh) |
 | Không thêm nội dung mới mang tên/tình tiết IP gốc vào bản thương mại | Đã ghi trong [CLAUDE.md](../../CLAUDE.md) |
 
 ### 6.1 Tác động lên từng tài liệu

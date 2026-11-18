@@ -12,6 +12,20 @@
 | [legal-and-compliance](product/legal-and-compliance.md) | IP, quy định game, dữ liệu cá nhân, thanh toán, điều khoản |
 | [reskin-plan](product/reskin-plan.md) | **Kế hoạch thương mại với IP gốc thay thế:** cần đổi gì, giữ gì, quy trình, danh sách kiểm tra |
 
+## 1a. World Bible (`world-bible/`): thế giới gốc cho bản thương mại
+
+> **Trạng thái: bản nháp v0.1, chờ duyệt.** Chưa thay các tài liệu thiết kế bên dưới; sau khi duyệt, nó là nguồn để viết lại chúng.
+
+| Tài liệu | Nội dung |
+|----------|----------|
+| [README](world-bible/README.md) | Tóm tắt một trang, **danh sách duyệt**, việc cần người thật |
+| [01 premise-and-pillars](world-bible/01-premise-and-pillars.md) | Tên game, logline, trụ cột, giọng văn, **rào chắn văn hóa** |
+| [02 world-and-history](world-bible/02-world-and-history.md) | Vũ trụ quan, lịch sử, Ba Mạch, chín vùng, lễ hội, sinh vật, phong cách hình ảnh |
+| [03 magic-linh-system](world-bible/03-magic-linh-system.md) | Linh, Lễ Khai Linh, Linh Vật, Bảy Phái, Thần Nỏ, Hợp Linh, Sổ Tên |
+| [04 factions-and-characters](world-bible/04-factions-and-characters.md) | Chín phe, ba bạn, sư phụ, NPC, phản diện |
+| [05 main-story](world-bible/05-main-story.md) | Tám chương, cú lật, kết cục, sự kiện |
+| [99 internal-mapping-and-audit](world-bible/99-internal-mapping-and-audit.md) | **NỘI BỘ, không phát hành:** ánh xạ sang thiết kế cũ, việc kỹ thuật, đánh giá độc đáo |
+
 ## 2. Thiết kế game (`game-design/`)
 
 | # | Tài liệu | Nội dung |
@@ -84,7 +98,8 @@
 
 | Thông tin | Tài liệu chuẩn |
 |-----------|----------------|
-| Tên gọi, thuật ngữ | [glossary](glossary.md) |
+| Thế giới, nhân vật, cốt truyện **bản thương mại** (khi được duyệt) | [world-bible](world-bible/README.md) |
+| Tên gọi, thuật ngữ (bản fan hiện tại) | [glossary](glossary.md) |
 | Công thức EXP, sát thương, quái | [04](game-design/04-combat-and-progression.md) |
 | Kỹ năng, khắc hệ | [03](game-design/03-origins-classes-skills.md) |
 | ID và danh sách map/quái/boss | [05](game-design/05-world-maps-monsters.md) |
