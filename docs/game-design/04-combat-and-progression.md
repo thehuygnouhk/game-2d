@@ -47,9 +47,22 @@ Vòng ngắn (phút): đánh quái, nhặt đồ. Vòng trung (ngày): nhiệm v
 |------|-----------|----------|
 | Thường | ×1 | ×1 |
 | Tinh anh (elite) | ×3 | ×3 |
+| Thủ lĩnh (leader) | ×6 | ×6 |
 | Mini-boss | ×10 | ×10 |
 | Boss | ×40 | ×40 |
 | Boss thế giới | ×200 | ×200 |
+
+#### 2.1.1 Quái tinh anh và thủ lĩnh
+
+Như Ninja School: thỉnh thoảng một con quái thường hồi sinh thành **Tinh anh** hoặc **Thủ lĩnh**. Máu dày hơn, đánh đau hơn, nhưng EXP và đồ rơi tốt hơn.
+
+| Loại | HP | ATK | DEF | EXP | Quan | Xuất hiện | Rơi đồ thêm (ngoài bảng §6) |
+|------|----|-----|-----|-----|------|-----------|------------------------------|
+| Thường | ×1 | ×1 | ×1 | ×1 | ×1 | — | — |
+| **Tinh anh** | ×3 | ×1,3 | ×1,2 | ×3 | ×3 | Mỗi lần hồi sinh có **1/15** cơ hội | +1 lượt rơi; trang bị Tốt 10%, Hiếm 1,5%, Sử Thi 0,15% |
+| **Thủ lĩnh** | ×6 | ×1,6 | ×1,4 | ×6 | ×5 | Mỗi lần hồi sinh có **1/60** cơ hội; tối đa **1 con/khu** | **Chắc chắn ≥ 1 vật phẩm**; trang bị Tốt 25%, Hiếm 5%, Sử Thi 0,5%; thông báo kênh Map |
+
+Nhận diện: Tinh anh có **viền và hào quang tím**, tên màu tím; Thủ lĩnh **to ×1,3**, viền và hào quang **vàng cam**, tên màu cam đỏ ([art §4](12-art-audio-direction.md)). Giá trị khởi điểm, cần kiểm bằng `sim:exp`.
 
 ### 2.2 Chênh lệch cấp
 
@@ -254,6 +267,7 @@ stateDiagram-v2
 | Trang bị **Hiếm** (xanh dương) | 0,3% |
 | Trang bị **Sử Thi** (tím) | 0,03% |
 
+- Tinh anh và Thủ lĩnh có lượt rơi thêm theo §2.1.1.
 - Boss có bảng riêng, đảm bảo **tối thiểu 1 vật phẩm** và có cơ chế **bảo đảm (pity)**: sau 20 lần hạ boss mà chưa có Sử Thi thì lượt thứ 21 chắc chắn rơi.
 - Trong nhóm: chế độ **Nhặt tự do** hoặc **Luân phiên**.
 

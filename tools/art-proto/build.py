@@ -262,21 +262,23 @@ rewardMaxLevelGap: 10
 
 
 def build_monsters():
-    from monsters import ANIMS, MONSTERS, monster_frames
+    from monsters import ALL_ANIMS, MONSTERS, monster_frames
     pk, sh, pv = mk("piskel"), mk("sheets"), mk("preview")
     lineup_small, boss_gifs = [], {}
     for mid, (_, size, name, lv) in MONSTERS.items():
         fr = monster_frames(mid)
-        seq = [f for a in ANIMS for f in fr[a]]
+        rows = [a for a in ALL_ANIMS if a in fr]
+        seq = [f for a in rows for f in fr[a]]
         tag = "boss" if mid.startswith("BOSS") else "quai"
         fn = f"{tag}_{mid.lower()}"
+        desc = "idle 1-4, move 5-8, attack 9-12, die 13-16, hurt 17-18" + (", skill2 19-22" if "skill2" in fr else "")
         save_piskel(os.path.join(pk, fn + ".piskel"), f"{mid} {name} (Lv{lv})", [("Quai", seq)], fps=8,
-                    description="idle 1-4, move 5-8, attack 9-12, die 13-16")
-        sheet([fr[a] for a in ANIMS]).save(os.path.join(sh, fn + ".png"))
+                    description=desc)
+        sheet([fr[a] for a in rows]).save(os.path.join(sh, fn + ".png"))
         if size == 64:
             lineup_small.append(fr)
         else:
-            loop = fr["idle"] * 2 + fr["move"] * 2 + fr["attack"] * 2 + fr["die"]
+            loop = fr["idle"] * 2 + fr["move"] * 2 + fr["attack"] * 2 + fr["hurt"] * 2 + fr["skill2"] * 2 + fr["die"]
             save_gif(loop, os.path.join(pv, fn + ".gif"), 125, scale=2)
     frames = []
     for k in range(16):
@@ -286,6 +288,62 @@ def build_monsters():
             over(cv, fr[anim][k % 4], (j % 4) * 64, (j // 4) * 64)
         frames.append(cv)
     save_gif(frames, os.path.join(pv, "quai_chuong1.gif"), 140, scale=3)
+
+
+VI_NAMES = {
+    "MOB001": "Nấm Lùn", "MOB002": "Thỏ Đốm", "MOB003": "Chó Rừng Non", "MOB004": "Lùn Ném Đá",
+    "MOB005": "Nhện Mực", "MOB006": "Dơi Giếng", "MOB007": "Rùa Đá Giếng", "BOSS001": "Trang Lạc",
+    "BOSS034": "Vua Nấm Lùn", "BOSS035": "Chó Rừng Đầu Đàn", "BOSS036": "Dơi Chúa Giếng",
+    "M001": "Nhà Học Suối Mơ", "M002": "Đồng Hoa Suối Mơ", "M003": "Rừng Mơ Non", "M004": "Hang Giếng Cạn",
+    "NPC001": "Thầy Bạch Vân", "NPC002": "Bà Mơ", "NPC003": "Lam Nhi", "NPC004": "Khôi", "NPC005": "Chấp Bút Hạc Minh",
+    "NPC040": "Cụ Trương", "NPC042": "Thợ Rèn Tư", "NPC024": "Cô Kim Thoa", "NPC053": "Cụ Tiễn",
+}
+
+
+def build_playable():
+    """Assets + data.json for the browser prototype in prototype/playable (single source with content/)."""
+    import json
+    import shutil
+
+    from PIL import Image
+
+    from monsters import ALL_ANIMS, MONSTERS, monster_frames
+    root = os.path.join(ROOT, "prototype", "playable", "assets")
+    for sub in ("maps/tilesets", "maps/backgrounds", "sprites"):
+        os.makedirs(os.path.join(root, sub), exist_ok=True)
+    src_maps = os.path.join(OUT, "maps")
+    for n in ("m001", "m002", "m003", "m004"):
+        shutil.copy(os.path.join(src_maps, f"{n}.tmj"), os.path.join(root, "maps", f"{n}.tmj"))
+        for k in ("far", "mid", "near"):
+            shutil.copy(os.path.join(src_maps, "backgrounds", f"{n}_{k}.png"), os.path.join(root, "maps", "backgrounds"))
+    for n in ("r01.png", "collision.png"):
+        shutil.copy(os.path.join(src_maps, "tilesets", n), os.path.join(root, "maps", "tilesets"))
+    sh = os.path.join(OUT, "sheets")
+    shutil.copy(os.path.join(sh, "nhan_vat_hoa.png"), os.path.join(root, "sprites", "hero_hoa.png"))
+    shutil.copy(os.path.join(sh, "npc_idle.png"), os.path.join(root, "sprites", "npc_idle.png"))
+    shutil.copy(os.path.join(sh, "hieu_ung_hoa.png"), os.path.join(root, "sprites", "vfx_hoa.png"))
+    shutil.copy(os.path.join(sh, "vat_pham.png"), os.path.join(root, "sprites", "items.png"))
+    mob_rows = {}
+    for mid in ("MOB001", "MOB002", "MOB003", "MOB004", "MOB005", "MOB006", "MOB007", "BOSS034", "BOSS035", "BOSS036"):
+        fr = monster_frames(mid)
+        rows = [a for a in ALL_ANIMS if a in fr]
+        sheet([fr[a] for a in rows]).save(os.path.join(root, "sprites", f"{mid.lower()}.png"))
+        mob_rows[mid] = {"size": MONSTERS[mid][1], "rows": {a: [i, len(fr[a])] for i, a in enumerate(rows)}}
+    data = {
+        "names": VI_NAMES,
+        "npcOrder": [k.split("_")[0] for k in NPCS],
+        "mobs": {mid: dict(level=v[0], element=v[1], kind=v[2], ai=v[3], aggro=v[4], speed=v[5], skills=v[6],
+                           flying=mid == "MOB006", fleeBelowHp=0.3 if mid == "MOB002" else 0,
+                           ranged=mid in ("MOB004", "MOB005"), sprite=mob_rows[mid]) for mid, v in MOB_DATA.items()},
+        "bosses": {bid: dict(level=v[0], element=v[1], kind=v[2], skills=v[3], sprite=mob_rows.get(bid),
+                             flying=bid == "BOSS036") for bid, v in BOSS_DATA.items() if bid in mob_rows},
+        "events": {eid: dict(boss=v[0], times=v[1], maps=v[2], zones=v[3]) for eid, v in EVENTS.items()},
+        "weeklyEvents": [dict(id="EVT_R01_WELL_NIGHT", name="Đêm Giếng Sáng", boss="BOSS036", map="M004", day=5,
+                              start="20:00", end="21:00", everyMin=20)],
+        "items": [n for n, _ in all_icons()],
+    }
+    with open(os.path.join(root, "data.json"), "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=1)
 
 
 def build_maps():
@@ -345,16 +403,22 @@ if __name__ == "__main__":
         build_maps()
         print("maps built into", OUT)
         sys.exit(0)
+    if len(sys.argv) > 2 and sys.argv[2] == "playable":
+        build_playable()
+        print("playable assets built")
+        sys.exit(0)
     if len(sys.argv) > 2 and sys.argv[2] == "monsters":
         build_monsters()
         build_content()
         build_maps()
+        build_playable()
         print("monsters, content and maps built into", OUT)
         sys.exit(0)
     build_monsters()
     build_content()
     build_maps()
     build_heroes()
+    build_playable()
     build_npcs()
     build_items()
     build_vfx()

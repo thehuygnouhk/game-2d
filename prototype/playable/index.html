@@ -1,0 +1,1186 @@
+<meta charset="utf-8">
+<title>Huyền Thư Ký Chương 1</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;600;700;800&display=swap">
+<style>
+/* Layout: one game stage (16:9) with a DOM HUD laid over it, help + test tools below.
+   Single dark look on purpose (game screen), every colour set explicitly. */
+:root {
+  color-scheme: dark;
+  --bg: #0d1020;
+  --panel: rgba(12, 14, 28, 0.86);
+  --panel-solid: #151a30;
+  --line: #2c3354;
+  --ink: #f2ead8;
+  --muted: #9aa2bf;
+  --gold: #f0c24a;
+  --hp: #e5484d;
+  --hp-chip: #ffe1e1;
+  --mp: #3a86ff;
+  --exp: #7fd1ff;
+  --elite: #c58bff;
+  --leader: #ff8a4a;
+  --good: #4caf50;
+  --rare: #2196f3;
+  --epic: #9c27b0;
+  --danger: #ff3b3b;
+  --font: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+[hidden] { display: none !important; }
+html, body { background: var(--bg); color: var(--ink); font-family: var(--font); }
+body { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 12px 24px; }
+.wrap { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
+h1 { margin: 0; font-size: clamp(18px, 2.4vw, 24px); font-weight: 800; letter-spacing: 0.01em; text-wrap: balance; }
+h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left: 8px; letter-spacing: 0.04em; text-transform: uppercase; }
+.keys { color: var(--muted); font-size: 13px; }
+.keys b { color: var(--ink); font-weight: 700; }
+
+#stage { position: relative; width: 100%; aspect-ratio: 16 / 9; container-type: inline-size; border-radius: 6px; overflow: hidden; background: #000; box-shadow: 0 0 0 1px var(--line); }
+#game { position: absolute; inset: 0; }
+#game canvas { display: block; width: 100% !important; height: 100% !important; image-rendering: pixelated; }
+.hud { position: absolute; pointer-events: none; font-size: 1.35cqw; line-height: 1.25; text-shadow: 0 1px 0 #000, 0 0 3px #000; }
+.box { background: var(--panel); border: 1px solid var(--line); border-radius: 0.5cqw; padding: 0.6cqw 0.8cqw; }
+
+#hud-player { left: 1cqw; top: 1cqw; width: 24cqw; display: grid; gap: 0.35cqw; }
+.who { display: flex; justify-content: space-between; font-weight: 700; }
+.who .lv { color: var(--gold); }
+.bar { position: relative; height: 1.25cqw; background: #2a1414; border-radius: 0.3cqw; overflow: hidden; border: 1px solid #000; }
+.bar i { position: absolute; inset: 0 auto 0 0; display: block; }
+.bar .chip { background: var(--hp-chip); transition: width 0.6s ease 0.25s; }
+.bar .fill { background: var(--hp); transition: width 0.12s linear; }
+.bar.mp { background: #101a33; } .bar.mp .fill { background: var(--mp); }
+.bar span { position: absolute; inset: 0; text-align: center; font-size: 0.95cqw; font-weight: 700; line-height: 1.25cqw; }
+.money { display: flex; gap: 1cqw; color: var(--gold); font-weight: 700; font-size: 1.15cqw; }
+.money em { font-style: normal; color: var(--muted); font-weight: 600; }
+
+#hud-right { right: 1cqw; top: 1cqw; display: grid; gap: 0.4cqw; justify-items: end; }
+#clock { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 1.6cqw; }
+#mapname { color: var(--muted); font-weight: 600; }
+.btn { pointer-events: auto; cursor: pointer; font: inherit; font-weight: 700; color: var(--ink); background: #2a2350; border: 1px solid #5b4ab0; border-radius: 0.4cqw; padding: 0.35cqw 0.9cqw; }
+.btn:hover { background: #3a2f6e; } .btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+#bossbar { left: 50%; top: 1cqw; transform: translateX(-50%); width: 40cqw; text-align: center; }
+#bossbar .name { font-weight: 800; color: var(--gold); font-size: 1.4cqw; }
+#bossbar .bar { height: 1.5cqw; }
+#bossbar .bar span { line-height: 1.5cqw; }
+#bossbar .sub { color: var(--muted); font-size: 1cqw; }
+
+#toast { left: 50%; top: 7.5cqw; transform: translateX(-50%); width: 60cqw; display: grid; gap: 0.4cqw; justify-items: center; }
+#toast div { background: rgba(60, 20, 20, 0.85); border: 1px solid #a8433d; border-radius: 0.4cqw; padding: 0.4cqw 1cqw; font-weight: 700; font-size: 1.25cqw; text-align: center; }
+#toast div.info { background: rgba(20, 30, 60, 0.85); border-color: #4a62b0; }
+
+#log { left: 1cqw; bottom: 3.4cqw; width: 34cqw; font-size: 1.1cqw; display: grid; gap: 0.15cqw; }
+#log div { background: rgba(0, 0, 0, 0.45); padding: 0.1cqw 0.5cqw; border-radius: 0.2cqw; }
+#log .sys { color: #ffd27a; } #log .exp { color: var(--exp); } #log .lvl { color: #9eff8a; } #log .bad { color: #ff9a9a; }
+
+#hotbar { left: 50%; bottom: 2.4cqw; transform: translateX(-50%); display: flex; gap: 0.5cqw; }
+.slot { position: relative; width: 4.6cqw; height: 4.6cqw; border-radius: 0.5cqw; background: var(--panel); border: 1px solid var(--line); display: grid; place-items: center; font-size: 0.95cqw; font-weight: 700; text-align: center; overflow: hidden; }
+.slot b { position: absolute; left: 0.25cqw; top: 0.1cqw; color: var(--gold); font-size: 0.9cqw; }
+.slot .cd { position: absolute; inset: auto 0 0 0; background: rgba(0, 0, 0, 0.65); height: 0; }
+.slot.locked { opacity: 0.4; }
+.slot small { position: absolute; right: 0.3cqw; bottom: 0.1cqw; font-size: 0.9cqw; color: var(--ink); }
+
+#expbar { left: 0; right: 0; bottom: 0; height: 1.6cqw; background: rgba(0, 0, 0, 0.7); }
+#expbar i { display: block; height: 100%; background: linear-gradient(90deg, #3a8fd0, var(--exp)); width: 0; transition: width 0.3s; }
+#expbar span { position: absolute; inset: 0; text-align: center; font-size: 1cqw; font-weight: 700; line-height: 1.6cqw; }
+
+#schedule { left: 50%; top: 50%; transform: translate(-50%, -50%); width: 70cqw; max-height: 44cqw; overflow: auto; pointer-events: auto; background: var(--panel-solid); border: 1px solid #5b4ab0; border-radius: 0.8cqw; padding: 1.2cqw 1.4cqw; }
+#schedule h2 { margin: 0 0 0.6cqw; font-size: 1.8cqw; font-weight: 800; display: flex; justify-content: space-between; align-items: center; gap: 1cqw; }
+#schedule table { width: 100%; border-collapse: collapse; font-size: 1.15cqw; }
+#schedule th { text-align: left; color: var(--muted); font-weight: 600; padding: 0.4cqw; border-bottom: 1px solid var(--line); }
+#schedule td { padding: 0.55cqw 0.4cqw; border-bottom: 1px solid #222846; vertical-align: top; }
+#schedule .times b { color: var(--gold); }
+.pill { display: inline-block; border-radius: 99px; padding: 0.1cqw 0.7cqw; font-weight: 700; font-size: 1cqw; white-space: nowrap; }
+.pill.wait { background: #24304f; color: #b8c8f0; } .pill.live { background: #6a1b1b; color: #ffd0d0; } .pill.dead { background: #1f3d22; color: #b8f0bc; } .pill.gone { background: #33333d; color: #c8c8d2; }
+#schedule .note { color: var(--muted); font-size: 1cqw; margin-top: 0.6cqw; }
+
+#overlay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(5, 6, 14, 0.72); text-align: center; pointer-events: auto; cursor: pointer; }
+#overlay .card { display: grid; gap: 0.8cqw; justify-items: center; font-size: 1.4cqw; }
+#overlay strong { font-size: 3cqw; font-weight: 800; }
+#overlay span { color: var(--muted); }
+
+.tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.tools section { background: var(--panel-solid); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.tools h3 { margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; }
+.tools p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.tools label { display: flex; gap: 8px; align-items: center; font-size: 14px; }
+.tools .row { display: flex; flex-wrap: wrap; gap: 8px; }
+.tools button, .tools select { font: inherit; font-size: 14px; color: var(--ink); background: #232a48; border: 1px solid #3d4777; border-radius: 6px; padding: 6px 10px; cursor: pointer; }
+.tools button:hover { background: #2f3860; } .tools button:focus-visible, .tools select:focus-visible, .tools input:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+#touch { display: none; grid-template-columns: repeat(3, auto) 1fr repeat(4, auto); gap: 8px; align-items: center; user-select: none; -webkit-user-select: none; touch-action: none; }
+#touch button { font: inherit; font-weight: 800; font-size: 18px; min-width: 52px; height: 52px; border-radius: 12px; border: 1px solid #3d4777; background: #232a48; color: var(--ink); touch-action: none; }
+#touch button:active { background: #3a2f6e; }
+@media (pointer: coarse) { #touch { display: grid; } }
+@media (max-width: 520px) { #touch { grid-template-columns: repeat(3, 1fr); } #touch .sp { display: none; } }
+@media (prefers-reduced-motion: reduce) { .bar .chip, .bar .fill, #expbar i { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Huyền Thư Ký <small>Chương 1 · bản chơi thử</small></h1>
+    <div class="keys"><b>A D</b> / <b>← →</b> đi · <b>W</b> / <b>Space</b> nhảy · <b>S</b> xuống, leo · <b>J</b> đánh · <b>1 2 3</b> chiêu · <b>Q E</b> bình máu, mana · <b>F</b> nói chuyện · <b>↑</b> qua cổng · <b>B</b> Lịch Boss</div>
+  </header>
+
+  <div id="stage">
+    <div id="game"></div>
+    <div id="hud-player" class="hud box">
+      <div class="who"><span id="pname">Tân thủ</span><span class="lv" id="plv">Lv 1</span></div>
+      <div class="bar" id="php"><i class="chip"></i><i class="fill"></i><span></span></div>
+      <div class="bar mp" id="pmp"><i class="fill"></i><span></span></div>
+      <div class="money"><span id="pquan">0 Quan</span><em id="pbag">Túi: 0 món</em></div>
+    </div>
+    <div id="hud-right" class="hud">
+      <div id="clock" class="box">--:--</div>
+      <div id="mapname">—</div>
+      <button class="btn" id="btn-sched" type="button">Lịch Boss</button>
+    </div>
+    <div id="bossbar" class="hud box" hidden>
+      <div class="name" id="bname"></div>
+      <div class="bar" id="bhp"><i class="chip"></i><i class="fill"></i><span></span></div>
+      <div class="sub" id="bsub"></div>
+    </div>
+    <div id="toast" class="hud"></div>
+    <div id="log" class="hud"></div>
+    <div id="hotbar" class="hud">
+      <div class="slot" data-skill="basic"><b>J</b>Đòn<br>Thường<i class="cd"></i></div>
+      <div class="slot" data-skill="burst"><b>1</b>Tụ Mana<br>Chấn<i class="cd"></i></div>
+      <div class="slot" data-skill="fireball"><b>2</b>Hỏa<br>Cầu<i class="cd"></i></div>
+      <div class="slot" data-skill="slash"><b>3</b>Trảm Liệt<br>Diễm<i class="cd"></i></div>
+      <div class="slot" data-skill="hp"><b>Q</b>Bình<br>Máu<small id="nhp">0</small></div>
+      <div class="slot" data-skill="mp"><b>E</b>Bình<br>Mana<small id="nmp">0</small></div>
+    </div>
+    <div id="expbar" class="hud"><i></i><span></span></div>
+    <div id="schedule" class="hud" hidden>
+      <h2>Lịch Boss <button class="btn" id="btn-close" type="button">Đóng</button></h2>
+      <table>
+        <thead><tr><th>Boss</th><th>Nơi xuất hiện</th><th>Giờ xuất hiện</th><th>Trạng thái</th></tr></thead>
+        <tbody id="schedrows"></tbody>
+      </table>
+      <div class="note">Boss xuất hiện ở 1 khu ngẫu nhiên, thông báo trước 5 phút, bỏ đi sau 30 phút. Người cao hơn boss quá 10 cấp không nhận vật phẩm.</div>
+    </div>
+    <div id="overlay"><div class="card"><strong>Nhấn để vào game</strong><span id="ovsub">Đang tải bản đồ và nhân vật…</span></div></div>
+  </div>
+
+  <div id="touch" aria-label="Điều khiển cảm ứng">
+    <button data-k="left" type="button" aria-label="Sang trái">◀</button>
+    <button data-k="right" type="button" aria-label="Sang phải">▶</button>
+    <button data-k="down" type="button" aria-label="Xuống">▼</button>
+    <span class="sp"></span>
+    <button data-k="up" type="button" aria-label="Nhảy hoặc qua cổng">▲</button>
+    <button data-k="attack" type="button" aria-label="Đánh">J</button>
+    <button data-k="s1" type="button">1</button>
+    <button data-k="interact" type="button">F</button>
+  </div>
+
+  <div class="tools">
+    <section>
+      <h3>Công cụ thử</h3>
+      <label>Tốc độ giờ trong game
+        <select id="speed"><option value="1">×1 (giờ thật)</option><option value="60" selected>×60 (1 giây = 1 phút)</option><option value="300">×300</option></select>
+      </label>
+      <div class="row">
+        <button id="dev-boss" type="button">Boss của map này xuất hiện ngay</button>
+        <button id="dev-fire" type="button">Thử hệ Hỏa (lên Lv10)</button>
+        <button id="dev-lv" type="button">+1 cấp</button>
+      </div>
+      <label><input type="checkbox" id="dev-weak" checked> Boss còn 20% máu (để đánh một mình)</label>
+      <label><input type="checkbox" id="dev-rare"> Tinh anh, Thủ lĩnh ra dày ×10</label>
+    </section>
+    <section>
+      <h3>Đang mô phỏng</h3>
+      <p>Công thức sát thương, trúng, chí mạng, EXP, chênh lệch cấp, bảng rơi đồ, quái Tinh anh (1/15) và Thủ lĩnh (1/60) theo tài liệu combat §2–6. Boss theo giờ theo tài liệu bản đồ §5.1–5.2.</p>
+      <p>Bản thử chạy hết trên trình duyệt. Game thật tính toàn bộ ở server.</p>
+    </section>
+    <section>
+      <h3>Đi đâu</h3>
+      <p>Làng (M001) → <b>Đồng Hoa</b> (Nấm Lùn, Thỏ Đốm; boss Vua Nấm Lùn) → <b>Rừng Mơ Non</b> (Chó Rừng, Lùn Ném Đá, Nhện Mực; boss Chó Rừng Đầu Đàn) → <b>Hang Giếng Cạn</b> (Dơi, Rùa Đá; boss Dơi Chúa Giếng). Đứng ở cổng cuối map và nhấn <b>↑</b>.</p>
+    </section>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.80.1/phaser.min.js"></script>
+<script>
+"use strict";
+/* =====================================================================
+   Formulas: docs/game-design/04-combat-and-progression.md §2-6
+   (prototype copy; the real game computes these on the server)
+   ===================================================================== */
+const F = {
+  expToNext: (L) => 50 * L * L + 100 * L,
+  mob(L) {
+    return { hp: Math.round(30 + 22 * Math.pow(L, 1.5)), atk: Math.round(8 + 3.2 * L), def: Math.round(2.5 * L), exp: 8 * L + 10, quan: 4 * L };
+  },
+  TIER: {
+    normal: { hp: 1, atk: 1, def: 1, exp: 1, quan: 1 },
+    elite:  { hp: 3, atk: 1.3, def: 1.2, exp: 3, quan: 3 },   // §2.1.1
+    leader: { hp: 6, atk: 1.6, def: 1.4, exp: 6, quan: 5 },   // §2.1.1
+    boss:   { hp: 40, atk: 1.5, def: 1.4, exp: 40, quan: 20 }, // maps §5.2 (starter bosses)
+  },
+  hitChance: (lvA, lvT) => Math.min(1, Math.max(0.3, 0.95 - 0.02 * Math.max(0, lvT - lvA))),
+  damage(att, tgt, mult) {
+    if (Math.random() > F.hitChance(att.lv, tgt.lv)) return { miss: true, dmg: 0 };
+    const crit = Math.random() < att.crit;
+    const defRed = tgt.def / (tgt.def + 15 * att.lv + 100);
+    const variance = 0.95 + Math.random() * 0.1;
+    const dmg = Math.max(1, Math.round(att.atk * mult * (crit ? att.critDmg : 1) * (1 - defRed) * variance));
+    return { miss: false, dmg, crit };
+  },
+  expMod(d) {
+    if (d <= -5) return 1.5;
+    if (d < 0) return 1 + 0.1 * Math.abs(d);
+    if (d <= 5) return 1;
+    return Math.max(0.1, 1 - 0.15 * (d - 5));
+  },
+  // Player: origin Dan Lang (classes §2) with auto-assigned potential points (+5/level)
+  player(L, fire) {
+    const pts = { hp: 4 + 2 * (L - 1), atk: 4 + 2 * (L - 1), def: 2 + (L - 1) };
+    let hp = 220 + 14 * (L - 1) + pts.hp * 30, mp = 70 + 4 * (L - 1);
+    let atk = 22 + 1.8 * (L - 1) + pts.atk * 3, def = 9 + 0.9 * (L - 1) + pts.def * 2;
+    if (fire) { atk *= 1.15; def *= 0.95; }          // Hoa Kiem Si: ATK +15%, DEF -5%
+    return { hp: Math.round(hp), mp: Math.round(mp), atk: Math.round(atk), def: Math.round(def), crit: 0.05, critDmg: 1.5, lv: L };
+  },
+};
+const RARITY = { common: ["Thường", "#ffffff"], good: ["Tốt", "#4caf50"], rare: ["Hiếm", "#2196f3"], epic: ["Sử Thi", "#9c27b0"] };
+// Loot (§6 + §2.1.1). Items reference the icon order in data.json
+function rollLoot(L, tier) {
+  const out = [];
+  const tq = F.TIER[tier].quan;
+  if (Math.random() < 0.9 || tier !== "normal") out.push({ kind: "quan", n: Math.max(1, Math.round(4 * L * tq * (0.8 + Math.random() * 0.4))) });
+  const rolls = tier === "normal" ? 1 : 2;
+  for (let r = 0; r < rolls; r++) {
+    if (Math.random() < 0.25) out.push({ kind: "item", icon: "dong_luyen_1", name: "Đồng Luyện Sơ", rarity: "common" });
+    if (Math.random() < 0.08) out.push(Math.random() < 0.6 ? { kind: "potion", type: "hp", icon: "potion_hp", name: "Bình Máu Nhỏ", rarity: "common" }
+                                                            : { kind: "potion", type: "mp", icon: "potion_mp", name: "Bình Mana Nhỏ", rarity: "common" });
+  }
+  const gear = { normal: [0.02, 0.003, 0.0003], elite: [0.10, 0.015, 0.0015], leader: [0.25, 0.05, 0.005], boss: [0.25, 0.05, 0.005] }[tier];
+  const g = Math.random();
+  if (g < gear[2]) out.push({ kind: "item", icon: "weapon_fire", name: "Kiếm Tập", rarity: "epic" });
+  else if (g < gear[2] + gear[1]) out.push({ kind: "item", icon: "weapon_fire", name: "Kiếm Tập", rarity: "rare" });
+  else if (g < gear[2] + gear[1] + gear[0]) out.push({ kind: "item", icon: "weapon_fire", name: "Kiếm Tập", rarity: "good" });
+  if ((tier === "leader" || tier === "boss") && !out.some((o) => o.kind !== "quan")) {
+    out.push({ kind: "item", icon: "dong_luyen_2", name: "Đồng Luyện Trung", rarity: "good" });   // guaranteed >= 1 item
+  }
+  return out;
+}
+
+/* =====================================================================
+   Persistent state across maps
+   ===================================================================== */
+const S = {
+  lv: 1, exp: 0, fire: false, hp: 0, mp: 0, quan: 0, bag: 0, potions: { hp: 3, mp: 3 },
+  t: 0, speed: 60, weekday0: new Date().getDay(), map: "M001", spawnAt: null,
+  bosses: {}, cds: { basic: 0, burst: 0, fireball: 0, slash: 0 }, combatAt: -1e9,
+  dev: { weak: true, rare: false },
+};
+{ const d = new Date(); S.t = d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60; }
+const stats = () => F.player(S.lv, S.fire);
+S.hp = stats().hp; S.mp = stats().mp;
+
+const $ = (id) => document.getElementById(id);
+const fmtClock = (t) => { const m = ((t % 1440) + 1440) % 1440; return String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(Math.floor(m % 60)).padStart(2, "0"); };
+const fmtDur = (min) => { const s = Math.max(0, Math.round(min * 60)); const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = s % 60; return (h ? h + ":" : "") + String(m).padStart(2, "0") + ":" + String(ss).padStart(2, "0"); };
+const toMin = (hhmm) => { const [h, m] = hhmm.split(":").map(Number); return h * 60 + m; };
+
+function log(text, cls = "") {
+  const el = document.createElement("div"); el.textContent = text; if (cls) el.className = cls;
+  const box = $("log"); box.appendChild(el); while (box.children.length > 6) box.removeChild(box.firstChild);
+}
+function toast(text, info = false) {
+  const el = document.createElement("div"); el.textContent = text; if (info) el.className = "info";
+  $("toast").appendChild(el); setTimeout(() => el.remove(), 4200);
+  while ($("toast").children.length > 3) $("toast").removeChild($("toast").firstChild);
+}
+
+/* =====================================================================
+   Boss schedule (maps §5.1-5.2): game clock, warnings, random zone,
+   30 min despawn, weekly event
+   ===================================================================== */
+let DATA = null;
+function occurrences(bossId, day) {
+  const ev = Object.values(DATA.events).find((e) => e.boss === bossId);
+  const list = ev.times.map(toMin);
+  const wd = (S.weekday0 + day) % 7;
+  for (const w of DATA.weeklyEvents) {
+    if (w.boss !== bossId || w.day !== wd) continue;
+    for (let m = toMin(w.start); m < toMin(w.end); m += w.everyMin) list.push(m);
+  }
+  return [...new Set(list)].sort((a, b) => a - b).map((m) => day * 1440 + m);
+}
+function nextOccurrence(bossId, after) {
+  const day = Math.floor(after / 1440);
+  for (let d = day; d < day + 8; d++) for (const t of occurrences(bossId, d)) if (t > after) return t;
+  return Infinity;
+}
+function initBosses() {
+  for (const ev of Object.values(DATA.events)) {
+    S.bosses[ev.boss] = { id: ev.boss, map: ev.maps[0], status: "wait", at: nextOccurrence(ev.boss, S.t - 0.01), until: 0, warned: false, hp: null, killer: null, entity: null };
+  }
+}
+function bossTick(scene) {
+  for (const b of Object.values(S.bosses)) {
+    const nm = DATA.names[b.id], mapName = DATA.names[b.map];
+    if ((b.status === "wait" || b.status === "dead" || b.status === "gone") && b.at !== Infinity) {
+      if (!b.warned && S.t >= b.at - 5) { b.warned = true; toast(`${nm} sẽ xuất hiện sau 5 phút tại ${mapName}`, true); log(`[Hệ thống] ${nm} sắp xuất hiện tại ${mapName}`, "sys"); }
+      if (S.t >= b.at) {
+        b.status = "live"; b.until = b.at + 30; b.hp = null; b.enraged = false; b.spawnedAt = b.at;
+        toast(`${nm} vừa xuất hiện tại ${mapName}, khu 1!`); log(`[Hệ thống] ${nm} xuất hiện tại ${mapName}, khu 1`, "sys");
+      }
+    }
+    if (b.status === "live") {
+      if (S.t >= b.until) {
+        b.status = "gone"; toast(`${nm} đã bỏ đi.`, true); log(`[Hệ thống] ${nm} đã bỏ đi`, "sys");
+        if (b.entity) { b.entity.destroyBoss(); b.entity = null; }
+        b.at = nextOccurrence(b.id, S.t); b.warned = false;
+      } else if (!b.entity && scene.mapId === b.map) {
+        scene.spawnBoss(b);
+      }
+      if (b.entity && !b.enraged && S.t - b.spawnedAt >= 10) { b.enraged = true; toast(`${nm} nổi cuồng nộ! Sức đánh ×2`); }
+    }
+  }
+}
+function renderSchedule() {
+  const rows = [];
+  for (const b of Object.values(S.bosses)) {
+    const lv = DATA.bosses[b.id].level;
+    const ev = Object.values(DATA.events).find((e) => e.boss === b.id);
+    const nextT = b.status === "live" ? b.at : b.at;
+    const nextMin = ((nextT % 1440) + 1440) % 1440;
+    const times = ev.times.map((tt) => (toMin(tt) === Math.round(nextMin) && b.status !== "live" ? `<b>${tt}</b>` : tt)).join(", ");
+    const weekly = DATA.weeklyEvents.filter((w) => w.boss === b.id).map((w) => `<br><small>Sự kiện ${w.name}: thứ Sáu ${w.start}–${w.end}, mỗi ${w.everyMin} phút</small>`).join("");
+    let st;
+    if (b.status === "live") st = `<span class="pill live">Đang xuất hiện · khu 1 · còn ${fmtDur(b.until - S.t)}</span>`;
+    else {
+      const prefix = b.status === "dead" ? `<span class="pill dead">Đã bị hạ bởi ${b.killer}</span><br>` : b.status === "gone" ? `<span class="pill gone">Đã bỏ đi</span><br>` : "";
+      st = `${prefix}<span class="pill wait">Còn ${fmtDur(b.at - S.t)}</span>`;
+    }
+    const guard = S.lv > lv + 10 ? `<br><small style="color:var(--muted)">Bạn cao hơn boss quá 10 cấp: không nhận vật phẩm</small>` : "";
+    rows.push(`<tr><td><b>${DATA.names[b.id]}</b><br><small>Lv ${lv}</small></td><td>${DATA.names[b.map]}<br><small>khu ngẫu nhiên</small></td><td class="times">${times}${weekly}</td><td>${st}${guard}</td></tr>`);
+  }
+  $("schedrows").innerHTML = rows.join("");
+}
+
+/* =====================================================================
+   Input (keyboard + touch buttons)
+   ===================================================================== */
+const V = {};
+for (const btn of document.querySelectorAll("#touch button")) {
+  const k = btn.dataset.k;
+  const on = (e) => { e.preventDefault(); V[k] = true; }, off = (e) => { e.preventDefault(); V[k] = false; };
+  btn.addEventListener("pointerdown", on); btn.addEventListener("pointerup", off); btn.addEventListener("pointerleave", off); btn.addEventListener("pointercancel", off);
+}
+
+/* =====================================================================
+   Scenes
+   ===================================================================== */
+const MAPS = ["M001", "M002", "M003", "M004"];
+const THEME_TOWN = "M001";
+
+class Boot extends Phaser.Scene {
+  constructor() { super("boot"); }
+  preload() { this.load.json("data", "assets/data.json"); }
+  create() { DATA = this.cache.json.get("data"); initBosses(); this.scene.start("world", { map: "M001" }); }
+}
+
+class World extends Phaser.Scene {
+  constructor() { super("world"); }
+
+  preload() {
+    for (const m of MAPS) {
+      const n = m.toLowerCase();
+      this.load.tilemapTiledJSON(n, `assets/maps/${n}.tmj`);
+      for (const k of ["far", "mid", "near"]) this.load.image(`${n}_${k}`, `assets/maps/backgrounds/${n}_${k}.png`);
+    }
+    this.load.image("r01", "assets/maps/tilesets/r01.png");
+    this.load.image("collision", "assets/maps/tilesets/collision.png");
+    this.load.spritesheet("hero", "assets/sprites/hero_hoa.png", { frameWidth: 96, frameHeight: 96 });
+    this.load.spritesheet("npc", "assets/sprites/npc_idle.png", { frameWidth: 96, frameHeight: 96 });
+    this.load.spritesheet("vfx", "assets/sprites/vfx_hoa.png", { frameWidth: 96, frameHeight: 96 });
+    this.load.spritesheet("items", "assets/sprites/items.png", { frameWidth: 32, frameHeight: 32 });
+    for (const [id, m] of Object.entries(DATA.mobs)) this.load.spritesheet(id, `assets/sprites/${id.toLowerCase()}.png`, { frameWidth: m.sprite.size, frameHeight: m.sprite.size });
+    for (const [id, b] of Object.entries(DATA.bosses)) if (b.sprite) this.load.spritesheet(id, `assets/sprites/${id.toLowerCase()}.png`, { frameWidth: b.sprite.size, frameHeight: b.sprite.size });
+    this.load.on("progress", (p) => { $("ovsub").textContent = `Đang tải… ${Math.round(p * 100)}%`; });
+  }
+
+  makeAnims() {
+    if (this.anims.exists("hero_idle")) return;
+    const A = (key, tex, frames, rate, repeat) => this.anims.create({ key, frames: this.anims.generateFrameNumbers(tex, { frames }), frameRate: rate, repeat });
+    const row = (r, n, cols = 6) => Array.from({ length: n }, (_, i) => r * cols + i);
+    A("hero_idle", "hero", row(0, 4), 6, -1); A("hero_walk", "hero", row(1, 6), 10, -1); A("hero_run", "hero", row(2, 6), 12, -1);
+    A("hero_attack", "hero", row(3, 5), 16, 0); A("hero_cast", "hero", row(4, 6), 14, 0);
+    DATA.npcOrder.forEach((id, i) => A(`npc_${id}`, "npc", row(i, 4, 4), 5, -1));
+    A("fx_fireball", "vfx", [0, 1, 2, 3], 12, -1); A("fx_boom", "vfx", [4, 5, 6, 7, 8, 9], 16, 0);
+    const mobAnims = (id, spr) => {
+      for (const [a, [r, n]] of Object.entries(spr.rows)) {
+        A(`${id}_${a}`, id, row(r, n, 4), a === "idle" ? 6 : a === "move" ? 8 : a === "die" ? 8 : 10, a === "idle" || a === "move" ? -1 : 0);
+      }
+    };
+    for (const [id, m] of Object.entries(DATA.mobs)) mobAnims(id, m.sprite);
+    for (const [id, b] of Object.entries(DATA.bosses)) if (b.sprite) mobAnims(id, b.sprite);
+  }
+
+  create(params) {
+    this.mapId = params.map;
+    S.map = this.mapId;
+    for (const b of Object.values(S.bosses)) b.entity = null;   // previous scene's objects are gone
+    this.makeAnims();
+    const n = this.mapId.toLowerCase();
+    const map = this.make.tilemap({ key: n });
+    this.map = map;
+    const W = map.widthInPixels, H = map.heightInPixels;
+    [["far", 0.1], ["mid", 0.35], ["near", 0.6]].forEach(([k, f]) => this.add.tileSprite(0, 0, W, H, `${n}_${k}`).setOrigin(0, 0).setScrollFactor(f, 1));
+    const ts = map.addTilesetImage("r01", "r01");
+    const cts = map.addTilesetImage("collision", "collision");
+    map.createLayer("ground", ts, 0, 0).setDepth(2);
+    map.createLayer("decor", ts, 0, 0).setDepth(3);
+    this.fgLayer = map.createLayer("fg", ts, 0, 0).setDepth(30);
+    const coll = map.createLayer("collision", cts, 0, 0).setVisible(false);
+    coll.setCollision([1, 2]);
+    coll.forEachTile((t) => { if (t.index === 2) t.setCollision(false, false, true, false); });
+    this.coll = coll;
+    this.physics.world.setBounds(0, 0, W, H);
+    this.cameras.main.setBounds(0, 0, W, H);
+
+    // objects
+    const objs = map.getObjectLayer("objects").objects;
+    const prop = (o, k) => (o.properties || []).find((p) => p.name === k)?.value;
+    this.portals = objs.filter((o) => o.type === "portal").map((o) => ({ x: o.x, y: o.y, w: o.width, h: o.height, to: prop(o, "to"), toX: prop(o, "toX"), toY: prop(o, "toY"), id: prop(o, "id") }));
+    for (const p of this.portals) {
+      const g = this.add.graphics().setDepth(4);
+      g.fillStyle(0x7fd1ff, 0.18); g.fillEllipse(p.x + p.w / 2, p.y + p.h - 6, p.w + 10, 18);
+      g.lineStyle(2, 0x7fd1ff, 0.7); g.strokeEllipse(p.x + p.w / 2, p.y + p.h - 6, p.w + 10, 18);
+      const to = MAPS.includes(p.to) ? DATA.names[p.to] : p.to === "DG01" ? "Hầm ngục DG01" : "Thượng Đô";
+      this.add.text(p.x + p.w / 2, p.y + 4, `↑ ${to}`, this.textStyle(13, "#bfe8ff")).setOrigin(0.5, 1).setDepth(40);
+    }
+    this.npcs = objs.filter((o) => o.type === "npc").map((o) => {
+      const id = prop(o, "id");
+      const spr = this.add.sprite(o.x, o.y - 41, "npc").setDepth(10).play(`npc_${id}`);
+      if (o.x > W / 2) spr.setFlipX(true);
+      const label = this.add.text(o.x, o.y - 92, DATA.names[id] || id, this.textStyle(13, "#ffe08a")).setOrigin(0.5, 1).setDepth(40);
+      return { id, x: o.x, y: o.y, spr, label };
+    });
+    this.spawns = objs.filter((o) => o.type === "mob_spawn").map((o) => ({ x: o.x, y: o.y, mob: prop(o, "mob"), count: prop(o, "count"), radius: prop(o, "radius"), respawn: prop(o, "respawnSec") }));
+    this.bossSpawns = objs.filter((o) => o.type === "boss_spawn").map((o) => ({ x: o.x, y: o.y, boss: prop(o, "boss") }));
+    const sp = objs.find((o) => o.type === "spawn_player");
+
+    // player
+    const px = params.x ?? sp.x, py = params.y ?? sp.y;
+    this.player = this.physics.add.sprite(px, py - 44, "hero").setDepth(20).play("hero_idle");
+    this.player.body.setSize(22, 50).setOffset(37, 38);
+    this.player.setCollideWorldBounds(true);
+    this.physics.world.gravity.y = 1200;
+    this.physics.add.collider(this.player, coll, null, (pl, tile) => this.platformCheck(pl, tile));
+    this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
+    this.facing = 1; this.busyUntil = 0; this.climbing = false; this.dropUntil = 0; this.invulnUntil = this.time.now + 1000; this.deadUntil = 0;
+
+    // entities
+    this.mobs = []; this.drops = []; this.shots = []; this.tele = []; this.boss = null;
+    this.mobGroup = this.physics.add.group();
+    this.physics.add.collider(this.mobGroup, coll, null, (m, tile) => this.platformCheck(m, tile));
+    for (const s of this.spawns) { s.alive = 0; for (let i = 0; i < s.count; i++) this.spawnMob(s, true); }
+    this.bars = this.add.graphics().setDepth(45);
+    this.teleG = this.add.graphics().setDepth(5);
+
+    // keys
+    const K = Phaser.Input.Keyboard.KeyCodes;
+    this.keys = this.input.keyboard.addKeys({
+      left: K.A, right: K.D, aLeft: K.LEFT, aRight: K.RIGHT, up: K.W, aUp: K.UP, jump: K.SPACE, down: K.S, aDown: K.DOWN,
+      attack: K.J, s1: K.ONE, s2: K.TWO, s3: K.THREE, hp: K.Q, mp: K.E, interact: K.F, sched: K.B,
+    });
+    this.input.keyboard.addCapture("SPACE,UP,DOWN,LEFT,RIGHT");
+    this.keys.sched.on("down", () => toggleSchedule());
+    this.keys.hp.on("down", () => this.usePotion("hp"));
+    this.keys.mp.on("down", () => this.usePotion("mp"));
+    this.keys.interact.on("down", () => this.interact());
+    this.prevUp = false; this.prevInteract = false;
+
+    $("mapname").textContent = `${DATA.names[this.mapId]} · Khu 1`;
+    log(`Vào ${DATA.names[this.mapId]}`, "sys");
+    window.__htk = { S, scene: this, F };
+    if (this.mapId === THEME_TOWN && !S.welcomed) { S.welcomed = true; log("Gặp Cụ Trương (F) để xem lịch boss.", "sys"); }
+    $("overlay").hidden = false; $("ovsub").textContent = "Bấm vào màn chơi rồi dùng bàn phím (hoặc nút cảm ứng)";
+    if (S.started) $("overlay").hidden = true;
+  }
+
+  textStyle(size, color, stroke = "#120e1a") {
+    return { fontFamily: '"Be Vietnam Pro", system-ui, sans-serif', fontSize: `${size}px`, fontStyle: "bold", color, stroke, strokeThickness: 4 };
+  }
+
+  platformCheck(body, tile) {
+    if (tile.index !== 2) return true;
+    if (body === this.player && (this.time.now < this.dropUntil || this.climbing)) return false;
+    return body.body.velocity.y >= 0 && body.body.bottom <= tile.pixelY + 10;
+  }
+
+  down(...names) { return names.some((n) => this.keys[n]?.isDown) || names.some((n) => V[{ left: "left", aLeft: "left", right: "right", aRight: "right", up: "up", aUp: "up", jump: "up", down: "down", aDown: "down", attack: "attack", s1: "s1", interact: "interact" }[n]]); }
+
+  /* ---------------- monsters ---------------- */
+  spawnMob(s, initial = false, forceTier = null, temp = false) {
+    const d = DATA.mobs[s.mob];
+    const lv = d.level[0] + Math.floor(Math.random() * (d.level[1] - d.level[0] + 1));
+    const boost = S.dev.rare ? 10 : 1;
+    let tier = forceTier || "normal";
+    if (!forceTier) {
+      const leaderAlive = this.mobs.some((m) => m.tier === "leader" && m.alive);
+      if (!leaderAlive && Math.random() < boost / 60) tier = "leader";
+      else if (Math.random() < boost / 15) tier = "elite";
+    }
+    const base = F.mob(lv), T = F.TIER[tier];
+    const x = s.x + (Math.random() * 2 - 1) * (s.radius || 64) * 0.8;
+    const y = d.flying ? s.y - 40 - Math.random() * 40 : s.y - 40;
+    const spr = this.physics.add.sprite(x, y, s.mob).setDepth(15).play(`${s.mob}_idle`);
+    this.mobGroup.add(spr);
+    const size = d.sprite.size;
+    if (d.flying) { spr.body.setAllowGravity(false); spr.body.setSize(34, 26).setOffset(15, 14); }
+    else { spr.body.setSize(36, 30).setOffset((size - 36) / 2, size - 33); }
+    if (tier === "leader") spr.setScale(1.3);
+    if (tier !== "normal" && spr.preFX) spr.preFX.addGlow(tier === "elite" ? 0xc58bff : 0xffa040, 3, 0, false, 0.1, 10);
+    const m = {
+      kind: "mob", id: s.mob, d, lv, tier, spr, s, temp,
+      hp: Math.round(base.hp * T.hp), maxHp: Math.round(base.hp * T.hp), atk: Math.round(base.atk * T.atk), def: Math.round(base.def * T.def),
+      exp: Math.round(base.exp * T.exp), shownHp: 1, chipHp: 1, alive: true, state: "idle", next: this.time.now + 500 + Math.random() * 1500,
+      aggro: false, atkReady: 0, hurtUntil: 0, homeX: x, homeY: y, dir: 1, showBarUntil: 0,
+    };
+    const prefix = tier === "elite" ? "[Tinh anh] " : tier === "leader" ? "[Thủ lĩnh] " : "";
+    const col = tier === "elite" ? "#c58bff" : tier === "leader" ? "#ff8a4a" : "#ffffff";
+    m.label = this.add.text(x, y, `${prefix}${DATA.names[s.mob]} Lv${lv}`, this.textStyle(12, col)).setOrigin(0.5, 1).setDepth(46);
+    this.mobs.push(m);
+    s.alive++;
+    if (tier === "leader" && !initial) { toast(`Thủ lĩnh ${DATA.names[s.mob]} xuất hiện!`, true); log(`[Map] Thủ lĩnh ${DATA.names[s.mob]} Lv${lv} xuất hiện`, "sys"); }
+    return m;
+  }
+
+  hitMob(m, mult, opts = {}) {
+    if (!m.alive) return;
+    const p = stats();
+    const r = opts.fixed ? { miss: false, dmg: opts.fixed, crit: false } : F.damage(p, { lv: m.lv, def: m.def }, mult);
+    S.combatAt = this.time.now;
+    m.aggro = true; m.showBarUntil = this.time.now + 4000;
+    const x = m.spr.x, y = m.spr.y - m.spr.displayHeight * 0.35;
+    if (r.miss) { this.floatText(x, y, "Trượt", "#9aa2bf", 14); return; }
+    m.hp -= r.dmg;
+    if (opts.dot) this.floatText(x, y, `${r.dmg}`, "#ff9a3a", 15);
+    else if (r.crit) this.floatText(x, y - 6, `Chí mạng ${r.dmg}`, "#ffd23f", 22);
+    else this.floatText(x, y, `${r.dmg}`, "#ffffff", 17);
+    if (opts.burn) m.burn = { until: this.time.now + 3000, next: this.time.now + 1000, dmg: Math.max(1, Math.round(p.atk * 0.2 / 3)) };
+    if (m.kind === "boss") { m.b.hp = m.hp; }
+    if (m.hp <= 0) { this.killMob(m); return; }
+    if (m.kind === "mob") {
+      m.hurtUntil = this.time.now + 220;
+      m.spr.play(`${m.id}_hurt`, true);
+      m.spr.body.setVelocityX(this.player.x < m.spr.x ? 90 : -90);
+      if (m.d.fleeBelowHp && m.hp / m.maxHp < m.d.fleeBelowHp) m.flee = true;
+    } else {
+      m.onHit?.();
+    }
+  }
+
+  killMob(m) {
+    m.alive = false; m.hp = 0;
+    const isBoss = m.kind === "boss";
+    const id = m.id, name = DATA.names[id];
+    m.spr.body.enable = false;
+    m.spr.play(`${id}_die`);
+    m.spr.once("animationcomplete", () => m.spr.destroy());
+    m.label.destroy();
+    const tier = isBoss ? "boss" : m.tier;
+    const gain = Math.max(1, Math.round(m.exp * F.expMod(S.lv - m.lv)));
+    const tag = tier === "elite" ? "Tinh anh " : tier === "leader" ? "Thủ lĩnh " : "";
+    log(`Hạ ${tag}${name} Lv${m.lv} · +${gain} EXP`, "exp");
+    this.floatText(this.player.x, this.player.y - 60, `+${gain} EXP`, "#7fd1ff", 15);
+    this.gainExp(gain);
+    const noItems = isBoss && S.lv > m.lv + 10;
+    const loot = rollLoot(m.lv, tier).filter((o) => !noItems || o.kind === "quan");
+    loot.forEach((o, i) => this.dropLoot(o, m.spr.x + (i - (loot.length - 1) / 2) * 22, m.spr.y));
+    if (isBoss) {
+      const b = m.b; b.status = "dead"; b.killer = "Bạn"; b.entity = null; b.at = nextOccurrence(b.id, S.t); b.warned = false;
+      toast(`${name} đã bị hạ bởi Bạn!`); log(`[Hệ thống] ${name} đã bị hạ`, "sys");
+      $("bossbar").hidden = true; this.boss = null;
+      this.cameras.main.flash(250, 255, 240, 200);
+      return;
+    }
+    if (!m.temp) {
+      const s = m.s; s.alive--;
+      this.time.delayedCall((s.respawn || 10) * 1000, () => { if (this.scene.isActive()) this.spawnMob(s); });
+    }
+  }
+
+  dropLoot(o, x, y) {
+    const iconIdx = o.kind === "quan" ? DATA.items.indexOf("quan") : DATA.items.indexOf(o.icon);
+    const spr = this.physics.add.sprite(x, y - 20, "items", iconIdx).setDepth(14).setScale(0.75);
+    spr.body.setSize(20, 20).setOffset(6, 6);
+    spr.setVelocity((Math.random() - 0.5) * 120, -260);
+    this.physics.add.collider(spr, this.coll, null, (a, tile) => this.platformCheck(a, tile));
+    if (o.rarity && o.rarity !== "common") spr.preFX?.addGlow(Phaser.Display.Color.HexStringToColor(RARITY[o.rarity][1]).color, 3, 0, false, 0.1, 8);
+    this.drops.push({ o, spr, born: this.time.now });
+  }
+
+  gainExp(n) {
+    S.exp += n;
+    while (S.exp >= F.expToNext(S.lv) && S.lv < 100) {
+      S.exp -= F.expToNext(S.lv); S.lv++;
+      const st = stats(); S.hp = st.hp; S.mp = st.mp;
+      toast(`Lên cấp ${S.lv}!`, true); log(`Lên cấp ${S.lv}: HP ${st.hp}, ATK ${st.atk}, DEF ${st.def}`, "lvl");
+      this.floatText(this.player.x, this.player.y - 80, `LÊN CẤP ${S.lv}`, "#9eff8a", 22);
+      if (S.lv === 5) log("Mở kỹ năng Tụ Mana Chấn (phím 1)", "lvl");
+    }
+  }
+
+  floatText(x, y, str, color, size) {
+    const t = this.add.text(x + (Math.random() - 0.5) * 16, y, str, this.textStyle(size, color)).setOrigin(0.5, 1).setDepth(60);
+    this.tweens.add({ targets: t, y: y - 42, alpha: { from: 1, to: 0 }, ease: "Cubic.easeOut", duration: 950, onComplete: () => t.destroy() });
+  }
+
+  hurtPlayer(dmgInfo, fromX) {
+    if (this.time.now < this.invulnUntil || this.deadUntil) return;
+    S.combatAt = this.time.now;
+    if (dmgInfo.miss) { this.floatText(this.player.x, this.player.y - 50, "Né", "#9aa2bf", 14); return; }
+    S.hp -= dmgInfo.dmg;
+    this.floatText(this.player.x, this.player.y - 50, `-${dmgInfo.dmg}`, "#ff4d4d", dmgInfo.crit ? 21 : 17);
+    this.player.setTintFill(0xffffff); this.time.delayedCall(70, () => this.player.clearTint());
+    this.player.body.setVelocityX((this.player.x < fromX ? -1 : 1) * 140);
+    this.invulnUntil = this.time.now + 350;
+    if (S.hp <= 0) this.playerDie();
+  }
+
+  playerDie() {
+    S.hp = 0;
+    const lost = Math.floor(F.expToNext(S.lv) * 0.02);
+    S.exp = Math.max(0, S.exp - lost);
+    log(`Bạn đã gục ngã. Mất ${lost} EXP (2%)`, "bad");
+    toast("Bạn đã gục ngã. Hồi sinh sau 3 giây…");
+    this.deadUntil = this.time.now + 3000;
+    this.player.setTint(0x555566); this.player.anims.pause();
+  }
+
+  /* ---------------- boss ---------------- */
+  spawnBoss(b) {
+    const bs = this.bossSpawns.find((s) => s.boss === b.id);
+    if (!bs) return;
+    const d = DATA.bosses[b.id];
+    const base = F.mob(d.level), T = F.TIER.boss;
+    const weak = S.dev.weak ? 0.2 : 1;
+    const maxHp = Math.round(base.hp * T.hp * weak);
+    const y = d.flying ? bs.y - 160 : bs.y - 70;
+    const spr = this.physics.add.sprite(bs.x, y, b.id).setDepth(16).play(`${b.id}_idle`).setFlipX(true);
+    if (d.flying) { spr.body.setAllowGravity(false); spr.body.setSize(90, 60).setOffset(19, 24); }
+    else { spr.body.setSize(70, 60).setOffset(29, 65); this.mobGroup.add(spr); }
+    const m = {
+      kind: "boss", id: b.id, b, d, lv: d.level, spr, hp: b.hp ?? maxHp, maxHp, atk: Math.round(base.atk * T.atk), def: Math.round(base.def * T.def),
+      exp: Math.round(base.exp * T.exp), alive: true, state: "chase", next: this.time.now + 1500, phaseDone: {}, homeY: y,
+    };
+    m.label = this.add.text(bs.x, y, "", this.textStyle(1, "#000")).setVisible(false);
+    m.onHit = () => this.bossPhase(m);
+    b.entity = m; b.hp = m.hp; m.destroyBoss = () => { spr.destroy(); m.label.destroy(); this.boss = null; $("bossbar").hidden = true; };
+    this.boss = m;
+    $("bossbar").hidden = false;
+    this.cameras.main.shake(300, 0.004);
+  }
+
+  bossAtk() { const m = this.boss; return { atk: m.atk * (m.b.enraged ? 2 : 1), lv: m.lv, crit: 0.05, critDmg: 1.5 }; }
+
+  bossPhase(m) {
+    const pct = m.hp / m.maxHp;
+    const summon = (mob, n, at) => {
+      if (m.phaseDone[at]) return; m.phaseDone[at] = true;
+      m.spr.play(`${m.id}_skill2`); m.busy = this.time.now + 900;
+      toast(`${DATA.names[m.id]} gọi đồng bọn!`, true);
+      this.time.delayedCall(600, () => {
+        for (let i = 0; i < n; i++) {
+          const s = { x: m.spr.x + (i - (n - 1) / 2) * 60, y: m.spr.y + 60, mob, radius: 30, respawn: 0, alive: 0 };
+          const mm = this.spawnMob(s, true, "normal", true); mm.aggro = true;
+        }
+      });
+    };
+    if (m.id === "BOSS034") { if (pct <= 0.6) summon("MOB001", 3, 60); if (pct <= 0.3) summon("MOB001", 3, 30); }
+    if (m.id === "BOSS035") { if (pct <= 0.7) summon("MOB003", 2, 70); if (pct <= 0.35) summon("MOB003", 2, 35); }
+  }
+
+  telegraph(shape, ms, onDone) {
+    this.tele.push({ shape, start: this.time.now, end: this.time.now + ms, onDone });
+  }
+
+  inShape(shape, x, y) {
+    if (shape.type === "circle") return Phaser.Math.Distance.Between(x, y, shape.x, shape.y) <= shape.r;
+    if (shape.type === "rect") return x >= shape.x && x <= shape.x + shape.w && y >= shape.y && y <= shape.y + shape.h;
+    return false;
+  }
+
+  bossAI(m, now) {
+    if (!m.alive) return;
+    const pl = this.player, spr = m.spr;
+    const dx = pl.x - spr.x, dist = Math.abs(dx);
+    const feetY = (pl.body.bottom);
+    if (m.busy && now < m.busy) { spr.body.setVelocityX(m.dashV || 0); return; }
+    m.dashV = 0;
+    spr.setFlipX(dx < 0);
+    const ready = now >= m.next;
+    const fast = m.hp / m.maxHp < 0.5 ? 0.7 : 1;
+    if (m.id === "BOSS034") {
+      if (ready && dist < 300) {
+        m.next = now + 5200 * fast; m.busy = now + 2100;
+        spr.body.setVelocityX(0); spr.play("BOSS034_idle");
+        const sh = { type: "circle", x: spr.x, y: spr.body.bottom - 4, r: 150 };
+        this.telegraph(sh, 1300, () => {
+          spr.play("BOSS034_attack");
+          this.time.delayedCall(420, () => {
+            this.cameras.main.shake(220, 0.01);
+            if (this.inShape(sh, pl.x, pl.body.bottom - 10)) this.hurtPlayer(F.damage(this.bossAtk(), { lv: S.lv, def: stats().def }, 1.8), spr.x);
+          });
+        });
+        return;
+      }
+      spr.body.setVelocityX(dist > 60 ? Math.sign(dx) * 55 : 0);
+      spr.play(dist > 60 ? "BOSS034_move" : "BOSS034_idle", true);
+      if (dist < 70 && now > (m.melee || 0)) { m.melee = now + 1600; this.hurtPlayer(F.damage(this.bossAtk(), { lv: S.lv, def: stats().def }, 1.0), spr.x); }
+    }
+    if (m.id === "BOSS035") {
+      if (ready && dist < 420) {
+        m.next = now + 4800 * fast;
+        const dir = Math.sign(dx) || 1, len = 320;
+        const sh = { type: "rect", x: dir > 0 ? spr.x : spr.x - len, y: spr.body.bottom - 46, w: len, h: 46 };
+        m.busy = now + 1050; spr.body.setVelocityX(0); spr.play("BOSS035_idle");
+        this.telegraph(sh, 1000, () => {
+          spr.play("BOSS035_attack");
+          m.busy = this.time.now + 460; m.dashV = dir * 700; m.hitThisDash = false;
+          m.dashShape = sh;
+        });
+        return;
+      }
+      spr.body.setVelocityX(dist > 70 ? Math.sign(dx) * 120 : 0);
+      spr.play(dist > 70 ? "BOSS035_move" : "BOSS035_idle", true);
+      if (dist < 80 && now > (m.melee || 0)) { m.melee = now + 1400; spr.play("BOSS035_attack"); this.hurtPlayer(F.damage(this.bossAtk(), { lv: S.lv, def: stats().def }, 1.0), spr.x); }
+    }
+    if (m.id === "BOSS036") {
+      const hoverY = m.homeY + Math.sin(now / 400) * 10;
+      if (ready) {
+        m.next = now + 5000 * fast;
+        if ((m.cycle = (m.cycle || 0) + 1) % 3 === 0) {
+          // Crystal wing: shards rain on circles around the player
+          spr.play("BOSS036_skill2"); m.busy = now + 1300;
+          for (let i = 0; i < 5; i++) {
+            const sh = { type: "circle", x: pl.x + (i - 2) * 70 + (Math.random() - 0.5) * 30, y: feetY - 4, r: 34 };
+            this.telegraph(sh, 1000 + i * 90, () => {
+              this.shard(sh.x, sh.y);
+              if (this.inShape(sh, pl.x, pl.body.bottom - 10)) this.hurtPlayer(F.damage(this.bossAtk(), { lv: S.lv, def: stats().def }, 1.2), sh.x);
+            });
+          }
+        } else {
+          // Dive onto a circle under the player
+          const sh = { type: "circle", x: pl.x, y: feetY - 4, r: 70 };
+          m.busy = now + 1900;
+          this.telegraph(sh, 1200, () => {
+            spr.play("BOSS036_attack");
+            this.tweens.add({ targets: spr, x: sh.x, y: sh.y - 50, duration: 220, yoyo: true, hold: 120, ease: "Quad.easeIn",
+              onYoyo: () => { this.cameras.main.shake(160, 0.008); if (this.inShape(sh, pl.x, pl.body.bottom - 10)) this.hurtPlayer(F.damage(this.bossAtk(), { lv: S.lv, def: stats().def }, 2.0), sh.x); } });
+          });
+        }
+        return;
+      }
+      spr.body.setVelocityX(Phaser.Math.Clamp(dx, -1, 1) * 70);
+      spr.y += (hoverY - spr.y) * 0.08;
+      spr.play("BOSS036_idle", true);
+    }
+  }
+
+  shard(x, y) {
+    const g = this.add.graphics().setDepth(17);
+    g.fillStyle(0x7fe0ff, 1); g.fillTriangle(-5, 0, 0, -16, 5, 0); g.fillStyle(0xffffff, 1); g.fillTriangle(-1, -2, 0, -12, 1, -2);
+    g.setPosition(x, y - 220);
+    this.tweens.add({ targets: g, y, duration: 160, ease: "Quad.easeIn", onComplete: () => { g.destroy(); this.burst(x, y, 0x7fe0ff); } });
+  }
+
+  burst(x, y, color) {
+    const fx = this.add.sprite(x, y - 30, "vfx").setDepth(18).play("fx_boom");
+    if (color) fx.setTint(color);
+    fx.once("animationcomplete", () => fx.destroy());
+  }
+
+  /* ---------------- player actions ---------------- */
+  skillReady(k) { return this.time.now >= (S.cds[k] || 0); }
+
+  attackBox(range, h = 60) {
+    const x = this.facing > 0 ? this.player.x : this.player.x - range;
+    return new Phaser.Geom.Rectangle(x, this.player.body.bottom - h, range, h);
+  }
+
+  targetsIn(rect) {
+    const out = [];
+    for (const m of this.mobs) if (m.alive && Phaser.Geom.Intersects.RectangleToRectangle(rect, m.spr.getBounds())) out.push(m);
+    if (this.boss?.alive && Phaser.Geom.Intersects.RectangleToRectangle(rect, this.boss.spr.body ? new Phaser.Geom.Rectangle(this.boss.spr.body.x, this.boss.spr.body.y, this.boss.spr.body.width, this.boss.spr.body.height) : this.boss.spr.getBounds())) out.push(this.boss);
+    return out;
+  }
+
+  nearest(list) {
+    return list.sort((a, b) => Math.abs(a.spr.x - this.player.x) - Math.abs(b.spr.x - this.player.x))[0];
+  }
+
+  useBasic() {
+    if (!this.skillReady("basic")) return;
+    S.cds.basic = this.time.now + 1000; this.busyUntil = this.time.now + 330;
+    this.player.play("hero_attack");
+    this.time.delayedCall(150, () => { const t = this.nearest(this.targetsIn(this.attackBox(72))); if (t) this.hitMob(t, 1.0); });
+  }
+
+  useBurst() {
+    if (S.lv < 5) { this.floatText(this.player.x, this.player.y - 70, "Mở ở Lv5", "#9aa2bf", 13); return; }
+    if (!this.skillReady("burst") || S.mp < 6) return;
+    S.mp -= 6; S.cds.burst = this.time.now + 3000; this.busyUntil = this.time.now + 420;
+    this.player.play("hero_cast");
+    this.time.delayedCall(260, () => {
+      const cx = this.player.x + this.facing * 90;
+      this.burst(cx, this.player.body.bottom - 10, 0x9fd8ff);
+      for (const t of this.targetsIn(new Phaser.Geom.Rectangle(cx - 60, this.player.body.bottom - 90, 120, 90))) this.hitMob(t, 1.2);
+    });
+  }
+
+  useFireball() {
+    if (!S.fire) { this.floatText(this.player.x, this.player.y - 70, "Cần hệ Hỏa (Lv10)", "#9aa2bf", 13); return; }
+    if (!this.skillReady("fireball") || S.mp < 10) return;
+    S.mp -= 10; S.cds.fireball = this.time.now + 3000; this.busyUntil = this.time.now + 380;
+    this.player.play("hero_cast");
+    this.time.delayedCall(250, () => {
+      const fb = this.add.sprite(this.player.x + this.facing * 30, this.player.y - 6, "vfx").setDepth(19).play("fx_fireball").setFlipX(this.facing < 0);
+      this.shots.push({ spr: fb, vx: this.facing * 520, left: 400, mult: 1.2, burn: true, from: "player" });
+    });
+  }
+
+  useSlash() {
+    if (!S.fire) { this.floatText(this.player.x, this.player.y - 70, "Cần hệ Hỏa (Lv10)", "#9aa2bf", 13); return; }
+    if (!this.skillReady("slash") || S.mp < 18) return;
+    S.mp -= 18; S.cds.slash = this.time.now + 5000; this.busyUntil = this.time.now + 360;
+    this.player.play("hero_attack");
+    this.time.delayedCall(140, () => {
+      for (const t of this.targetsIn(this.attackBox(96, 80))) this.hitMob(t, 1.6);
+      this.burst(this.player.x + this.facing * 50, this.player.body.bottom - 20, 0xffb070);
+    });
+  }
+
+  usePotion(type) {
+    if (!S.potions[type]) { log(`Hết ${type === "hp" ? "Bình Máu" : "Bình Mana"}`, "bad"); return; }
+    const st = stats();
+    if (type === "hp") { if (S.hp >= st.hp) return; S.hp = Math.min(st.hp, S.hp + Math.round(st.hp * 0.4)); this.floatText(this.player.x, this.player.y - 60, `+${Math.round(st.hp * 0.4)}`, "#7dff8a", 16); }
+    else { if (S.mp >= st.mp) return; S.mp = Math.min(st.mp, S.mp + Math.round(st.mp * 0.4)); }
+    S.potions[type]--;
+  }
+
+  interact() {
+    const n = this.npcs.find((n) => Math.abs(n.x - this.player.x) < 60 && Math.abs(n.y - this.player.body.bottom) < 80);
+    if (!n) return;
+    const lines = {
+      NPC001: "Mỗi trang sách đều có chỗ của nó. Đi săn cẩn thận nhé.",
+      NPC002: "Ăn no rồi hẵng đi, con.",
+      NPC003: "Mình đang chế thuốc, cậu mang Đồng Luyện về cho mình nhé!",
+      NPC004: "Ra Đồng Hoa đi, Vua Nấm Lùn sắp xuất hiện đấy.",
+      NPC040: "Lịch boss dán trên bảng tin đây, xem đi.",
+    };
+    const bub = this.add.text(n.x, n.y - 110, lines[n.id] || "…", this.textStyle(13, "#ffffff")).setOrigin(0.5, 1).setDepth(61).setWordWrapWidth(260);
+    this.time.delayedCall(2600, () => bub.destroy());
+    if (n.id === "NPC040") toggleSchedule(true);
+  }
+
+  tryPortal() {
+    const pl = this.player;
+    const p = this.portals.find((p) => pl.x >= p.x - 10 && pl.x <= p.x + p.w + 10 && pl.body.bottom >= p.y && pl.body.bottom <= p.y + p.h + 10);
+    if (!p) return false;
+    if (!MAPS.includes(p.to)) { toast(p.to === "DG01" ? "Hầm ngục DG01 (Trang Lạc) chưa có trong bản thử." : "Thượng Đô chưa có trong bản thử.", true); return true; }
+    this.scene.restart({ map: p.to, x: p.toX, y: p.toY });
+    return true;
+  }
+
+  /* ---------------- update ---------------- */
+  update(now, dtMs) {
+    const dt = dtMs / 1000;
+    S.t += dt * S.speed / 60;
+    bossTick(this);
+    const pl = this.player, body = pl.body;
+    const st = stats();
+
+    // death / respawn
+    if (this.deadUntil) {
+      body.setVelocityX(0);
+      if (now >= this.deadUntil) {
+        this.deadUntil = 0; S.hp = st.hp; S.mp = st.mp; pl.clearTint(); pl.anims.resume();
+        const sp = this.map.getObjectLayer("objects").objects.find((o) => o.type === "spawn_player");
+        pl.setPosition(sp.x, sp.y - 44); this.invulnUntil = now + 3000;
+        log("Hồi sinh (bất khả xâm phạm 3 giây)", "sys");
+      }
+      this.updateWorld(now, dt); this.updateHud(); return;
+    }
+
+    // regen (§3.2): out of combat HP 1%/5s, MP 2%/s; in combat MP 0.5%/s
+    const out = now - S.combatAt > 5000;
+    if (out) S.hp = Math.min(st.hp, S.hp + st.hp * 0.01 * dt / 5);
+    S.mp = Math.min(st.mp, S.mp + st.mp * (out ? 0.02 : 0.005) * dt);
+
+    // ladders and hazards
+    const tile = this.coll.getTileAtWorldXY(pl.x, body.bottom - 20);
+    const onLadder = tile && tile.index === 3;
+    const upKey = this.down("up", "aUp"), downKey = this.down("down", "aDown");
+    if (onLadder && (upKey || downKey) && !this.climbing) { this.climbing = true; body.setAllowGravity(false); }
+    if (this.climbing && (!onLadder || this.down("jump"))) { this.climbing = false; body.setAllowGravity(true); }
+    const foot = this.coll.getTileAtWorldXY(pl.x, body.bottom - 6) || this.coll.getTileAtWorldXY(pl.x, body.bottom + 2);
+    if (foot && foot.index === 4 && now > (this.hazardAt || 0)) {
+      this.hazardAt = now + 900;
+      this.hurtPlayer({ miss: false, dmg: Math.round(st.hp * 0.08) }, pl.x + 1); body.setVelocityY(-380);
+    }
+
+    // movement
+    const left = this.down("left", "aLeft"), right = this.down("right", "aRight");
+    const busy = now < this.busyUntil;
+    let vx = 0;
+    if (!busy || !body.blocked.down) { if (left) vx -= 180; if (right) vx += 180; }
+    if (vx) this.facing = Math.sign(vx);
+    pl.setFlipX(this.facing < 0);
+    if (now > this.invulnUntil - 200) body.setVelocityX(vx);
+    if (this.climbing) {
+      body.setVelocityY(upKey ? -120 : downKey ? 120 : 0); body.setVelocityX(vx * 0.4);
+    } else {
+      const jumpPressed = (this.down("jump") || (upKey && !this.nearPortal())) && body.blocked.down;
+      if (jumpPressed) body.setVelocityY(-500);
+      if (downKey && body.blocked.down) {
+        const below = this.coll.getTileAtWorldXY(pl.x, body.bottom + 4);
+        if (below && below.index === 2) this.dropUntil = now + 260;
+      }
+    }
+    // portals: up on a portal
+    if (upKey && !this.prevUp && this.nearPortal()) this.tryPortal();
+    this.prevUp = upKey;
+
+    // actions
+    if (this.down("attack")) this.useBasic();
+    if (this.down("s1")) this.useBurst();
+    if (this.keys.s2.isDown) this.useFireball();
+    if (this.keys.s3.isDown) this.useSlash();
+    const inter = V.interact; if (inter && !this.prevInteract) this.interact(); this.prevInteract = inter;
+
+    // player anim
+    if (!busy) {
+      if (!body.blocked.down && !this.climbing) pl.anims.stop(), pl.setFrame(14);
+      else if (vx) pl.play("hero_walk", true);
+      else pl.play("hero_idle", true);
+    }
+
+    this.updateWorld(now, dt);
+    this.updateHud();
+  }
+
+  nearPortal() {
+    const pl = this.player;
+    return this.portals.some((p) => pl.x >= p.x - 10 && pl.x <= p.x + p.w + 10 && pl.body.bottom >= p.y && pl.body.bottom <= p.y + p.h + 10);
+  }
+
+  updateWorld(now, dt) {
+    const pl = this.player;
+    // monsters
+    for (const m of this.mobs) {
+      if (!m.alive) continue;
+      const spr = m.spr, d = m.d;
+      if (m.burn && now >= m.burn.next) {
+        m.burn.next += 1000;
+        if (now <= m.burn.until) this.hitMob(m, 0, { fixed: m.burn.dmg, dot: true }); else m.burn = null;
+        if (!m.alive) continue;
+      }
+      const dx = pl.x - spr.x, dist = Math.abs(dx), dy = pl.y - spr.y;
+      const fromHome = spr.x - m.homeX;
+      if (Math.abs(fromHome) > 600) { m.aggro = false; m.returning = true; }
+      if (m.returning) {
+        spr.body.setVelocityX(-Math.sign(fromHome) * d.speed * 1.5); spr.setFlipX(fromHome > 0);
+        if (Math.abs(fromHome) < 20) { m.returning = false; m.hp = m.maxHp; }
+        if (!d.flying) spr.play(`${m.id}_move`, true);
+        continue;
+      }
+      if (!m.aggro && d.ai === "AGGRESSIVE" && dist < d.aggro && Math.abs(dy) < 120 && !this.deadUntil) m.aggro = true;
+      if (this.deadUntil) m.aggro = false;
+      if (now < m.hurtUntil) continue;
+      if (m.flee) {
+        spr.body.setVelocityX(-Math.sign(dx) * d.speed * 1.4); spr.setFlipX(dx > 0); spr.play(`${m.id}_move`, true);
+        continue;
+      }
+      if (d.flying) {
+        const ty = m.aggro ? pl.y - 34 : m.homeY + Math.sin(now / 500 + m.homeX) * 8;
+        const tx = m.aggro ? pl.x : m.homeX + Math.sin(now / 1500 + m.homeX) * 60;
+        spr.body.setVelocity(Phaser.Math.Clamp(tx - spr.x, -1, 1) * d.speed, Phaser.Math.Clamp(ty - spr.y, -1, 1) * d.speed * 0.6);
+        spr.setFlipX(tx < spr.x);
+        if (m.aggro && dist < 40 && Math.abs(dy) < 50 && now > m.atkReady) {
+          m.atkReady = now + 1600; spr.play(`${m.id}_attack`);
+          this.hurtPlayer(F.damage({ atk: m.atk, lv: m.lv, crit: 0.05, critDmg: 1.5 }, { lv: S.lv, def: stats().def }, 1.0), spr.x);
+          spr.once("animationcomplete", () => m.alive && spr.play(`${m.id}_idle`));
+        } else if (!spr.anims.isPlaying || spr.anims.currentAnim.key.endsWith("_idle") || spr.anims.currentAnim.key.endsWith("_move")) spr.play(`${m.id}_idle`, true);
+        continue;
+      }
+      if (m.aggro) {
+        const range = d.ranged ? 190 : 40;
+        spr.setFlipX(dx < 0);
+        if (dist > range) { spr.body.setVelocityX(Math.sign(dx) * d.speed * 1.3); spr.play(`${m.id}_move`, true); }
+        else {
+          spr.body.setVelocityX(0);
+          if (now > m.atkReady && Math.abs(dy) < 90) {
+            m.atkReady = now + 1600; spr.play(`${m.id}_attack`);
+            if (d.ranged) {
+              this.time.delayedCall(250, () => {
+                if (!m.alive) return;
+                const c = this.add.circle(spr.x, spr.y - 6, 5, m.id === "MOB005" ? 0x6a3cb0 : 0x8a8494).setDepth(19);
+                this.shots.push({ spr: c, vx: Math.sign(dx) * 260, left: 260, from: "mob", m });
+              });
+            } else {
+              this.time.delayedCall(220, () => {
+                if (m.alive && Math.abs(pl.x - spr.x) < 56) this.hurtPlayer(F.damage({ atk: m.atk, lv: m.lv, crit: 0.05, critDmg: 1.5 }, { lv: S.lv, def: stats().def }, 1.0), spr.x);
+              });
+            }
+          } else if (!spr.anims.isPlaying || !spr.anims.currentAnim.key.endsWith("_attack")) spr.play(`${m.id}_idle`, true);
+        }
+      } else {
+        if (now > m.next) { m.next = now + 1200 + Math.random() * 2000; m.dir = Math.random() < 0.5 ? -1 : 1; m.walking = Math.random() < 0.6; }
+        const outside = Math.abs(fromHome) > (m.s.radius || 64);
+        const dir = outside ? -Math.sign(fromHome) : m.dir;
+        if (m.walking) { spr.body.setVelocityX(dir * d.speed * 0.6); spr.setFlipX(dir < 0); spr.play(`${m.id}_move`, true); }
+        else { spr.body.setVelocityX(0); spr.play(`${m.id}_idle`, true); }
+      }
+    }
+    // boss
+    if (this.boss?.alive) {
+      this.bossAI(this.boss, now);
+      const m = this.boss;
+      if (m.dashV && !m.hitThisDash && Phaser.Geom.Intersects.RectangleToRectangle(m.spr.getBounds(), pl.getBounds())) {
+        m.hitThisDash = true; this.hurtPlayer(F.damage(this.bossAtk(), { lv: S.lv, def: stats().def }, 2.0), m.spr.x);
+      }
+    }
+    // shots
+    for (const s of this.shots) {
+      if (s.dead) continue;
+      const step = s.vx * dt; s.spr.x += step; s.left -= Math.abs(step);
+      if (s.from === "player") {
+        const hit = this.targetsIn(new Phaser.Geom.Rectangle(s.spr.x - 12, s.spr.y - 12, 24, 24));
+        if (hit.length) { this.hitMob(hit[0], s.mult, { burn: s.burn }); this.burst(s.spr.x, s.spr.y + 30); s.dead = true; }
+      } else if (Math.abs(s.spr.x - pl.x) < 16 && Math.abs(s.spr.y - (pl.y - 6)) < 40) {
+        this.hurtPlayer(F.damage({ atk: s.m.atk, lv: s.m.lv, crit: 0.05, critDmg: 1.5 }, { lv: S.lv, def: stats().def }, 1.0), s.spr.x); s.dead = true;
+      }
+      if (s.left <= 0) s.dead = true;
+      if (s.dead) s.spr.destroy();
+    }
+    this.shots = this.shots.filter((s) => !s.dead);
+    // drops: auto-pickup, expire after 60 s
+    for (const dr of this.drops) {
+      if (dr.done) continue;
+      if (now - dr.born > 60000) { dr.done = true; dr.spr.destroy(); continue; }
+      if (now - dr.born > 500 && Math.abs(dr.spr.x - pl.x) < 26 && Math.abs(dr.spr.y - (pl.body.bottom - 14)) < 40) {
+        dr.done = true; dr.spr.destroy();
+        const o = dr.o;
+        if (o.kind === "quan") { S.quan += o.n; this.floatText(pl.x, pl.y - 70, `+${o.n} Quan`, "#f0c24a", 14); }
+        else {
+          if (o.kind === "potion") S.potions[o.type]++; else S.bag++;
+          const [rn, col] = RARITY[o.rarity];
+          const label = o.rarity === "common" ? o.name : `${o.name} (${rn})`;
+          this.floatText(pl.x, pl.y - 70, label, col, 14);
+          const el = document.createElement("div"); el.textContent = `Nhặt: ${label}`; el.style.color = col;
+          $("log").appendChild(el); while ($("log").children.length > 6) $("log").removeChild($("log").firstChild);
+        }
+      }
+    }
+    this.drops = this.drops.filter((d) => !d.done);
+    this.mobs = this.mobs.filter((m) => m.alive || m.spr.active);
+    // telegraphs
+    const g = this.teleG; g.clear();
+    for (const t of this.tele) {
+      const k = Phaser.Math.Clamp((now - t.start) / (t.end - t.start), 0, 1);
+      const sh = t.shape;
+      g.fillStyle(0xff3b3b, 0.16); g.lineStyle(3, 0xff3b3b, 0.9);
+      if (sh.type === "circle") {
+        g.fillEllipse(sh.x, sh.y, sh.r * 2, sh.r * 0.7); g.strokeEllipse(sh.x, sh.y, sh.r * 2, sh.r * 0.7);
+        g.fillStyle(0xff3b3b, 0.38); g.fillEllipse(sh.x, sh.y, sh.r * 2 * k, sh.r * 0.7 * k);
+      } else {
+        g.fillRect(sh.x, sh.y, sh.w, sh.h); g.strokeRect(sh.x, sh.y, sh.w, sh.h);
+        g.fillStyle(0xff3b3b, 0.38);
+        const goesLeft = sh.x < (this.boss?.spr.x ?? sh.x);
+        g.fillRect(goesLeft ? sh.x + sh.w * (1 - k) : sh.x, sh.y, sh.w * k, sh.h);
+      }
+      if (k >= 1 && !t.fired) { t.fired = true; t.onDone?.(); }
+    }
+    this.tele = this.tele.filter((t) => !t.fired);
+    // monster bars + labels
+    const b = this.bars; b.clear();
+    for (const m of this.mobs) {
+      if (!m.alive) continue;
+      const spr = m.spr, w = m.tier === "normal" ? 40 : 54;
+      const top = spr.y - spr.displayHeight / 2 + (m.d.flying ? 8 : spr.displayHeight * 0.35);
+      m.label.setPosition(spr.x, top - 8);
+      m.shownHp += (m.hp / m.maxHp - m.shownHp) * 0.3;
+      m.chipHp += (m.shownHp - m.chipHp) * 0.06;
+      const show = m.tier !== "normal" || now < m.showBarUntil;
+      m.label.setVisible(show || Math.abs(spr.x - pl.x) < 150);
+      if (!show) continue;
+      b.fillStyle(0x000000, 0.8); b.fillRect(spr.x - w / 2 - 1, top - 6, w + 2, 6);
+      b.fillStyle(0xffe1e1, 1); b.fillRect(spr.x - w / 2, top - 5, w * Math.max(0, m.chipHp), 4);
+      b.fillStyle(m.tier === "leader" ? 0xff8a4a : m.tier === "elite" ? 0xc58bff : 0xe5484d, 1); b.fillRect(spr.x - w / 2, top - 5, w * Math.max(0, m.shownHp), 4);
+    }
+  }
+
+  updateHud() {
+    const st = stats();
+    $("plv").textContent = `Lv ${S.lv}`;
+    $("pname").textContent = S.fire ? "Hỏa Kiếm Sĩ" : "Tân thủ";
+    const hpP = Math.max(0, S.hp / st.hp) * 100, mpP = Math.max(0, S.mp / st.mp) * 100;
+    $("php").querySelector(".fill").style.width = hpP + "%"; $("php").querySelector(".chip").style.width = hpP + "%";
+    $("php").querySelector("span").textContent = `${Math.max(0, Math.round(S.hp))} / ${st.hp}`;
+    $("pmp").querySelector(".fill").style.width = mpP + "%";
+    $("pmp").querySelector("span").textContent = `${Math.round(S.mp)} / ${st.mp}`;
+    $("pquan").textContent = `${S.quan.toLocaleString("vi-VN")} Quan`;
+    $("pbag").textContent = `Túi: ${S.bag} món`;
+    $("nhp").textContent = S.potions.hp; $("nmp").textContent = S.potions.mp;
+    const need = F.expToNext(S.lv);
+    $("expbar").querySelector("i").style.width = (S.exp / need * 100) + "%";
+    $("expbar").querySelector("span").textContent = `EXP ${S.exp.toLocaleString("vi-VN")} / ${need.toLocaleString("vi-VN")} (${(S.exp / need * 100).toFixed(1)}%)`;
+    $("clock").textContent = `${fmtClock(S.t)}  ×${S.speed}`;
+    const now = this.time.now;
+    const cdLen = { basic: 1000, burst: 3000, fireball: 3000, slash: 5000 };
+    for (const el of document.querySelectorAll(".slot[data-skill]")) {
+      const k = el.dataset.skill;
+      if (cdLen[k]) el.querySelector(".cd").style.height = Math.max(0, (S.cds[k] - now) / cdLen[k]) * 100 + "%";
+      el.classList.toggle("locked", (k === "burst" && S.lv < 5) || ((k === "fireball" || k === "slash") && !S.fire));
+    }
+    if (this.boss?.alive) {
+      const m = this.boss, p = Math.max(0, m.hp / m.maxHp) * 100;
+      $("bname").textContent = `${DATA.names[m.id]} · Lv ${m.lv}${m.b.enraged ? " · CUỒNG NỘ" : ""}`;
+      $("bhp").querySelector(".fill").style.width = p + "%"; $("bhp").querySelector(".chip").style.width = p + "%";
+      $("bhp").querySelector("span").textContent = `${Math.max(0, m.hp).toLocaleString("vi-VN")} / ${m.maxHp.toLocaleString("vi-VN")}`;
+      $("bsub").textContent = `Bỏ đi sau ${fmtDur(m.b.until - S.t)}${S.lv > m.lv + 10 ? " · bạn quá cấp, không nhận vật phẩm" : ""}`;
+    }
+    if (!$("schedule").hidden && (this.frameN = (this.frameN || 0) + 1) % 15 === 0) renderSchedule();
+  }
+}
+
+function toggleSchedule(force) {
+  const el = $("schedule");
+  el.hidden = force === true ? false : !el.hidden;
+  if (!el.hidden) renderSchedule();
+}
+$("btn-sched").addEventListener("click", () => toggleSchedule());
+$("btn-close").addEventListener("click", () => toggleSchedule());
+$("overlay").addEventListener("click", () => { $("overlay").hidden = true; S.started = true; window.focus(); });
+$("speed").addEventListener("change", (e) => { S.speed = Number(e.target.value); });
+$("dev-weak").addEventListener("change", (e) => { S.dev.weak = e.target.checked; });
+$("dev-rare").addEventListener("change", (e) => { S.dev.rare = e.target.checked; });
+$("dev-boss").addEventListener("click", () => {
+  const b = Object.values(S.bosses).find((x) => x.map === S.map) || Object.values(S.bosses)[0];
+  if (b.status === "live") { toast(`${DATA.names[b.id]} đang ở ${DATA.names[b.map]}.`, true); return; }
+  b.at = S.t + 0.05; b.warned = true;
+  if (b.map !== S.map) toast(`${DATA.names[b.id]} sẽ xuất hiện ở ${DATA.names[b.map]}. Map này không có boss theo giờ.`, true);
+});
+$("dev-fire").addEventListener("click", () => {
+  if (S.lv < 10) { S.lv = 10; S.exp = 0; }
+  S.fire = true; const st = stats(); S.hp = st.hp; S.mp = st.mp;
+  log("Lễ Khai Thư (thử): đã chọn hệ Hỏa. Phím 2 Hỏa Cầu, phím 3 Trảm Liệt Diễm", "lvl");
+});
+$("dev-lv").addEventListener("click", () => { const sc = window.__htk?.scene; if (sc) sc.gainExp(F.expToNext(S.lv) - S.exp); });
+
+new Phaser.Game({
+  type: Phaser.AUTO, parent: "game", width: 960, height: 540, pixelArt: true, backgroundColor: "#0d1020",
+  physics: { default: "arcade", arcade: { gravity: { y: 1200 }, tileBias: 32, debug: false } },
+  scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+  scene: [Boot, World],
+});
+</script>

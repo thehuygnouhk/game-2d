@@ -51,6 +51,31 @@ flowchart TD
 └────────────────────────────────────────────────────────────────┘
 ```
 
+### 3.1.1 Thông tin chiến đấu trên màn hình
+
+| Thành phần | Quy ước |
+|-----------|---------|
+| **Thanh máu quái** | Trên đầu quái: tên + cấp, thanh HP. Quái thường chỉ hiện thanh khi bị đánh hoặc đang được chọn; Tinh anh, Thủ lĩnh, boss luôn hiện. Thanh giảm mượt, phần vừa mất hiện màu trắng rồi rút dần |
+| **Tên theo loại** | Thường: trắng. **[Tinh anh]**: tím. **[Thủ lĩnh]**: cam đỏ. Boss: vàng, thanh HP lớn ở đỉnh màn hình |
+| **Số sát thương** | Bay lên rồi mờ dần. Người chơi đánh quái: **trắng**; chí mạng: **vàng, to hơn**, kèm chữ "Chí mạng"; sát thương theo thời gian (Cháy, Độc): **cam**; trượt: "Trượt" màu xám. Quái đánh người chơi: **đỏ** trên đầu nhân vật |
+| **Phần thưởng** | Khi hạ quái: "+N EXP" màu xanh nhạt trên nhân vật; nhặt đồ hiện tên theo màu độ hiếm ([art §2.1](12-art-audio-direction.md)); "+N Quan" màu vàng |
+| **Nhật ký** | Khung chat (kênh Hệ thống) ghi: hạ quái, EXP, đồ nhặt, lên cấp, thủ lĩnh xuất hiện, thông báo boss |
+| **Vùng báo hiệu boss** | Vùng đỏ bán trong suốt có viền, tô đầy dần trong 1–1,5s rồi mới gây sát thương ([combat §5.3](04-combat-and-progression.md)) |
+
+### 3.1.2 Lịch Boss
+
+Mở bằng nút **Lịch Boss** cạnh mini-map, hoặc tại bảng tin của Cụ Trương (NPC040).
+
+| Cột | Nội dung |
+|-----|----------|
+| Boss | Tên, cấp, ảnh nhỏ |
+| Nơi xuất hiện | Tên map (khu ngẫu nhiên) |
+| Giờ xuất hiện | Danh sách giờ trong ngày; giờ kế tiếp tô đậm |
+| Trạng thái | **Còn hh:mm:ss**, **Đang xuất hiện – khu n (còn mm:ss)**, **Đã bị hạ bởi *tên***, hoặc **Đã bỏ đi** |
+| Nút | **Đi tới** (dịch chuyển bằng Thẻ Kẹp Trang nếu đã mở map), **Nhắc tôi** (thông báo trước 5 phút) |
+
+Boss chưa đủ cấp để nhận thưởng (bảo vệ tân thủ, [maps §5.2](05-world-maps-monsters.md#52-quy-tắc-boss-theo-giờ)) hiện ghi chú màu xám.
+
 ### 3.2 Bố cục Mobile (ngang)
 
 ```text

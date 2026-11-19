@@ -85,9 +85,13 @@ Mỗi lớp có tập hoạt ảnh chung **bộ xương (rig)** với mốc neo 
 |------|-------------------|---------|
 | Quái nhỏ | 64×64 | 3–4 hoạt ảnh (idle, move, attack, die) |
 | Quái vừa | 96×96–128×128 | |
-| Elite | Quái thường + viền sáng + aura | Dùng lại sprite |
+| Elite (Tinh anh) | Quái thường + viền sáng **tím** + aura | Dùng lại sprite |
+| Thủ lĩnh | Quái thường **×1,3** + viền **vàng cam** + aura | Dùng lại sprite |
 | Mini-boss | 160×160 | |
 | Boss | 256×256 trở lên | Có animation riêng từng chiêu + telegraph |
+
+- Mọi quái có thêm hoạt ảnh **hurt** (2 khung): khung 1 lùi về sau và lóe trắng, khung 2 lùi ít hơn và ửng đỏ.
+- Boss có hoạt ảnh **attack** (chiêu 1) và **skill2** (chiêu 2). **Vùng báo hiệu** vẽ bằng engine: vùng đỏ bán trong suốt (`#ff3b3b`, 25–45%) có viền đậm, tô đầy dần theo thời gian báo hiệu; hình tròn, vòng, hình chữ nhật hoặc hình quạt theo chiêu.
 | Raid boss | Tối đa 512×512 | Có thể chia sprite nhiều phần |
 
 ## 5. Bản đồ

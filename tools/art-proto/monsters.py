@@ -14,6 +14,7 @@ from pix import Grid, canvas, dilate4, fill, hex_rgb, put
 from tiles_rich import pal, vol
 
 ANIMS = ("idle", "move", "attack", "die")
+ALL_ANIMS = ("idle", "move", "attack", "die", "hurt", "skill2")   # hurt: 2 frames; skill2: bosses only
 INK = hex_rgb("#160f1c")
 WHITE = (255, 255, 255)
 
@@ -96,8 +97,29 @@ def flash(cv):
     return cv
 
 
-def _frames(draw, size):
+def _frames(draw, size, boss=False):
     out = {}
+    if boss:
+        out["skill2"] = []
+        for i in range(4):
+            cv = canvas(size, size)
+            draw(cv, Grid(size, size), "skill2", i)
+            out["skill2"].append(cv)
+    base = canvas(size, size)
+    draw(base, Grid(size, size), "idle", 0)
+    hurt = []
+    for k, (shift_px, tint) in enumerate(((3, "white"), (1, "red"))):
+        f = np.zeros_like(base)
+        f[:, :size - shift_px] = base[:, shift_px:]
+        m = f[..., 3] > 0
+        if tint == "white":
+            f[m, :3] = (f[m, :3].astype(int) + 255 * 2) // 3
+        else:
+            f[m, 0] = np.minimum(255, f[m, 0].astype(int) + 70)
+            f[m, 1] = (f[m, 1].astype(int) * 3) // 4
+            f[m, 2] = (f[m, 2].astype(int) * 3) // 4
+        hurt.append(f)
+    out["hurt"] = hurt
     for a in ANIMS:
         out[a] = []
         for i in range(4):
@@ -211,6 +233,16 @@ def nam_lun(cv, g, a, i, scale=1.0, king=False):
         fill(cv, g.disc(cx + 18 * s, base - 31 * s + dy, 4.2 * s), hex_rgb("#1a5a52"))
         fill(cv, g.disc(cx + 18 * s, base - 31 * s + dy, 3 * s), hex_rgb(SPORE))
         put(cv, cx + 17 * s, base - 32 * s + dy, WHITE)
+        if a == "skill2":  # spore burst from the staff, sprouts around the feet
+            tip = (cx + 18 * s, base - 31 * s + dy)
+            for k in range(i + 1):
+                fill(cv, g.ring(*tip, (6 + k * 6) * s, (6 + k * 6) * s, 1.2 * s), hex_rgb(SPORE))
+            aura(cv, g, *tip, (14 + i * 6) * s, SPORE, i, n=8)
+            if i >= 2:
+                for fx in (cx - 24 * s, cx + 30 * s):
+                    sprout = g.ellipse(fx, base - (3 + i) * s, 4 * s, 2.6 * s) & (g.py < base - (2 + i) * s)
+                    vol(cv, sprout, CAP_RED, shadow=1, light=1)
+                    put(cv, fx, base - (4 + i) * s, hex_rgb(SPORE))
         if a == "attack" and i == 3:  # shock rings on landing
             for r in (18 * s, 26 * s):
                 fill(cv, g.ring(cx, base - 2 * s, r, r * 0.25, 1.6 * s), hex_rgb(SPORE))
@@ -326,6 +358,10 @@ def wolf(cv, g, a, i, s=1.0, alpha=False):
             put(cv, cx + 12 * s + math.cos(ang) * 14 * s, by - 3 * s + math.sin(ang) * 13 * s, hex_rgb("#7cf0ff"))
         aura(cv, g, cx + 4 * s, by - 4 * s, 30 * s, "#7cf0ff", i, n=7)
     hx, hy = cx + 19 * s, by - 7 * s + (2 * s if a == "die" else 0)
+    if a == "skill2":  # howl: head up, mouth open
+        open_mouth = True
+        hy -= (2 + i) * s
+        hx -= 1 * s
     for ex in (-3, 2):  # ears
         e = g.poly([(hx + ex * s - 2.5 * s, hy - 4 * s), (hx + ex * s - 1 * s, hy - 12 * s), (hx + ex * s + 2.5 * s, hy - 4 * s)])
         vol(cv, e, fur, shadow=1, light=1)
@@ -346,6 +382,9 @@ def wolf(cv, g, a, i, s=1.0, alpha=False):
     fangs(cv, g, hx + 9 * s, hy + 4.2 * s, n=2, h=2 * s, gap=3 * s)
     if alpha:
         fill(cv, g.polyline([(hx + 1 * s, hy - 6 * s), (hx + 5 * s, hy + 1 * s)], 0.5 * s), hex_rgb("#d8a0a0"))
+    if a == "skill2":
+        for k in range(i + 1):
+            fill(cv, g.arc(hx + 12 * s, hy + 2 * s, (8 + k * 8) * s, 300, 60, 1.3 * s), hex_rgb("#7cf0ff"))
 
 
 # ---------------------------------------------------------------- MOB004 Lun Nem Da
@@ -463,6 +502,8 @@ def bat(cv, g, a, i, s=1.0, queen=False):
     if a == "die":
         flap = 0.6
         dy = (2, 6, 10, 14)[i] * s
+    if a == "skill2":
+        flap = (-0.6, -1.0, -1.0, -0.4)[i]
     cx += dx
     cy += dy
     wp = WING if not queen else pal("#0c1a2a", "#1e3450", "#2a4a6e", "#3a6290", "#5a86b8", "#86b0e0")
@@ -500,6 +541,13 @@ def bat(cv, g, a, i, s=1.0, queen=False):
             glow_eye(cv, g, ex, hy, 1.6 * s, "#ffd23f" if queen else "#ff4d6a")
         if queen and a != "die":
             aura(cv, g, cx, cy, 34 * s, "#7fe0ff", i, n=8)
+    if queen and a == "skill2" and i >= 1:
+        for k in range(6):
+            ang = math.radians(200 + k * 28)
+            d = (12 + i * 11) * s
+            sx, sy = cx + math.cos(ang) * d, cy + math.sin(ang) * d * 0.7 + 18 * s
+            shard = g.poly([(sx - 2 * s, sy), (sx, sy - 6 * s), (sx + 2 * s, sy), (sx, sy + 3 * s)])
+            vol(cv, shard, CRYSTAL, shadow=1, light=1)
     for fx in (cx, cx + 3 * s):  # fangs
         fill(cv, g.rect(fx, hy + 3 * s, fx, hy + 4.5 * s), WHITE)
     if queen:
@@ -576,14 +624,18 @@ def trang_lac(cv, g, a, i):
     cx += dx
     cy += bob
     # pages orbiting behind the body (upper half of the orbit)
+    storm = a == "skill2"
+    n_pages = 9 if storm else 5
+
     def orbit(front):
-        for k in range(5):
-            ang = k * 72 + i * 18 + (30 if a == "attack" else 0)
+        for k in range(n_pages):
+            ang = k * 360 / n_pages + i * (40 if storm else 18) + (30 if a == "attack" else 0)
             sy = math.sin(math.radians(ang))
             if (sy > 0) != front:
                 continue
-            px_ = cx + math.cos(math.radians(ang)) * 62
-            py_ = cy + 4 + sy * 20
+            rad = 62 + (i * 5 if storm else 0)
+            px_ = cx + math.cos(math.radians(ang)) * min(rad, W / 2 - 8)
+            py_ = cy + 4 + sy * (20 + (i * 4 if storm else 0))
             _page(cv, g, px_, py_, 5, 7, ang * 0.6)
     orbit(False)
     # shredded skirt
@@ -622,7 +674,7 @@ def trang_lac(cv, g, a, i):
     fx, fy = cx + 5, cy - 18
     fill(cv, g.ellipse(fx, fy, 9, 7.5), INKBODY[1])
     fill(cv, g.ring(fx, fy, 6.5, 5.5, 1.3), INKBODY[3])
-    fill(cv, g.disc(fx + 1, fy, 2.8), hex_rgb("#ff4d6a") if a == "attack" else INKBODY[5])
+    fill(cv, g.disc(fx + 1, fy, 2.8), hex_rgb("#ff4d6a") if a in ("attack", "skill2") else INKBODY[5])
     put(cv, fx - 1, fy - 2, WHITE)
     for k, dl in enumerate((7, 11, 5)):
         fill(cv, g.capsule(fx - 4 + k * 4, fy + 6, fx - 4 + k * 4, fy + 6 + dl, 1.0), INKBODY[1])
@@ -671,6 +723,9 @@ MONSTERS = {
 }
 
 
+BOSSES = ("BOSS001", "BOSS034", "BOSS035", "BOSS036")
+
+
 def monster_frames(mid):
     draw, size, _, _ = MONSTERS[mid]
-    return _frames(draw, size)
+    return _frames(draw, size, boss=mid in BOSSES)

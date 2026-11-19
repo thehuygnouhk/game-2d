@@ -108,7 +108,7 @@ Phong cách **quái thú ma lực**: thú bị ma lực thấm vào, mắt khe p
 | BOSS035 | Chó Rừng Đầu Đàn | 8 | 128 | M003, 11:00/17:00/21:00 | Sói đầu đàn, bờm gai, sẹo, hào quang gió |
 | BOSS036 | Dơi Chúa Giếng | 10 | 128 | M004, 12:30/19:30; Đêm Giếng Sáng | Cánh gai pha lê, gân mana xanh |
 
-Mỗi con có 4 hoạt ảnh × 4 khung: `idle` 1–4, `move` 5–8, `attack` 9–12, `die` 13–16 (`.piskel` một lớp; sheet PNG mỗi hàng một hoạt ảnh). Xem nhanh: `preview/quai_chuong1.gif`, `preview/boss_*.gif`.
+Mỗi con có `idle` 1–4, `move` 5–8, `attack` 9–12, `die` 13–16, **`hurt` 17–18** (lùi lại, lóe trắng rồi ửng đỏ); boss có thêm **`skill2` 19–22** (Vua Nấm Lùn giơ gậy gọi nấm, Chó Rừng Đầu Đàn hú, Dơi Chúa Giếng bắn pha lê, Trang Lạc bão trang giấy). `.piskel` một lớp; sheet PNG mỗi hàng một hoạt ảnh. Vùng báo hiệu chiêu boss vẽ bằng engine ([art §4](../../docs/game-design/12-art-audio-direction.md)). Xem nhanh: `preview/quai_chuong1.gif`, `preview/boss_*.gif`.
 
 **Dữ liệu thử** (`content/`, chuyển vào `packages/content` ở Phase 0): `monsters/mob001–007.yaml`, `bosses/boss001.yaml` (chỉ trong instance DG01, tách 4 mảnh ở 50% HP), `boss034–036.yaml` (gọi đệ theo mốc HP), `events/evt_boss_034–036.yaml` (lịch, 1 khu ngẫu nhiên, bỏ đi sau 30 phút, bảo vệ tân thủ 10 cấp) và `evt_r01_well_night.yaml` (Đêm Giếng Sáng). Quy tắc: [maps §5.1–5.2](../../docs/game-design/05-world-maps-monsters.md#52-quy-tắc-boss-theo-giờ).
 
@@ -134,4 +134,4 @@ Cần Python 3, numpy, Pillow. Lệnh ghi đè thư mục này. **Nếu đã s�
 - Tay, chân, thân dựng từ hình khối nên dáng còn hơi cứng; hoạt ảnh nội suy theo góc khớp, chưa có nhấn nhá như vẽ tay.
 - Mới có idle, walk, run, attack, cast. Còn thiếu jump, hurt, die, ride_broom, emote theo [art-audio-direction §3.2](../../docs/game-design/12-art-audio-direction.md).
 - Một kiểu khuôn mặt chung; NPC phân biệt bằng tóc, râu, trang phục, đạo cụ.
-- Quái mới có 4 hoạt ảnh (chưa có `hurt`), boss chưa có hoạt ảnh riêng cho từng chiêu và vùng báo hiệu; chưa có giao diện. Bản đồ mới có vùng R01; ảnh xem trước trải nền ra cả chiều dài map nên thấy mặt trời lặp lại, còn trong game lớp xa chỉ trôi 10% nên không lặp.
+- Quái đủ `idle`, `move`, `attack`, `hurt`, `die`; boss có thêm `skill2`. Bản chơi thử (có thanh máu, số sát thương, Lịch Boss) ở [`prototype/playable`](../../prototype/playable/README.md). Bản đồ mới có vùng R01; ảnh xem trước trải nền ra cả chiều dài map nên thấy mặt trời lặp lại, còn trong game lớp xa chỉ trôi 10% nên không lặp.

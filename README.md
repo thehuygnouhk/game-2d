@@ -24,6 +24,8 @@
 
 Mục lục đầy đủ: [docs/README.md](docs/README.md).
 
+**Bản thử:** art thử (nhân vật, NPC, quái, boss, bản đồ Chương 1) ở [`art/prototype`](art/prototype/README.md); bản chơi thử Chương 1 trên trình duyệt ở [`prototype/playable`](prototype/playable/README.md).
+
 ## Công nghệ dự kiến
 
 | Lớp | Công nghệ |

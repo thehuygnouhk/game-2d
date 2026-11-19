@@ -1,0 +1,535 @@
+{
+ "names": {
+  "MOB001": "Nấm Lùn",
+  "MOB002": "Thỏ Đốm",
+  "MOB003": "Chó Rừng Non",
+  "MOB004": "Lùn Ném Đá",
+  "MOB005": "Nhện Mực",
+  "MOB006": "Dơi Giếng",
+  "MOB007": "Rùa Đá Giếng",
+  "BOSS001": "Trang Lạc",
+  "BOSS034": "Vua Nấm Lùn",
+  "BOSS035": "Chó Rừng Đầu Đàn",
+  "BOSS036": "Dơi Chúa Giếng",
+  "M001": "Nhà Học Suối Mơ",
+  "M002": "Đồng Hoa Suối Mơ",
+  "M003": "Rừng Mơ Non",
+  "M004": "Hang Giếng Cạn",
+  "NPC001": "Thầy Bạch Vân",
+  "NPC002": "Bà Mơ",
+  "NPC003": "Lam Nhi",
+  "NPC004": "Khôi",
+  "NPC005": "Chấp Bút Hạc Minh",
+  "NPC040": "Cụ Trương",
+  "NPC042": "Thợ Rèn Tư",
+  "NPC024": "Cô Kim Thoa",
+  "NPC053": "Cụ Tiễn"
+ },
+ "npcOrder": [
+  "NPC001",
+  "NPC002",
+  "NPC003",
+  "NPC004",
+  "NPC005",
+  "NPC040",
+  "NPC042",
+  "NPC024",
+  "NPC053"
+ ],
+ "mobs": {
+  "MOB001": {
+   "level": [
+    1,
+    2
+   ],
+   "element": "PLANT",
+   "kind": "NORMAL",
+   "ai": "PASSIVE",
+   "aggro": 0,
+   "speed": 40,
+   "skills": [
+    "MOBSKL_TACKLE"
+   ],
+   "flying": false,
+   "fleeBelowHp": 0,
+   "ranged": false,
+   "sprite": {
+    "size": 64,
+    "rows": {
+     "idle": [
+      0,
+      4
+     ],
+     "move": [
+      1,
+      4
+     ],
+     "attack": [
+      2,
+      4
+     ],
+     "die": [
+      3,
+      4
+     ],
+     "hurt": [
+      4,
+      2
+     ]
+    }
+   }
+  },
+  "MOB002": {
+   "level": [
+    2,
+    4
+   ],
+   "element": "NONE",
+   "kind": "NORMAL",
+   "ai": "PASSIVE",
+   "aggro": 0,
+   "speed": 70,
+   "skills": [
+    "MOBSKL_KICK"
+   ],
+   "flying": false,
+   "fleeBelowHp": 0.3,
+   "ranged": false,
+   "sprite": {
+    "size": 64,
+    "rows": {
+     "idle": [
+      0,
+      4
+     ],
+     "move": [
+      1,
+      4
+     ],
+     "attack": [
+      2,
+      4
+     ],
+     "die": [
+      3,
+      4
+     ],
+     "hurt": [
+      4,
+      2
+     ]
+    }
+   }
+  },
+  "MOB003": {
+   "level": [
+    4,
+    5
+   ],
+   "element": "NONE",
+   "kind": "NORMAL",
+   "ai": "AGGRESSIVE",
+   "aggro": 180,
+   "speed": 90,
+   "skills": [
+    "MOBSKL_BITE"
+   ],
+   "flying": false,
+   "fleeBelowHp": 0,
+   "ranged": false,
+   "sprite": {
+    "size": 64,
+    "rows": {
+     "idle": [
+      0,
+      4
+     ],
+     "move": [
+      1,
+      4
+     ],
+     "attack": [
+      2,
+      4
+     ],
+     "die": [
+      3,
+      4
+     ],
+     "hurt": [
+      4,
+      2
+     ]
+    }
+   }
+  },
+  "MOB004": {
+   "level": [
+    5,
+    7
+   ],
+   "element": "EARTH",
+   "kind": "NORMAL",
+   "ai": "AGGRESSIVE",
+   "aggro": 240,
+   "speed": 50,
+   "skills": [
+    "MOBSKL_THROW_ROCK"
+   ],
+   "flying": false,
+   "fleeBelowHp": 0,
+   "ranged": true,
+   "sprite": {
+    "size": 64,
+    "rows": {
+     "idle": [
+      0,
+      4
+     ],
+     "move": [
+      1,
+      4
+     ],
+     "attack": [
+      2,
+      4
+     ],
+     "die": [
+      3,
+      4
+     ],
+     "hurt": [
+      4,
+      2
+     ]
+    }
+   }
+  },
+  "MOB005": {
+   "level": [
+    6,
+    7
+   ],
+   "element": "DARK",
+   "kind": "NORMAL",
+   "ai": "AGGRESSIVE",
+   "aggro": 200,
+   "speed": 60,
+   "skills": [
+    "MOBSKL_INK_SPIT"
+   ],
+   "flying": false,
+   "fleeBelowHp": 0,
+   "ranged": true,
+   "sprite": {
+    "size": 64,
+    "rows": {
+     "idle": [
+      0,
+      4
+     ],
+     "move": [
+      1,
+      4
+     ],
+     "attack": [
+      2,
+      4
+     ],
+     "die": [
+      3,
+      4
+     ],
+     "hurt": [
+      4,
+      2
+     ]
+    }
+   }
+  },
+  "MOB006": {
+   "level": [
+    7,
+    8
+   ],
+   "element": "DARK",
+   "kind": "NORMAL",
+   "ai": "AGGRESSIVE",
+   "aggro": 220,
+   "speed": 80,
+   "skills": [
+    "MOBSKL_DIVE"
+   ],
+   "flying": true,
+   "fleeBelowHp": 0,
+   "ranged": false,
+   "sprite": {
+    "size": 64,
+    "rows": {
+     "idle": [
+      0,
+      4
+     ],
+     "move": [
+      1,
+      4
+     ],
+     "attack": [
+      2,
+      4
+     ],
+     "die": [
+      3,
+      4
+     ],
+     "hurt": [
+      4,
+      2
+     ]
+    }
+   }
+  },
+  "MOB007": {
+   "level": [
+    8,
+    9
+   ],
+   "element": "EARTH",
+   "kind": "NORMAL",
+   "ai": "AGGRESSIVE",
+   "aggro": 140,
+   "speed": 30,
+   "skills": [
+    "MOBSKL_SHELL_BASH"
+   ],
+   "flying": false,
+   "fleeBelowHp": 0,
+   "ranged": false,
+   "sprite": {
+    "size": 64,
+    "rows": {
+     "idle": [
+      0,
+      4
+     ],
+     "move": [
+      1,
+      4
+     ],
+     "attack": [
+      2,
+      4
+     ],
+     "die": [
+      3,
+      4
+     ],
+     "hurt": [
+      4,
+      2
+     ]
+    }
+   }
+  }
+ },
+ "bosses": {
+  "BOSS034": {
+   "level": 5,
+   "element": "PLANT",
+   "kind": "BOSS",
+   "skills": [
+    "BSKL_STOMP_WAVE",
+    "BSKL_SUMMON_MUSHROOMS"
+   ],
+   "sprite": {
+    "size": 128,
+    "rows": {
+     "idle": [
+      0,
+      4
+     ],
+     "move": [
+      1,
+      4
+     ],
+     "attack": [
+      2,
+      4
+     ],
+     "die": [
+      3,
+      4
+     ],
+     "hurt": [
+      4,
+      2
+     ],
+     "skill2": [
+      5,
+      4
+     ]
+    }
+   },
+   "flying": false
+  },
+  "BOSS035": {
+   "level": 8,
+   "element": "NONE",
+   "kind": "BOSS",
+   "skills": [
+    "BSKL_HOWL_SUMMON",
+    "BSKL_LUNGE"
+   ],
+   "sprite": {
+    "size": 128,
+    "rows": {
+     "idle": [
+      0,
+      4
+     ],
+     "move": [
+      1,
+      4
+     ],
+     "attack": [
+      2,
+      4
+     ],
+     "die": [
+      3,
+      4
+     ],
+     "hurt": [
+      4,
+      2
+     ],
+     "skill2": [
+      5,
+      4
+     ]
+    }
+   },
+   "flying": false
+  },
+  "BOSS036": {
+   "level": 10,
+   "element": "DARK",
+   "kind": "BOSS",
+   "skills": [
+    "BSKL_DIVE_CIRCLE",
+    "BSKL_CRYSTAL_WING"
+   ],
+   "sprite": {
+    "size": 128,
+    "rows": {
+     "idle": [
+      0,
+      4
+     ],
+     "move": [
+      1,
+      4
+     ],
+     "attack": [
+      2,
+      4
+     ],
+     "die": [
+      3,
+      4
+     ],
+     "hurt": [
+      4,
+      2
+     ],
+     "skill2": [
+      5,
+      4
+     ]
+    }
+   },
+   "flying": true
+  }
+ },
+ "events": {
+  "EVT_BOSS_034": {
+   "boss": "BOSS034",
+   "times": [
+    "08:00",
+    "10:00",
+    "12:00",
+    "14:00",
+    "16:00",
+    "18:00",
+    "20:00",
+    "22:00"
+   ],
+   "maps": [
+    "M002"
+   ],
+   "zones": "RANDOM_ONE"
+  },
+  "EVT_BOSS_035": {
+   "boss": "BOSS035",
+   "times": [
+    "11:00",
+    "17:00",
+    "21:00"
+   ],
+   "maps": [
+    "M003"
+   ],
+   "zones": "RANDOM_ONE"
+  },
+  "EVT_BOSS_036": {
+   "boss": "BOSS036",
+   "times": [
+    "12:30",
+    "19:30"
+   ],
+   "maps": [
+    "M004"
+   ],
+   "zones": "RANDOM_ONE"
+  }
+ },
+ "weeklyEvents": [
+  {
+   "id": "EVT_R01_WELL_NIGHT",
+   "name": "Đêm Giếng Sáng",
+   "boss": "BOSS036",
+   "map": "M004",
+   "day": 5,
+   "start": "20:00",
+   "end": "21:00",
+   "everyMin": 20
+  }
+ ],
+ "items": [
+  "weapon_fire",
+  "weapon_water",
+  "weapon_wind",
+  "weapon_bolt",
+  "weapon_earth",
+  "weapon_plant",
+  "weapon_dark",
+  "weapon_seal",
+  "potion_hp",
+  "potion_mp",
+  "dong_luyen_1",
+  "dong_luyen_2",
+  "dong_luyen_3",
+  "dong_luyen_4",
+  "hat_nguyen_tim",
+  "hat_nguyen_lam",
+  "trang_roi",
+  "quan",
+  "nen_bac",
+  "la_thuoc_co",
+  "choi_bay",
+  "huyen_thu_so_ban",
+  "huyen_thu_tu_ban",
+  "huyen_thu_dinh_ban",
+  "the_kep_trang"
+ ]
+}

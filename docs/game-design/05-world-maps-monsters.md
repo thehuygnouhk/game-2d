@@ -239,7 +239,7 @@ Thông báo toàn máy chủ trước **5 phút**. Phần thưởng gửi **qua 
 | Nơi xuất hiện | **1 khu ngẫu nhiên** của map, tại một trong các điểm `boss_spawn` của map đó ([content-pipeline §5.2](../workflows/content-pipeline.md)) |
 | Thông báo | Toàn máy chủ: 5 phút trước, khi xuất hiện ("… vừa xuất hiện tại *map*, khu *n*"), khi bị hạ (tên người hạ cuối) và khi bỏ đi |
 | Thời gian tồn tại | **30 phút**; hết giờ boss bỏ đi, không rơi gì. Cuồng nộ sau 10 phút ([combat](04-combat-and-progression.md)) |
-| Chỉ số | Boss tân thủ (BOSS034–036): hệ số **Boss ×40** để 3–5 người cấp thấp hạ được. Boss thế giới (BOSS030–033): hệ số **×200** |
+| Chỉ số | Boss tân thủ (BOSS034–036): hệ số **Boss ×40** (HP, EXP), **ATK ×1,5**, DEF ×1,4, để 3–5 người cấp thấp hạ được. Boss thế giới (BOSS030–033): hệ số **×200** |
 | Bảo vệ tân thủ | Người chơi **cao hơn boss quá 10 cấp** chỉ nhận EXP tham gia, **không** nhận vật phẩm, và không được tính hạng sát thương |
 | Phần thưởng | Theo hạng sát thương, gửi qua thư; người hạ cuối thêm 1 rương; ai gây ≥ 1% HP đều có quà tham gia |
 | Xem lịch | Bảng tin làng của **Cụ Trương (NPC040)** và mục *Lịch Boss* trên giao diện hiển thị lần xuất hiện kế tiếp |
@@ -287,7 +287,7 @@ Thông báo toàn máy chủ trước **5 phút**. Phần thưởng gửi **qua 
 | Boss | Boss **không** nằm trong `spawns[]`. Boss cốt truyện ở hầm ngục (instance); boss theo giờ ở `events/` + điểm `boss_spawn` (§5.2) |
 | Mật độ | 6–12 quái/khu cho map Field, tối đa 40 |
 | Thời gian hồi | 8–20s (tăng 20% ở khu đông) |
-| Elite | 1 tinh anh mỗi 15 quái thường, xuất hiện ngẫu nhiên |
+| Tinh anh / Thủ lĩnh | Mỗi lần hồi sinh: 1/15 thành **Tinh anh**, 1/60 thành **Thủ lĩnh** (tối đa 1 thủ lĩnh mỗi khu). Hệ số và đồ rơi ở [combat §2.1.1](04-combat-and-progression.md) |
 | Chuyển khu động | Khi khu chứa > 80% sức chứa, khu mới được mở |
 
 ## 8. Quy tắc tạo nội dung
