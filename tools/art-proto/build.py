@@ -369,7 +369,15 @@ def build_maps():
     mob_spr = {m: monster_frames(m) for m in ("MOB001", "MOB002", "MOB003", "MOB004", "MOB005", "MOB006", "MOB007",
                                               "BOSS034", "BOSS035", "BOSS036")}
     flying = {"MOB006": 27, "BOSS036": 54}
-    for mid, B in build_region(S).items():
+    region = build_region(S)
+    problems = []
+    for mid, B in region.items():   # content-pipeline V016: every portal, NPC and spawn must be reachable
+        bad, unreached, total = MP.reach_report(B)
+        problems += [f"{mid}: {x}" for x in bad]
+        print(f"{mid}: reachable {total - unreached}/{total} standable tiles")
+    if problems:
+        raise SystemExit("unreachable map content:\n  " + "\n  ".join(problems))
+    for mid, B in region.items():
         name = mid.lower()
         bgs = dict(zip(("bg_far", "bg_mid", "bg_near"), MP.bg_rich(B.theme, B.h * 32, seed=int(mid[1:]))))
         bg_names = {}

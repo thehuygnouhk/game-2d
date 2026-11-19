@@ -80,6 +80,7 @@ Theo [content-pipeline §5](../../docs/workflows/content-pipeline.md):
 - **Lớp:** `bg_far`, `bg_mid`, `bg_near` (lớp ảnh, parallax 0,1 / 0,35 / 0,6, lặp ngang), `ground`, `decor`, `collision` (ẩn sẵn), `objects`, `fg`.
 - **Va chạm:** tileset `collision` đặt `firstgid = 1`, nên giá trị ô đúng quy ước `1` đặc, `2` nền một chiều, `3` thang, `4` nguy hiểm.
 - **Đối tượng:** `spawn_player`, `portal` (`id`, `to`, `toX`, `toY`), `npc`, `mob_spawn` (`mob`, `count`, `radius`, `respawnSec`), `boss_spawn` (`boss`, `event`), `zone_safe`.
+- **Đi tới được:** bậc lên tối đa 2 ô, đảo cỏ là nền một chiều (nhảy xuyên từ dưới), cầu gỗ qua thác và thang dây ở hồ (M002). `build.py` chạy kiểm tra V016 (nhảy 3 ô) và **dừng build** nếu có cổng, NPC, điểm sinh quái hoặc điểm boss không tới được. Đã thử thêm bằng engine: đi từ điểm xuất hiện tới cổng cuối của cả 4 map.
 - **Khu cấp độ:** quái xếp theo cấp tăng dần từ cổng vào tới cổng ra (M002: Nấm Lùn → Thỏ Đốm; M003: Chó Rừng Non → Lùn Ném Đá → Nhện Mực; M004: Dơi Giếng → Rùa Đá Giếng). Ảnh xem trước có vẽ quái tại điểm sinh và boss tại điểm `boss_spawn` để minh họa; trong game boss chỉ xuất hiện theo lịch.
 - **YAML** cùng tên theo schema [content-pipeline §3.1](../../docs/workflows/content-pipeline.md). Cổng giữa các map đã nối toạ độ hai chiều; cổng M004 → M005 dùng toạ độ tạm vì M005 chưa vẽ.
 - Tileset được **nhúng** vào `.tmj` (Phaser không đọc tileset rời). `maps/tilesets/r01_index.txt` liệt kê tên và vị trí từng ô.

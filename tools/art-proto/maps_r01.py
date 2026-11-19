@@ -18,9 +18,9 @@ def m001(S):
                    "audio/bgm/r01_village", zone_cap=60)
     h = [15] * 64
     for x in range(33, 44):
-        h[x] = 11
+        h[x] = 13
     B.ground_profile(h)
-    B.block(46, 8, 51, 9)
+    B.block(46, 11, 51, 11, oneway=True)
     B.finalize()
     B.on_ground("tree_big", 0)
     B.on_ground("school", 4)
@@ -34,7 +34,7 @@ def m001(S):
     B.on_ground("tree_small", 52)
     B.on_ground("haystack", 56)
     B.on_ground("sign", 61)
-    _vines(B, (33, 34, 43), 12)
+    _vines(B, (33, 43), 14)
     B.scatter(["flowers_a", "flowers_b", "grass_tall_a", "fern"], 0.35, seed=1)
     B.scatter(["grass_tall_a", "fern"], 0.08, seed=2, layer="fg", avoid=[(10, 24)])
     B.player_spawn = (B.px(21), B.feet(21))
@@ -54,17 +54,22 @@ def m002(S):
     h = [16] * 90
     for x in range(18, 28):
         h[x] = 14
+    for x in (28, 29, 46, 47):
+        h[x] = 14            # steps up to the cliffs
     for x in list(range(30, 36)) + list(range(40, 46)):
-        h[x] = 10
+        h[x] = 12
     for x in range(36, 40):
-        h[x] = 18           # pool basin under the waterfall
+        h[x] = 18            # pool basin under the waterfall
     B.ground_profile(h)
-    for (a, b, top) in ((11, 16, 10), (59, 64, 10), (73, 77, 12)):
-        B.block(a, top, b, top + 1)
+    for (a, b, top) in ((10, 15, 11), (59, 64, 13), (73, 77, 13)):
+        B.block(a, top, b, top, oneway=True)
     B.finalize()
-    for y in range(10, 16):  # waterfall between the two cliffs, pool in front of the legs
+    B.platform(36, 39, 12)  # plank bridge over the waterfall
+    B.ladder(36, 13, 17)    # rope ladder out of the pool
+    for y in range(12, 16):  # waterfall between the two cliffs, pool in front of the legs
         for x in range(36, 40):
-            B.tiles["decor"][y, x] = B._t(f"waterfall_{(x + y) % 2}")
+            if B.tiles["ground"][y, x] == 0:
+                B.tiles["decor"][y, x] = B._t(f"waterfall_{(x + y) % 2}")
     for x in range(36, 40):
         B.tiles["fg"][16, x] = B._t("water_top")
         B.tiles["fg"][17, x] = B._t("water")
@@ -78,7 +83,7 @@ def m002(S):
         B.stamp("fence_m", x, B.surface(x) - 1)
     B.on_ground("tree_big", 80)
     B.on_ground("sign", 87)
-    _vines(B, (30, 35, 40, 45), 11)
+    _vines(B, (30, 45), 13)
     B.scatter(["flowers_a", "flowers_b", "flowers_a", "grass_tall_a", "fern"], 0.5, seed=3)
     B.scatter(["grass_tall_a", "fern"], 0.1, seed=4, layer="fg")
     B.player_spawn = (B.px(3), B.feet(3))
@@ -86,9 +91,9 @@ def m002(S):
     B.npc("NPC004", 70)     # Khoi (Q_MAIN_05 sparring)
     # level zones left -> right: Lv1-2 Nam Lun, then Lv2-4 Tho Dom
     B.spawn("MOB001", 10, 6, 5, 8, note="khu Lv1-2: Nam Lun")
-    B.spawn("MOB001", 13, 2, 2, 8, y_tile=10, note="khu Lv1-2: Nam Lun tren dao co")
+    B.spawn("MOB001", 12, 2, 2, 8, y_tile=11, note="khu Lv1-2: Nam Lun tren dao co")
     B.spawn("MOB002", 52, 6, 6, 10, note="khu Lv2-4: Tho Dom")
-    B.spawn("MOB002", 61, 2, 2, 10, y_tile=10, note="khu Lv2-4: Tho Dom tren dao co")
+    B.spawn("MOB002", 61, 2, 2, 10, y_tile=13, note="khu Lv2-4: Tho Dom tren dao co")
     B.spawn("MOB002", 76, 4, 5, 10, note="khu Lv2-4: Tho Dom")
     B.boss_spawn("BOSS034", 50, "EVT_BOSS_034")
     B.portal("P01", 1, "M001", 0, 0)
@@ -101,9 +106,9 @@ def m003(S):
                    "audio/bgm/r01_young_forest")
     h = [20] * 96
     for x in range(28, 45):
-        h[x] = 16
+        h[x] = 18
     for x in range(62, 77):
-        h[x] = 17
+        h[x] = 18
     B.ground_profile(h)
     B.finalize()
     for (a, b, row, lad) in ((5, 12, 14, 9), (48, 56, 12, 52), (80, 88, 14, 84)):
@@ -115,8 +120,8 @@ def m003(S):
     B.on_ground("tree_small", 68)
     for x in (24, 40, 78):
         B.on_ground("bush", x)
-    _vines(B, (28, 29, 44), 17)
-    _vines(B, (62, 76), 18)
+    _vines(B, (28, 44), 19)
+    _vines(B, (62, 76), 19)
     B.scatter(["fern", "mushrooms", "grass_tall_a", "rock", "flowers_b"], 0.35, seed=5)
     B.scatter(["fern", "grass_tall_a"], 0.12, seed=6, layer="fg")
     B.player_spawn = (B.px(3), B.feet(3))

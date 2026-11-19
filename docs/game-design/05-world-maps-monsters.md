@@ -36,6 +36,7 @@ Bản thử bố cục và đồ họa vùng R01 (M001–M004, file Tiled kèm �
 | Vùng an toàn | Town: không bị đánh, không PK |
 | PK | Cho phép ở **Field Lv≥30** khi bật **Cờ PK**; cưỡng chế ở **Chiến Trường** |
 | Thời tiết/ngày đêm | Hiệu ứng thị giác, đêm tăng 10% tốc xuất hiện quái hệ Ám |
+| **Độ cao địa hình** | Nhảy cao 3 ô ([combat §4.5](04-combat-and-progression.md)): bậc lên **tối đa 3 ô, nên dùng 2 ô**. Chỗ cao hơn phải có bậc trung gian, thang hoặc dây. **Đảo cỏ lơ lửng là nền một chiều** (nhảy xuyên từ dưới lên). Dưới đảo chừa **≥ 2 ô** để đi qua. Kiểm bằng quy tắc V016 ([content-pipeline §4](../workflows/content-pipeline.md#4-quy-tắc-kiểm-chứng-validator)) |
 
 ## 2. Danh sách map (31)
 

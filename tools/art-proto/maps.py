@@ -68,6 +68,7 @@ class MapBuilder:
         self.type, self.level, self.region, self.theme, self.bgm, self.pk = kind, level, region, theme, bgm, pk
         self.zone_cap = zone_cap
         self.solid = np.zeros((h, w), bool)
+        self.oneway = np.zeros((h, w), bool)   # floating ledges you can jump through from below
         self.prefix = np.full((h, w), "grass", object)
         self.tiles = {n: np.zeros((h, w), int) for n in ("ground", "decor", "fg")}
         self.coll = np.zeros((h, w), int)
@@ -83,9 +84,10 @@ class MapBuilder:
             self.solid[top:, x] = True
             self.prefix[top:, x] = prefix
 
-    def block(self, x0, y0, x1, y1, prefix="grass"):
+    def block(self, x0, y0, x1, y1, prefix="grass", oneway=False):
         self.solid[y0:y1 + 1, x0:x1 + 1] = True
         self.prefix[y0:y1 + 1, x0:x1 + 1] = prefix
+        self.oneway[y0:y1 + 1, x0:x1 + 1] = oneway
 
     def carve(self, x0, y0, x1, y1):
         self.solid[y0:y1 + 1, x0:x1 + 1] = False
@@ -196,7 +198,102 @@ class MapBuilder:
                         depth += 1
                     var = "m"
                 self.tiles["ground"][y, x] = self._t(f"{self.prefix[y, x]}_{var}")
-                self.coll[y, x] = 1
+                if self.oneway[y, x]:
+                    self.coll[y, x] = 2 if (y == 0 or not self.oneway[y - 1, x]) else 0
+                else:
+                    self.coll[y, x] = 1
+
+
+# ---------------------------------------------------------------- reachability
+
+JUMP_UP = 3      # tiles: jump height is 3 tiles (combat section 4.5)
+JUMP_SIDE = 3    # tiles of horizontal reach while climbing a step
+FALL_SIDE = 5    # tiles of horizontal drift while falling
+
+
+def reach_report(B):
+    """Walk/jump/fall/climb graph over standable tiles, BFS from the player spawn.
+
+    A node (x, y) is a tile whose top a 2-tile-tall body can stand on. Returns
+    the objects (portals, NPCs, spawns, boss spawns) that cannot be reached.
+    """
+    c = B.coll
+    H, W = c.shape
+    free = (c == 0) | (c == 3) | (c == 4)
+
+    def standable(x, y):
+        if not (0 <= x < W and 1 <= y < H):
+            return False
+        if c[y, x] not in (1, 2):
+            return False
+        return free[y - 1, x] and (y < 2 or free[y - 2, x])
+
+    nodes = {(x, y) for x in range(W) for y in range(1, H) if standable(x, y)}
+    ladders = {(x, y) for x in range(W) for y in range(H) if c[y, x] == 3}
+    by_col = {}
+    for (x, y) in nodes:
+        by_col.setdefault(x, []).append(y)
+
+    def neighbours(n):
+        x, y = n
+        for dx in range(-FALL_SIDE, FALL_SIDE + 1):
+            for yy in by_col.get(x + dx, []):
+                up = y - yy
+                if up > 0 and (up > JUMP_UP or abs(dx) > JUMP_SIDE):
+                    continue
+                if up <= 0 and abs(dx) > (1 if up == 0 else FALL_SIDE):
+                    continue
+                if up <= 0 and up < 0 and not _clear_fall(free, x, y, x + dx, yy):
+                    continue
+                yield (x + dx, yy)
+        # ladders: any ladder column next to this node connects its whole span
+        for lx in (x - 1, x, x + 1):
+            span = [ly for (cx, ly) in ladders if cx == lx]
+            if span and min(span) - 2 <= y <= max(span) + 2:
+                for yy in range(min(span) - 1, max(span) + 3):
+                    for nx in (lx - 1, lx, lx + 1):
+                        if (nx, yy) in nodes:
+                            yield (nx, yy)
+
+    start = (B.player_spawn[0] // TS, B.player_spawn[1] // TS)
+    start = min(nodes, key=lambda n: abs(n[0] - start[0]) + abs(n[1] - start[1]))
+    seen, todo = {start}, [start]
+    while todo:
+        n = todo.pop()
+        for m in neighbours(n):
+            if m not in seen:
+                seen.add(m)
+                todo.append(m)
+
+    def ok(px, py):
+        tx, ty = int(px // TS), int(round(py / TS))
+        return any((tx + dx, ty + dy) in seen for dx in (-1, 0, 1) for dy in (-1, 0, 1))
+
+    bad = []
+    for p in B.portals:
+        if not ok(p["x"], p["y"]):
+            bad.append(f"portal {p['id']} -> {p['to']}")
+    for n in B.npcs:
+        if not ok(n["x"], n["y"]):
+            bad.append(f"npc {n['id']}")
+    for s in B.spawns:
+        if not ok(s["x"], s["y"]) and s["mob"] not in ("MOB006",):  # flying spawns sit in the air
+            bad.append(f"spawn {s['mob']} at x={s['x']}")
+    for b in B.boss_spawns:
+        if not ok(b["x"], b["y"]):
+            bad.append(f"boss_spawn {b['boss']}")
+    unreached = len(nodes) - len(seen)
+    return bad, unreached, len(nodes)
+
+
+def _clear_fall(free, x0, y0, x1, y1):
+    """Rough check that a body can drift from (x0, y0) down to (x1, y1)."""
+    steps = max(abs(x1 - x0), 1)
+    for k in range(1, steps + 1):
+        x = x0 + (x1 - x0) * k // steps
+        if not free[y0 - 1, x]:
+            return False
+    return True
 
 
 # ---------------------------------------------------------------- export

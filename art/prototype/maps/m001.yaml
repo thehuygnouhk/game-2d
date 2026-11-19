@@ -16,7 +16,7 @@ npcs:
   - { id: NPC002, x: 656, y: 480 }
   - { id: NPC040, x: 880, y: 480 }
   - { id: NPC003, x: 1008, y: 480 }
-  - { id: NPC004, x: 1328, y: 352 }
+  - { id: NPC004, x: 1328, y: 416 }
 spawns: []
 bossSpawns: []
 skyZones: []

@@ -89,8 +89,19 @@ Boss chưa đủ cấp để nhận thưởng (bảo vệ tân thủ, [maps §5.
 └────────────────────────────────────────────────────────────────┘
 ```
 
-- Nút **Đánh** to ở góc phải dưới; 6 nút kỹ năng bao quanh theo vòng cung.
-- Chạm quái để **khóa mục tiêu**; chạm lại để bỏ khóa.
+- Nút **Đánh** to ở góc phải dưới; 6 nút kỹ năng bao quanh theo vòng cung, kèm nút **Nhảy** và 2 ô bình thuốc. Trên cụm nút: **Tự đánh**, **Treo máy**, **Đổi mục tiêu** ([combat §8](04-combat-and-progression.md)).
+- **Cần điều khiển ảo** bên trái: kéo ngang để đi, kéo lên để nhảy, leo thang hoặc qua cổng, kéo xuống để xuống nền.
+- Chạm quái để **khóa mục tiêu**; chạm lại để bỏ khóa. Bản PC dùng cùng cụm nút này (bấm chuột được), phím tắt ghi trên nút.
+
+### 3.3 Mục tiêu (như Ninja School)
+
+| Thành phần | Quy ước |
+|-----------|---------|
+| **Mũi tên mục tiêu** | Mũi tên vàng nhấp nháy trên đầu quái, boss hoặc người đang được chọn |
+| **Khung mục tiêu** | Dưới khung nhân vật: tên, cấp, loại (Tinh anh, Thủ lĩnh, Boss), thanh HP |
+| **Chọn** | Tab hoặc nút **Đổi mục tiêu**: lần lượt từ gần tới xa trong 700 px; chạm hoặc nhấp chuột vào quái để chọn; chạm lại để bỏ |
+| **Đánh** | Đòn thường và kỹ năng ưu tiên mục tiêu đang chọn, tự quay mặt về phía mục tiêu |
+| **Khi mục tiêu chết** | Bỏ chọn; nếu đang Tự đánh thì tự chọn con kế tiếp |
 - Tùy chỉnh vị trí nút trong Cài đặt (chế độ kéo thả).
 
 ## 4. Điều khiển
@@ -107,7 +118,10 @@ Boss chưa đủ cấp để nhận thưởng (bảo vệ tân thủ, [maps §5.
 | Q | Bình HP nhanh |
 | E | Bình MP nhanh |
 | R | Lá Thuốc Cổ |
-| Tab | Chọn mục tiêu gần nhất |
+| Tab | Đổi mục tiêu (từ gần tới xa) |
+| G | Bật/tắt Tự đánh |
+| H | Bật/tắt Treo máy (Lv20) |
+| N | Lịch Boss |
 | F | Tương tác (NPC, nhặt, cổng) |
 | B / I | Túi đồ |
 | C | Nhân vật |

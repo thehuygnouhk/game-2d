@@ -241,6 +241,7 @@ rewardMaxLevelGap: 10        # cao hơn boss quá 10 cấp: không nhận vật 
 | V012 | Tiled: đủ lớp bắt buộc (`ground`, `collision`, `objects`), không có tile ngoài tileset |
 | V013 | Bảng rơi: tổng xác suất hợp lý, không có vật phẩm cấp quá cao so với cấp quái |
 | V014 | Quest reward hợp lý theo cấp (cảnh báo nếu > 2× chuẩn) |
+| V016 | **Đi tới được:** từ điểm xuất hiện, với nhảy cao 3 ô, sang ngang 3 ô khi leo bậc, rơi lệch tối đa 5 ô, đi thang và nền một chiều, phải tới được mọi cổng, NPC, điểm sinh quái và `boss_spawn` ([maps §1.1](../game-design/05-world-maps-monsters.md)) |
 | V015 | i18n, hội thoại và tên file asset **không chứa từ trong danh sách cấm** (tên riêng của tác phẩm khác). Danh sách lưu ngoài gói nội dung phát hành; quy trình ở [reskin-spec §10](../product/reskin-spec.md#10-kiểm-tra-rò-rỉ-tên-ip) (nội bộ) |
 
 Lệnh:

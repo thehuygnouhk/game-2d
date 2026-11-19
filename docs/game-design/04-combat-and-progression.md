@@ -281,7 +281,22 @@ stateDiagram-v2
 | Chết trong hầm ngục | Hồi sinh theo **điểm lưu** hầm ngục, tối đa 3 lần/lượt (thêm bằng Lá Hồi Sinh). Không phụ thuộc hệ phép nào |
 | Chết ở boss thế giới | Phải chờ **15s** mới hồi sinh |
 
-## 8. Auto Hunt (treo máy)
+## 8. Tự đánh và Auto Hunt (treo máy)
+
+Có hai mức tự động, khác nhau rõ ràng:
+
+| | **Tự đánh** | **Auto Hunt (treo máy)** |
+|---|-------------|--------------------------|
+| Mở khóa | **Lv1** | Lv20 |
+| Làm gì | Đánh **mục tiêu đang khóa**; khi mục tiêu chết, chuyển sang quái **đang đánh mình** hoặc quái gần nhất trong 500 px. Tự chạy lại gần và dùng kỹ năng theo thứ tự. **Không** tự đi xa để tìm quái | Tự đi tìm quái trong cả khu, nhặt đồ, dùng kỹ năng theo thứ tự |
+| Bình thuốc | Tự dùng khi HP < 40% | Tự dùng khi HP < 40% |
+| EXP, Quan | 100% | 70% (bảng dưới) |
+| Boss | Đánh được | Không dùng được |
+| Tắt | Bấm lại nút, hoặc tự dừng khi không còn quái trong 500 px | Theo bảng dưới |
+
+Bấm phím di chuyển trong lúc tự động thì người chơi điều khiển tạm thời, nhả phím thì tự động chạy tiếp.
+
+### 8.1 Auto Hunt
 
 | Quy tắc | Giá trị |
 |---------|---------|
