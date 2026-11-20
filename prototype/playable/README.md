@@ -38,6 +38,7 @@ Mở `http://localhost:8000`, bấm vào màn chơi rồi dùng bàn phím hoặ
 | Boss theo giờ, thông báo 5 phút, bỏ đi sau 30 phút, cuồng nộ sau 10 phút, Đêm Giếng Sáng, bảo vệ tân thủ | [maps §5.1–5.2](../../docs/game-design/05-world-maps-monsters.md) |
 | Vùng báo hiệu, gọi đệ theo mốc máu | [combat §5.3](../../docs/game-design/04-combat-and-progression.md), [maps §5.1](../../docs/game-design/05-world-maps-monsters.md) |
 | Thanh máu, số sát thương theo màu, Lịch Boss | [ui-ux §3.1.1–3.1.2](../../docs/game-design/11-ui-ux-spec.md) |
+| Hoạt ảnh đánh và niệm chạy hết khung, tụ lực, vệt chém, tia trúng, rung khi chí mạng | [art §6.1](../../docs/game-design/12-art-audio-direction.md) (bản thử chưa có tùy chọn tắt rung) |
 | Mục tiêu, mũi tên, phím ảo trên điện thoại | [ui-ux §3.2–3.3](../../docs/game-design/11-ui-ux-spec.md) |
 | Tự đánh và Treo máy | [combat §8](../../docs/game-design/04-combat-and-progression.md) |
 | Bản đồ đi tới được (nhảy 3 ô, đảo cỏ xuyên từ dưới) | [maps §1.1](../../docs/game-design/05-world-maps-monsters.md), quy tắc V016 |

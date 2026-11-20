@@ -125,6 +125,18 @@ Mỗi lớp có tập hoạt ảnh chung **bộ xương (rig)** với mốc neo 
 - Nhập Linh: hào quang lớn quanh nhân vật, đổi màu bảng màu hệ, **ảnh hưởng nhẹ đến ánh sáng bản đồ**.
 - Hiệu ứng toàn màn hình (flash, rung) **giới hạn** và có tùy chọn tắt.
 
+### 6.1 Phản hồi đòn đánh
+
+Mọi đòn trúng phải **nhìn thấy được** ngay cả khi người chơi không đọc số:
+
+| Lớp | Quy định |
+|-----|----------|
+| Hoạt ảnh nhân vật | Đòn đánh và niệm phép chạy **hết khung** rồi mới về đứng/đi; không để hoạt ảnh di chuyển ghi đè giữa chừng |
+| Tụ lực | Chiêu có thời gian niệm hiện quầng sáng màu hệ ở tay suốt lúc niệm |
+| Vệt chém | Đòn cận chiến có vệt cong theo hướng mặt, màu hệ (đánh thường: vàng), **viền tối** để đọc được trên nền trời sáng; ≤ 200 ms |
+| Tia trúng | Tia sáng tỏa ra ở điểm trúng, kèm quái nháy trắng (hoạt ảnh bị đánh); chí mạng: tia vàng lớn hơn và rung màn hình ≤ 80 ms |
+| Bị đánh | Tia đỏ trên người chơi; đòn chí mạng của quái dùng tia lớn |
+
 ## 7. UI
 
 | Hạng mục | Quy định |

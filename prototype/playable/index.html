@@ -725,8 +725,8 @@ class World extends Phaser.Scene {
     if (r.miss) { this.floatText(x, y, "Trượt", "#9aa2bf", 14); return; }
     m.hp -= r.dmg;
     if (opts.dot) this.floatText(x, y, `${r.dmg}`, "#ff9a3a", 15);
-    else if (r.crit) this.floatText(x, y - 6, `Chí mạng ${r.dmg}`, "#ffd23f", 22);
-    else this.floatText(x, y, `${r.dmg}`, "#ffffff", 17);
+    else if (r.crit) { this.floatText(x, y - 6, `Chí mạng ${r.dmg}`, "#ffd23f", 22); this.hitSpark(x, y + 10, 0xffd23f, true); this.cameras.main.shake(80, 0.004); }
+    else { this.floatText(x, y, `${r.dmg}`, "#ffffff", 17); this.hitSpark(x, y + 10, opts.color ?? 0xfff3d0); }
     if (opts.burn) m.burn = { until: this.time.now + 3000, next: this.time.now + 1000, dmg: Math.max(1, Math.round(p.atk * 0.2 / 3)) };
     if (m.kind === "boss") { m.b.hp = m.hp; }
     if (m.hp <= 0) { this.killMob(m); return; }
@@ -804,6 +804,7 @@ class World extends Phaser.Scene {
     if (dmgInfo.miss) { this.floatText(this.player.x, this.player.y - 50, "Né", "#9aa2bf", 14); return; }
     S.hp -= dmgInfo.dmg;
     this.floatText(this.player.x, this.player.y - 50, `-${dmgInfo.dmg}`, "#ff4d4d", dmgInfo.crit ? 21 : 17);
+    this.hitSpark(this.player.x, this.player.y - 6, 0xff5a5a, dmgInfo.crit);
     this.player.setTintFill(0xffffff); this.time.delayedCall(70, () => this.player.clearTint());
     this.player.body.setVelocityX((this.player.x < fromX ? -1 : 1) * 140);
     this.invulnUntil = this.time.now + 350;
@@ -963,6 +964,46 @@ class World extends Phaser.Scene {
     fx.once("animationcomplete", () => fx.destroy());
   }
 
+  /* ---------------- hit and skill effects ---------------- */
+  slashArc(dir, radius, color, width, inner = 0xffffff) {
+    const pl = this.player;
+    const g = this.add.graphics({ x: pl.x + dir * 8, y: pl.body.bottom - 30 }).setDepth(21);
+    const D = Phaser.Math.DegToRad;
+    const [a0, a1, ccw] = dir > 0 ? [D(-80), D(55), false] : [D(260), D(125), true];
+    g.lineStyle(width + 4, 0x2a1408, 0.45); g.beginPath(); g.arc(0, 0, radius, a0, a1, ccw); g.strokePath();
+    g.lineStyle(width, color, 0.95); g.beginPath(); g.arc(0, 0, radius, a0, a1, ccw); g.strokePath();
+    g.lineStyle(Math.max(1, width / 3), inner, 1); g.beginPath(); g.arc(0, 0, radius - width / 3, a0 + (ccw ? -0.15 : 0.15), a1, ccw); g.strokePath();
+    this.tweens.add({ targets: g, scale: { from: 0.8, to: 1.15 }, alpha: { from: 1, to: 0 }, duration: 200, ease: "Quad.easeOut", onComplete: () => g.destroy() });
+  }
+
+  hitSpark(x, y, color, big = false) {
+    const g = this.add.graphics({ x, y }).setDepth(48);
+    const n = big ? 9 : 6, r1 = big ? 18 : 12;
+    g.lineStyle(big ? 3 : 2, color, 1);
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2 + Math.random() * 0.4;
+      g.lineBetween(Math.cos(a) * 4, Math.sin(a) * 4, Math.cos(a) * r1, Math.sin(a) * r1);
+    }
+    g.fillStyle(0xffffff, 1); g.fillCircle(0, 0, big ? 4 : 3);
+    this.tweens.add({ targets: g, scale: { from: 0.6, to: 1.35 }, alpha: { from: 1, to: 0 }, duration: 210, onComplete: () => g.destroy() });
+  }
+
+  chargeGlow(color, ms) {
+    const pl = this.player;
+    const g = this.add.graphics({ x: pl.x + this.facing * 16, y: pl.y - 4 }).setDepth(21);
+    g.fillStyle(color, 0.35); g.fillCircle(0, 0, 14);
+    g.fillStyle(color, 0.8); g.fillCircle(0, 0, 7);
+    g.fillStyle(0xffffff, 1); g.fillCircle(0, 0, 3);
+    this.tweens.add({ targets: g, scale: { from: 0.3, to: 1.2 }, alpha: { from: 0.6, to: 1 }, duration: ms, ease: "Sine.easeIn", onComplete: () => g.destroy() });
+  }
+
+  manaRing(x, y, color) {
+    const g = this.add.graphics({ x, y }).setDepth(21);
+    g.lineStyle(4, color, 1); g.strokeEllipse(0, 0, 40, 16);
+    g.lineStyle(2, 0xffffff, 1); g.strokeEllipse(0, 0, 28, 10);
+    this.tweens.add({ targets: g, scale: { from: 0.4, to: 3 }, alpha: { from: 1, to: 0 }, duration: 320, ease: "Cubic.easeOut", onComplete: () => g.destroy() });
+  }
+
   /* ---------------- player actions ---------------- */
   skillReady(k) { return this.time.now >= (S.cds[k] || 0); }
 
@@ -987,6 +1028,7 @@ class World extends Phaser.Scene {
     this.faceTarget();
     S.cds.basic = this.time.now + 1000; this.busyUntil = this.time.now + 330;
     this.player.play("hero_attack");
+    this.time.delayedCall(110, () => this.slashArc(this.facing, 50, 0xffd84a, 6));
     this.time.delayedCall(150, () => {
       const locked = this.target?.alive && this.inReach(this.target, 72) ? this.target : null;
       const t = locked || this.nearest(this.targetsIn(this.attackBox(72)));
@@ -998,10 +1040,12 @@ class World extends Phaser.Scene {
     if (S.lv < 5) { this.floatText(this.player.x, this.player.y - 70, "Mở ở Lv5", "#9aa2bf", 13); return; }
     if (!this.skillReady("burst") || S.mp < 6) return;
     this.faceTarget();
-    S.mp -= 6; S.cds.burst = this.time.now + 3000; this.busyUntil = this.time.now + 420;
+    S.mp -= 6; S.cds.burst = this.time.now + 3000; this.busyUntil = this.time.now + 440;
     this.player.play("hero_cast");
+    this.chargeGlow(0x7fd1ff, 250);
     this.time.delayedCall(260, () => {
       const cx = this.player.x + this.facing * 90;
+      this.manaRing(cx, this.player.body.bottom - 30, 0x7fd1ff);
       this.burst(cx, this.player.body.bottom - 10, 0x9fd8ff);
       for (const t of this.targetsIn(new Phaser.Geom.Rectangle(cx - 60, this.player.body.bottom - 90, 120, 90))) this.hitMob(t, 1.2);
     });
@@ -1011,9 +1055,11 @@ class World extends Phaser.Scene {
     if (!S.fire) { this.floatText(this.player.x, this.player.y - 70, "Cần hệ Hỏa (Lv10)", "#9aa2bf", 13); return; }
     if (!this.skillReady("fireball") || S.mp < 10) return;
     this.faceTarget();
-    S.mp -= 10; S.cds.fireball = this.time.now + 3000; this.busyUntil = this.time.now + 380;
+    S.mp -= 10; S.cds.fireball = this.time.now + 3000; this.busyUntil = this.time.now + 440;
     this.player.play("hero_cast");
+    this.chargeGlow(0xffa030, 240);
     this.time.delayedCall(250, () => {
+      this.hitSpark(this.player.x + this.facing * 34, this.player.y - 6, 0xffb703, true);
       const fb = this.add.sprite(this.player.x + this.facing * 30, this.player.y - 6, "vfx").setDepth(19).play("fx_fireball").setFlipX(this.facing < 0);
       this.shots.push({ spr: fb, vx: this.facing * 520, left: 400, mult: 1.2, burn: true, from: "player" });
     });
@@ -1025,8 +1071,9 @@ class World extends Phaser.Scene {
     this.faceTarget();
     S.mp -= 18; S.cds.slash = this.time.now + 5000; this.busyUntil = this.time.now + 360;
     this.player.play("hero_attack");
+    this.time.delayedCall(100, () => this.slashArc(this.facing, 64, 0xff7a2a, 10, 0xffe08a));
     this.time.delayedCall(140, () => {
-      for (const t of this.targetsIn(this.attackBox(96, 80))) this.hitMob(t, 1.6);
+      for (const t of this.targetsIn(this.attackBox(96, 80))) this.hitMob(t, 1.6, { color: 0xffa040 });
       this.burst(this.player.x + this.facing * 50, this.player.body.bottom - 20, 0xffb070);
     });
   }
@@ -1134,8 +1181,10 @@ class World extends Phaser.Scene {
     if (ac && ac.attack) this.autoAttack(now);
     const inter = V.interact; if (inter && !this.prevInteract) this.interact(); this.prevInteract = inter;
 
-    // player anim
-    if (!busy) {
+    // player anim: re-check after this frame's actions, and let attack/cast animations finish
+    const actKey = pl.anims.isPlaying ? pl.anims.currentAnim?.key : null;
+    const acting = actKey === "hero_attack" || actKey === "hero_cast";
+    if (now >= this.busyUntil && !acting) {
       if (!body.blocked.down && !this.climbing) pl.anims.stop(), pl.setFrame(14);
       else if (vx) pl.play("hero_walk", true);
       else pl.play("hero_idle", true);
