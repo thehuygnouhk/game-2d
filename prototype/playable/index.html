@@ -148,7 +148,7 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
 .tools button:hover { background: #2f3860; } .tools button:focus-visible, .tools select:focus-visible, .tools input:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
 
-/* ---------------- quest UI: dark wood frame with gold trim (NSO) around cream paper (NRO) ---------------- */
+/* ---------------- quest UI: dark wood frame with gold trim around cream paper (art §7) ---------------- */
 :root {
   --wood-1: #6b3f1d; --wood-2: #3d2210; --wood-3: #22120a;
   --gold-1: #ffe7a3; --gold-2: #e9b949; --gold-3: #a8701c;
@@ -276,7 +276,7 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
 @keyframes qpulse { 50% { box-shadow: inset 0.3cqw 0 0 #7dff8a, 0 0 1cqw rgba(125, 255, 138, 0.6); } }
 .btn .dot { display: inline-block; width: 0.8cqw; height: 0.8cqw; margin-left: 0.4cqw; border-radius: 50%; background: #ffd23f; vertical-align: 0.1cqw; box-shadow: 0 0 0.4cqw #ffd23f; }
 
-/* NPC dialog (ui-ux §5, NRO style) */
+/* NPC dialog (ui-ux §5) */
 #dlg { left: 50%; bottom: 3.2cqw; transform: translateX(-50%); width: 66cqw; display: grid; grid-template-columns: 10.5cqw 1fr; gap: 1.1cqw; padding: 1.2cqw; }
 #dlg .face { --box: 10.5cqw; --s: calc(var(--box) / 56); width: var(--box); height: var(--box); border-radius: 0.6cqw; image-rendering: pixelated; align-self: start;
   background: url(assets/sprites/npc_idle.png) calc(-20 * var(--s)) calc((-96 * var(--r) - 16) * var(--s)) / calc(384 * var(--s)) calc(864 * var(--s)) no-repeat, radial-gradient(circle at 50% 35%, #5a7ab0, #1c2640 75%);

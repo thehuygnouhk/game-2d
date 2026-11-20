@@ -132,3 +132,48 @@ gantt
 | Tỉ lệ build CI pass | ≥ 95% |
 | Thời gian từ PR đến merge | ≤ 2 ngày làm việc |
 | Độ phủ test (core formulas) | ≥ 90% |
+
+## 8. Lộ trình bậc thang (làm nhỏ, chơi được, mở rộng dần)
+
+Các Phase ở §3 tính cho đội 6–8 người. Khi làm ít người, đi theo **bậc**: mỗi bậc nhỏ, xong là **chơi được** và có thứ mới để thử, rồi mới sang bậc sau.
+
+- **Bậc A** làm trên [bản chơi thử](../../prototype/playable/README.md) để thử cảm giác và cân bằng nhanh, rẻ.
+- **Từ bậc B** chuyển sang khung dự án thật: server quyết định mọi kết quả ([CLAUDE.md](../../CLAUDE.md), quy tắc 4). Bản chơi thử dừng lại, chỉ làm mẫu tham chiếu, để không đổ thêm công vào mã sẽ bỏ.
+
+### 8.1 Hiện có (bản chơi thử trình duyệt, 1 người)
+
+| Đã chơi được | Chưa có |
+|--------------|---------|
+| Di chuyển, nhảy, leo thang, qua cổng; 4 map R01 | **Lưu game**: tải lại trang là mất hết |
+| Đánh thường và 3 chiêu Hỏa, chọn mục tiêu, Tự đánh, Treo máy, phím ảo điện thoại | **Túi đồ, trang bị**: đồ rơi chỉ là con số "Túi: N món", không mặc được |
+| 7 quái, Tinh anh, Thủ lĩnh, 3 boss theo giờ, Lịch Boss | **Cửa hàng**: Quan chưa tiêu được |
+| EXP, lên cấp, chết mất EXP | Tạo nhân vật, chọn Xuất thân, Lễ Khai Thư chọn hệ (đang dùng nút thử), Điểm Tiềm Năng, Lực Chiến |
+| Nhiệm vụ chính tuyến 1–9, bảng Nhiệm vụ, nút Đi tới | Hầm ngục DG01, Thượng Đô |
+| | **Chơi cùng người khác** (thấy nhau, chat, khu, nhóm), tài khoản, server |
+
+So với Ninja School, thiếu lớn nhất là hai thứ: **vòng lặp đồ** (rơi đồ → mặc → mạnh hơn → cường hóa) và **chơi online**.
+
+### 8.2 Các bậc
+
+| Bậc | Chơi được gì khi xong | Việc chính | Tài liệu |
+|-----|------------------------|-----------|----------|
+| **A1 Vòng lặp đồ** | Quái rơi vũ khí, mũ, áo, giày. Mở Túi (B), mặc vào thấy chỉ số và Lực Chiến tăng. Bán đồ thừa, mua bình. Tắt trình duyệt mở lại vẫn còn | Lưu trên máy; túi 30 ô; 4 ô trang bị (Vũ khí, Mũ, Áo, Giày); chỉ số theo công thức; Lam Nhi (chế thuốc) bán bình, mua lại đồ; Lực Chiến | [items §2–4, §10](../game-design/07-items-and-equipment.md), [ui-ux §6.1–6.2](../game-design/11-ui-ux-spec.md) |
+| **A2 Nhân vật** | Tạo nhân vật (tên, 3 Xuất thân). Lv10 vào Lễ Khai Thư chọn Hỏa hoặc Thủy. Mỗi cấp tự cộng 5 Điểm Tiềm Năng | Màn tạo nhân vật; hệ Thủy 3 chiêu; cửa sổ Nhân vật; bỏ nút "Thử hệ Hỏa" | [classes](../game-design/03-origins-classes-skills.md), [combat §3](../game-design/04-combat-and-progression.md) |
+| **A3 Hết Chương 1** | Chơi một mình trọn Chương 1 (khoảng 1 giờ), đánh Trang Lạc trong DG01 | Hầm ngục DG01; Q_MAIN_10–12; chỉnh cân bằng theo số phút chơi thật | [maps](../game-design/05-world-maps-monsters.md), [quests §4](../game-design/06-quests-and-missions.md) |
+| **B1 Lên mạng** | 2 trình duyệt thấy nhau đi lại trên M001 | Monorepo pnpm; client Phaser + Vite + TS dùng lại asset; server Node + `ws`, tick 20 Hz; Docker Compose; CI | Phase 0 (§3), [architecture](../architecture/system-architecture.md), [developer-setup §5](../guides/developer-setup-guide.md) |
+| **B2 Đánh quái online** | Nhiều người cùng đánh quái trong 1 khu. Quái, sát thương, EXP, đồ rơi do server tính. Chọn khu, chat map | Công thức vào `packages/shared` có test; AOI; khu 1–3 | [combat](../game-design/04-combat-and-progression.md), [network](../architecture/network-protocol.md), [server](../architecture/server-design.md) |
+| **B3 Tài khoản** | Đăng ký, đăng nhập. Nhân vật, túi đồ, nhiệm vụ lưu ở PostgreSQL. Chat thế giới. **Mời 10–20 người chơi thử** | Auth; schema DB v0; sổ cái tiền | [database](../architecture/database-schema.md), [security](../architecture/security-and-anticheat.md) |
+| **C Mở rộng kiểu NSO** | Mỗi mục là một bản phát hành nhỏ: nhóm và chia EXP; giao dịch; cường hóa +1…+16 và khảm; Thượng Đô và chợ; Đội; Cờ PK; nhiệm vụ ngày; boss thế giới; Chổi Bay; bản điện thoại | Theo Phase 2–4 (§3) | |
+
+**Quy tắc chung mỗi bậc:**
+- Không dùng nút "thử" thay cho tính năng chính.
+- Số liệu mới ghi vào tài liệu chuẩn trước.
+- Chạy kiểm tra rò rỉ tên IP.
+- Chơi thử tự động trên trình duyệt (Playwright).
+
+**Việc cần người thật**, làm song song và không chặn bậc A:
+- duyệt mục 2–9 ở [reskin-spec §9](reskin-spec.md);
+- đối chiếu độc lập;
+- tra cứu nhãn hiệu tên game.
+
+Art chính thức chỉ bắt đầu sau khi duyệt.
