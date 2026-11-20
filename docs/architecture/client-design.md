@@ -113,6 +113,33 @@ Hiện thực (bậc B1, `apps/web-client/src/world/`):
 - Bấm kỹ năng: phát **hoạt ảnh cast ngay** (tin tưởng), nhưng **số sát thương chỉ hiển thị khi server xác nhận**.
 - Nếu server từ chối (`S_ERROR`, vd: COOLDOWN), hủy hoạt ảnh và hiện thông báo nhỏ.
 
+Hiện thực (bậc B2, `apps/web-client/src/scenes/WorldScene.ts`, `src/ui/hud.ts`, `src/state.ts`):
+
+**Đánh**
+- J (giữ để đánh liên tục) và 1 gửi `C_USE_SKILL` kèm `seq` của bước input gần nhất. Hoạt ảnh và vệt chém chạy ngay.
+- Hồi chiêu đếm ở client chỉ để hiển thị và để không gửi thừa; server vẫn quyết định.
+- Lỗi hồi chiêu không hiện thông báo. Thiếu MP, chưa đủ cấp, túi đầy, khu đầy, map chưa mở thì hiện thông báo nhỏ.
+- Tab hoặc nhấp chuột vào quái để khóa mục tiêu (mũi tên vàng). Đánh trúng quái khi chưa khóa thì tự khóa nó.
+
+**Hiển thị**
+- Số sát thương, "Trượt" và "Né" chỉ hiện khi có `S_DAMAGE`.
+- Thanh máu quái hiện 4 s sau khi trúng đòn hoặc khi đang khóa.
+- Quái chết thì chạy hoạt ảnh gục rồi mới gỡ.
+
+**Đồ rơi và bình thuốc**
+- Đi qua đồ rơi thì client gửi `C_PICKUP`: chỉ khi mình là chủ hoặc đã hết 15 s khóa, mỗi món tối đa một lần mỗi 0,6 s.
+- Q, E dùng bình HP, MP. Chọn bình nhỏ nhất đủ bù phần thiếu, nếu không có thì bình lớn nhất.
+
+**Đổi map và nhập phím**
+- Khi nhận `S_ENTER_WORLD` hoặc `S_MAP_CHANGE`, `Connection.hold()` giữ các gói đến sau. Cảnh mới tạo xong thì `release()` xử lý chúng theo thứ tự (network §3.1.2).
+- Nhấn ↑ ở cổng gửi `C_USE_PORTAL` và tạm ngừng gửi input tới khi đổi map xong.
+- Phím nhấn ngắn hơn một bước 50 ms (nhảy, ↑) được giữ lại cho bước kế tiếp, nên chạm nhanh không bị mất.
+- Khi gõ chat, phím game tắt và Phaser thôi chặn phím, để gõ được khoảng trắng và mũi tên.
+
+**HUD**
+- HUD là DOM nằm trên canvas, dùng đơn vị `cqw` như bản chơi thử: khung nhân vật (HP, MP, EXP, Quan, Lực Chiến), nút tên map và khu (mở danh sách khu), ô chat và nhật ký, 4 ô hành động (J, 1, Q, E) có lớp phủ hồi chiêu, bảng "Bạn đã gục ngã" có nút về làng.
+- Chưa có phím ảo cho điện thoại (để ở bậc C, "bản điện thoại").
+
 ## 6. Render
 
 ### 6.1 Paper-doll (lớp nhân vật)

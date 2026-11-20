@@ -67,7 +67,7 @@ test("two browsers see each other walk and jump on M001", async ({ browser }, in
           }
         ).__htk.scene;
         const spr = s.children.list.find((o) => o.type === "Sprite" && o.texture?.key === "p_ancient_female_novice");
-        return spr ? Math.round(spr.y + 44) : -1;
+        return spr ? Math.round(spr.y - 4) : -1; // feet-anchored sprite, drawn 4 px low like the prototype
       }),
     )
     .toBe(endA.y);

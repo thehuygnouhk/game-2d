@@ -128,7 +128,7 @@ flowchart TB
 
 ## 6. Cấu trúc monorepo (kế hoạch)
 
-Đã có từ bậc B1: `apps/web-client`, `apps/game-server`, `packages/shared`, `packages/config`, `infra/docker-compose.yml`, `.github/workflows/ci.yml`, `tools/checks`, `tools/sim`. Còn lại theo [roadmap §8](../product/roadmap.md).
+Đã có từ bậc B1: `apps/web-client`, `apps/game-server`, `packages/shared`, `packages/config`, `infra/docker-compose.yml`, `.github/workflows/ci.yml`, `tools/checks`, `tools/sim`. Bậc B2 thêm `packages/content` (YAML, schema Zod, bộ nạp và `content:validate`) và `packages/shared/src/formulas`. Còn lại theo [roadmap §8](../product/roadmap.md).
 
 ```text
 game-2d/

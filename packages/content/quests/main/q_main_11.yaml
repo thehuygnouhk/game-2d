@@ -1,0 +1,15 @@
+id: Q_MAIN_11
+type: MAIN
+nameKey: quest.main.11.title
+chapter: 1
+levelMin: 9
+prerequisites: [Q_MAIN_10]
+giver: NPC001
+turnIn: NPC001
+objectives:
+  - { type: SCENE, target: Q_MAIN_11, map: M001 }
+rewards: { exp: 1200 }
+dialogue:
+  accept: quest.main.11.accept
+  progress: quest.main.11.progress
+  complete: quest.main.11.complete

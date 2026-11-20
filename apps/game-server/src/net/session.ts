@@ -12,6 +12,8 @@ import {
   MAX_BAD_FRAMES,
   MAX_MOVE_INPUTS_PER_S,
   MAX_PACKETS_PER_S,
+  MAX_SKILLS_PER_S,
+  CHAT_MAP_INTERVAL_MS,
   Op,
   opName,
   PROTOCOL_VERSION,
@@ -20,11 +22,13 @@ import {
   SNAPSHOT_EVERY_TICKS,
   type CHello,
   type CMoveInput,
+  type CUseSkill,
 } from "@htk/shared";
 import type { ServerConfig } from "../config";
-import { Player, type Zone } from "../world/zone";
+import { pickup, useItem } from "../world/combat";
+import { Player } from "../world/entities";
+import type { World } from "../world/world";
 
-let nextEntityId = 1;
 const IDLE_TIMEOUT_MS = 30_000;
 
 /** One WebSocket connection (network-protocol §3-4, §7). */
@@ -38,16 +42,25 @@ export class Session {
   private windowStart = Date.now();
   private packets = 0;
   private moves = 0;
+  private skills = 0;
   private floodSeconds = 0;
   private lastSeen = Date.now();
 
   constructor(
     private readonly ws: WebSocket,
-    private readonly zone: Zone,
+    private readonly world: World,
     private readonly cfg: ServerConfig,
   ) {
     ws.binaryType = "nodebuffer";
-    ws.on("message", (data, isBinary) => this.onMessage(data as Buffer, isBinary));
+    ws.on("message", (data, isBinary) => {
+      try {
+        this.onMessage(data as Buffer, isBinary);
+      } catch (e) {
+        // a bug in one command must not take the map host down (server-design §14)
+        this.cfg.log("session.error", { name: this.name, message: (e as Error).message, stack: (e as Error).stack });
+        this.error(ErrorCode.E_INTERNAL, 0, "internal error");
+      }
+    });
     ws.on("close", () => this.onClose());
     ws.on("error", () => this.onClose());
   }
@@ -84,6 +97,7 @@ export class Session {
       this.windowStart = now;
       this.packets = 0;
       this.moves = 0;
+      this.skills = 0;
       if (this.floodSeconds >= 10) {
         this.close(1008, "flood");
         return false;
@@ -91,6 +105,10 @@ export class Session {
     }
     this.packets++;
     if (op === Op.C_MOVE_INPUT && ++this.moves > MAX_MOVE_INPUTS_PER_S) return false; // dropped, not an error
+    if (op === Op.C_USE_SKILL && ++this.skills > MAX_SKILLS_PER_S) {
+      this.error(ErrorCode.E_RATE_LIMIT, 0, "C_USE_SKILL over 10/s");
+      return false;
+    }
     return true;
   }
 
@@ -117,15 +135,51 @@ export class Session {
         return this.send(Op.S_PONG, { t: (p as { t: number }).t, serverTime: Date.now() });
       case Op.C_ENTER_WORLD:
         return this.onEnterWorld(frame.seq);
+    }
+    const pl = this.stage === "world" ? this.player : null;
+    if (!pl?.zone) return; // in-game commands before C_ENTER_WORLD (or between maps) are ignored
+    const w = this.world,
+      now = w.now;
+    switch (frame.op) {
       case Op.C_MOVE_INPUT:
-        if (this.stage === "world" && this.player) this.zone.queueInput(this.player, p as CMoveInput);
+        return pl.zone.queueInput(pl, p as CMoveInput);
+      case Op.C_USE_SKILL:
+        pl.skillQueue.push({ cmd: p as CUseSkill, at: now, refSeq: frame.seq });
+        if (pl.skillQueue.length > 8) pl.skillQueue.shift();
         return;
+      case Op.C_USE_PORTAL: {
+        const q = p as { portalId: string; seq: number };
+        return w.requestPortal(pl, q.portalId, q.seq, frame.seq);
+      }
+      case Op.C_REQUEST_ZONES: {
+        const list = w.zoneList(pl);
+        if (list) this.send(Op.S_ZONE_LIST, list);
+        return;
+      }
+      case Op.C_CHANGE_ZONE:
+        return w.changeZone(pl, (p as { zoneNo: number }).zoneNo, frame.seq);
+      case Op.C_REVIVE:
+        return w.revive(pl, frame.seq);
+      case Op.C_PICKUP:
+        return pickup(pl.zone, pl, (p as { dropId: number }).dropId, frame.seq, now);
+      case Op.C_USE_ITEM:
+        return useItem(pl.zone, pl, (p as { instanceId: string }).instanceId, frame.seq, now);
+      case Op.C_CHAT_SEND: {
+        // map chat: everyone in the same map and zone, one message per second (network-protocol §7)
+        if (now - pl.lastChat < CHAT_MAP_INTERVAL_MS)
+          return this.error(ErrorCode.E_RATE_LIMIT, frame.seq, "CHAT_TOO_FAST");
+        pl.lastChat = now;
+        pl.zone.chatAll("MAP", (p as { text: string }).text, pl);
+        this.cfg.log("chat", { id: pl.id, map: pl.zone.key, len: (p as { text: string }).text.length });
+        return;
+      }
     }
   }
 
   private onHello(h: CHello, seq: number): void {
     if (this.stage !== "hello") return this.strike(seq, "C_HELLO sent twice");
-    if (h.protocolVersion !== PROTOCOL_VERSION && h.protocolVersion !== PROTOCOL_VERSION - 1) {
+    // network-protocol §11: N and N-1 once real players exist (step B3); until then exactly N
+    if (h.protocolVersion !== PROTOCOL_VERSION) {
       this.error(
         ErrorCode.E_VERSION,
         seq,
@@ -151,7 +205,7 @@ export class Session {
       tickRate: TICK_RATE,
       snapshotRate: TICK_RATE / SNAPSHOT_EVERY_TICKS,
       resumeToken: randomBytes(16).toString("hex"),
-      config: { mapId: this.zone.mapId },
+      config: { mapId: this.world.startMap },
     };
     this.send(Op.S_WELCOME, welcome);
     this.cfg.log("hello", { name: this.name, client: h.clientVersion });
@@ -159,23 +213,29 @@ export class Session {
 
   private onEnterWorld(seq: number): void {
     if (this.stage !== "lobby") return this.strike(seq, "C_ENTER_WORLD before C_HELLO");
+    const pl = new Player(this.world.nextId(), this.name, this.appearance, this, this.world.content);
+    const enter = this.world.enter(pl);
+    if (!enter) {
+      this.error(ErrorCode.E_ZONE_FULL, seq, "ALL_ZONES_FULL");
+      return this.close(4003, "full");
+    }
     this.stage = "world";
-    this.player = new Player(nextEntityId++, this.name, this.appearance, this, this.zone.spawn);
-    this.zone.add(this.player);
-    this.cfg.log("enter", {
-      id: this.player.id,
-      name: this.name,
-      map: this.zone.mapId,
-      online: this.zone.players.size,
-    });
+    this.player = pl;
+    this.send(Op.S_ENTER_WORLD, enter);
+    this.cfg.log("enter", { id: pl.id, name: this.name, zone: pl.zone?.key, online: this.world.playerCount });
   }
 
   private onClose(): void {
     if (this.stage === "closed") return;
     this.stage = "closed";
     if (this.player) {
-      this.zone.remove(this.player);
-      this.cfg.log("leave", { id: this.player.id, name: this.name, online: this.zone.players.size });
+      this.world.leave(this.player);
+      this.cfg.log("leave", { id: this.player.id, name: this.name, online: this.world.playerCount });
     }
+  }
+
+  /** Test hook: the player of this connection. */
+  get entity(): Player | null {
+    return this.player;
   }
 }

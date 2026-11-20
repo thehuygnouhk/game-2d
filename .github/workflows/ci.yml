@@ -24,6 +24,8 @@ jobs:
       - run: pnpm test
       - run: pnpm build
       - run: pnpm map:check
+      - name: Content (content-pipeline §4, V001-V004)
+        run: pnpm content:validate
       - name: IP leak check (reskin-spec §10, V015)
         run: pnpm check:ip
       - name: Docs links
@@ -41,7 +43,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @htk/web-client exec playwright install --with-deps chromium
-      - name: Two browsers see each other on M001 (step B1)
+      - name: Two browsers walk, fight and chat together (steps B1, B2)
         run: pnpm test:e2e
       - uses: actions/upload-artifact@v4
         if: always()

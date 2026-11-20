@@ -95,6 +95,13 @@ classDiagram
 | **Chuyển map** | Qua portal: gỡ khỏi zone cũ, thêm vào zone mới, gửi `S_MAP_CHANGE` |
 | **Tự cân bằng** | Khi một zone > 80% sức chứa, mở zone mới; khi < 20% và có zone thưa, gộp sau 10 phút |
 
+**Bậc B2:**
+- Server dựng sẵn **3 khu** cho mỗi map công khai (TOWN, FIELD) trong `packages/content` (R01: M001–M004).
+- Sức chứa mỗi khu lấy từ `zoneCap` trong YAML của map (M001 60, map đồng 30). Chưa tự mở hay gộp khu.
+- Map hầm ngục và instance (DG01, I001) chưa mở online. Cổng dẫn tới map chưa mở trả `E_MAP_LOCKED`.
+- Đổi khu (`C_CHANGE_ZONE`) giữ nguyên vị trí, chỉ được khi đã 5 s không đánh hay bị đánh.
+- Mỗi khu sinh quái theo các điểm `mob_spawn` của map. Mỗi lần sinh có thể ra Tinh anh hoặc Thủ lĩnh ([combat §2.1.1](../game-design/04-combat-and-progression.md)). Thủ lĩnh xuất hiện thì báo kênh hệ thống của khu.
+
 ## 4. Di chuyển & va chạm
 
 ### 4.1 Mô hình
@@ -105,13 +112,20 @@ classDiagram
   - trọng lực `g = 1200 px/s²`, tốc nhảy ban đầu `-544 px/s`, rơi tối đa 960 px/s. Nhảy cao **103 px** (hơn 3 ô một chút), khớp luật map V016 (bậc tối đa 3 ô) và bản chơi thử.
   - **Lý do đổi** từ `g = 1800`, `-560 px/s`: bộ số cũ ở bước 50 ms chỉ nhảy được khoảng 2,7 ô, không lên được bậc 3 ô đã kiểm chứng trên map.
 - **Xác định (deterministic):** sau mỗi bước, vị trí làm tròn tới px nguyên, `vy` làm tròn tới bội số 8 (khớp lượng tử hóa `int8 × 8` của snapshot). Cùng chuỗi input thì client và server ra cùng kết quả.
-- Nhấn xuống khi đứng trên nền một chiều: rơi xuyên qua trong 6 tick. Thang (tile 3) và bẫy (tile 4) chưa có trong mô phỏng chung (đến ở bậc B2).
+- Nhấn xuống khi đứng trên nền một chiều: rơi xuyên qua trong 6 tick.
 - **Nền một chiều** và **thang** là tile đặc biệt trong lớp collision của map.
+- **Thang (tile 3), từ bậc B2:**
+  - Đứng chạm thang theo cột giữa thân rồi nhấn lên (hoặc nhấn xuống khi đứng ngay trên thang) để bám. Thân được kéo vào giữa cột thang.
+  - Trên thang đi dọc 6 px/tick (120 px/s, [combat §4.5](../game-design/04-combat-and-progression.md)), đi ngang 4 px/tick. Trong lúc leo bỏ qua nền một chiều, vẫn chặn bởi tường.
+  - Leo hết thang thì đứng lên nền phía trên: nền một chiều nối với đầu thang, hoặc chính đỉnh thang nếu đỉnh thang hở. Đỉnh thang hở đứng được như nền một chiều.
+  - Xuống tới đất thì đứng lại. Nhấn nhảy thì buông thang và rơi.
+  - Xa thang, `up` là nhảy.
+- **Bẫy (tile 4), từ bậc B2:** chân chạm bẫy khi đứng thì bị hất lên 384 px/s, trừ khi đang nhấn nhảy (nhảy bình thường để thoát). Mỗi lần chạm, server trừ **8% HP tối đa**, cách nhau ít nhất 0,9 s (giá trị của bản chơi thử). `S_DAMAGE` có `sourceId` = 0.
 - Server **mô phỏng lại** chuyển động từ input (không tin vị trí client).
 
 ### 4.2 Input & dự đoán
 
-Client gửi **`C_MOVE_INPUT`** gồm `{ seq, dir(-1/0/1), jump, down, tickClient }`, tối đa 20 gói/s. Server:
+Client gửi **`C_MOVE_INPUT`** gồm `{ seq, dir(-1/0/1), jump, down, up, tickClient }`, tối đa 20 gói/s. Một lần nhấn ngắn hơn 50 ms vẫn được tính cho bước kế tiếp. Server:
 
 1. Đưa vào hàng đợi theo `seq` (tối đa 12, bỏ gói cũ, bỏ gói trùng hoặc đã xử lý). **Mỗi input là một bước vật lý.**
 2. **Hạn mức bước:** mỗi tick cộng 1 lượt, để dành tối đa 3 lượt bù trễ mạng; mỗi input tiêu 1 lượt. Vì vậy người chơi không đi nhanh hơn 1 bước/tick về lâu dài, dù gửi dồn input.
@@ -133,7 +147,7 @@ Vi phạm đầu tiên: **kéo lại vị trí**. Lặp lại: ghi `suspicion` v
 ## 5. AOI (Area of Interest)
 
 - Lưới ô **512 × 512 px** trên mỗi zone.
-- Mỗi người chơi **quan sát 3×3 ô** quanh mình (tối đa ~1.536 × 1.536 px), chỉ gửi thực thể trong vùng này.
+- Mỗi người chơi **quan sát 3×3 ô** quanh mình (tối đa ~1.536 × 1.536 px), chỉ gửi thực thể trong vùng này: người chơi, quái và đồ rơi (bậc B2).
 - Khi thực thể đổi ô: gửi `S_ENTITY_SPAWN`/`S_ENTITY_DESPAWN` cho người quan sát liên quan.
 - Giới hạn: tối đa **40 thực thể** người chơi hiển thị (cài đặt người dùng), ưu tiên đồng đội, Đội, bạn bè.
 
@@ -171,7 +185,39 @@ validate(player, skillId, target, seq):
 
 `threat = sát thương × hệ số vai trò`. Hệ số: Thổ ×2, Hồi máu: hồi × 0,5 chia cho quái đang đánh người được hồi.
 
+### 6.4 Bậc B2: những gì đã chạy
+
+**Kỹ năng**
+- Kỹ năng tân thủ đọc từ `packages/content/classes/novice.yaml`:
+  - **Đòn Thường** (`SKL_BASIC`): vùng 72 px trước mặt; nếu đang khóa mục tiêu trong tầm thì đánh mục tiêu đó. Hồi 1 s, không GCD.
+  - **Tụ Mana Chấn** (`SKL_MANA_BURST`): vùng 120 × 90 px, tâm cách 90 px trước mặt; đánh mọi quái trong vùng. Mở ở Lv5, MP 6, hồi 3 s, GCD 0,5 s.
+- Lệnh chờ trong hàng đợi tới khi server mô phỏng xong `C_MOVE_INPUT` có `seq` ghi trong lệnh ([network §3.1.2](network-protocol.md)).
+- Dung sai tầm 50 px; lệnh tới sớm tối đa 100 ms so với hồi chiêu vẫn được tung.
+- Có khóa mục tiêu thì nhân vật quay về phía mục tiêu, cả client lẫn server.
+- Tấn công thì mất trạng thái bất khả xâm phạm sau hồi sinh.
+
+**Sát thương và chia EXP**
+- Sát thương theo [combat §4.2](../game-design/04-combat-and-progression.md), hệ phép ×1 (chưa có hệ online). Gia Truyền (Thế Gia) +5% cho kỹ năng, không áp cho Đòn Thường.
+- Mỗi người chơi gây sát thương được ghi threat. Quái đổi mục tiêu sang người có threat cao nhất.
+- Quái chết thì chia EXP theo [combat §2.3](../game-design/04-combat-and-progression.md): ai gây ≥ 10% tổng sát thương thì nhận `EXP × hệ số chênh cấp × tỉ phần sát thương`.
+- Đồ rơi khóa cho người gây sát thương nhiều nhất trong 15 s.
+
+**AI quái**
+- Chạy trên server, chỉ ở khu đang có người. Trạng thái theo [combat §5.2](../game-design/04-combat-and-progression.md): đứng hoặc đi lang thang trong bán kính điểm sinh, đuổi, đánh, quay về (hồi đầy máu) khi xa điểm sinh quá `leash`, chạy trốn khi máu thấp (Thỏ Đốm).
+- Quái mặt đất **không bước khỏi mép nền**; quái bay (Dơi Giếng) bay tự do.
+- Số liệu ở YAML quái (`ai.attackRange`, `ai.attackCooldownMs`) và `RULES` trong `packages/shared/src/formulas/combat.ts`:
+  - đuổi ×1,3 tốc chạy, lang thang ×0,6, quay về ×1,5, chạy trốn ×1,4;
+  - khựng 220 ms khi trúng đòn;
+  - đòn cận chiến vung 220 ms và trúng nếu mục tiêu còn trong 56 px;
+  - đòn đánh xa (Lùn Ném Đá, Nhện Mực) bắn đạn 260 px/s, xa 260 px.
+
+**Chết và hồi sinh**
+- Gục ngã: mất 2% EXP của cấp ([combat §7](../game-design/04-combat-and-progression.md)). Quái bỏ mục tiêu.
+- `C_REVIVE {mode: "TOWN"}`: về làng của vùng (R01: M001), đầy HP và MP, bất khả xâm phạm 1 s.
+
 ## 7. Domain: Inventory, Shop, Trade, Market
+
+> **Bậc B2:** chưa có cơ sở dữ liệu. Đồ nhặt được và Quan nằm trong một **túi tạm của phiên** (`apps/game-server/src/world/bag.ts`, 30 ô, bình thuốc và nguyên liệu xếp chồng). Túi này mất khi ngắt kết nối, không phải tài sản. Bậc B3 thay nó bằng kho đồ trong PostgreSQL: mọi thay đổi chạy trong transaction, có `idemKey` và dòng sổ cái (§7.2–7.3, [database §6](database-schema.md)).
 
 ### 7.1 Hàng đợi tuần tự theo nhân vật
 

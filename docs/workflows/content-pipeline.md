@@ -48,6 +48,18 @@ packages/content/
     └─ en/*.json
 ```
 
+### 2.1 Trạng thái (bậc B2)
+
+**Đã có:**
+- `packages/content` chứa `monsters/`, `bosses/`, `events/`, `items/`, `classes/` (`origins.yaml`, `novice.yaml`, `fire.yaml`, `water.yaml`), `quests/`, `shops/`, `drops/`, `i18n/vi.yaml`.
+- `schema/index.ts` (Zod) và `src/index.ts`: bộ nạp và kiểm chứng mà game server dùng khi khởi động.
+
+**Những điểm khác cây thư mục ở §2:**
+- YAML hiện do `tools/art-proto/build.py` sinh ra từ cùng nguồn với bản chơi thử. Muốn sửa số liệu thì sửa ở đó rồi dựng lại (`python3 tools/art-proto/build.py art/prototype content`). Khi có `content-cli`, YAML sẽ thành nguồn sửa tay.
+- Map (`.tmj` và `.yaml`) vẫn ở `art/prototype/maps`, do bộ dựng map tạo ra. Chúng chuyển vào `packages/content/maps` cùng với bộ dựng đó. Game server đọc qua `MAP_DIR`.
+- `i18n` là một file `vi.yaml` lồng nhau. Khóa phẳng là đường dẫn có dấu chấm, ví dụ `mob.mob001.name`.
+- Tên vật phẩm thử dùng dạng `potion_hp`, chưa theo định dạng `ITMxxxxx`.
+
 ## 3. Định dạng dữ liệu (ví dụ)
 
 > Các trường có hậu tố `Key` là khóa i18n, **không** chứa văn bản.
@@ -166,17 +178,24 @@ rewards: { exp: 6000, soft: 2000 }
 
 ### 3.6 Bảng rơi
 
+Bảng đang dùng ở bậc B2 (`packages/content/drops/drop_r01_basic.yaml`, số liệu theo [combat §6, §2.1.1](../game-design/04-combat-and-progression.md)):
+
 ```yaml
-# drops/drop_r01_basic.yaml
 id: DROP_R01_BASIC
-soft: { chance: 0.9, formula: "4*L" }
+soft: { chance: 0.9, perLevel: 4, spread: 0.2 }     # Quan = 4L (±20%) × hệ số Quan của loại quái
 entries:
-  - { item: ITM05001, chance: 0.25, qty: [1, 2] }     # nguyên liệu
-  - { item: ITM04001, chance: 0.08, qty: [1, 1] }     # Bình HP Nhỏ
-  - { rarity: UNCOMMON, levelBand: [1, 9], chance: 0.02 }
-  - { rarity: RARE,     levelBand: [1, 9], chance: 0.003 }
-pity: { key: R01_EPIC, afterKills: 0 }
+  - { chance: 0.25, item: dong_luyen_1 }             # nguyên liệu
+  - { chance: 0.08, pick: { potion_hp: 0.6, potion_mp: 0.4 } }   # tiêu hao: một lần gieo, rồi chọn món
+gear:
+  items: [ s1_weapon, s1_hat, s1_armor, s1_boots ]   # bộ S1, lấy cấp của quái
+  levelBand: [1, 9]
+  chance: { common: 0.06, good: 0.02, rare: 0.003, epic: 0.0003 }
+tiers:                                               # Tinh anh, Thủ lĩnh: chắc có Quan, 2 lượt gieo
+  elite: { softChance: 1, rolls: 2, gear: { common: 0.06, good: 0.10, rare: 0.015, epic: 0.0015 } }
+  leader: { softChance: 1, rolls: 2, gear: { common: 0.06, good: 0.25, rare: 0.05, epic: 0.005 }, guaranteed: dong_luyen_2 }
 ```
+
+Bảo đảm (pity) Sử Thi của boss đến cùng boss online.
 
 ### 3.7 NPC và hội thoại
 
@@ -251,6 +270,12 @@ pnpm content:validate          # chạy tất cả quy tắc
 pnpm content:validate maps     # chỉ một loại
 pnpm content:build             # tạo gói JSON + contentVersion (hash)
 ```
+
+Bậc B2:
+- `pnpm content:validate` chạy V001 (schema), V002 (trùng ID), V003 (tham chiếu) và V004 (khóa i18n) trên các loại server đang dùng: quái, vật phẩm, kỹ năng, bảng rơi, map.
+- Cổng dẫn tới map chưa dựng (M004 → M005) chỉ là cảnh báo.
+- Chưa lọc theo loại; `content:build` đến ở bậc B3.
+- V016 chạy trong bộ dựng map; `pnpm map:check` kiểm tra điểm xuất hiện và điểm sinh quái có nền.
 
 ## 5. Pipeline bản đồ (Tiled)
 

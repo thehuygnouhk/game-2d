@@ -1,0 +1,15 @@
+id: Q_MAIN_10
+type: MAIN
+nameKey: quest.main.10.title
+chapter: 1
+levelMin: 9
+prerequisites: [Q_MAIN_09]
+giver: NPC001
+turnIn: NPC001
+objectives:
+  - { type: BOSS, target: BOSS001, count: 1, map: DG01 }
+rewards: { exp: 2000, soft: 600, items: [ { id: ao_suoi_mo, count: 1 } ] }
+dialogue:
+  accept: quest.main.10.accept
+  progress: quest.main.10.progress
+  complete: quest.main.10.complete

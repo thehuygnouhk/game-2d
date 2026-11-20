@@ -2,28 +2,55 @@ import { type CHello, decodeFrame, encodeFrame, type Frame, Op, opName, PROTOCOL
 
 type Handler = (payload: never, frame: Frame) => void;
 
-/** WebSocket + frame codec + dispatcher + ping (client-design §4). Reconnect arrives with C_RESUME in step B2. */
+/** WebSocket + frame codec + dispatcher + ping (client-design §4). Reconnect arrives with C_RESUME in step B3. */
 export class Connection {
   private ws: WebSocket | null = null;
   private seq = 0;
   private readonly handlers = new Map<number, Handler[]>();
   private pingTimer = 0;
+  /** while a scene loads (map change), frames wait here so no spawn or snapshot is lost */
+  private held: Frame[] | null = null;
   rtt = 0;
   serverOffset = 0;
   onClose: (reason: string) => void = () => {};
 
   constructor(readonly url: string) {}
 
-  on<T>(op: number, fn: (payload: T, frame: Frame) => void): void {
+  /** Register a handler; returns a function that removes it. */
+  on<T>(op: number, fn: (payload: T, frame: Frame) => void): () => void {
     const list = this.handlers.get(op) ?? [];
     list.push(fn as Handler);
     this.handlers.set(op, list);
+    return () => {
+      const l = this.handlers.get(op),
+        i = l ? l.indexOf(fn as Handler) : -1;
+      if (i >= 0) l!.splice(i, 1);
+    };
   }
 
   send(op: number, payload: unknown = {}): number {
     this.seq = (this.seq + 1) >>> 0;
     if (this.ws?.readyState === WebSocket.OPEN) this.ws.send(encodeFrame(op, this.seq, payload));
     return this.seq;
+  }
+
+  hold(): void {
+    this.held ??= [];
+  }
+  release(): void {
+    const frames = this.held ?? [];
+    this.held = null;
+    for (const f of frames) this.dispatch(f);
+  }
+
+  private dispatch(f: Frame): void {
+    if (this.held) {
+      this.held.push(f);
+      return;
+    }
+    const list = this.handlers.get(f.op);
+    for (const h of [...(list ?? [])]) h(f.payload as never, f);
+    if (!list?.length) console.debug("unhandled", opName(f.op));
   }
 
   connect(hello: Omit<CHello, "protocolVersion" | "contentVersion" | "device">): Promise<void> {
@@ -48,8 +75,7 @@ export class Connection {
           console.warn("bad frame from server", err);
           return;
         }
-        for (const h of this.handlers.get(f.op) ?? []) h(f.payload as never, f);
-        if (!this.handlers.has(f.op)) console.debug("unhandled", opName(f.op));
+        this.dispatch(f);
       };
     });
   }

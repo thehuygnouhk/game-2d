@@ -5,3 +5,4 @@ export * from "./protocol/frame";
 export * from "./protocol/messages";
 export * from "./physics/tilemap";
 export * from "./physics/body";
+export * from "./formulas";

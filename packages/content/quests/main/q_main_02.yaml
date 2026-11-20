@@ -1,0 +1,15 @@
+id: Q_MAIN_02
+type: MAIN
+nameKey: quest.main.02.title
+chapter: 1
+levelMin: 1
+prerequisites: [Q_MAIN_01]
+giver: NPC001
+turnIn: NPC001
+objectives:
+  - { type: KILL, target: MOB001, count: 5, map: M002 }
+rewards: { exp: 120, soft: 80, items: [ { id: kiem_go_tap, count: 1 } ] }
+dialogue:
+  accept: quest.main.02.accept
+  progress: quest.main.02.progress
+  complete: quest.main.02.complete

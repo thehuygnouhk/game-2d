@@ -14,7 +14,14 @@ interface TiledLayer {
   data?: number[];
   width?: number;
   height?: number;
-  objects?: { type: string; x: number; y: number; properties?: { name: string; value: unknown }[] }[];
+  objects?: {
+    type: string;
+    x: number;
+    y: number;
+    width?: number;
+    height?: number;
+    properties?: { name: string; value: unknown }[];
+  }[];
 }
 export interface TiledMap {
   width: number;

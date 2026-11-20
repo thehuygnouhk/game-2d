@@ -1,0 +1,16 @@
+id: Q_MAIN_07
+type: MAIN
+nameKey: quest.main.07.title
+chapter: 1
+levelMin: 6
+prerequisites: [Q_MAIN_06]
+giver: NPC040
+turnIn: NPC040
+objectives:
+  - { type: KILL, target: MOB004, count: 6, map: M003 }
+  - { type: COLLECT, target: bao_tai, count: 1, map: M003 }
+rewards: { exp: 800, soft: 300 }
+dialogue:
+  accept: quest.main.07.accept
+  progress: quest.main.07.progress
+  complete: quest.main.07.complete

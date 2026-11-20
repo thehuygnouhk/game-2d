@@ -1,0 +1,18 @@
+# Lun Nem Da: nem da tam ngan (prototype)
+id: MOB004
+nameKey: mob.mob004.name
+level: [5, 7]
+element: EARTH
+kind: NORMAL
+sprite: monsters/mob004
+size: { w: 36, h: 56 }
+ai:
+  type: AGGRESSIVE
+  aggroRange: 240
+  leash: 600
+  moveSpeed: 50
+  attackRange: 190        # ranged: a shot flies 260 px/s
+  attackCooldownMs: 1600
+skills: [ MOBSKL_THROW_ROCK ]
+drops: DROP_R01_BASIC
+exp: formula                 # 8L + 10 (combat section 2.1)

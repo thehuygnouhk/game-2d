@@ -1,0 +1,7 @@
+# Novice skills (classes section 3): every character has them, before and after the class ceremony.
+# shape: melee = 72 px in front (or the locked target within 72 px); burst = 120 x 90 area 90 px ahead
+id: NOVICE
+nameKey: class.novice.name
+skills:
+  - { id: SKL_BASIC, nameKey: skill.skl_basic.name, unlockLevel: 1, mp: 0, cooldownSec: 1.0, atkMult: 1.0, shape: melee, gcd: false }
+  - { id: SKL_MANA_BURST, nameKey: skill.skl_mana_burst.name, unlockLevel: 5, mp: 6, cooldownSec: 3, atkMult: 1.2, shape: burst, gcd: true }

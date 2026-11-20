@@ -4,3 +4,5 @@ docs/
 pnpm-lock.yaml
 **/dist/
 *.md
+# content YAML is written by tools/art-proto/build.py; its layout is kept as generated
+packages/content/**/*.yaml

@@ -1,0 +1,15 @@
+id: Q_MAIN_12
+type: MAIN
+nameKey: quest.main.12.title
+chapter: 1
+levelMin: 10
+prerequisites: [Q_MAIN_11]
+giver: NPC001
+turnIn: NPC001
+objectives:
+  - { type: REACH, target: I001, map: I001 }
+rewards: {  }
+dialogue:
+  accept: quest.main.12.accept
+  progress: quest.main.12.progress
+  complete: quest.main.12.complete

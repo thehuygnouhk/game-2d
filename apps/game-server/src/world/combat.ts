@@ -1,0 +1,317 @@
+import {
+  deathExpLoss,
+  ErrorCode,
+  type ErrorCodeValue,
+  expMod,
+  expToNext,
+  type Hit,
+  hpByte,
+  Op,
+  PASSIVE,
+  REGEN,
+  rollDamage,
+  rollLoot,
+  RULES,
+  type SDamage,
+  type SEntityDied,
+  type SStatsUpdate,
+} from "@htk/shared";
+import { Drop, type Mob, type Player } from "./entities";
+import type { Zone } from "./zone";
+
+/** Combat on the server (server-design §6, combat §2-7). The client only sends intents. */
+
+export function fail(p: Player, code: ErrorCodeValue, refSeq: number, message: string): void {
+  p.out.send(Op.S_ERROR, { code, refSeq, message });
+}
+
+/** Skills wait until the movement the player pressed them after has been simulated (C_USE_SKILL.seq). */
+export function runSkills(zone: Zone, p: Player, now: number): void {
+  while (p.skillQueue.length) {
+    const q = p.skillQueue[0]!;
+    if (q.cmd.seq > p.ack && now - q.at < 500) return;
+    p.skillQueue.shift();
+    cast(zone, p, q.cmd.skillId, q.cmd.targetId, q.refSeq, now);
+  }
+}
+
+const overlaps = (a: [number, number, number, number], b: [number, number, number, number]) =>
+  a[0] < b[2] && b[0] < a[2] && a[1] < b[3] && b[1] < a[3];
+const mobBox = (m: Mob): [number, number, number, number] => [m.x - m.w / 2, m.y - m.h, m.x + m.w / 2, m.y];
+
+function cast(zone: Zone, p: Player, skillId: string, targetId: number | undefined, refSeq: number, now: number): void {
+  const sk = zone.world.content.skills.get(skillId);
+  if (!sk || sk.set !== "NOVICE") return fail(p, ErrorCode.E_INVALID_TARGET, refSeq, "UNKNOWN_SKILL");
+  if (!p.alive) return fail(p, ErrorCode.E_DEAD, refSeq, "DEAD");
+  if (p.lv < sk.unlockLevel) return fail(p, ErrorCode.E_LEVEL_REQUIRED, refSeq, `LEVEL_${sk.unlockLevel}`);
+  const tol = RULES.cooldownToleranceMs;
+  if (now < (p.cds.get(sk.id) ?? 0) - tol || (sk.gcd && now < p.gcdUntil - tol))
+    return fail(p, ErrorCode.E_COOLDOWN, refSeq, "SKILL_ON_COOLDOWN");
+  if (p.mp < sk.mp) return fail(p, ErrorCode.E_NOT_ENOUGH_MP, refSeq, "NOT_ENOUGH_MP");
+  p.mp -= sk.mp;
+  p.cds.set(sk.id, now + sk.cooldownSec * 1000);
+  if (sk.gcd) p.gcdUntil = now + RULES.gcdMs;
+
+  const locked = targetId ? zone.mobs.get(targetId) : undefined;
+  const b = p.body;
+  if (locked?.alive && Math.abs(locked.x - b.x) > 4) p.body = { ...b, facing: locked.x > b.x ? 1 : -1 };
+  const f = p.body.facing,
+    px = p.body.x,
+    py = p.body.y,
+    tolPx = RULES.rangeTolerance;
+  let hits: Mob[] = [];
+  if (sk.shape === "melee") {
+    const reach = RULES.meleeReach;
+    if (
+      locked?.alive &&
+      Math.abs(locked.x - px) - locked.w / 2 <= reach + tolPx &&
+      overlaps(mobBox(locked), [px - 1e4, py - 60 - tolPx, px + 1e4, py + tolPx])
+    )
+      hits = [locked];
+    else {
+      const box: [number, number, number, number] =
+        f > 0 ? [px, py - 60, px + reach + tolPx, py] : [px - reach - tolPx, py - 60, px, py];
+      const near = [...zone.mobs.values()]
+        .filter((m) => m.alive && overlaps(mobBox(m), box))
+        .sort((a, c) => Math.abs(a.x - px) - Math.abs(c.x - px));
+      hits = near.slice(0, 1);
+    }
+  } else if (sk.shape === "burst") {
+    const { ahead, w, h } = RULES.burst,
+      cx = px + f * ahead,
+      pad = tolPx / 2;
+    const box: [number, number, number, number] = [cx - w / 2 - pad, py - h - pad, cx + w / 2 + pad, py + pad];
+    hits = [...zone.mobs.values()].filter((m) => m.alive && overlaps(mobBox(m), box));
+  }
+  const cast = { casterId: p.id, skillId: sk.id, f, ...(locked ? { targetId: locked.id } : {}) };
+  for (const o of zone.observers(p.id)) if (o !== p) o.out.send(Op.S_SKILL_CAST, cast);
+  const isSkill = sk.id !== "SKL_BASIC";
+  const mult = sk.atkMult * (isSkill && p.appearance.origin === "NOBLE" ? PASSIVE.nobleSkillMult : 1);
+  p.lastCombat = now;
+  p.invulnUntil = 0; // attacking ends the revive protection (combat §4.1)
+  for (const m of hits) hitMob(zone, p, m, mult, now);
+}
+
+export function hitMob(zone: Zone, p: Player, m: Mob, mult: number, now: number): void {
+  if (!m.alive) return;
+  const s = p.combatStats(now);
+  const r = rollDamage(
+    zone.world.rng,
+    { atk: s.atk, lv: p.lv, crit: s.crit, critDmg: s.critDmg },
+    { def: m.max.def, lv: m.lv },
+    mult,
+  );
+  p.lastCombat = now;
+  m.threat.set(p.id, (m.threat.get(p.id) ?? 0) + r.amount);
+  if (m.mode !== "return") {
+    let top = 0,
+      best = -1;
+    for (const [id, v] of m.threat) if (v > best && zone.players.get(id)?.alive) [top, best] = [id, v];
+    m.targetId = top;
+    m.mode = "chase";
+  }
+  if (!r.miss) {
+    m.hp -= r.amount;
+    m.hurtUntil = now + RULES.mobHurtMs;
+    m.knockDir = p.body.x < m.x ? 1 : -1;
+  }
+  const dmg: SDamage = {
+    targetId: m.id,
+    sourceId: p.id,
+    amount: r.amount,
+    crit: r.crit,
+    miss: r.miss,
+    hp: hpByte(m.hp, m.max.hp),
+  };
+  zone.sendAbout(m.id, Op.S_DAMAGE, dmg, p);
+  if (m.hp <= 0) killMob(zone, m, p, now);
+}
+
+function killMob(zone: Zone, m: Mob, killer: Player, now: number): void {
+  const w = zone.world;
+  m.alive = false;
+  m.hp = 0;
+  m.windup = null;
+  zone.mobGone(m, now);
+  // combat §2.3: everyone with at least 10% of the damage shares the EXP by damage dealt
+  const total = [...m.threat.values()].reduce((a, b) => a + b, 0) || 1;
+  const gained = new Map<number, number>();
+  let owner = killer.id,
+    best = -1;
+  for (const [id, dmg] of m.threat) {
+    const pl = zone.players.get(id);
+    if (dmg > best && pl) [owner, best] = [id, dmg];
+    const share = dmg / total;
+    if (!pl?.alive || share < RULES.expShareMin) continue;
+    const exp = Math.max(1, Math.round(m.max.exp * expMod(pl.lv - m.lv) * share));
+    gained.set(id, exp);
+  }
+  for (const o of zone.observers(m.id)) {
+    const died: SEntityDied = { id: m.id, killerId: killer.id };
+    const exp = gained.get(o.id);
+    if (exp) died.exp = exp;
+    o.out.send(Op.S_ENTITY_DIED, died);
+  }
+  if (!killer.visible.has(m.id) && gained.has(killer.id))
+    killer.out.send(Op.S_ENTITY_DIED, { id: m.id, killerId: killer.id, exp: gained.get(killer.id) });
+  for (const [id, exp] of gained) gainExp(zone.players.get(id)!, exp, now);
+  // combat §6: drops near the body, locked to the top damage dealer for 15 s, gone after 60 s
+  const table = w.content.drops.get(m.def.drops);
+  if (!table) return;
+  const loot = rollLoot(w.rng, table, m.lv, m.tier);
+  loot.forEach((l, i) => {
+    const x = Math.round(m.x + (i - (loot.length - 1) / 2) * 22);
+    const y = zone.surfaceBelow(x, m.y - 8) ?? m.y;
+    const d = new Drop(w.nextId(), l, x, y, owner, now + RULES.dropLockMs, now + RULES.dropTtlMs);
+    zone.drops.set(d.id, d);
+  });
+}
+
+export function gainExp(p: Player, n: number, now: number): void {
+  p.exp += n;
+  const cap = RULES.levelCapChapter1;
+  let up = false;
+  while (p.exp >= expToNext(p.lv) && p.lv < cap) {
+    p.exp -= expToNext(p.lv);
+    p.lv++;
+    p.recompute(true);
+    up = true;
+    p.out.send(Op.S_LEVEL_UP, { level: p.lv, statPoints: 5 });
+  }
+  if (p.lv >= cap) p.exp = Math.min(p.exp, expToNext(p.lv) - 1); // quests §4: Lv10 waits for Q_MAIN_11
+  if (up) sendStats(p, p.full(now));
+}
+
+/** A monster melee swing or shot reaches a player. */
+export function mobAttackLands(zone: Zone, m: Mob, p: Player, now: number): void {
+  if (!p.alive || now < p.invulnUntil) return;
+  const r = rollDamage(
+    zone.world.rng,
+    { atk: m.max.atk, lv: m.lv, crit: 0.05, critDmg: 1.5 },
+    { def: p.combatStats(now).def, lv: p.lv },
+    1,
+  );
+  damagePlayer(zone, p, r, m.id, now);
+}
+
+export function damagePlayer(zone: Zone, p: Player, r: Hit, sourceId: number, now: number): void {
+  if (!p.alive) return;
+  p.lastCombat = now;
+  if (!r.miss) p.hp -= r.amount;
+  const dmg: SDamage = {
+    targetId: p.id,
+    sourceId,
+    amount: r.amount,
+    crit: r.crit,
+    miss: r.miss,
+    hp: hpByte(p.hp, p.stats.hp),
+  };
+  zone.sendAbout(p.id, Op.S_DAMAGE, dmg);
+  if (p.hp <= 0) playerDies(zone, p, sourceId, now);
+}
+
+/** combat §7: lose 2% of the level's EXP, revive in town (C_REVIVE). */
+function playerDies(zone: Zone, p: Player, killerId: number, now: number): void {
+  p.alive = false;
+  p.hp = 0;
+  p.diedAt = now;
+  p.skillQueue.length = 0;
+  const loss = Math.min(p.exp, deathExpLoss(p.lv));
+  p.exp -= loss;
+  for (const o of zone.observers(p.id))
+    o.out.send(Op.S_ENTITY_DIED, o === p ? { id: p.id, killerId, exp: -loss } : { id: p.id, killerId });
+  for (const m of zone.mobs.values())
+    if (m.targetId === p.id) {
+      m.targetId = 0;
+      m.threat.delete(p.id);
+      m.windup = null;
+      if (m.mode === "chase") m.mode = "idle";
+    }
+  sendStats(p, { hp: 0, exp: p.exp });
+}
+
+export function sendStats(p: Player, s: SStatsUpdate): void {
+  if (s.hp !== undefined) p.shownVitals.hp = s.hp;
+  if (s.mp !== undefined) p.shownVitals.mp = s.mp;
+  if (s.exp !== undefined) p.shownVitals.exp = s.exp;
+  p.out.send(Op.S_STATS_UPDATE, s);
+}
+
+/** 5. status: hazards, origin passives, regeneration (combat §3.2, classes §2); vitals to the owner. */
+export function tickPlayerStatus(zone: Zone, p: Player, now: number): void {
+  if (p.alive && p.hazardHit) {
+    p.hazardHit = false;
+    if (now >= p.hazardCdUntil && now >= p.invulnUntil) {
+      p.hazardCdUntil = now + RULES.hazardEveryMs;
+      const amount = Math.max(1, Math.round(p.stats.hp * RULES.hazardPct));
+      damagePlayer(zone, p, { miss: false, crit: false, amount }, 0, now);
+    }
+  }
+  if (!p.alive) return;
+  const max = p.stats;
+  const origin = p.appearance.origin;
+  if (origin === "VILLAGER" && p.hp < max.hp * PASSIVE.rally.belowHp && now >= p.rallyCdUntil) {
+    p.rallyUntil = now + PASSIVE.rally.durationMs;
+    p.rallyCdUntil = now + PASSIVE.rally.cooldownMs;
+    const s = p.full(now);
+    sendStats(p, { atk: s.atk, def: s.def, power: s.power, rallyMs: PASSIVE.rally.durationMs });
+  } else if (p.rallyUntil && now >= p.rallyUntil) {
+    p.rallyUntil = 0;
+    const s = p.full(now);
+    sendStats(p, { atk: s.atk, def: s.def, power: s.power });
+  }
+  const out = now - p.lastCombat >= REGEN.combatMs;
+  const dt = 50;
+  if (out && p.hp < max.hp)
+    p.hp = Math.min(
+      max.hp,
+      p.hp + (max.hp * REGEN.hpOutPct * dt) / (origin === "ANCIENT" ? REGEN.hpOutEveryMsAncient : REGEN.hpOutEveryMs),
+    );
+  const mpRate = (out ? REGEN.mpOutPctPerS : REGEN.mpInPctPerS) * (origin === "NOBLE" ? REGEN.mpNobleMult : 1);
+  p.mp = Math.min(max.mp, p.mp + (max.mp * mpRate * dt) / 1000);
+  if (zone.world.tick % 2 === 0) {
+    const v = { hp: Math.ceil(p.hp), mp: Math.floor(p.mp), exp: p.exp };
+    const s: SStatsUpdate = {};
+    if (v.hp !== p.shownVitals.hp) s.hp = v.hp;
+    if (v.mp !== p.shownVitals.mp) s.mp = v.mp;
+    if (v.exp !== p.shownVitals.exp) s.exp = v.exp;
+    if (Object.keys(s).length) sendStats(p, s);
+  }
+}
+
+export function pickup(zone: Zone, p: Player, dropId: number, refSeq: number, now: number): void {
+  const d = zone.drops.get(dropId);
+  if (!d) return fail(p, ErrorCode.E_ITEM_NOT_FOUND, refSeq, "DROP_GONE");
+  if (!p.alive) return fail(p, ErrorCode.E_DEAD, refSeq, "DEAD");
+  if (Math.abs(p.body.x - d.x) > RULES.pickupX || Math.abs(p.body.y - d.y) > RULES.pickupY)
+    return fail(p, ErrorCode.E_OUT_OF_RANGE, refSeq, "TOO_FAR");
+  if (now < d.lockedUntil && d.ownerId !== p.id) return fail(p, ErrorCode.E_INVALID_TARGET, refSeq, "DROP_LOCKED");
+  const delta = p.bag.add(d.loot);
+  if (!delta) return fail(p, ErrorCode.E_INVENTORY_FULL, refSeq, "BAG_FULL");
+  zone.drops.delete(d.id);
+  p.out.send(Op.S_INVENTORY_DELTA, delta);
+}
+
+export function useItem(zone: Zone, p: Player, instanceId: string, refSeq: number, now: number): void {
+  const it = p.bag.items.find((i) => i.instanceId === instanceId);
+  if (!it) return fail(p, ErrorCode.E_ITEM_NOT_FOUND, refSeq, "NO_ITEM");
+  if (!p.alive) return fail(p, ErrorCode.E_DEAD, refSeq, "DEAD");
+  const kind = it.healHp ? "hp" : it.healMp ? "mp" : null;
+  if (!kind) return fail(p, ErrorCode.E_INVALID_TARGET, refSeq, "NOT_USABLE");
+  if (now < p.potionCd[kind]) return fail(p, ErrorCode.E_COOLDOWN, refSeq, "POTION_ON_COOLDOWN");
+  const taken = p.bag.takeOne(instanceId)!;
+  p.potionCd[kind] = now + RULES.potionCooldownMs;
+  let amount: number;
+  if (kind === "hp") {
+    // Ấn Cổ Hộ Thân (classes §2): healing received +15%
+    const heal = Math.round(it.healHp! * (p.appearance.origin === "ANCIENT" ? 1.15 : 1));
+    amount = Math.min(heal, p.stats.hp - Math.ceil(p.hp));
+    p.hp = Math.min(p.stats.hp, p.hp + heal);
+  } else {
+    amount = Math.min(it.healMp!, p.stats.mp - Math.floor(p.mp));
+    p.mp = Math.min(p.stats.mp, p.mp + it.healMp!);
+  }
+  p.out.send(Op.S_INVENTORY_DELTA, taken.delta);
+  zone.sendAbout(p.id, Op.S_HEAL, { targetId: p.id, sourceId: p.id, amount: Math.max(0, amount), kind });
+  sendStats(p, kind === "hp" ? { hp: Math.ceil(p.hp) } : { mp: Math.floor(p.mp) });
+}

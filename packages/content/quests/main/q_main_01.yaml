@@ -1,0 +1,15 @@
+id: Q_MAIN_01
+type: MAIN
+nameKey: quest.main.01.title
+chapter: 1
+levelMin: 1
+prerequisites: []
+giver: NPC001
+turnIn: NPC001
+objectives:
+  - { type: TALK, target: NPC002, map: M001 }
+rewards: { exp: 50, soft: 100, items: [ { id: potion_hp, count: 5 } ] }
+dialogue:
+  accept: quest.main.01.accept
+  progress: quest.main.01.progress
+  complete: quest.main.01.complete

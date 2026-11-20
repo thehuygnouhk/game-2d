@@ -103,7 +103,7 @@ Vật phẩm nhiệm vụ **chỉ rơi khi người chơi đang nhận nhiệm v
 | Bao Tải Bị Lấy | Q_MAIN_07 | Lùn Ném Đá, 25% |
 | Mảnh Trang | Q_MAIN_09 | Rùa Đá Giếng, 30% |
 
-Dữ liệu thử của chuỗi Chương 1 (định dạng §11) nằm ở [`art/prototype/content/quests`](../../art/prototype/README.md); chữ hiển thị ở `content/i18n/vi.yaml`.
+Dữ liệu thử của chuỗi Chương 1 (định dạng §11) nằm ở `packages/content/quests` ([content-pipeline §2.1](../workflows/content-pipeline.md)); chữ hiển thị ở `packages/content/i18n/vi.yaml`.
 
 ## 5. Chính tuyến — Chương 2 (Lv 10–24) tóm lược
 

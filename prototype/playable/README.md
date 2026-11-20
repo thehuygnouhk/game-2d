@@ -58,7 +58,7 @@ Mở `http://localhost:8000`, bấm vào màn chơi rồi dùng bàn phím hoặ
 | Tiệm thuốc của Lam Nhi: mua bình, bán đồ 25% giá trị, mua lại trong 30 phút, bán nhanh đồ Thường | [economy §3](../../docs/game-design/08-economy-and-monetization.md), [items §4.1](../../docs/game-design/07-items-and-equipment.md), [ui-ux §6.2](../../docs/game-design/11-ui-ux-spec.md) |
 | Hầm ngục DG01 (Lv9, 30 phút, một mình: quái 30% HP, 70% ATK, thưởng ×0,8; không hồi sinh; gục ngã là ra), Trang Lạc (Quét Trang, Bão Trang, rách thành 4 Mảnh Trang ở 50%), Rương Tân Thủ | [maps §5.3, §6.1–6.2](../../docs/game-design/05-world-maps-monsters.md) |
 | Q_MAIN_10–12: cảnh truyện, giới hạn Lv9, lễ đường I001 ban đêm, thẻ hết chương | [quests §4](../../docs/game-design/06-quests-and-missions.md), [ui-ux §6.3.1](../../docs/game-design/11-ui-ux-spec.md) |
-| Chuỗi chính tuyến Chương 1 Q_MAIN_01–09: nhận, làm, trả, thưởng; vật phẩm nhiệm vụ chỉ rơi khi còn thiếu; bụi Thảo Dược | [quests §2–4.1](../../docs/game-design/06-quests-and-missions.md), dữ liệu ở [`art/prototype/content/quests`](../../art/prototype/README.md) |
+| Chuỗi chính tuyến Chương 1 Q_MAIN_01–09: nhận, làm, trả, thưởng; vật phẩm nhiệm vụ chỉ rơi khi còn thiếu; bụi Thảo Dược | [quests §2–4.1](../../docs/game-design/06-quests-and-missions.md), dữ liệu ở `packages/content/quests` ([content-pipeline §2.1](../../docs/workflows/content-pipeline.md)) |
 | Khung theo dõi nhiệm vụ, dấu ! ? trên đầu NPC, hộp thoại NPC, cửa sổ Nhiệm vụ 4 tab, nút Đi tới, dải ruy băng nhận/trả | [ui-ux §3.1.3, §5, §6.4](../../docs/game-design/11-ui-ux-spec.md), [art §7](../../docs/game-design/12-art-audio-direction.md) |
 
 Giá trị **chưa có trong tài liệu**, dùng tạm cho bản thử: hệ số chiêu boss (dậm 180%, lao 200%, sà 200%, mưa pha lê 120%). Q_MAIN_05: phần "đấu tập với Khôi" thay bằng "Tụ Mana Chấn trúng quái 3 lần" vì bản thử chưa có đấu tập. Q_MAIN_12 chưa trao 1 Điểm Kỹ Năng vì chưa có nâng kỹ năng.
@@ -67,6 +67,6 @@ Giá trị **chưa có trong tài liệu**, dùng tạm cho bản thử: hệ s�
 
 ## Dựng lại asset
 
-`assets/` do `python3 tools/art-proto/build.py` sinh ra (bước `build_playable`), cùng nguồn với dữ liệu thử ở `art/prototype/content`. Không sửa tay trong `assets/`. Chỉ dựng lại nhiệm vụ, vật phẩm, icon và `data.json`: `python3 tools/art-proto/build.py art/prototype content`.
+`assets/` do `python3 tools/art-proto/build.py` sinh ra (bước `build_playable`), cùng nguồn với dữ liệu YAML ở `packages/content` (bản online đọc từ đó). Không sửa tay trong `assets/`. Chỉ dựng lại nhiệm vụ, vật phẩm, icon và `data.json`: `python3 tools/art-proto/build.py art/prototype content`.
 
 Chưa có: map Thượng Đô (Chương 2), nhặt đồ theo quyền sát thương, nhóm, nhiều khu, cường hóa, đồ mặc hiện trên hình nhân vật.

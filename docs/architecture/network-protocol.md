@@ -81,6 +81,34 @@ Chưa có API đăng nhập (đến ở bậc B3), nên game server chạy với
 
 `S_ENTITY_SPAWN` của người chơi gồm `id, kind: "player", name, appearance, x, y, st, f`.
 
+### 3.1.2 Bậc B2: vào thế giới, đổi map, đổi khu
+
+`S_ENTER_WORLD` ở bậc B2 có thêm:
+- `map {id, zone, name}`: tên map lấy từ i18n;
+- `ack`: `seq` của `C_MOVE_INPUT` cuối cùng đã xử lý;
+- `stats {lv, exp, expNext, hp, mp, maxHp, maxMp, atk, def, crit, power}`;
+- `skills[] {id, name, unlockLevel, mp, cooldownMs}`: kỹ năng tân thủ;
+- `bag {soft, items[], size}`;
+- `entities[]` (người chơi và quái), `drops[]` (đồ rơi) trong vùng nhìn.
+
+Người chơi vào khu còn chỗ có số nhỏ nhất của map khởi đầu (M001).
+
+**`S_MAP_CHANGE`** dùng chung khi qua cổng, đổi khu và hồi sinh về làng. Payload giống phần vị trí của `S_ENTER_WORLD`: `map, tick, ack, body, entities, drops`.
+
+Từ lúc nhận `S_ENTER_WORLD` hoặc `S_MAP_CHANGE` tới khi cảnh mới tải xong map, client giữ các gói đến sau trong hàng chờ rồi xử lý theo thứ tự. Nhờ vậy không gói spawn hay snapshot nào bị mất.
+
+**`C_USE_PORTAL {portalId, seq}`**, với `seq` là `C_MOVE_INPUT` cuối cùng client đã gửi:
+- server chỉ chuyển map sau khi đã mô phỏng tới `seq` đó, hoặc sau 500 ms;
+- client ngừng gửi input trong lúc chờ (tối đa 1,5 s);
+- vì vậy không input nào của map cũ bị áp lên map mới.
+
+Server kiểm tra:
+- thân người chơi phải nằm trong ô cổng (nới 16 px);
+- map đích phải đang mở, không thì trả `E_MAP_LOCKED`;
+- vào khu cùng số nếu còn chỗ, không thì vào khu khác còn chỗ.
+
+`C_USE_SKILL.seq` theo cùng quy tắc: kỹ năng được tung ở vị trí và hướng sau `C_MOVE_INPUT` có `seq` đó, đúng chỗ người chơi thấy trên màn hình lúc bấm.
+
 ### 3.2 Đá phiên
 
 Đăng nhập mới cùng tài khoản: phiên cũ nhận `S_KICK {reason:"DUPLICATE_LOGIN"}` rồi đóng.
@@ -113,14 +141,16 @@ interface EntityDelta {
   vx?: number; vy?: number;    // int8 × 8
   st?: number;                 // trạng thái (idle, run, jump, attack, dead...)
   f?: 1 | -1;                  // hướng
-  hp?: number;                 // u8 (0–255, % máu)
+  hp?: number;                 // u8: tỉ lệ máu, 255 = đầy, 0 = chết (0 < máu → ít nhất 1)
 }
 ```
 
 - Gửi **10 Hz**; thực thể không đổi thì không gửi.
 - `S_ENTITY_SPAWN` mô tả đầy đủ khi thực thể vào AOI; `S_ENTITY_DESPAWN` khi rời.
 
-`st` (trạng thái di chuyển): `0` đứng, `1` chạy, `2` nhảy lên, `3` rơi; `st < 2` nghĩa là đang đứng trên nền. Snapshot được gửi khi có thực thể đổi **hoặc** `ack` của client đó đổi.
+`st` (trạng thái): `0` đứng, `1` chạy, `2` nhảy lên, `3` rơi, `4` leo thang, `5` gục ngã; `st < 2` nghĩa là đang đứng trên nền. Quái dùng `0`, `1`, `5`; đòn đánh của quái đi bằng `S_SKILL_CAST`. Snapshot được gửi khi có thực thể đổi **hoặc** `ack` của client đó đổi.
+
+`S_ENTITY_SPAWN` của quái (bậc B2): `id, kind: "mob", templateId, name, lv, tier (normal|elite|leader), flying, x, y, st, f, hp`. Vị trí của quái và người chơi đều là **chân** (giữa đáy hộp va chạm).
 
 ### 5.2 Hiệu chỉnh vị trí
 
@@ -161,14 +191,14 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 
 | Op | Tên | Hướng | Payload chính |
 |----|-----|-------|----------------|
-| 0x0301 | `C_MOVE_INPUT` | C→S | `seq, dir, jump, down, tickClient` |
+| 0x0301 | `C_MOVE_INPUT` | C→S | `seq, dir, jump, down, up, tickClient` (`up`: leo thang, xa thang thì là nhảy; bậc B2) |
 | 0x0302 | `S_SNAPSHOT` | S→C | xem §5.1 |
 | 0x0303 | `S_ENTITY_SPAWN` | S→C | `id, kind, templateId, x, y, appearance, name, hp, ...` |
 | 0x0304 | `S_ENTITY_DESPAWN` | S→C | `ids[]` |
-| 0x0305 | `C_USE_PORTAL` | C→S | `portalId` |
-| 0x0306 | `S_MAP_CHANGE` | S→C | `mapId, zoneNo, x, y, entities` |
+| 0x0305 | `C_USE_PORTAL` | C→S | `portalId, seq` (§3.1.2) |
+| 0x0306 | `S_MAP_CHANGE` | S→C | `map {id, zone, name}, tick, ack, body, entities, drops` (§3.1.2) |
 | 0x0307 | `C_CHANGE_ZONE` | C→S | `zoneNo` |
-| 0x0308 | `S_ZONE_LIST` | S→C | `[{zoneNo, players, cap}]` |
+| 0x0308 | `S_ZONE_LIST` | S→C | `mapId, zones: [{zoneNo, players, cap}]` |
 | 0x0309 | `C_REQUEST_ZONES` | C→S | — |
 | 0x030A | `S_CORRECTION` | S→C | xem §5.2 |
 | 0x030B | `C_TELEPORT` | C→S | `destId` (Bác Tô) + `idemKey` |
@@ -177,13 +207,13 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 
 | Op | Tên | Hướng | Payload chính |
 |----|-----|-------|----------------|
-| 0x0401 | `C_USE_SKILL` | C→S | `skillId, targetId?, x?, y?, seq` |
-| 0x0402 | `S_SKILL_CAST` | S→C | `casterId, skillId, targetId?, x?, y?` |
-| 0x0403 | `S_DAMAGE` | S→C | `targetId, sourceId, amount, crit, elem(↑↓), miss` |
+| 0x0401 | `C_USE_SKILL` | C→S | `skillId, targetId?, x?, y?, seq` (`seq`: §3.1.2) |
+| 0x0402 | `S_SKILL_CAST` | S→C | `casterId, skillId, f, targetId?, x?, y?, shot? {vx, range, delayMs}` (`shot`: đạn của quái đánh xa) |
+| 0x0403 | `S_DAMAGE` | S→C | `targetId, sourceId, amount, crit, elem(↑↓), miss, hp` (`hp`: máu còn lại 0–255; `sourceId` 0 = bẫy) |
 | 0x0404 | `S_HEAL` | S→C | `targetId, sourceId, amount` |
 | 0x0405 | `S_STATUS_APPLY` | S→C | `targetId, statusId, duration, stacks` |
 | 0x0406 | `S_STATUS_REMOVE` | S→C | `targetId, statusId` |
-| 0x0407 | `S_ENTITY_DIED` | S→C | `id, killerId` |
+| 0x0407 | `S_ENTITY_DIED` | S→C | `id, killerId, exp?` (`exp`: EXP người nhận vừa được, hoặc số âm khi chính mình gục ngã) |
 | 0x0408 | `C_TARGET` | C→S | `targetId?` |
 | 0x0409 | `C_REVIVE` | C→S | `mode: TOWN|INPLACE` + `idemKey` |
 | 0x040A | `S_REVIVED` | S→C | `x, y, hp, mp` |
@@ -203,7 +233,7 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 | 0x0506 | `C_UNEQUIP` | C→S | `slot` |
 | 0x0507 | `C_DROP_ITEM` | C→S | `instanceId, qty` (hủy hoặc vứt) |
 | 0x0508 | `C_PICKUP` | C→S | `dropId` |
-| 0x0509 | `S_DROP_SPAWN` | S→C | `dropId, itemSummary, x, y, ownerUntil` |
+| 0x0509 | `S_DROP_SPAWN` | S→C | `id, what {kind, item?, name, icon?, qty, level?, rarity?}, x, y, ownerId, lockedMs` |
 | 0x050A | `C_SORT_BAG` | C→S | — |
 | 0x050B | `C_ENHANCE` | C→S | `instanceId, useCharm` + `idemKey` |
 | 0x050C | `S_ENHANCE_RESULT` | S→C | `success, newLevel, pity` |
@@ -247,8 +277,8 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 
 | Op | Tên | Hướng | Payload chính |
 |----|-----|-------|----------------|
-| 0x0801 | `C_CHAT_SEND` | C→S | `channel, text, targetName?` |
-| 0x0802 | `S_CHAT_MSG` | S→C | `channel, fromId, fromName, text, time` |
+| 0x0801 | `C_CHAT_SEND` | C→S | `channel, text, targetName?`. Bậc B2 có kênh `MAP` (cùng map và khu); chữ 1–120 ký tự sau khi gộp khoảng trắng, không ký tự điều khiển |
+| 0x0802 | `S_CHAT_MSG` | S→C | `channel (MAP, SYSTEM), fromId, fromName, text, time` |
 | 0x0803 | `C_FRIEND_OP` | C→S | `op (ADD, ACCEPT, REMOVE, BLOCK), name` |
 | 0x0804 | `S_FRIEND_LIST` | S→C | danh sách bạn, trạng thái |
 | 0x0805 | `C_PARTY_OP` | C→S | `op (INVITE, ACCEPT, LEAVE, KICK, LOOT_MODE), target?` |
@@ -329,6 +359,9 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 | 2004 | `E_INVALID_TARGET` | Mục tiêu không hợp lệ |
 | 2005 | `E_DEAD` | Đang chết |
 | 2006 | `E_PK_NOT_ALLOWED` | Không được PK ở đây |
+| 2007 | `E_ZONE_FULL` | Khu (hoặc mọi khu của map) đã đầy |
+| 2008 | `E_IN_COMBAT` | Đang giao tranh (chưa đủ 5 s), chưa đổi khu được |
+| 2009 | `E_MAP_LOCKED` | Map đích chưa mở |
 | 3001 | `E_INVENTORY_FULL` | Túi đầy |
 | 3002 | `E_NOT_ENOUGH_SOFT` | Không đủ Quan |
 | 3003 | `E_NOT_ENOUGH_PREMIUM` | Không đủ Nén Bạc |
@@ -385,7 +418,7 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 
 | Khái niệm | Ý nghĩa | Khi đổi |
 |-----------|---------|---------|
-| `protocolVersion` | Thay đổi phá vỡ khung hoặc payload | Tăng số nguyên; server hỗ trợ **N** và **N−1** trong 2 tuần |
+| `protocolVersion` | Thay đổi phá vỡ khung hoặc payload | Tăng số nguyên; server hỗ trợ **N** và **N−1** trong 2 tuần. Trước khi có người chơi thật (trước bậc B3), server chỉ nhận đúng **N**. Bậc B2 là phiên bản **2** |
 | `clientVersion` | SemVer của bản build | `minClient` do server yêu cầu |
 | `contentVersion` | Hash nội dung (`packages/content`) | Khác → client tải lại dữ liệu hoặc từ chối |
 

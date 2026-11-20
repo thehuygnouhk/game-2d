@@ -17,13 +17,7 @@ const A =
   "black[ _-]?clover|clover|hage|diamond|spade|heart|ma đạo thư|grimoire|phản ma|anti[ _-]?magic|mana[ _-]?skin|mana[ _-]?zone|spirit[ _-]?dive|hiệp sĩ ma pháp|magic[ _-]?knight|vua phép thuật|wizard[ _-]?king|yul|ngọc mana|ngoc|lễ trao sao|linh thạch sao|tinh linh|lá cỏ|[345] lá|mắt mặt trời|midnight[ _-]?sun|bộ ba hắc ám|dark[ _-]?triad|golden[ _-]?dawn|black[ _-]?bulls|bò đen|bình minh vàng|sư tử đỏ|hoa hồng xanh|đại bàng bạc|công xanh san hô|bọ ngựa xanh|orca tím|hươu nước|asta|yuno|julius|novachrono|yami|sukehiro|vangeance|fuegoleon|mereoleona|vermillion|roselei|nozel|noelle|silva|mimosa|finral|magna|vanessa|charmy|gauche|zora|secre|nacht|liebe|lily|orsi|zogratis|dante|vanica|zenon|lucius|zagred|megicula|lucifero|licht|patry|vetto|fana|rhya|lumiere|langris|leopold|rill|nebra";
 const listA = new RegExp(`(^|[^\\p{L}])(${A})([^\\p{L}]|$)`, "iu");
 const listB = /Ninja School|Ngọc Rồng|Dragon Ball|\bNRO\b|\bNSO\b/;
-const PLAYER_FACING = [
-  "docs/guides/player-guide.md",
-  "art/prototype/content/",
-  "packages/content/",
-  "apps/",
-  "prototype/playable/index.html",
-];
+const PLAYER_FACING = ["docs/guides/player-guide.md", "packages/content/", "apps/", "prototype/playable/index.html"];
 
 function* walk(dir) {
   for (const name of readdirSync(dir)) {

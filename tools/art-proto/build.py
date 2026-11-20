@@ -63,6 +63,16 @@ def mk(*parts):
     return d
 
 
+CONTENT = os.path.join(ROOT, "packages", "content")
+
+
+def mkc(*parts):
+    """Content data (YAML) goes to packages/content, whatever the art output folder is."""
+    d = os.path.join(CONTENT, *parts)
+    os.makedirs(d, exist_ok=True)
+    return d
+
+
 def build_heroes():
     pk, sh, pv = mk("piskel"), mk("sheets"), mk("preview")
     for cls, spec in HEROES.items():
@@ -173,6 +183,7 @@ MOB_DATA = {
     "MOB006": ([7, 8], "DARK", "NORMAL", "AGGRESSIVE", 220, 80, ["MOBSKL_DIVE"], 44, 36, "Doi Gieng: bay, lao xuong"),
     "MOB007": ([8, 9], "EARTH", "NORMAL", "AGGRESSIVE", 140, 30, ["MOBSKL_SHELL_BASH"], 56, 34, "Rua Da Gieng: DEF cao"),
 }
+RANGED_MOBS = ("MOB004", "MOB005")
 BOSS_DATA = {
     # id: (level, element, kind, hp_mult_note, skills, w, h, where, note)
     "BOSS001": (9, "NONE", "MINIBOSS", ["BSKL_PAGE_SWIPE", "BSKL_PAGE_STORM", "BSKL_TEAR_APART"], 110, 140,
@@ -193,7 +204,7 @@ EVENTS = {
 
 def build_content():
     """Prototype content data (to move into packages/content in Phase 0)."""
-    d = {k: mk("content", k) for k in ("monsters", "bosses", "events")}
+    d = {k: mkc(k) for k in ("monsters", "bosses", "events")}
     for mid, (lv, el, kind, ai, aggro, spd, skills, w, h, note) in MOB_DATA.items():
         with open(os.path.join(d["monsters"], f"{mid.lower()}.yaml"), "w") as f:
             f.write(f"""# {note} (prototype)
@@ -209,6 +220,8 @@ ai:
   aggroRange: {aggro}
   leash: 600
   moveSpeed: {spd}{chr(10) + "  flying: true" if mid == "MOB006" else ""}{chr(10) + "  fleeBelowHp: 0.3" if mid == "MOB002" else ""}
+  attackRange: {190 if mid in RANGED_MOBS else 40}{"        # ranged: a shot flies 260 px/s" if mid in RANGED_MOBS else ""}
+  attackCooldownMs: 1600
 skills: [ {", ".join(skills)} ]
 drops: DROP_R01_BASIC
 exp: formula                 # 8L + 10 (combat section 2.1)
@@ -463,12 +476,30 @@ SCENES = {
 }
 LOCKED_CLASSES = {"WIND": "Phong Kiếm Khách", "BOLT": "Lôi Chiến Binh", "EARTH": "Thổ Hộ Vệ", "PLANT": "Mộc Thuật Sư", "DARK": "Ám Pháp Sư"}
 SETS = {"S1": dict(name="Dân Làng", bonus={"2": "+5% HP", "4": "+8% ATK, +8% DEF"})}
+NOVICE = dict(name="Tân thủ", skills=[   # classes section 3 (novice skills), combat section 4.1 (no GCD on the basic attack)
+    dict(id="SKL_BASIC", name="Đòn Thường", lv=1, mp=0, cd=1.0, mult=1.0, kind="melee", gcd=False),
+    dict(id="SKL_MANA_BURST", name="Tụ Mana Chấn", lv=5, mp=6, cd=3, mult=1.2, kind="burst", gcd=True),
+])
+DROP_R01_BASIC = """# Basic drop table of region R01 (combat section 6 and 2.1.1), the same numbers as the prototype.
+id: DROP_R01_BASIC
+soft: { chance: 0.9, perLevel: 4, spread: 0.2 }     # Quan = 4L (+-20%), times the tier Quan multiplier
+entries:
+  - { chance: 0.25, item: dong_luyen_1 }             # material
+  - { chance: 0.08, pick: { potion_hp: 0.6, potion_mp: 0.4 } }   # consumable
+gear:
+  items: [ s1_weapon, s1_hat, s1_armor, s1_boots ]   # set S1, takes the monster level
+  levelBand: [1, 9]
+  chance: { common: 0.06, good: 0.02, rare: 0.003, epic: 0.0003 }
+tiers:
+  elite: { softChance: 1, rolls: 2, gear: { common: 0.06, good: 0.10, rare: 0.015, epic: 0.0015 } }
+  leader: { softChance: 1, rolls: 2, gear: { common: 0.06, good: 0.25, rare: 0.05, epic: 0.005 }, guaranteed: dong_luyen_2 }
+"""
 SHOPS = {"NPC003": dict(name="Tiệm thuốc của Lam Nhi", sells=["potion_hp", "potion_hp_m", "potion_mp", "potion_mp_m"])}
 
 
 def build_item_content():
     """Item records + shop for step A1 (content-pipeline §3, items §12)."""
-    d = mk("content", "items")
+    d = mkc("items")
     for k, v in ITEM_DEFS.items():
         lines = [f"id: {k}", f"type: {v['type']}", f"nameKey: item.{k}.name", f"icon: items/{v['icon']}"]
         for f in ("slot", "set", "level", "rarity", "value", "heal_hp", "heal_mp", "stack"):
@@ -479,18 +510,27 @@ def build_item_content():
             lines.append(f"levelBand: [{v['levelBand'][0]}, {v['levelBand'][1]}]   # rolled from the monster level")
         with open(os.path.join(d, f"{k}.yaml"), "w", encoding="utf-8") as f:
             f.write("# prototype item (step A1)\n" + "\n".join(lines) + "\n")
-    with open(os.path.join(mk("content", "classes"), "origins.yaml"), "w", encoding="utf-8") as f:
+    with open(os.path.join(mkc("classes"), "origins.yaml"), "w", encoding="utf-8") as f:
         f.write("# Origins (classes section 2), prototype step A2. base/growth: HP, MP, ATK, DEF\n")
         for k, v in ORIGIN_DATA.items():
             f.write(f"{k}:\n  nameKey: origin.{k.lower()}.name\n  base: {v['base']}\n  growth: {v['growth']}\n"
                     f"  passiveKey: origin.{k.lower()}.passive\n")
     for k, v in CLASS_DATA.items():
-        with open(os.path.join(mk("content", "classes"), f"{k.lower()}.yaml"), "w", encoding="utf-8") as f:
+        with open(os.path.join(mkc("classes"), f"{k.lower()}.yaml"), "w", encoding="utf-8") as f:
             f.write(f"# {k} class, skills 1-3 (classes section 3-4), prototype step A2\nid: {k}\nnameKey: class.{k.lower()}.name\nskills:\n")
             for sk in v["skills"]:
-                f.write(f"  - {{ id: {sk['id']}, unlockLevel: {sk['lv']}, mp: {sk['mp']}, cooldownSec: {sk['cd']}, "
-                        f"atkMult: {sk['mult']}, shape: {sk['kind']} }}\n")
-    with open(os.path.join(mk("content", "shops"), "npc003.yaml"), "w", encoding="utf-8") as f:
+                f.write(f"  - {{ id: {sk['id']}, nameKey: skill.{sk['id'].lower()}.name, unlockLevel: {sk['lv']}, "
+                        f"mp: {sk['mp']}, cooldownSec: {sk['cd']}, atkMult: {sk['mult']}, shape: {sk['kind']} }}\n")
+    with open(os.path.join(mkc("classes"), "novice.yaml"), "w", encoding="utf-8") as f:
+        f.write("# Novice skills (classes section 3): every character has them, before and after the class ceremony.\n"
+                "# shape: melee = 72 px in front (or the locked target within 72 px); burst = 120 x 90 area 90 px ahead\n"
+                f"id: NOVICE\nnameKey: class.novice.name\nskills:\n")
+        for sk in NOVICE["skills"]:
+            f.write(f"  - {{ id: {sk['id']}, nameKey: skill.{sk['id'].lower()}.name, unlockLevel: {sk['lv']}, mp: {sk['mp']}, "
+                    f"cooldownSec: {sk['cd']}, atkMult: {sk['mult']}, shape: {sk['kind']}, gcd: {str(sk['gcd']).lower()} }}\n")
+    with open(os.path.join(mkc("drops"), "drop_r01_basic.yaml"), "w", encoding="utf-8") as f:
+        f.write(DROP_R01_BASIC)
+    with open(os.path.join(mkc("shops"), "npc003.yaml"), "w", encoding="utf-8") as f:
         f.write("# Lam Nhi sells potions and buys items back at 25% (economy section 3), prototype step A1\n"
                 "npc: NPC003\nnameKey: shop.npc003.name\ncurrency: SOFT\n"
                 f"sells: [ {', '.join(SHOPS['NPC003']['sells'])} ]\nbuyBack: {{ ratio: 0.25, windowMin: 30 }}\n")
@@ -502,7 +542,7 @@ def _yaml_obj(o):
 
 def build_quests():
     """Chapter 1 quest records + vi i18n (content-pipeline §3.5, quests §11)."""
-    qd, i18n = mk("content", "quests", "main"), mk("content", "i18n")
+    qd, i18n = mkc("quests", "main"), mkc("i18n")
     prev = None
     lines = ["# i18n vi (prototype): display text for quests and quest items", "quest:"]
     for qid, lv, giver, turn_in, objs, rew, ready in QUEST_DATA:
@@ -520,7 +560,6 @@ def build_quests():
             f.write(f"""{note}id: {qid}
 type: MAIN
 nameKey: quest.main.{n}.title
-descKey: quest.main.{n}.desc
 chapter: 1
 levelMin: {lv}
 prerequisites: [{prev or ""}]
@@ -529,9 +568,9 @@ turnIn: {turn_in}
 objectives:
 """ + "".join(f"  - {_yaml_obj(o)}\n" for o in objs) + f"""rewards: {{ {", ".join(rparts)} }}
 dialogue:
-  accept: dlg.q_main_{n}.accept
-  progress: dlg.q_main_{n}.progress
-  complete: dlg.q_main_{n}.complete
+  accept: quest.main.{n}.accept
+  progress: quest.main.{n}.progress
+  complete: quest.main.{n}.complete
 """)
         prev = qid
         title, olabels, acc, prog, comp, extra = QUEST_TEXT[qid]
@@ -542,10 +581,10 @@ dialogue:
             lines.append(f"    talk.{npc.lower()}: \"{t}\"")
     lines.append("item:")
     for k, (name, _) in QUEST_ITEMS.items():
-        lines.append(f"  {k}: \"{name}\"")
+        lines.append(f"  {k}.name: \"{name}\"")
     for k, v in ITEM_DEFS.items():
         if k not in QUEST_ITEMS:
-            lines.append(f"  {k}: \"{v['name']}\"")
+            lines.append(f"  {k}.name: \"{v['name']}\"")
     lines.append("scene:")
     for k, v in SCENES.items():
         if isinstance(v, str):
@@ -557,16 +596,23 @@ dialogue:
     for k, v in ORIGIN_DATA.items():
         lines += [f"  {k.lower()}.name: \"{v['name']}\"", f"  {k.lower()}.passive: \"{v['passive']}: {v['passiveText']}\""]
     lines.append("class:")
+    lines.append(f"  novice.name: \"{NOVICE['name']}\"")
     for k, v in CLASS_DATA.items():
         lines.append(f"  {k.lower()}.name: \"{v['name']}\"")
-        for sk in v["skills"]:
-            lines.append(f"  skill.{sk['id'].lower()}: \"{sk['name']}\"")
+    lines.append("skill:")
+    for sk in NOVICE["skills"] + [sk for v in CLASS_DATA.values() for sk in v["skills"]]:
+        lines.append(f"  {sk['id'].lower()}.name: \"{sk['name']}\"")
     lines.append("shop:")
     for k, v in SHOPS.items():
-        lines.append(f"  {k.lower()}: \"{v['name']}\"")
+        lines.append(f"  {k.lower()}.name: \"{v['name']}\"")
+    for section, prefix in (("mob", ("MOB",)), ("boss", ("BOSS",)), ("map", ("M0", "DG", "I0"))):
+        lines.append(f"{section}:")
+        for k, v in VI_NAMES.items():
+            if k.startswith(prefix):
+                lines.append(f"  {k.lower()}.name: \"{v}\"")
     with open(os.path.join(i18n, "vi.yaml"), "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
-    with open(os.path.join(mk("content", "quests"), "quest_items.yaml"), "w", encoding="utf-8") as f:
+    with open(os.path.join(mkc("quests"), "quest_items.yaml"), "w", encoding="utf-8") as f:
         f.write("# Quest item sources (quests section 4.1). Drops only while the quest still needs the item.\n")
         for k, (_, src) in QUEST_ITEMS.items():
             f.write(f"{k}: {_yaml_obj(src)}\n")
@@ -629,7 +675,7 @@ def build_playable():
         "npcOrder": [k.split("_")[0] for k in NPCS],
         "mobs": {mid: dict(level=v[0], element=v[1], kind=v[2], ai=v[3], aggro=v[4], speed=v[5], skills=v[6],
                            flying=mid == "MOB006", fleeBelowHp=0.3 if mid == "MOB002" else 0,
-                           ranged=mid in ("MOB004", "MOB005"), sprite=mob_rows[mid]) for mid, v in MOB_DATA.items()},
+                           ranged=mid in RANGED_MOBS, sprite=mob_rows[mid]) for mid, v in MOB_DATA.items()},
         "bosses": {bid: dict(level=v[0], element=v[1], kind=v[2], skills=v[3], sprite=mob_rows.get(bid),
                              flying=bid == "BOSS036") for bid, v in BOSS_DATA.items() if bid in mob_rows},
         "minions": {"BOSS001_SHARD": dict(level=[9, 9], element="NONE", kind="MINION", ai="AGGRESSIVE", aggro=600, speed=110,
@@ -655,6 +701,9 @@ def build_playable():
     }
     with open(os.path.join(root, "data.json"), "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=1)
+    # icon order of sprites/items.png (32 x 32 cells, 8 per row), read by the online client (apps/web-client)
+    with open(os.path.join(root, "sprites", "items.json"), "w", encoding="utf-8") as f:
+        json.dump(data["items"], f)
 
 
 def build_player_sheets(out):

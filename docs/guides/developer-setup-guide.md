@@ -2,9 +2,9 @@
 
 > **Trạng thái:** Draft v0.1 · **Liên quan:** [system-architecture](../architecture/system-architecture.md) · [development-workflow](../workflows/development-workflow.md) · [infrastructure](../architecture/infrastructure-devops.md)
 
-> **Trạng thái:** khung dự án đã có từ **bậc B1** ([roadmap §8](../product/roadmap.md)): `apps/game-server`, `apps/web-client`, `packages/shared`, `packages/config`, `infra/docker-compose.yml`, CI. Lệnh nào ở §5 chưa có thì báo bậc sẽ có. Tài liệu này vẫn là **hợp đồng** cho các phần còn lại.
+> **Trạng thái:** khung dự án đã có từ **bậc B1**, đánh quái online từ **bậc B2** ([roadmap §8](../product/roadmap.md)): `apps/game-server`, `apps/web-client`, `packages/shared`, `packages/content`, `packages/config`, `infra/docker-compose.yml`, CI. Lệnh nào ở §5 chưa có thì báo bậc sẽ có. Tài liệu này vẫn là **hợp đồng** cho các phần còn lại.
 
-### Chạy nhanh bậc B1 (chưa cần Docker)
+### Chạy nhanh bậc B2 (chưa cần Docker)
 
 ```bash
 corepack enable
@@ -16,7 +16,11 @@ cp .env.example .env
 pnpm dev
 ```
 
-Mở `http://localhost:5173` ở **hai** cửa sổ trình duyệt, nhập hai tên khác nhau và vào game: hai nhân vật thấy nhau đi lại trên M001. Game server chạy với vé khách (`DEV_GUEST=1`, [network-protocol §3.1.1](../architecture/network-protocol.md)). Máy khác trong cùng mạng mở `http://<ip-máy-chạy>:5173`.
+Mở `http://localhost:5173` ở **hai** cửa sổ trình duyệt, nhập hai tên khác nhau và vào game. Hai nhân vật thấy nhau ở Nhà Học Suối Mơ (M001).
+
+Đi sang phải qua cổng (nhấn ↑ ở cổng) ra Đồng Hoa (M002) để đánh quái. Quái, sát thương, EXP và đồ rơi do server tính. Nút tên map ở giữa trên cùng để đổi khu. Enter để chat với người cùng khu.
+
+Game server chạy với vé khách (`DEV_GUEST=1`, [network-protocol §3.1.1](../architecture/network-protocol.md)). Máy khác trong cùng mạng mở `http://<ip-máy-chạy>:5173`.
 
 ## 1. Yêu cầu
 
@@ -93,7 +97,9 @@ File `.env` (không commit). Mẫu `.env.example`:
 | `GAME_WS_PORT` | `7001` | |
 | `REALM_ID` | `1` | Realm của game server |
 | `TICK_RATE` | `20` | Hz |
-| `CONTENT_DIR` | `packages/content` | Thư mục nội dung |
+| `CONTENT_DIR` | `packages/content` | Thư mục nội dung (YAML) |
+| `MAP_DIR` | `art/prototype/maps` | Map Tiled `.tmj` và `.yaml`, chưa chuyển vào `packages/content/maps` |
+| `GAME_SEED` | (trống) | Hạt ngẫu nhiên cố định cho test; để trống ở môi trường thật |
 | `LOG_LEVEL` | `debug` | |
 | `SMTP_URL` | `smtp://localhost:1025` | Mailhog |
 | `PAYMENT_WEBHOOK_SECRET` | `dev-secret` | Chỉ cho sandbox |
@@ -101,8 +107,8 @@ File `.env` (không commit). Mẫu `.env.example`:
 
 ## 5. Lệnh thường dùng
 
-Trạng thái ở bậc B1:
-- **Đã có:** `dev`, `dev:client`, `dev:server`, `build`, `lint`, `typecheck`, `test`, `test:e2e`, `map:check`, `sim:exp` (gọi `tools/sim/chapter1.py`).
+Trạng thái ở bậc B2:
+- **Đã có:** `dev`, `dev:client`, `dev:server`, `build`, `lint`, `typecheck`, `test`, `test:e2e`, `map:check`, `content:validate` (quy tắc V001–V004), `sim:exp` (gọi `tools/sim/chapter1.py`).
 - **Thêm ngoài danh sách:** `check:ip` (kiểm tra rò rỉ tên IP), `check:links` (liên kết tài liệu), `format`, `format:check`.
 - **Chưa có:** các lệnh còn lại in ra bậc sẽ có rồi thoát với mã 1.
 

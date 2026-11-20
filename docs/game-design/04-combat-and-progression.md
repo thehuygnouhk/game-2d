@@ -80,6 +80,7 @@ Với `d = cấp người chơi − cấp quái`:
 - Nhóm tối đa **5 người**, cách quái ≤ 800 px mới được chia.
 - Tổng EXP = EXP gốc × (1 + 0,1 × (số người − 1)). Chia theo cấp: người cấp cao nhận ít hơn.
 - Người gây ≥ 10% tổng sát thương mới nhận EXP và quyền nhặt đồ.
+- **Không cùng nhóm** (bậc B2, chưa có nhóm): ai gây ≥ 10% tổng sát thương lên con quái thì nhận `EXP quái × hệ số chênh cấp (§2.2) × tỉ phần sát thương của mình`. Đánh một mình nhận đủ 100%. Hai người đánh chung không làm tổng EXP tăng lên, nên không có lợi khi "chạm" quái của người khác. Đồ rơi khóa 15 s cho người gây sát thương nhiều nhất (§6).
 
 ### 2.4 Cột mốc thời gian dự kiến
 
@@ -116,6 +117,7 @@ Số quái cần giết mỗi cấp (cùng cấp): `≈ 6,3 × L`. Ở Lv50 kho�
 - **+5 điểm mỗi cấp** (Lv2–100), cộng 10 điểm khởi đầu: tổng **505** điểm.
 - Cộng điểm tại menu *Nhân vật*; không hoàn tác miễn phí, **Bình Rửa Tiềm Năng** (cửa hàng, 50 Nén Bạc hoặc sự kiện) để reset.
 - Nút **Cộng gợi ý** chia điểm còn lại theo nhịp 2 HP, 2 ATK, 1 DEF cho mỗi 5 điểm; người chơi vẫn phải bấm Xác nhận.
+- **Bậc B2 (bản online):** chưa có cửa sổ Nhân vật và chưa lưu nhân vật, nên server **tự cộng theo nhịp gợi ý** ngay khi lên cấp. Cửa sổ Nhân vật và `C_ALLOCATE_POINTS` đến ở bậc B3, cùng với lưu nhân vật. Bản chơi thử vẫn cộng tay.
 
 | Chỉ số | Mỗi điểm | Giới hạn |
 |--------|----------|----------|
@@ -207,7 +209,7 @@ Thủy → Hỏa → Phong → Thổ → Lôi → Thủy (khắc ×1,25; bị kh
 
 | Cấp | HP | ATK | DEF | EXP | Quan |
 |-----|----|-----|-----|-----|-----|
-| 1 | 52 | 11 | 2 | 18 | 4 |
+| 1 | 52 | 11 | 3 | 18 | 4 |
 | 10 | 726 | 40 | 25 | 90 | 40 |
 | 20 | 1.998 | 72 | 50 | 170 | 80 |
 | 30 | 3.645 | 104 | 75 | 250 | 120 |
@@ -219,7 +221,7 @@ Thủy → Hỏa → Phong → Thổ → Lôi → Thủy (khắc ×1,25; bị kh
 | 90 | 18.814 | 296 | 225 | 730 | 360 |
 | 100 | 22.030 | 328 | 250 | 810 | 400 |
 
-Công thức: `HP = round(30 + 22·L^1.5)`, `ATK = round(8 + 3.2·L)`, `DEF = round(2.5·L)`, `EXP = 8L + 10`, `Quan = 4L (±20%)`. Nhân theo loại ở §2.1.
+Công thức: `HP = round(30 + 22·L^1.5)`, `ATK = round(8 + 3.2·L)`, `DEF = round(2.5·L)`, `EXP = 8L + 10`, `Quan = 4L (±20%)`. Nhân theo loại ở §2.1. `round` làm tròn .5 lên, như bản chơi thử và `packages/shared/src/formulas/combat.ts`. Bảng cũ ghi DEF Lv1 là 2, nay sửa thành 3 cho khớp công thức.
 
 ### 5.2 Máy trạng thái AI
 
@@ -242,6 +244,12 @@ stateDiagram-v2
 - **Aggro:** tầm 160–320 px tùy loại. Quái bị đánh sẽ nhắm người gây **sát thương nhiều nhất** (threat); người đỡ (Thổ) có hệ số threat ×2.
 - **Leash:** rời điểm xuất hiện > 600 px thì quay về và hồi đầy máu.
 - **Hồi sinh quái:** 8–20s tùy khu vực.
+- **Đòn đánh của quái** (giá trị khởi điểm, lấy từ bản chơi thử, ghi ở YAML quái):
+  - tầm 40 px với quái cận chiến, 190 px với quái đánh xa; hồi 1,6 s;
+  - cận chiến vung 0,22 s rồi mới trúng (né được nếu kịp chạy ra);
+  - đánh xa bắn đạn 260 px/s;
+  - quái đánh thường: ATK của quái, chí mạng 5%.
+- Quái mặt đất không bước khỏi mép nền. Quái PASSIVE chỉ đánh lại khi bị đánh. Thỏ Đốm chạy trốn khi máu < 30%.
 
 ### 5.3 Boss
 

@@ -141,3 +141,266 @@ button:focus-visible {
 .keys b {
   color: var(--ink);
 }
+
+/* ---------- in-game HUD (ui-ux §3.1): sizes in cqw so it scales with the stage ---------- */
+.hud-root {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  font-size: 1.25cqw;
+  font-weight: 700;
+}
+.hud-root button,
+.hud-root input {
+  pointer-events: auto;
+  font: inherit;
+}
+.hud-me {
+  position: absolute;
+  left: 1cqw;
+  top: 1cqw;
+  width: 22cqw;
+  padding: 0.6cqw 0.8cqw;
+  border-radius: 0.6cqw;
+  background: var(--panel);
+  border: 1px solid #5b4a2a;
+  box-shadow: inset 0 0 0 1px rgba(240, 194, 74, 0.25);
+  display: grid;
+  gap: 0.35cqw;
+}
+.hud-me .nm {
+  display: flex;
+  gap: 0.6cqw;
+  align-items: baseline;
+}
+.hud-me .nm b {
+  color: #ffe08a;
+}
+.hud-me .lv {
+  color: var(--muted);
+}
+.hud-me .buff {
+  margin-left: auto;
+  color: #ffd23f;
+  font-size: 0.95cqw;
+}
+.bar {
+  position: relative;
+  height: 1.25cqw;
+  border-radius: 0.3cqw;
+  background: #1a1726;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px #000;
+}
+.bar i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  transition: width 0.15s;
+}
+.bar span {
+  position: relative;
+  display: block;
+  text-align: center;
+  font-size: 0.95cqw;
+  line-height: 1.25cqw;
+  text-shadow: 0 1px 1px #000;
+}
+.bar.hp i {
+  background: linear-gradient(180deg, #ff6b5a, #c62828);
+}
+.bar.mp i {
+  background: linear-gradient(180deg, #6fb7ff, #1e5bd6);
+}
+.bar.exp {
+  height: 0.9cqw;
+}
+.bar.exp span {
+  line-height: 0.9cqw;
+  font-size: 0.8cqw;
+}
+.bar.exp i {
+  background: linear-gradient(180deg, #ffe27a, #d99a1e);
+}
+.hud-me .soft {
+  font-size: 1cqw;
+  color: var(--muted);
+}
+.hud-me .soft b {
+  color: var(--gold);
+}
+.hud-zone {
+  position: absolute;
+  top: 1cqw;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.4cqw 1.2cqw;
+  border-radius: 2cqw;
+  border: 1px solid #5b4a2a;
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+}
+.hud-zones {
+  position: absolute;
+  top: 3.6cqw;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5cqw;
+  padding: 0.5cqw;
+  border-radius: 0.6cqw;
+  background: var(--panel);
+  border: 1px solid #5b4a2a;
+}
+.hud-zones button {
+  padding: 0.4cqw 0.9cqw;
+  border-radius: 0.4cqw;
+  border: 1px solid #3d4777;
+  background: #1a2040;
+  color: var(--ink);
+  cursor: pointer;
+}
+.hud-zones button.on {
+  border-color: var(--gold);
+}
+.hud-zones button:disabled {
+  cursor: default;
+  opacity: 0.75;
+}
+.hud-zones small {
+  color: var(--muted);
+}
+.hud-zones small.full {
+  color: #ff9a9a;
+}
+.hud-net {
+  position: absolute;
+  top: 1.3cqw;
+  right: 1cqw;
+  color: #9eff8a;
+  font-size: 1cqw;
+}
+.hud-chat {
+  position: absolute;
+  left: 1cqw;
+  bottom: 1cqw;
+  width: 30cqw;
+  display: grid;
+  gap: 0.3cqw;
+}
+.chat-log {
+  display: grid;
+  gap: 0.15cqw;
+  font-size: 1cqw;
+  font-weight: 600;
+  text-shadow:
+    0 1px 2px #000,
+    0 0 3px #000;
+}
+.chat-log .system {
+  color: #9fd8ff;
+}
+.chat-log .exp {
+  color: #b9e3ff;
+}
+.chat-in {
+  padding: 0.35cqw 0.6cqw;
+  border-radius: 0.4cqw;
+  border: 1px solid #3d4777;
+  background: rgba(12, 14, 28, 0.75);
+  color: var(--ink);
+  font-size: 1cqw !important;
+}
+.hud-actions {
+  position: absolute;
+  right: 1cqw;
+  bottom: 1cqw;
+  display: flex;
+  gap: 0.5cqw;
+}
+.hud-actions .act {
+  position: relative;
+  width: 6.2cqw;
+  height: 6.2cqw;
+  border-radius: 0.8cqw;
+  border: 2px solid #8a6a2a;
+  background: radial-gradient(circle at 50% 35%, #3a3150, #1a1626);
+  color: var(--ink);
+  overflow: hidden;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+.hud-actions .act kbd {
+  position: absolute;
+  left: 0.3cqw;
+  top: 0.2cqw;
+  font-size: 0.9cqw;
+  color: var(--gold);
+  font-family: inherit;
+}
+.hud-actions .act .nm {
+  font-size: 0.85cqw;
+  line-height: 1.1;
+  padding: 0 0.3cqw;
+}
+.hud-actions .act .n {
+  position: absolute;
+  right: 0.35cqw;
+  bottom: 0.2cqw;
+  font-size: 0.9cqw;
+  color: #fff;
+}
+.hud-actions .act .cd {
+  position: absolute;
+  inset: auto 0 0 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+.hud-actions .act.locked {
+  filter: grayscale(1);
+  opacity: 0.6;
+}
+.hud-toast {
+  position: absolute;
+  top: 7cqw;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.5cqw 1.2cqw;
+  border-radius: 0.5cqw;
+  background: rgba(20, 12, 4, 0.85);
+  border: 1px solid #8a6a2a;
+  color: #ffe08a;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.hud-toast.on {
+  opacity: 1;
+}
+.hud-dead {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  background: rgba(10, 6, 14, 0.55);
+  pointer-events: auto;
+}
+.hud-dead .t {
+  margin: 0;
+  font-size: 2.4cqw;
+  color: #ff9a9a;
+}
+.hud-dead .s {
+  margin: 0.4cqw 0 1.2cqw;
+  color: var(--muted);
+}
+.hud-dead button {
+  padding: 0.7cqw 1.6cqw;
+  border-radius: 0.6cqw;
+  border: 1px solid #5a2a00;
+  background: linear-gradient(180deg, #ffd36b, #e08e1b);
+  color: #3a1f00;
+  font-weight: 800;
+  cursor: pointer;
+}

@@ -1,135 +1,190 @@
+import type { GameMap, MobSpawn as SpawnDef } from "@htk/content";
 import {
   AOI_CELL,
-  type Appearance,
   type Body,
   type CMoveInput,
   type CollisionMap,
   type EntityDelta,
   type EntitySpawn,
-  makeBody,
-  moveState,
+  mobStats,
   Op,
-  type SEnterWorld,
+  rollTier,
+  RULES,
+  type SDropSpawn,
   step,
+  TILE,
+  Tile,
+  tileAt,
 } from "@htk/shared";
-
-export interface Outbox {
-  send(op: number, payload: unknown): void;
-}
+import { mobAttackLands, runSkills, tickPlayerStatus } from "./combat";
+import { type Drop, Mob, type Player, type Replicated } from "./entities";
+import { tickMob } from "./mob-ai";
+import type { World } from "./world";
 
 // Input budget: +1 step per tick, up to 3 saved for network jitter, so a client never moves faster than
 // one step per server tick on average (server-design §4.3: speed check).
 const BURST = 3;
 const MAX_QUEUE = 12; // older inputs are dropped
-type Shown = { x: number; y: number; vy: number; st: number; f: 1 | -1 };
 const IDLE_AFTER_TICKS = 10; // no input for 0.5 s: let gravity settle the body
 
-export class Player {
-  readonly inputs: CMoveInput[] = [];
-  body: Body;
-  dir: -1 | 0 | 1 = 0;
-  ack = 0;
-  quietTicks = 0;
-  /** what each observer last received about this entity */
-  readonly sent = new Map<number, Shown>();
-  budget = BURST;
-  readonly visible = new Set<number>();
-  ackSent = -1;
+const cellOf = (x: number, y: number) => [Math.floor(x / AOI_CELL), Math.floor((y - 1) / AOI_CELL)] as const;
+const pos = (e: Replicated | Drop): { x: number; y: number } =>
+  "body" in e ? (e as Player).body : (e as { x: number; y: number });
 
-  constructor(
-    readonly id: number,
-    readonly name: string,
-    readonly appearance: Appearance,
-    readonly out: Outbox,
-    spawn: { x: number; y: number },
-  ) {
-    this.body = makeBody(spawn.x, spawn.y);
-  }
-
-  state(): Shown {
-    return {
-      x: this.body.x,
-      y: this.body.y,
-      vy: this.body.vy,
-      st: moveState(this.body, this.dir),
-      f: this.body.facing,
-    };
-  }
-
-  spawnInfo(): EntitySpawn {
-    const s = this.state();
-    return {
-      id: this.id,
-      kind: "player",
-      name: this.name,
-      appearance: this.appearance,
-      x: s.x,
-      y: s.y,
-      st: s.st,
-      f: s.f,
-    };
-  }
+interface SpawnSlot {
+  def: SpawnDef;
+  alive: number;
+  respawnAt: number[];
+}
+export interface Shot {
+  mob: Mob;
+  x: number;
+  y: number;
+  vx: number;
+  left: number;
 }
 
-const cell = (p: Player) => [Math.floor(p.body.x / AOI_CELL), Math.floor((p.body.y - 1) / AOI_CELL)] as const;
-
-/** One public copy of a map (docs/architecture/server-design.md §3). */
+/** One public copy of a map: players, monsters, drops (docs/architecture/server-design.md §2-3). */
 export class Zone {
   readonly players = new Map<number, Player>();
-  tick = 0;
+  readonly mobs = new Map<number, Mob>();
+  readonly drops = new Map<number, Drop>();
+  readonly shots: Shot[] = [];
+  private readonly slots: SpawnSlot[];
 
   constructor(
-    readonly mapId: string,
+    readonly world: World,
+    readonly map: GameMap,
     readonly zoneNo: number,
     readonly collision: CollisionMap,
-    readonly spawn: { x: number; y: number },
-  ) {}
+    readonly cap: number,
+  ) {
+    this.slots = map.mobSpawns.map((def) => ({ def, alive: 0, respawnAt: [] }));
+    for (const s of this.slots) for (let i = 0; i < s.def.count; i++) this.spawnMob(s, 0);
+  }
 
-  /** Settle a fresh body on the ground below the spawn point. */
+  get key(): string {
+    return `${this.map.id}#${this.zoneNo}`;
+  }
+  get mapId(): string {
+    return this.map.id;
+  }
+
+  /** Feet y of the first surface at or below (x, fromY), or null. */
+  surfaceBelow(x: number, fromY: number): number | null {
+    const c = Math.floor(x / TILE);
+    for (let r = Math.max(0, Math.floor(fromY / TILE)); r < this.collision.height; r++) {
+      const t = tileAt(this.collision, c, r);
+      if (t === Tile.SOLID || t === Tile.ONE_WAY) return r * TILE;
+    }
+    return null;
+  }
+
+  private spawnMob(s: SpawnSlot, now: number): void {
+    const w = this.world;
+    const def = w.content.monsters.get(s.def.mob);
+    if (!def) return;
+    const band = s.def.level ?? def.level;
+    const lv = band[0] + Math.floor(w.rng() * (band[1] - band[0] + 1));
+    const leaderAlive = [...this.mobs.values()].some((m) => m.tier === "leader");
+    const tier = rollTier(w.rng, leaderAlive);
+    let x = Math.round(s.def.x + (w.rng() * 2 - 1) * s.def.radius * 0.8);
+    let y: number | null;
+    if (def.ai.flying) y = Math.round(s.def.y - 40 - w.rng() * 40);
+    else {
+      y = this.surfaceBelow(x, s.def.y - 40);
+      if (y === null) {
+        x = Math.round(s.def.x);
+        y = this.surfaceBelow(x, s.def.y - 40) ?? s.def.y;
+      }
+    }
+    const mob = new Mob(w.nextId(), def, s.def, w.content.text(def.nameKey), lv, tier, mobStats(lv, tier), x, y, now);
+    this.mobs.set(mob.id, mob);
+    s.alive++;
+    if (tier === "leader" && now > 0)
+      this.chatAll("SYSTEM", `Thủ lĩnh ${mob.name} Lv${lv} xuất hiện ở ${w.content.text(this.map.nameKey)}!`);
+  }
+
+  /** A monster died: free its slot and schedule the respawn (combat §5.2: 8-20 s by area). */
+  mobGone(m: Mob, now: number): void {
+    this.mobs.delete(m.id);
+    const s = this.slots.find((x) => x.def === m.spawn);
+    if (!s) return;
+    s.alive--;
+    s.respawnAt.push(now + s.def.respawnSec * 1000);
+  }
+
+  chatAll(channel: "MAP" | "SYSTEM", text: string, from?: Player): void {
+    const msg = { channel, fromId: from?.id ?? 0, fromName: from?.name ?? "", text, time: Date.now() };
+    for (const p of this.players.values()) p.out.send(Op.S_CHAT_MSG, msg);
+  }
+
+  /** Players who currently see entity `id` (or are it). */
+  *observers(id: number): Iterable<Player> {
+    for (const p of this.players.values()) if (p.id === id || p.visible.has(id)) yield p;
+  }
+  sendAbout(id: number, op: number, payload: unknown, also?: Player): void {
+    for (const p of this.observers(id)) if (p !== also) p.out.send(op, payload);
+    also?.out.send(op, payload);
+  }
+
+  sees(obs: Player, e: Replicated | Drop): boolean {
+    const a = cellOf(obs.body.x, obs.body.y),
+      p = pos(e),
+      b = cellOf(p.x, p.y);
+    return Math.abs(a[0] - b[0]) <= 1 && Math.abs(a[1] - b[1]) <= 1;
+  }
+
   private settle(b: Body): Body {
     for (let i = 0; i < 60 && !b.ground; i++) b = step(this.collision, b, { dir: 0, jump: false, down: false });
     return b;
   }
 
-  sees(a: Player, b: Player): boolean {
-    const [ax, ay] = cell(a),
-      [bx, by] = cell(b);
-    return Math.abs(ax - bx) <= 1 && Math.abs(ay - by) <= 1;
-  }
-
-  add(p: Player): void {
-    p.body = this.settle(p.body);
+  /** Put a player into this zone at (x, y). Returns what the player sees right away. */
+  add(p: Player, x: number, y: number): { entities: EntitySpawn[]; drops: SDropSpawn[] } {
+    p.zone = this;
+    p.inputs.length = 0;
+    p.skillQueue.length = 0;
+    p.body = this.settle({ x, y, vy: 0, ground: false, drop: 0, facing: p.body.facing, climb: false });
+    p.visible.clear();
+    p.sent.clear();
     this.players.set(p.id, p);
-    const others = [...this.players.values()].filter((o) => o !== p && this.sees(p, o));
-    for (const o of others) {
-      p.visible.add(o.id);
-      o.sent.set(p.id, o.state());
-      o.visible.add(p.id);
-      p.sent.set(o.id, p.state());
-      o.out.send(Op.S_ENTITY_SPAWN, p.spawnInfo());
+    const now = this.world.now;
+    const entities: EntitySpawn[] = [];
+    for (const e of [...this.players.values(), ...this.mobs.values()]) {
+      if (e === p || !this.sees(p, e)) continue;
+      p.visible.add(e.id);
+      e.sent.set(p.id, e.state());
+      entities.push(e.spawnInfo());
+      if (e.kind === "player" && this.sees(e, p)) {
+        e.visible.add(p.id);
+        p.sent.set(e.id, p.state());
+        e.out.send(Op.S_ENTITY_SPAWN, p.spawnInfo());
+      }
     }
-    const s = p.state();
-    const welcome: SEnterWorld = {
-      you: p.id,
-      character: { name: p.name, appearance: p.appearance },
-      map: { id: this.mapId, zone: this.zoneNo },
-      tick: this.tick,
-      body: { x: s.x, y: s.y, vy: s.vy, st: s.st },
-      entities: others.map((o) => o.spawnInfo()),
-    };
-    p.sent.set(p.id, s);
-    p.out.send(Op.S_ENTER_WORLD, welcome);
+    const drops: SDropSpawn[] = [];
+    for (const d of this.drops.values())
+      if (this.sees(p, d)) {
+        p.visible.add(d.id);
+        drops.push(d.info(now, p.bag.summary(d.loot)));
+      }
+    p.sent.set(p.id, p.state());
+    p.ackSent = p.ack;
+    return { entities, drops };
   }
 
   remove(p: Player): void {
     if (!this.players.delete(p.id)) return;
     for (const o of this.players.values()) {
-      if (o.visible.delete(p.id)) {
-        o.out.send(Op.S_ENTITY_DESPAWN, { ids: [p.id] });
-      }
-      p.sent.delete(o.id);
+      if (o.visible.delete(p.id)) o.out.send(Op.S_ENTITY_DESPAWN, { ids: [p.id] });
       o.sent.delete(p.id);
     }
+    for (const m of this.mobs.values()) {
+      m.sent.delete(p.id);
+      if (m.targetId === p.id) m.targetId = 0;
+      m.threat.delete(p.id);
+    }
+    p.zone = null;
   }
 
   queueInput(p: Player, inp: CMoveInput): void {
@@ -138,67 +193,119 @@ export class Zone {
     if (p.inputs.length > MAX_QUEUE) p.inputs.splice(0, p.inputs.length - MAX_QUEUE);
   }
 
-  /** 1. net input + 2. movement (server-design §2). */
-  update(): void {
-    this.tick++;
-    for (const p of this.players.values()) {
-      p.inputs.sort((a, b) => a.seq - b.seq);
-      p.budget = Math.min(BURST, p.budget + 1);
-      const batch = p.inputs.splice(0, Math.floor(p.budget));
-      p.budget -= batch.length;
-      if (batch.length === 0) {
-        if (++p.quietTicks >= IDLE_AFTER_TICKS && !p.body.ground)
-          p.body = step(this.collision, p.body, { dir: 0, jump: false, down: false });
-        continue;
-      }
-      p.quietTicks = 0;
-      for (const inp of batch) {
-        p.dir = inp.dir;
-        p.body = step(this.collision, p.body, { dir: inp.dir, jump: inp.jump === 1, down: inp.down === 1 });
-        p.ack = inp.seq;
-      }
+  /** One server tick (server-design §2): input + movement, skills, AI, status, spawns, drops. */
+  update(now: number): void {
+    for (const p of this.players.values()) this.move(p);
+    for (const p of this.players.values()) runSkills(this, p, now);
+    if (this.players.size) {
+      for (const m of [...this.mobs.values()]) tickMob(this, m, now);
+      this.tickShots(now);
+    }
+    for (const p of [...this.players.values()]) tickPlayerStatus(this, p, now);
+    for (const s of this.slots)
+      for (let i = s.respawnAt.length - 1; i >= 0; i--)
+        if (now >= s.respawnAt[i]!) {
+          s.respawnAt.splice(i, 1);
+          this.spawnMob(s, now);
+        }
+    for (const d of this.drops.values()) if (now >= d.expiresAt) this.drops.delete(d.id);
+  }
+
+  private move(p: Player): void {
+    p.inputs.sort((a, b) => a.seq - b.seq);
+    p.budget = Math.min(BURST, p.budget + 1);
+    const batch = p.inputs.splice(0, Math.floor(p.budget));
+    p.budget -= batch.length;
+    if (batch.length === 0) {
+      if (++p.quietTicks >= IDLE_AFTER_TICKS && !p.body.ground && !p.body.climb)
+        p.body = step(this.collision, p.body, { dir: 0, jump: false, down: false });
+      return;
+    }
+    p.quietTicks = 0;
+    for (const inp of batch) {
+      p.ack = inp.seq;
+      if (!p.alive) continue; // the dead do not move, their inputs are still acknowledged
+      p.dir = inp.dir;
+      const was = p.body;
+      p.body = step(this.collision, p.body, {
+        dir: inp.dir,
+        jump: inp.jump === 1,
+        down: inp.down === 1,
+        up: inp.up === 1,
+      });
+      if (p.body.hazard && !was.hazard) p.hazardHit = true;
+    }
+  }
+
+  private tickShots(now: number): void {
+    const dt = 0.05;
+    for (let i = this.shots.length - 1; i >= 0; i--) {
+      const s = this.shots[i]!;
+      const stepX = s.vx * dt;
+      s.x += stepX;
+      s.left -= Math.abs(stepX);
+      let hit: Player | undefined;
+      for (const p of this.players.values())
+        if (p.alive && Math.abs(p.body.x - s.x) < 16 && Math.abs(p.body.y - 24 - s.y) < 40) hit = p;
+      const wall = tileAt(this.collision, Math.floor(s.x / TILE), Math.floor(s.y / TILE)) === Tile.SOLID;
+      if (hit) mobAttackLands(this, s.mob, hit, now);
+      if (hit || wall || s.left <= 0) this.shots.splice(i, 1);
     }
   }
 
   /** 9. replication: AOI spawn/despawn and delta snapshots (server-design §5). */
   replicate(): void {
-    const all = [...this.players.values()];
-    for (const obs of all) {
+    const now = this.world.now;
+    const ents: Replicated[] = [...this.players.values(), ...this.mobs.values()];
+    for (const obs of this.players.values()) {
       const gone: number[] = [];
-      const ents: EntityDelta[] = [];
-      for (const p of all) {
-        const inView = p === obs || this.sees(obs, p);
-        if (p !== obs && inView && !obs.visible.has(p.id)) {
-          obs.visible.add(p.id);
-          obs.out.send(Op.S_ENTITY_SPAWN, p.spawnInfo());
-          p.sent.set(obs.id, p.state());
-          continue;
-        }
-        if (p !== obs && !inView && obs.visible.delete(p.id)) {
-          gone.push(p.id);
-          p.sent.delete(obs.id);
-          continue;
-        }
-        if (!inView) continue;
-        const now = p.state(),
-          last = p.sent.get(obs.id);
-        const d: EntityDelta = { id: p.id };
-        if (!last || last.x !== now.x) d.x = now.x;
-        if (!last || last.y !== now.y) d.y = now.y;
-        if (!last || last.vy !== now.vy) d.vy = now.vy;
-        if (!last || last.st !== now.st) d.st = now.st;
-        if (!last || last.f !== now.f) d.f = now.f;
-        const changed = Object.keys(d).length > 1;
-        if (changed) {
-          ents.push(d);
-          p.sent.set(obs.id, now);
+      for (const id of obs.visible) {
+        const e = this.players.get(id) ?? this.mobs.get(id) ?? this.drops.get(id);
+        if (!e || !this.sees(obs, e)) {
+          obs.visible.delete(id);
+          if (e && "sent" in e) e.sent.delete(obs.id);
+          gone.push(id);
         }
       }
+      const deltas: EntityDelta[] = [];
+      for (const e of ents) {
+        if (e !== obs && !obs.visible.has(e.id)) {
+          if (!this.sees(obs, e)) continue;
+          obs.visible.add(e.id);
+          obs.out.send(Op.S_ENTITY_SPAWN, e.spawnInfo());
+          e.sent.set(obs.id, e.state());
+          continue;
+        }
+        const cur = e.state(),
+          last = e.sent.get(obs.id);
+        const d: EntityDelta = { id: e.id };
+        if (!last || last.x !== cur.x) d.x = cur.x;
+        if (!last || last.y !== cur.y) d.y = cur.y;
+        if (!last || last.vy !== cur.vy) d.vy = cur.vy;
+        if (!last || last.st !== cur.st) d.st = cur.st;
+        if (!last || last.f !== cur.f) d.f = cur.f;
+        if (!last || last.hp !== cur.hp) d.hp = cur.hp;
+        if (Object.keys(d).length > 1) {
+          deltas.push(d);
+          e.sent.set(obs.id, cur);
+        }
+      }
+      for (const d of this.drops.values())
+        if (!obs.visible.has(d.id) && this.sees(obs, d)) {
+          obs.visible.add(d.id);
+          obs.out.send(Op.S_DROP_SPAWN, d.info(now, obs.bag.summary(d.loot)));
+        }
       if (gone.length) obs.out.send(Op.S_ENTITY_DESPAWN, { ids: gone });
-      if (ents.length || obs.ack !== obs.ackSent) {
-        obs.out.send(Op.S_SNAPSHOT, { tick: this.tick, ack: obs.ack, ents });
+      if (deltas.length || obs.ack !== obs.ackSent) {
+        obs.out.send(Op.S_SNAPSHOT, { tick: this.world.tick, ack: obs.ack, ents: deltas });
         obs.ackSent = obs.ack;
       }
     }
   }
+
+  /** Monster template counts for tests and logs. */
+  get mobCount(): number {
+    return this.mobs.size;
+  }
+  static readonly zonesPerMap = RULES.zonesPerMap;
 }

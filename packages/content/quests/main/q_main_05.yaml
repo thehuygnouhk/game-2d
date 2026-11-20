@@ -1,0 +1,16 @@
+id: Q_MAIN_05
+type: MAIN
+nameKey: quest.main.05.title
+chapter: 1
+levelMin: 5
+prerequisites: [Q_MAIN_04]
+giver: NPC004
+turnIn: NPC004
+objectives:
+  - { type: TALK, target: NPC004, map: M002 }
+  - { type: USE_SKILL, target: SKL_MANA_BURST, count: 3, map: M002 }
+rewards: { exp: 400, soft: 200, skill: SKL_MANA_BURST }
+dialogue:
+  accept: quest.main.05.accept
+  progress: quest.main.05.progress
+  complete: quest.main.05.complete

@@ -17,7 +17,7 @@ Công cụ vẽ pixel art bằng code để **thử phong cách** nhân vật, s
 | `maps.py` | Bộ dựng map: chọn ô mép theo hàng xóm, xuất Tiled `.tmj` (tileset nhúng) và `.yaml`, nền parallax, ảnh xem trước |
 | `maps_r01.py` | Bố cục M001–M004, hầm ngục DG01, lễ đường I001, khu cấp độ, điểm boss, nối cổng |
 | `monsters.py` | 7 quái Chương 1, Trang Lạc và Mảnh Trang, 3 boss theo giờ (kiểu quái thú ma lực) |
-| `build.py` | Xuất toàn bộ vào [`art/prototype`](../../art/prototype/README.md) (`build.py <thư mục> maps` chỉ dựng bản đồ; `build.py <thư mục> monsters` dựng quái, dữ liệu và bản đồ; `build.py <thư mục> content` dựng nhiệm vụ, vật phẩm, icon và dữ liệu bản chơi thử) |
+| `build.py` | Xuất toàn bộ vào [`art/prototype`](../../art/prototype/README.md) (`build.py <thư mục> maps` chỉ dựng bản đồ; `build.py <thư mục> monsters` dựng quái, dữ liệu và bản đồ; `build.py <thư mục> content` dựng nhiệm vụ, vật phẩm, icon và dữ liệu bản chơi thử). Dữ liệu YAML (quái, vật phẩm, kỹ năng, bảng rơi, nhiệm vụ, i18n) luôn ghi vào `packages/content`, bất kể thư mục xuất; danh sách icon cho bản online ghi ở `prototype/playable/assets/sprites/items.json` |
 | `sample.py` | Bộ mẫu phong cách đầu tiên |
 
 Chạy (cần Python 3, numpy, Pillow):

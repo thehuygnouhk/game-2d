@@ -1,0 +1,166 @@
+# i18n vi (prototype): display text for quests and quest items
+quest:
+  main.01:
+    title: "Buổi Sáng Ở Nhà Học"
+    objectives:
+      - "Chào Bà Mơ ở bếp nhà học"
+    accept: "Sáng nay con đến sớm đấy. Ghé chào Bà Mơ ở bếp rồi quay lại đây, ta có việc nhờ."
+    progress: "Bà Mơ ở ngay cạnh nhà học thôi, con."
+    complete: "Ăn sáng no rồi mới học được. Cầm mấy bình thuốc này mà dùng."
+    talk.npc002: "Ôi, đến sớm thế! Cầm cái bánh này rồi về báo thầy nhé."
+  main.02:
+    title: "Dọn Vườn Thuốc"
+    objectives:
+      - "Hạ Nấm Lùn"
+    accept: "Lũ Nấm Lùn lại mọc tràn ra Đồng Hoa, giẫm nát cả vườn thuốc. Con ra dọn giúp ta năm con."
+    progress: "Nấm Lùn ở phía trái Đồng Hoa, đi qua cổng cuối làng là thấy."
+    complete: "Vườn thuốc sạch rồi. Thanh kiếm gỗ này hợp tay con đấy."
+  main.03:
+    title: "Thỏ Phá Ruộng"
+    objectives:
+      - "Hạ Thỏ Đốm"
+      - "Nhặt Củ Cải Non"
+    accept: "Thỏ Đốm đào nát ruộng củ cải của làng rồi! Đuổi chúng đi, nhặt lại giúp lão mấy củ còn lành."
+    progress: "Thỏ ở nửa sau Đồng Hoa, gần cối xay gió. Củ cải rơi ra khi hạ thỏ."
+    complete: "Củ còn tươi cả. Già này cảm ơn con."
+  main.04:
+    title: "Hái Thảo Dược"
+    objectives:
+      - "Hái Thảo Dược Suối Mơ"
+    accept: "Mình cần năm nhánh Thảo Dược Suối Mơ để chế thuốc. Nó mọc lấp lánh trên Đồng Hoa, cậu hái giúp nhé!"
+    progress: "Thảo dược có đốm sáng xanh. Đứng gần rồi nhấn F (hoặc chạm vào) để hái."
+    complete: "Đủ rồi! Mình vừa chế xong mấy bình, cậu cầm đi đường."
+  main.05:
+    title: "Bài Học Của Khôi"
+    objectives:
+      - "Gặp Khôi ở Đồng Hoa"
+      - "Đấu tập: Tụ Mana Chấn trúng quái"
+    accept: "Muốn mạnh lên thì phải biết dồn mana. Ra Đồng Hoa gặp tớ, tớ chỉ cho."
+    progress: "Dồn mana vào lòng bàn tay rồi đẩy ra. Nhấn phím 1, trúng ba lần là được."
+    complete: "Khá đấy! Từ giờ Tụ Mana Chấn là chiêu của cậu."
+    talk.npc004: "Tới rồi à? Nhìn tớ này: dồn mana, rồi đẩy! Giờ cậu thử với lũ quái quanh đây."
+  main.06:
+    title: "Chó Rừng Lạc Bầy"
+    objectives:
+      - "Hạ Chó Rừng Non"
+    accept: "Đêm qua chó rừng mò tới tận bờ rào. Vào Rừng Mơ Non đuổi bớt tám con giúp lão."
+    progress: "Chó Rừng Non ở đầu Rừng Mơ Non, đi hết Đồng Hoa là tới."
+    complete: "Đêm nay làng ngủ yên rồi."
+  main.07:
+    title: "Bao Tải Bị Lấy"
+    objectives:
+      - "Hạ Lùn Ném Đá"
+      - "Lấy lại Bao Tải Bị Lấy"
+    accept: "Bác Tư bên suối bị lũ Lùn Ném Đá cướp mất bao tải hạt giống. Con đòi lại giúp lão."
+    progress: "Lùn Ném Đá ở giữa Rừng Mơ Non. Cẩn thận đá bay."
+    complete: "Bao tải đây rồi, hạt giống còn nguyên. Bác Tư sẽ mừng lắm."
+  main.08:
+    title: "Giếng Làng Cạn"
+    objectives:
+      - "Hạ Dơi Giếng"
+    accept: "Giếng làng cạn dần mà dưới hang toàn dơi. Con xuống Hang Giếng Cạn đuổi tám con đi."
+    progress: "Hang Giếng Cạn ở cuối Rừng Mơ Non. Dơi bay thấp, đứng dưới mà đánh."
+    complete: "Nước lại róc rách rồi. Tối nay bà nấu canh cho cả làng."
+  main.09:
+    title: "Tờ Giấy Trắng"
+    objectives:
+      - "Hạ Rùa Đá Giếng"
+      - "Tìm Mảnh Trang"
+    accept: "Rùa đá trong hang có nuốt một tờ giấy không chữ. Cậu tìm giúp mình được không?"
+    progress: "Rùa Đá Giếng ở sâu trong hang, mai cứng lắm."
+    complete: "Trắng tinh… nhưng mình có cảm giác nó đang chờ ai đó viết lên."
+  main.10:
+    title: "Trang Lạc"
+    objectives:
+      - "Hạ Trang Lạc trong hầm ngục DG01"
+    accept: "Tờ giấy trắng dưới giếng không tự nhiên mà có. Thứ gì đó đang trú trong đáy hang. Con đủ sức rồi, xuống xem đi."
+    progress: "Cổng hầm ngục ở cuối Hang Giếng Cạn, cạnh đài đá. Cần Lv9."
+    complete: "Một sinh vật làm từ trang giấy bị xóa… Con làm tốt lắm. Áo này thầy may sẵn cho con."
+  main.11:
+    title: "Đêm Trước Ngày Lễ"
+    objectives:
+      - "Ngồi lại cùng Thầy, Lam Nhi và Khôi"
+    accept: "Mai là Lễ Khai Thư. Tối nay cả ba đứa ở lại nhà học với thầy nhé."
+    progress: "Thầy đang đợi ở nhà học."
+    complete: "Ngủ sớm đi. Mai thầy đợi ở lễ đường."
+  main.12:
+    title: "Lễ Khai Thư"
+    objectives:
+      - "Đặt tay lên Đài Khai Thư, chọn hệ phép"
+    accept: "Huyền Thư đang chờ con. Theo thầy vào lễ đường."
+    progress: "Đài Khai Thư ở giữa lễ đường. Lại gần rồi nhấn F."
+    complete: ""
+item:
+  cu_cai_non.name: "Củ Cải Non"
+  thao_duoc.name: "Thảo Dược Suối Mơ"
+  bao_tai.name: "Bao Tải Bị Lấy"
+  manh_trang.name: "Mảnh Trang"
+  potion_hp.name: "Bình HP Nhỏ"
+  potion_hp_m.name: "Bình HP Vừa"
+  potion_mp.name: "Bình MP Nhỏ"
+  potion_mp_m.name: "Bình MP Vừa"
+  dong_luyen_1.name: "Đồng Luyện Sơ"
+  dong_luyen_2.name: "Đồng Luyện Trung"
+  s1_weapon.name: "Kiếm Dân Làng"
+  s1_hat.name: "Mũ Dân Làng"
+  s1_armor.name: "Áo Dân Làng"
+  s1_boots.name: "Giày Dân Làng"
+  kiem_go_tap.name: "Kiếm Gỗ Tập"
+  ao_suoi_mo.name: "Áo Suối Mơ"
+  ruong_tan_thu.name: "Rương Tân Thủ"
+  huyen_thu_so_ban.name: "Huyền Thư Sơ Bản"
+  kiem_lua_tap_su.name: "Kiếm Lửa Tập Sự"
+  truong_thuy_tap_su.name: "Trượng Thủy Tập Sự"
+scene:
+  q_main_11.1: "Ngồi xuống đây cả ba. Mai là Lễ Khai Thư rồi."   # NPC001
+  q_main_11.2: "Con hồi hộp quá thầy ạ. Lỡ Huyền Thư của con chẳng chịu mở thì sao?"   # NPC003
+  q_main_11.3: "Mở hay không thì cậu vẫn chế thuốc giỏi nhất làng mà."   # NPC004
+  q_main_11.4: "Huyền Thư không chọn người mạnh nhất. Nó chọn người biết mình muốn viết gì."   # NPC001
+  q_main_11.5: "Con muốn biết tờ giấy trắng dưới giếng là gì, và ai đã xóa nó."   # PLAYER
+  q_main_11.6: "…Ngủ sớm đi. Mai thầy đợi ở lễ đường."   # NPC001
+  q_main_12.1: "Huyền Thư đã nhận con. Từ nay con tự viết đường đi của mình."   # NPC001
+  q_main_12.2: "Thầy còn vài trang sách cũ phải đi tìm lại. Đừng lo cho thầy."   # NPC001
+  letter: "Đừng tìm thầy. Hãy tìm Mười Hai Quyển."
+origin:
+  villager.name: "Dân Làng"
+  villager.passive: "Không Lùi Bước: Khi HP dưới 30%: +15% ATK và DEF trong 8 giây (hồi 60 giây)"
+  noble.name: "Thế Gia"
+  noble.passive: "Gia Truyền: Hồi MP +25%, sát thương kỹ năng +5%"
+  ancient.name: "Hậu Duệ Tộc Cổ Thư"
+  ancient.passive: "Ấn Cổ Hộ Thân: Ngoài giao tranh hồi 1% HP mỗi 3 giây; bình và hồi máu nhận +15%"
+class:
+  novice.name: "Tân thủ"
+  fire.name: "Hỏa Kiếm Sĩ"
+  water.name: "Thủy Pháp Sư"
+skill:
+  skl_basic.name: "Đòn Thường"
+  skl_mana_burst.name: "Tụ Mana Chấn"
+  skl_fire_1.name: "Hỏa Cầu"
+  skl_fire_2.name: "Trảm Liệt Diễm"
+  skl_fire_3.name: "Hỏa Thương Xuyên Thiên"
+  skl_water_1.name: "Thủy Đạn"
+  skl_water_2.name: "Sóng Triều"
+  skl_water_3.name: "Thủy Tiễn Xuyên Sóng"
+shop:
+  npc003.name: "Tiệm thuốc của Lam Nhi"
+mob:
+  mob001.name: "Nấm Lùn"
+  mob002.name: "Thỏ Đốm"
+  mob003.name: "Chó Rừng Non"
+  mob004.name: "Lùn Ném Đá"
+  mob005.name: "Nhện Mực"
+  mob006.name: "Dơi Giếng"
+  mob007.name: "Rùa Đá Giếng"
+boss:
+  boss001.name: "Trang Lạc"
+  boss034.name: "Vua Nấm Lùn"
+  boss035.name: "Chó Rừng Đầu Đàn"
+  boss036.name: "Dơi Chúa Giếng"
+  boss001_shard.name: "Mảnh Trang"
+map:
+  dg01.name: "Hầm Ngục Hang Giếng Cạn"
+  i001.name: "Lễ Đường Khai Thư"
+  m001.name: "Nhà Học Suối Mơ"
+  m002.name: "Đồng Hoa Suối Mơ"
+  m003.name: "Rừng Mơ Non"
+  m004.name: "Hang Giếng Cạn"
