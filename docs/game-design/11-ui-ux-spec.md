@@ -34,6 +34,18 @@ flowchart TD
     Menu --> Settings["Cài đặt"]
 ```
 
+### 2.1 Tạo nhân vật và Lễ Khai Thư
+
+- **Tạo nhân vật** (lần đầu vào game; [classes §2.1](03-origins-classes-skills.md)):
+  - cột trái: hình nhân vật động, ô tên, chọn Nam/Nữ, hình xem trước sau Lễ Khai Thư (Hỏa, Thủy);
+  - cột phải: 3 thẻ xuất thân (chỉ số gốc, tăng mỗi cấp, nội tại);
+  - nút **Vào game**; tên sai hiện lỗi đỏ ngay dưới.
+- Dữ liệu lưu của bản cũ chưa có nhân vật: mở màn này nhưng giữ cấp, đồ, nhiệm vụ.
+- **Lễ Khai Thư** (Thầy Bạch Vân):
+  - hàng 7 thẻ hệ (hệ chưa có hiện mờ "Sắp có");
+  - chi tiết: hình nhân vật trong đồng phục hệ, vai trò, vũ khí, hiệu chỉnh chỉ số, nội tại, 3 kỹ năng đầu với cấp mở, MP, hồi chiêu, tầm;
+  - nút **Khai Thư**. Trong 24 giờ đầu, cùng cửa sổ dùng để **Đổi hệ phép**.
+
 ## 3. HUD trong game
 
 ### 3.1 Bố cục PC (960×540 logic)
@@ -90,6 +102,10 @@ Khung nằm dưới khung nhân vật (dưới khung mục tiêu nếu đang ch�
 - Mỗi lần có tiến độ, chữ "*Mục tiêu* n/N" bay lên trên đầu nhân vật.
 - Nhận và trả nhiệm vụ hiện **dải ruy băng** giữa màn hình trong khoảng 3 giây: "Nhận nhiệm vụ" (đỏ), "Hoàn thành nhiệm vụ" (xanh, kèm phần thưởng).
 - Nút **Nhiệm vụ** cạnh nút Lịch Boss có chấm vàng khi có nhiệm vụ để nhận hoặc để trả.
+
+### 3.1.4 Thanh kỹ năng
+
+Phím **1** Tụ Mana Chấn (Lv5); phím **2, 3, 4** là kỹ năng 1–3 của hệ (mở Lv10, 20, 30, [classes §4](03-origins-classes-skills.md)). Nút ghi tên kỹ năng của hệ đang chọn; chưa mở thì mờ kèm "LvN"; vòng tối là thời gian hồi. Thiếu MP hoặc chưa mở thì hiện chữ nhắc trên đầu nhân vật.
 
 ### 3.2 Bố cục Mobile (ngang)
 
@@ -187,6 +203,7 @@ NPC hiện **hộp thoại + menu dọc tối đa 5 mục**:
 - Tab: **Chỉ số**, **Điểm Tiềm Năng**, **Thành tích**, **Danh vọng phe**.
 - Cộng điểm: nút **+/−** cạnh từng chỉ số, nút Xác nhận; hiển thị trước giá trị mới.
 - **Lực Chiến** nổi bật, so sánh khi di chuột vào trang bị khác.
+- Bậc A2: cột trái cửa sổ Hành trang có hai thẻ **Trang bị** và **Tiềm năng (N)**. Thẻ Tiềm năng: điểm còn lại; mỗi chỉ số có nút −, +, +5, lượng tăng mỗi điểm, giá trị hiện tại → giá trị mới (xanh); nút Xác nhận, Hủy, Cộng gợi ý. Phím **C** mở thẳng thẻ này. Còn điểm thì nút Hành trang có chấm vàng.
 
 ### 6.2 Túi đồ
 - Lưới 6×5 (30 ô), cuộn cho 90 ô, tab: Tất cả, Trang bị, Tiêu hao, Nguyên liệu, Nhiệm vụ.

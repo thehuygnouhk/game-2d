@@ -1,0 +1,16 @@
+# Origins (classes section 2), prototype step A2. base/growth: HP, MP, ATK, DEF
+VILLAGER:
+  nameKey: origin.villager.name
+  base: [220, 70, 22, 9]
+  growth: [14, 4, 1.8, 0.9]
+  passiveKey: origin.villager.passive
+NOBLE:
+  nameKey: origin.noble.name
+  base: [180, 120, 24, 7]
+  growth: [11, 7, 2.0, 0.7]
+  passiveKey: origin.noble.passive
+ANCIENT:
+  nameKey: origin.ancient.name
+  base: [200, 100, 18, 8]
+  growth: [13, 6, 1.5, 0.8]
+  passiveKey: origin.ancient.passive

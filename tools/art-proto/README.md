@@ -8,6 +8,7 @@ Công cụ vẽ pixel art bằng code để **thử phong cách** nhân vật, s
 | `actors.py` | Khung xương (rig), tư thế (idle, walk, run, attack, cast), vũ khí |
 | `templates.py` | Đầu, mắt, tóc, ủng, Huyền Thư chấm tay từng pixel |
 | `hero.py` | Bộ vẽ nhân vật theo lớp: đồng phục, áo dài, áo ngắn, áo choàng có huy hiệu quẻ, Huyền Thư 3 ấn bản |
+| `player_looks.py` | Ngoại hình người chơi theo xuất thân và giới tính: tân thủ, Hỏa, Thủy (18 bảng hình cho bản chơi thử; xem trước ở `preview/nguoi_choi_ngoai_hinh.png`) |
 | `npcs.py` | 8 NPC |
 | `items.py` | 37 icon vật phẩm 32×32, gồm vật phẩm nhiệm vụ Chương 1 và bộ S1 Dân Làng |
 | `vfx.py` | Hiệu ứng chiêu 8 hệ, hình nộm tập |

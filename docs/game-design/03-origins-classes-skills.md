@@ -22,6 +22,18 @@ Cách chia này giống NRO (chọn tộc ngay từ đầu) kết hợp NS (ch�
 
 Cả ba bắt đầu ở **Nhà Học Suối Mơ (M001)**. Khác biệt chỉ ở thoại mở đầu của `Q_MAIN_01` và ngoại hình gợi ý (vệt chữ mờ trên da cho Hậu Duệ Tộc Cổ Thư, trang phục lịch sự cho Thế Gia).
 
+### 2.1 Tạo nhân vật
+
+| Mục | Quy tắc |
+|-----|---------|
+| Tên | 3–12 ký tự: chữ (có dấu tiếng Việt), số, một dấu cách giữa các từ; duy nhất trong máy chủ (bản chơi thử chưa kiểm tra trùng) |
+| Giới tính | Nam hoặc Nữ; chỉ đổi ngoại hình |
+| Xuất thân | Một trong ba ở §2, **không đổi được** |
+| Ngoại hình | Theo xuất thân và giới tính (bản đầu, chưa tự chọn từng phần): Dân Làng tóc nâu, áo vải nông; Thế Gia tóc đen, áo dài xanh cổ vàng; Hậu Duệ Tộc Cổ Thư tóc bạc, áo xám lam. Nữ: Dân Làng tóc tết, Thế Gia và Hậu Duệ tóc dài có nơ |
+| Khởi đầu | Lv1 với **10 Điểm Tiềm Năng** chưa cộng ([combat §3.3](04-combat-and-progression.md)), 3 Bình HP Nhỏ, 3 Bình MP Nhỏ |
+
+Sau Lễ Khai Thư nhân vật **giữ mặt và tóc**, chỉ đổi sang đồng phục Pháp Vệ có màu của hệ.
+
 > **Gợi ý lối chơi:** Dân Làng hợp vai trò gánh chịu (Thổ), Thế Gia hợp sát thương phép (Hỏa, Thủy, Ám), Hậu Duệ Tộc Cổ Thư hợp lối bền bỉ (Mộc, Phong).
 
 ## 3. Bảy hệ phép + hệ ẩn
@@ -223,7 +235,7 @@ Nâng đủ 7 kỹ năng lên cấp 7 tốn **105 SP**, trong khi chỉ có **91
 |---------|---------|
 | Đổi hệ lần đầu | **Miễn phí** trong 24 giờ đầu sau Lễ Khai Thư |
 | Đổi hệ sau đó | **100 Nén Bạc**, bắt buộc chờ 30 ngày giữa hai lần |
-| Hậu quả | Thu hồi SP, hoàn lại 100% SP nhưng mất Quan đã trả; trang bị khác hệ vẫn mặc được nhưng mất **bonus set** |
+| Hậu quả | Thu hồi SP, hoàn lại 100% SP nhưng mất Quan đã trả. **Vũ khí** hệ cũ tự tháo vào túi (không mặc được vũ khí hệ khác, [items §3](07-items-and-equipment.md)) và nhận vũ khí tập sự của hệ mới nếu chưa có; giáp, phụ kiện hệ khác vẫn mặc được nhưng mất **bonus set** |
 | **Khe Huyền Thư (Lv80+)** | Có 2 khe build. Khe A hệ chính, khe B (Phong Ấn Xạ Thủ hoặc hệ phụ) |
 | Đổi khe | Chỉ khi không giao tranh, tại Đài Huyền Thư, hồi chiêu 5 phút |
 

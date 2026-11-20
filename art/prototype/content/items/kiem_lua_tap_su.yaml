@@ -1,0 +1,8 @@
+# prototype item (step A1)
+id: kiem_lua_tap_su
+type: WEAPON
+nameKey: item.kiem_lua_tap_su.name
+icon: items/weapon_fire
+slot: weapon
+levelReq: 10
+rarity: common

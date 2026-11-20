@@ -93,6 +93,8 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
 .act[data-k="s1"] { right: 10.6cqw; bottom: 0.4cqw; }
 .act[data-k="s2"] { right: 9.6cqw; bottom: 6.6cqw; }
 .act[data-k="s3"] { right: 4.4cqw; bottom: 10.6cqw; }
+.act[data-k="s4"] { right: 15.6cqw; bottom: 9.4cqw; }
+.act .lk { position: absolute; bottom: 0.35cqw; left: 50%; transform: translateX(-50%); font-size: 0.75cqw; color: var(--gold); }
 .act[data-k="jump"] { right: 16.8cqw; bottom: 0.4cqw; }
 .act[data-tap="hp"] { right: 0; bottom: 11.4cqw; width: 4.4cqw; height: 4.4cqw; }
 .act[data-tap="mp"] { right: 0; bottom: 16.4cqw; width: 4.4cqw; height: 4.4cqw; }
@@ -286,8 +288,7 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
 .bag-detail { border-left: 0.12cqw dashed var(--paper-3); padding-left: 0.9cqw; overflow: auto; }
 .doll { display: grid; grid-template-columns: 4.8cqw 1fr 4.8cqw; grid-template-rows: 4.8cqw 4.8cqw; gap: 0.5cqw; grid-template-areas: "hat hero weapon" "armor hero boots"; padding: 0.5cqw; border-radius: 0.5cqw;
   background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.75), rgba(233, 185, 73, 0.18) 70%); border: 0.12cqw solid var(--paper-3); }
-.doll .hero { grid-area: hero; justify-self: center; align-self: center; --s: calc(10cqw / 96); width: 10cqw; height: 10cqw; image-rendering: pixelated;
-  background: url(assets/sprites/hero_hoa.png) 0 0 / calc(576 * var(--s)) calc(480 * var(--s)) no-repeat; }
+.doll .hero { grid-area: hero; justify-self: center; align-self: center; }
 .cell, .eq { position: relative; box-sizing: border-box; width: 4.15cqw; height: 4.15cqw; padding: 0; border-radius: 0.45cqw; border: 0.16cqw solid var(--edge, #b9a47c); display: grid; place-items: center;
   background: linear-gradient(180deg, #fffaf0, #efdcae); cursor: pointer; font: inherit; color: inherit; --box: 3cqw; box-shadow: inset 0 -0.2cqw 0 rgba(120, 80, 30, 0.18); }
 .cell.empty { cursor: default; background: rgba(239, 220, 174, 0.5); border-style: dashed; border-color: #cdb78a; box-shadow: none; }
@@ -335,6 +336,77 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
 .shop-row .price { color: #9a5a00; font-weight: 800; font-size: 0.95cqw; }
 .shop-row .buy span { display: flex; gap: 0.3cqw; }
 
+/* ---------------- character creation, Lễ Khai Thư, potential points (classes §1-4, combat §3.3, ui-ux §2.1, §6.1) ---------------- */
+#create, #rite { left: 50%; top: 50%; transform: translate(-50%, -47%); width: 82cqw; height: 46cqw; display: flex; flex-direction: column; }
+#create .win-body, #rite .win-body { flex: 1; min-height: 0; display: grid; gap: 1.1cqw; padding: 1cqw 1.1cqw; }
+#create .win-body { grid-template-columns: 21cqw 1fr; }
+.cr-left { display: flex; flex-direction: column; gap: 0.7cqw; align-items: stretch; border-right: 0.12cqw dashed var(--paper-3); padding-right: 1cqw; min-height: 0; }
+.cr-stage { align-self: center; width: 13cqw; height: 13cqw; border-radius: 50%; display: grid; place-items: center; border: 0.15cqw solid var(--paper-3);
+  background: radial-gradient(circle at 50% 62%, #ffffff 0, rgba(233, 185, 73, 0.28) 72%); }
+.sprite { --s: calc(var(--w, 10cqw) / 96); width: var(--w, 10cqw); height: var(--w, 10cqw); image-rendering: pixelated; flex: none;
+  background-image: var(--img); background-repeat: no-repeat; background-size: calc(576 * var(--s)) calc(480 * var(--s)); background-position: 0 calc(var(--row, 0) * -96 * var(--s)); }
+.sprite.anim { animation: idle4 0.72s steps(4) infinite; }
+@keyframes idle4 { to { background-position-x: calc(-384 * var(--s)); } }
+@media (prefers-reduced-motion: reduce) { .sprite.anim { animation: none; } }
+.cr-future { display: flex; justify-content: center; gap: 0.6cqw; align-items: flex-end; font-size: 0.85cqw; color: var(--ink-soft); font-weight: 700; text-align: center; }
+.cr-future div { display: grid; justify-items: center; }
+.field { display: grid; gap: 0.25cqw; font-size: 0.95cqw; font-weight: 700; color: var(--ink-soft); }
+.field input { font: inherit; font-size: 1.25cqw; font-weight: 800; color: var(--ink-brown); padding: 0.45cqw 0.7cqw; border-radius: 0.45cqw; border: 0.15cqw solid var(--paper-3); background: #fffaf0; min-width: 0; }
+.field input:focus-visible { outline: 0.2cqw solid var(--gold-2); }
+.seg { display: flex; gap: 0.35cqw; }
+.seg button { flex: 1; font: inherit; font-size: 1.02cqw; font-weight: 800; padding: 0.35cqw 0; border-radius: 0.45cqw; cursor: pointer; border: 0.13cqw solid var(--paper-3); background: rgba(255, 255, 255, 0.5); color: var(--ink-soft); }
+.seg button[aria-pressed="true"] { background: var(--ink-red); border-color: var(--ink-red); color: var(--gold-1); }
+.cr-right { display: flex; flex-direction: column; gap: 0.7cqw; min-height: 0; }
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8cqw; flex: 1; min-height: 0; }
+.ocard { display: flex; flex-direction: column; gap: 0.45cqw; text-align: left; font: inherit; color: inherit; cursor: pointer; padding: 0.7cqw 0.8cqw; border-radius: 0.6cqw;
+  border: 0.16cqw solid var(--paper-3); background: rgba(255, 255, 255, 0.45); min-height: 0; overflow: auto; }
+.ocard:hover { background: rgba(255, 255, 255, 0.7); }
+.ocard[aria-pressed="true"] { border-color: var(--gold-2); background: linear-gradient(180deg, #fff8e0, #f6e2b0); box-shadow: 0 0 0 0.15cqw var(--gold-1) inset; }
+.ocard .top { display: flex; gap: 0.6cqw; align-items: center; }
+.ocard b { color: var(--ink-red); font-size: 1.3cqw; font-weight: 800; line-height: 1.2; }
+.ocard p { margin: 0; font-size: 0.95cqw; font-weight: 600; color: var(--ink-soft); line-height: 1.4; }
+.ostats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.3cqw; text-align: center; }
+.ostats span { display: grid; padding: 0.25cqw 0; border-radius: 0.35cqw; background: rgba(122, 90, 54, 0.1); font-size: 0.82cqw; font-weight: 700; color: var(--ink-soft); }
+.ostats span b { font-size: 1.1cqw; color: var(--ink-brown); }
+.ostats span small { font-size: 0.75cqw; color: #2e7d32; }
+.opass { font-size: 0.92cqw; line-height: 1.4; padding: 0.4cqw 0.55cqw; border-radius: 0.4cqw; background: rgba(233, 185, 73, 0.18); border-left: 0.25cqw solid var(--gold-3); font-weight: 600; }
+.opass strong { color: var(--ink-brown); }
+.cr-foot { display: flex; align-items: center; gap: 1cqw; justify-content: flex-end; }
+.cr-foot .err { margin-right: auto; color: #b0281a; font-weight: 700; font-size: 1cqw; }
+.cr-foot .cr-note { margin-right: auto; color: var(--ink-soft); font-weight: 600; font-size: 0.95cqw; }
+#rite .win-body { grid-template-rows: auto 1fr; }
+.clist { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.55cqw; }
+.ccard { display: grid; justify-items: center; gap: 0.25cqw; padding: 0.5cqw 0.3cqw; font: inherit; color: inherit; cursor: pointer; border-radius: 0.55cqw; border: 0.15cqw solid var(--paper-3); background: rgba(255, 255, 255, 0.45); }
+.ccard[aria-pressed="true"] { border-color: var(--gold-2); background: linear-gradient(180deg, #fff8e0, #f6e2b0); }
+.ccard:disabled { cursor: default; opacity: 0.5; filter: grayscale(0.6); }
+.ccard .emb { width: 2.8cqw; height: 2.8cqw; border-radius: 50%; border: 0.18cqw solid var(--gold-2); background: radial-gradient(circle at 35% 30%, #fff, var(--c) 55%, #1a1222 120%); }
+.ccard b { font-size: 0.98cqw; font-weight: 800; color: var(--ink-brown); text-align: center; line-height: 1.2; }
+.ccard small { font-size: 0.8cqw; color: var(--ink-soft); font-weight: 700; }
+.cdetail { display: grid; grid-template-columns: 13cqw 1fr; gap: 1.1cqw; min-height: 0; }
+.cdetail .cr-stage { width: 12cqw; height: 12cqw; }
+.cinfo { display: flex; flex-direction: column; gap: 0.5cqw; min-height: 0; overflow: auto; }
+.cinfo h3 { margin: 0; font-size: 1.7cqw; color: var(--ink-red); font-weight: 800; }
+.cinfo .meta { font-size: 1cqw; color: var(--ink-soft); font-weight: 600; } .cinfo .meta b { color: var(--ink-brown); }
+.sklist { display: grid; gap: 0.3cqw; }
+.sk { display: grid; grid-template-columns: 4cqw 1fr auto; gap: 0.6cqw; align-items: center; padding: 0.3cqw 0.5cqw; border-radius: 0.4cqw; background: rgba(255, 255, 255, 0.45); font-size: 0.98cqw; font-weight: 600; }
+.sk .lv { font-weight: 800; color: #fff; background: var(--ink-red); border-radius: 99px; text-align: center; font-size: 0.85cqw; padding: 0.1cqw 0; }
+.sk b { color: var(--ink-brown); } .sk small { color: var(--ink-soft); font-weight: 700; font-size: 0.85cqw; white-space: nowrap; }
+.vtabs { display: flex; gap: 0.3cqw; }
+.vtabs button { flex: 1; font: inherit; font-size: 0.95cqw; font-weight: 800; padding: 0.3cqw 0; border-radius: 0.45cqw; cursor: pointer; border: 0.13cqw solid var(--paper-3); background: rgba(255, 255, 255, 0.5); color: var(--ink-soft); position: relative; }
+.vtabs button[aria-pressed="true"] { background: var(--ink-red); border-color: var(--ink-red); color: var(--gold-1); }
+.vtabs .dot { position: absolute; top: -0.3cqw; right: -0.3cqw; width: 0.9cqw; height: 0.9cqw; border-radius: 50%; background: #ffd23f; border: 0.12cqw solid #4a2000; }
+.ptsfree { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; font-size: 1.02cqw; color: var(--ink-soft); }
+.ptsfree b { font-size: 1.7cqw; color: var(--ink-red); }
+.prow { display: grid; grid-template-columns: 1fr auto auto; gap: 0.4cqw; align-items: center; font-size: 1cqw; font-weight: 700; padding: 0.25cqw 0; border-bottom: 0.1cqw dashed var(--paper-3); }
+.prow small { display: block; color: var(--ink-soft); font-weight: 600; font-size: 0.85cqw; }
+.prow .val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 800; } .prow .val em { font-style: normal; color: #2e7d32; }
+.pbtns { display: flex; gap: 0.2cqw; }
+.pbtns button { font: inherit; font-size: 1cqw; font-weight: 800; width: 2.2cqw; height: 2cqw; padding: 0; border-radius: 0.4cqw; cursor: pointer; border: 0.13cqw solid var(--gold-3); background: linear-gradient(180deg, #fff3d0, #f0d690); color: var(--ink-brown); }
+.pbtns button:disabled { opacity: 0.35; cursor: default; }
+.pfoot { display: flex; gap: 0.4cqw; flex-wrap: wrap; } .pnote { font-size: 0.85cqw; color: var(--ink-soft); font-weight: 600; line-height: 1.35; }
+.doll { grid-template-rows: 4.8cqw 4.8cqw 4.8cqw; grid-template-areas: "hat hero weapon" "armor hero boots" ". tome ."; }
+.eq[data-slot="tome"] { grid-area: tome; justify-self: center; }
+
 /* NPC dialog (ui-ux §5) */
 #dlg { left: 50%; bottom: 3.2cqw; transform: translateX(-50%); width: 66cqw; display: grid; grid-template-columns: 10.5cqw 1fr; gap: 1.1cqw; padding: 1.2cqw; }
 #dlg .face { --box: 10.5cqw; --s: calc(var(--box) / 56); width: var(--box); height: var(--box); border-radius: 0.6cqw; image-rendering: pixelated; align-self: start;
@@ -370,7 +442,7 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
 <div class="wrap">
   <header>
     <h1>Huyền Thư Ký <small>Chương 1 · bản chơi thử</small></h1>
-    <div class="keys"><b>A D</b> / <b>← →</b> đi · <b>W</b> / <b>Space</b> nhảy · <b>S</b> xuống, leo · <b>J</b> đánh · <b>1 2 3</b> chiêu · <b>Tab</b> đổi mục tiêu · <b>G</b> tự đánh · <b>H</b> treo máy · <b>Q E</b> bình · <b>F</b> nói chuyện, hái · <b>B</b> Hành trang · <b>L</b> Nhiệm vụ · <b>↑</b> qua cổng · <b>N</b> Lịch Boss</div>
+    <div class="keys"><b>A D</b> / <b>← →</b> đi · <b>W</b> / <b>Space</b> nhảy · <b>S</b> xuống, leo · <b>J</b> đánh · <b>1 2 3 4</b> chiêu · <b>Tab</b> đổi mục tiêu · <b>G</b> tự đánh · <b>H</b> treo máy · <b>Q E</b> bình · <b>F</b> nói chuyện, hái · <b>B</b> Hành trang · <b>L</b> Nhiệm vụ · <b>↑</b> qua cổng · <b>N</b> Lịch Boss</div>
   </header>
 
   <div id="stage">
@@ -410,8 +482,9 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
       <button class="pill-btn" id="b-target" data-tap="target" type="button">Đổi mục tiêu <kbd>Tab</kbd></button>
       <button class="act" data-tap="mp" type="button"><kbd>E</kbd><span>Mana</span><small id="nmp">0</small><i class="cd"></i></button>
       <button class="act" data-tap="hp" type="button"><kbd>Q</kbd><span>Máu</span><small id="nhp">0</small><i class="cd"></i></button>
-      <button class="act" data-k="s3" data-skill="slash" type="button"><kbd>3</kbd><span>Trảm Liệt Diễm</span><i class="cd"></i></button>
-      <button class="act" data-k="s2" data-skill="fireball" type="button"><kbd>2</kbd><span>Hỏa Cầu</span><i class="cd"></i></button>
+      <button class="act" data-k="s4" data-skill="c2" type="button"><kbd>4</kbd><span>—</span><i class="cd"></i></button>
+      <button class="act" data-k="s3" data-skill="c1" type="button"><kbd>3</kbd><span>—</span><i class="cd"></i></button>
+      <button class="act" data-k="s2" data-skill="c0" type="button"><kbd>2</kbd><span>—</span><i class="cd"></i></button>
       <button class="act" data-k="s1" data-skill="burst" type="button"><kbd>1</kbd><span>Tụ Mana Chấn</span><i class="cd"></i></button>
       <button class="act" data-k="jump" type="button"><kbd>Space</kbd><span>Nhảy</span></button>
       <button class="act big" data-k="attack" data-skill="basic" type="button"><kbd>J</kbd><span>Đánh</span><i class="cd"></i></button>
@@ -451,6 +524,17 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
         <section class="bag-detail" id="bag-detail"></section>
       </div>
     </div>
+    <div id="create" class="win" role="dialog" aria-label="Tạo nhân vật" hidden>
+      <i class="stud tl"></i><i class="stud tr"></i><i class="stud bl"></i><i class="stud br"></i>
+      <div class="win-head"><span class="ribbon">Tạo nhân vật</span></div>
+      <div class="win-body paper" id="create-body"></div>
+    </div>
+    <div id="rite" class="win" role="dialog" aria-label="Lễ Khai Thư" hidden>
+      <i class="stud tl"></i><i class="stud tr"></i><i class="stud bl"></i><i class="stud br"></i>
+      <div class="win-head"><span class="ribbon" id="rite-title">Lễ Khai Thư</span></div>
+      <button class="win-x" id="rite-x" type="button" aria-label="Đóng">✕</button>
+      <div class="win-body paper" id="rite-body"></div>
+    </div>
     <div id="dlg" class="win" role="dialog" hidden>
       <i class="stud tl"></i><i class="stud tr"></i><i class="stud bl"></i><i class="stud br"></i>
       <div class="face" id="dlg-face"></div>
@@ -473,7 +557,7 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
       </label>
       <div class="row">
         <button id="dev-boss" type="button">Boss của map này xuất hiện ngay</button>
-        <button id="dev-fire" type="button">Thử hệ Hỏa (lên Lv10)</button>
+        <button id="dev-fire" type="button">Lên Lv10 (thử Lễ Khai Thư)</button>
         <button id="dev-lv" type="button">+1 cấp</button>
         <button id="dev-quest" type="button">Xong mục tiêu nhiệm vụ hiện tại</button>
         <button id="dev-reset" type="button">Xóa dữ liệu lưu, chơi lại từ đầu</button>
@@ -498,6 +582,7 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
 <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.80.1/phaser.min.js"></script>
 <script>
 "use strict";
+let DATA = null;   // assets/data.json, loaded by the Boot scene
 /* =====================================================================
    Formulas: docs/game-design/04-combat-and-progression.md §2-6
    (prototype copy; the real game computes these on the server)
@@ -528,13 +613,16 @@ const F = {
     if (d <= 5) return 1;
     return Math.max(0.1, 1 - 0.15 * (d - 5));
   },
-  // Player: origin Dan Lang (classes §2) with auto-assigned potential points (+5/level)
-  player(L, fire) {
-    const pts = { hp: 4 + 2 * (L - 1), atk: 4 + 2 * (L - 1), def: 2 + (L - 1) };
-    let hp = 220 + 14 * (L - 1) + pts.hp * 30, mp = 70 + 4 * (L - 1);
-    let atk = 22 + 1.8 * (L - 1) + pts.atk * 3, def = 9 + 0.9 * (L - 1) + pts.def * 2;
-    if (fire) { atk *= 1.15; def *= 0.95; }          // Hoa Kiem Si: ATK +15%, DEF -5%
-    return { hp: Math.round(hp), mp: Math.round(mp), atk: Math.round(atk), def: Math.round(def), crit: 0.05, critDmg: 1.5, lv: L };
+  // Player (combat §3.3-3.4): origin base + growth x (L-1) + potential points, then class multiplier
+  PTS: { hp: 30, mp: 20, atk: 3, def: 2, crit: 0.0005 },
+  player(L, origin, pts, cls) {
+    const o = (DATA && DATA.origins[origin]) || { base: [220, 70, 22, 9], growth: [14, 4, 1.8, 0.9] };
+    const P = F.PTS, n = (k) => (pts && pts[k]) || 0;
+    let hp = o.base[0] + o.growth[0] * (L - 1) + n("hp") * P.hp, mp = o.base[1] + o.growth[1] * (L - 1) + n("mp") * P.mp;
+    let atk = o.base[2] + o.growth[2] * (L - 1) + n("atk") * P.atk, def = o.base[3] + o.growth[3] * (L - 1) + n("def") * P.def;
+    if (cls === "FIRE") { atk *= 1.15; def *= 0.95; }   // classes §3
+    if (cls === "WATER") mp *= 1.2;
+    return { hp: Math.round(hp), mp: Math.round(mp), atk: Math.round(atk), def: Math.round(def), crit: 0.05 + n("crit") * P.crit, critDmg: 1.5, lv: L };
   },
 };
 /* =====================================================================
@@ -547,7 +635,7 @@ const RAR = {   // items §2; colour art §2.1; ink = text colour on paper; val 
   epic:   { name: "Sử Thi", col: "#9c27b0", ink: "#7b1fa2", mult: 1.9, aff: 3, val: 15 },
 };
 const RARITY = Object.fromEntries(Object.entries(RAR).map(([k, r]) => [k, [r.name, r.col]]));
-const SLOTS = [["weapon", "Vũ khí"], ["hat", "Mũ"], ["armor", "Áo"], ["boots", "Giày"]];   // step A1: 4 of the 10 slots (items §3)
+const SLOTS = [["weapon", "Vũ khí"], ["hat", "Mũ"], ["armor", "Áo"], ["boots", "Giày"], ["tome", "Huyền Thư"]];   // 5 of the 10 slots (items §3)
 const AFFIX = {   // items §2.2 (first six lines)
   hp: { roll: (L) => 8 * L, fmt: (v) => `+${v} HP` },
   mp: { roll: (L) => 5 * L, fmt: (v) => `+${v} MP` },
@@ -567,7 +655,7 @@ const itemName = (it) => itemDef(it).name + ((it.enh || 0) > 0 ? ` +${it.enh}` :
 function gearMain(it) {   // items §4: base by slot × rarity × (1 + 0.06 × enhance)
   const L = it.lv, k = RAR[it.rarity].mult * (1 + 0.06 * (it.enh || 0)), r = (v) => Math.round(v * k);
   return { weapon: { atk: r(4 * L + 10) }, hat: { def: r(L + 2), mp: r(6 * L) }, armor: { def: r(1.6 * L + 4), hp: r(18 * L + 40) },
-    boots: { def: r(0.8 * L + 2), spd: 0.02 } }[itemDef(it).slot];
+    boots: { def: r(0.8 * L + 2), spd: 0.02 }, tome: { atk: r(1.5 * L + 5), mp: r(8 * L + 20) } }[itemDef(it).slot];
 }
 function makeGear(id, lv, rarity) {
   const keys = Object.keys(AFFIX).sort(() => Math.random() - 0.5).slice(0, RAR[rarity].aff);
@@ -606,6 +694,8 @@ const potionCount = (type) => potionIds(type).reduce((a, id) => a + countItem(id
 function equipItem(it) {
   const slot = itemDef(it).slot;
   if (S.lv < it.lv) { toast(`Cần Lv ${it.lv} để mặc ${itemDef(it).name}.`, true); return false; }
+  const need = itemDef(it).cls;
+  if (need && need !== S.cls) { toast(`Chỉ ${DATA.classes[need].name} dùng được ${itemDef(it).name}.`, true); return false; }
   const old = S.equip[slot];
   S.inv[S.inv.indexOf(it)] = old || null;   // swap in place, keep the bag order
   S.inv = S.inv.filter(Boolean);
@@ -613,7 +703,7 @@ function equipItem(it) {
   gearChanged(); return true;
 }
 function unequipItem(slot) {
-  const it = S.equip[slot]; if (!it) return;
+  const it = S.equip[slot]; if (!it || itemDef(it).bound) return;
   if (S.inv.length >= BAG_SIZE) { toast("Túi đầy, không tháo được.", true); return; }
   S.equip[slot] = null; S.inv.push(it); gearChanged();
 }
@@ -626,7 +716,7 @@ function invChanged() { S.dirty = true; if (!$("bag").hidden) renderBag(); }
 
 // combat §3.4: base (origin + potential points) + gear, then % bonuses added together; Lực Chiến combat §3.5
 function calcStats(equip = S.equip) {
-  const b = F.player(S.lv, S.fire);
+  const b = F.player(S.lv, S.origin, S.pts, S.cls);
   let { hp, mp, atk, def, crit, critDmg } = b, spd = 1, hpP = 0, atkP = 0, defP = 0;
   const sets = {};
   for (const [slot] of SLOTS) {
@@ -641,15 +731,16 @@ function calcStats(equip = S.equip) {
   }
   if ((sets.S1 || 0) >= 2) hpP += 0.05;                          // items §5.1
   if ((sets.S1 || 0) >= 4) { atkP += 0.08; defP += 0.08; }
+  if (S.rallyOn) { atkP += 0.15; defP += 0.15; }                // Dân Làng: Không Lùi Bước (classes §2)
   const st = { hp: Math.round(hp * (1 + hpP)), mp: Math.round(mp), atk: Math.round(atk * (1 + atkP)), def: Math.round(def * (1 + defP)),
     crit: Math.min(0.5, crit), critDmg, spd, lv: S.lv, sets };
-  const skills = (S.lv >= 5 ? 1 : 0) + (S.fire ? 2 : 0);
+  const skills = (S.lv >= 5 ? 1 : 0) + (S.cls && DATA ? DATA.classes[S.cls].skills.filter((k) => S.lv >= k.lv).length : 0);
   st.power = Math.round(st.hp * 0.1 + st.mp * 0.05 + st.atk * 4 + st.def * 3 + st.crit * 100 * 10 + (st.critDmg * 100 - 150) * 0.5 + skills * 20);
   return st;
 }
 let statCache = null, statKey = "";
 function stats() {
-  const k = `${S.lv}|${S.fire}|${S.gearVer}`;
+  const k = `${S.lv}|${S.origin}|${S.cls}|${S.gearVer}`;
   if (k !== statKey) { statKey = k; statCache = calcStats(); }
   return statCache;
 }
@@ -677,11 +768,13 @@ function rollLoot(L, tier) {
    Persistent state across maps
    ===================================================================== */
 const S = {
-  lv: 1, exp: 0, fire: false, hp: 0, mp: 0, quan: 0,
-  inv: [{ id: "potion_hp", n: 3 }, { id: "potion_mp", n: 3 }], equip: { weapon: null, hat: null, armor: null, boots: null },
+  lv: 1, exp: 0, hp: 0, mp: 0, quan: 0,
+  name: "", gender: "MALE", origin: null, cls: null, clsAt: 0, pts: {},   // character (classes §1-3, combat §3.3)
+  tideN: 0, tideReady: false, rallyUntil: 0, rallyCd: 0, rallyOn: false,
+  inv: [{ id: "potion_hp", n: 3 }, { id: "potion_mp", n: 3 }], equip: { weapon: null, hat: null, armor: null, boots: null, tome: null },
   gearVer: 0, potCd: { hp: 0, mp: 0 }, sold: [], dirty: false,
   t: 0, speed: 60, weekday0: new Date().getDay(), map: "M001", spawnAt: null,
-  bosses: {}, cds: { basic: 0, burst: 0, fireball: 0, slash: 0 }, combatAt: -1e9,
+  bosses: {}, cds: { basic: 0, burst: 0 }, combatAt: -1e9,
   dev: { weak: true, rare: false }, auto: false, hunt: false, huntUnlocked: false,
   q: { i: 0, st: "idle", prog: [] }, goto: null,   // current main quest (quests §2) and auto-path target (ui-ux §6.4)
 };
@@ -707,7 +800,6 @@ function toast(text, info = false) {
    Boss schedule (maps §5.1-5.2): game clock, warnings, random zone,
    30 min despawn, weekly event
    ===================================================================== */
-let DATA = null;
 function occurrences(bossId, day) {
   const ev = Object.values(DATA.events).find((e) => e.boss === bossId);
   const list = ev.times.map(toMin);
@@ -800,8 +892,9 @@ const PLACE = { DG01: "Hầm ngục DG01", I001: "Lễ đường Khai Thư" };
 const mapName = (m) => DATA.names[m] || PLACE[m] || m;
 const iconVars = (name) => { const i = Math.max(0, DATA.items.indexOf(name)); return `--c:${i % 8};--r:${Math.floor(i / 8)}`; };
 const faceVars = (id) => `--r:${Math.max(0, DATA.npcOrder.indexOf(id))}`;
-const uiModal = () => !$("quest").hidden || !$("dlg").hidden || !$("bag").hidden;
+const uiModal = () => !$("quest").hidden || !$("dlg").hidden || !$("bag").hidden || !$("create").hidden || !$("rite").hidden;
 function npcMark(id) {
+  if (id === "NPC001" && S.lv >= 10 && !S.cls) return ["!", "#ffd23f"];
   const q = Q.cur(), st = Q.state();
   if (!q || st === "end" || st === "proto") return null;
   if (st === "avail" && q.giver === id) return ["!", "#ffd23f"];
@@ -924,7 +1017,8 @@ function renderTracker() {
   const q = Q.cur(), st = Q.state(), el = $("qtrack");
   el.className = st === "ready" ? "ready" : st === "avail" ? "avail" : "";
   let body;
-  if (st === "end" || !q) body = `<span class="qn">Chương 1</span><span class="qo dim">Đã hết nhiệm vụ của bản thử</span>`;
+  if (S.lv >= 10 && !S.cls) { el.className = "avail"; body = `<span class="qn">Lễ Khai Thư</span><span class="qo go">Gặp Thầy Bạch Vân để chọn hệ phép</span>`; }
+  else if (st === "end" || !q) body = `<span class="qn">Chương 1</span><span class="qo dim">Đã hết nhiệm vụ của bản thử</span>`;
   else if (st === "proto") body = `<span class="qn">${esc(q.title)}</span><span class="qo dim">Cần ${esc(mapName(q.objectives[0].map))}, chưa có trong bản thử</span>`;
   else if (st === "lvl") body = `<span class="qn">${esc(q.title)}</span><span class="qo dim">Đạt Lv ${q.lv} để nhận</span>`;
   else if (st === "avail") body = `<span class="qn">${esc(q.title)}</span><span class="qo go">Gặp ${esc(DATA.names[q.giver])} để nhận</span>`;
@@ -1069,6 +1163,8 @@ function openDlg(id, scene) {
     text = esc(q.progress);
     menu.push({ label: `Xem nhiệm vụ: ${q.title}`, mk: "?", cls: "dim", fn: () => { closeDlg(); openQuest("main"); } });
   }
+  if (id === "NPC001" && S.lv >= 10 && !S.cls) { text = "Con đủ mười tuổi phép rồi. Huyền Thư đang chờ con, chọn con đường của mình đi."; menu.unshift({ label: "Lễ Khai Thư: chọn hệ phép", mk: "!", fn: openRite }); }
+  else if (id === "NPC001" && canRechoose()) menu.push({ label: "Đổi hệ phép (miễn phí trong 24 giờ)", fn: openRite });
   if (DATA.shops[id]) menu.push({ label: "Mua bán: bình thuốc, bán đồ", fn: () => openShop(id) });
   if (id === "NPC040") menu.push({ label: "Xem Lịch Boss (bảng tin làng)", fn: () => { closeDlg(); toggleSchedule(true); } });
   menu.push({ label: "Đóng", fn: closeDlg });
@@ -1106,7 +1202,9 @@ window.addEventListener("keydown", (e) => {
     if (i >= 0 && DLG.menu[i]) { e.preventDefault(); e.stopImmediatePropagation(); DLG.menu[i].fn(); }
     return;
   }
-  if (k === "Escape" && !$("bag").hidden) { e.preventDefault(); toggleBag(false); }
+  if (!$("create").hidden) return;
+  if (k === "Escape" && !$("rite").hidden) { e.preventDefault(); $("rite").hidden = true; }
+  else if (k === "Escape" && !$("bag").hidden) { e.preventDefault(); toggleBag(false); }
   else if (k === "Escape" && !$("quest").hidden) { e.preventDefault(); toggleQuest(false); }
   else if (k === "Escape" && !$("schedule").hidden) toggleSchedule();
 }, true);
@@ -1119,7 +1217,8 @@ const SAVE_KEY = "htk.proto.save.v1";
 function saveGame() {
   if (!DATA || S.noSave) return;
   const pl = window.__htk?.scene?.player;
-  const d = { v: 1, at: Date.now(), lv: S.lv, exp: S.exp, quan: S.quan, fire: S.fire, hp: Math.round(S.hp), mp: Math.round(S.mp),
+  const d = { v: 2, at: Date.now(), lv: S.lv, exp: S.exp, quan: S.quan, hp: Math.round(S.hp), mp: Math.round(S.mp),
+    name: S.name, gender: S.gender, origin: S.origin, cls: S.cls, clsAt: S.clsAt, pts: S.pts,
     inv: S.inv, equip: S.equip, q: S.q, sold: S.sold, welcomed: !!S.welcomed, huntUnlocked: S.huntUnlocked,
     map: S.map, x: pl?.active ? Math.round(pl.x) : null, y: pl?.body ? Math.round(pl.body.bottom) : null };
   try { localStorage.setItem(SAVE_KEY, JSON.stringify(d)); S.dirty = false; } catch (_) { /* storage blocked: keep playing without saving */ }
@@ -1127,12 +1226,18 @@ function saveGame() {
 function loadGame() {
   let d = null;
   try { d = JSON.parse(localStorage.getItem(SAVE_KEY) || "null"); } catch (_) { d = null; }
-  if (!d || d.v !== 1) return null;
+  if (!d || (d.v !== 1 && d.v !== 2)) return null;
   const known = (it) => it && DATA.itemDefs[it.id];
-  Object.assign(S, { lv: d.lv | 0 || 1, exp: d.exp || 0, quan: d.quan || 0, fire: !!d.fire, welcomed: d.welcomed, huntUnlocked: !!d.huntUnlocked,
+  // v1 (step A1) had no character: keep level and items, ask for name and origin, refund potential points
+  const cls = d.cls || (d.fire ? "FIRE" : null);
+  Object.assign(S, { lv: d.lv | 0 || 1, exp: d.exp || 0, quan: d.quan || 0, welcomed: d.welcomed, huntUnlocked: !!d.huntUnlocked,
+    name: d.name || "", gender: d.gender === "FEMALE" ? "FEMALE" : "MALE", origin: DATA.origins[d.origin] ? d.origin : null,
+    cls: DATA.classes[cls] ? cls : null, clsAt: d.clsAt || (cls ? Date.now() : 0), pts: d.pts || {},
     inv: (d.inv || []).filter(known).slice(0, BAG_SIZE), sold: (d.sold || []).filter((x) => x && known(x.it)), q: d.q || S.q });
   for (const [slot] of SLOTS) S.equip[slot] = known(d.equip?.[slot]) ? d.equip[slot] : null;
+  if (S.cls && !S.equip.tome) S.equip.tome = makeGear("huyen_thu_so_ban", 10, "common");
   uidN = 1 + Math.max(0, ...[...S.inv, ...Object.values(S.equip), ...S.sold.map((x) => x.it)].map((x) => x?.uid || 0));
+  for (const it of [...S.inv, ...Object.values(S.equip)]) if (it?.uid && it.uid >= uidN) uidN = it.uid + 1;
   S.gearVer++;
   const st = stats(); S.hp = Math.min(st.hp, d.hp || st.hp); S.mp = Math.min(st.mp, d.mp || st.mp);
   S.loaded = true;
@@ -1144,13 +1249,13 @@ document.addEventListener("visibilitychange", () => { if (document.visibilitySta
 /* =====================================================================
    Hành trang (ui-ux §6.1-6.2) and Lam Nhi's shop (economy §3)
    ===================================================================== */
-const BAG = { mode: "char", shop: null, tab: "all", sel: null, confirm: null };
+const BAG = { mode: "char", shop: null, tab: "all", sel: null, confirm: null, view: "gear", pend: {} };
 const BAG_TABS = [["all", "Tất cả"], ["gear", "Trang bị"], ["use", "Tiêu hao"], ["mat", "Nguyên liệu"], ["quest", "Nhiệm vụ"]];
-function toggleBag(force, mode = "char", shop = null) {
+function toggleBag(force, mode = "char", shop = null, view = "gear") {
   const el = $("bag");
   el.hidden = force === undefined ? !el.hidden : !force;
   if (!el.hidden) {
-    BAG.mode = mode; BAG.shop = shop; BAG.sel = null; BAG.confirm = null;
+    BAG.mode = mode; BAG.shop = shop; BAG.sel = null; BAG.confirm = null; BAG.view = view; BAG.pend = {};
     closeDlg(); $("quest").hidden = true; $("qbanner").hidden = true;
     renderBag();
   } else saveGame();
@@ -1184,7 +1289,9 @@ function renderBag() {
   if (!DATA) return;
   const shop = BAG.mode === "shop" ? DATA.shops[BAG.shop] : null;
   $("bag-title").textContent = shop ? shop.name : "Hành trang";
-  $("bag-left").innerHTML = shop ? shopPanel(shop) : charPanel();
+  const free = ptsFree();
+  $("bag-left").innerHTML = shop ? shopPanel(shop) : `<div class="vtabs"><button type="button" data-view="gear" aria-pressed="${BAG.view === "gear"}">Trang bị</button><button type="button" data-view="pts" aria-pressed="${BAG.view === "pts"}">Tiềm năng${free ? ` (${free})` : ""}${free ? '<i class="dot"></i>' : ""}</button></div>`
+    + (BAG.view === "pts" ? ptsPanel() : charPanel());
   $("bag-tabs").innerHTML = BAG_TABS.map(([k, n]) => `<button type="button" data-tab="${k}" aria-pressed="${BAG.tab === k}">${n}</button>`).join("");
   const list = bagList();
   const cells = list.map((it) => cellHtml(it));
@@ -1206,7 +1313,7 @@ function charPanel() {
   const row = (label, v, b, fmt = (x) => x.toLocaleString("vi-VN")) => `<dt>${label}</dt><dd>${fmt(v)}${v > b ? `<small>+${fmt(v - b)}</small>` : ""}</dd>`;
   const pct = (x) => `${Math.round(x * 100)}%`;
   const n1 = st.sets.S1 || 0, set = DATA.sets.S1;
-  return `<div class="doll">${slots}<div class="hero" role="img" aria-label="Nhân vật"></div></div>
+  return `<div class="doll">${slots}<i class="hero sprite anim" role="img" aria-label="Nhân vật" style="${spriteVars(S.origin || "VILLAGER", S.gender, LOOK(S.cls), "10cqw")}"></i></div>
     <div class="power"><span>Lực Chiến</span><b>${st.power.toLocaleString("vi-VN")}</b></div>
     <dl class="statlist">${row("HP", st.hp, base.hp)}${row("MP", st.mp, base.mp)}${row("Sức đánh", st.atk, base.atk)}${row("Phòng thủ", st.def, base.def)}
       ${row("Chí mạng", st.crit, base.crit, pct)}${row("ST chí mạng", st.critDmg, base.critDmg, pct)}${row("Tốc chạy", st.spd, 1, pct)}</dl>
@@ -1250,7 +1357,10 @@ function detailPanel() {
   }
   const price = sellPrice(it), n = it.n || 1;
   extra += `<div class="idt-box">Giá bán cho NPC: <b>${price.toLocaleString("vi-VN")} Quan</b>${n > 1 ? ` mỗi cái` : ""}</div>`;
-  if (shop && !eq) {
+  if (d.bound) extra += `<div class="idt-box">Huyền Thư đi theo bạn suốt hành trình: không tháo, không bán.</div>`;
+  else if (d.cls) extra += `<div class="idt-box">Chỉ ${esc(DATA.classes[d.cls].name)} dùng được.</div>`;
+  if (d.bound) acts = "";
+  else if (shop && !eq) {
     const big = gear && (it.rarity === "rare" || it.rarity === "epic");
     acts += `<button type="button" class="wbtn" data-act="sell1">${big && BAG.confirm !== keyOf(it) ? "Bán (Hiếm trở lên: bấm 2 lần)" : `Bán +${price.toLocaleString("vi-VN")} Quan`}</button>`;
     if (n > 1) acts += `<button type="button" class="wbtn ghost" data-act="sellall">Bán hết +${(price * n).toLocaleString("vi-VN")}</button>`;
@@ -1292,6 +1402,22 @@ function bagPrimary(it) {   // double click: equip / use / sell
 $("bag").addEventListener("click", (e) => {
   const t = e.target.closest("button"); if (!t) return;
   if (t.id === "bag-x") { toggleBag(false); return; }
+  if (t.dataset.view) { BAG.view = t.dataset.view; BAG.pend = {}; renderBag(); return; }
+  if (t.dataset.pt) {
+    const k = t.dataset.pt, d = Number(t.dataset.d), free = ptsFree() - ptsUsed(BAG.pend);
+    BAG.pend[k] = Math.max(0, (BAG.pend[k] || 0) + (d > 0 ? Math.min(d, free) : d)); renderBag(); return;
+  }
+  if (t.dataset.act === "ptsok") {
+    for (const [k, v] of Object.entries(BAG.pend)) if (v) S.pts[k] = (S.pts[k] || 0) + v;
+    BAG.pend = {}; gearChanged(); log("Đã cộng điểm tiềm năng", "sys"); saveGame(); renderBag(); renderTracker(); return;
+  }
+  if (t.dataset.act === "ptscancel") { BAG.pend = {}; renderBag(); return; }
+  if (t.dataset.act === "ptsauto") {
+    let free = ptsFree() - ptsUsed(BAG.pend);
+    const cycle = ["hp", "atk", "hp", "atk", "def"];
+    for (let i = 0; free > 0; i++, free--) BAG.pend[cycle[i % 5]] = (BAG.pend[cycle[i % 5]] || 0) + 1;
+    renderBag(); return;
+  }
   if (t.dataset.tab) { BAG.tab = t.dataset.tab; BAG.sel = null; }
   else if (t.dataset.key || t.dataset.slot) {
     const k = t.dataset.key || "eq:" + t.dataset.slot, again = BAG.lastKey === k && performance.now() - BAG.lastAt < 450;
@@ -1321,6 +1447,139 @@ $("bag").addEventListener("click", (e) => {
   renderBag();
 });
 $("btn-bag").addEventListener("click", () => toggleBag());
+
+
+/* =====================================================================
+   Character: creation (classes §2), Lễ Khai Thư (classes §3-6), potential points (combat §3.3)
+   ===================================================================== */
+const LOOK = (cls) => (cls === "FIRE" ? "fire" : cls === "WATER" ? "water" : "novice");
+const sheetOf = (origin, gender, look) => `${origin}_${gender}_${look}`.toLowerCase();
+const heroTex = () => "p_" + sheetOf(S.origin || "VILLAGER", S.gender, LOOK(S.cls));
+const spriteVars = (origin, gender, look, w, row = 0) => `--img:url(assets/sprites/player/${sheetOf(origin, gender, look)}.png);--w:${w};--row:${row}`;
+const CLASS_COL = { FIRE: "#e4572e", WATER: "#3a86ff", WIND: "#2ec4b6", BOLT: "#ffd23f", EARTH: "#8d6e63", PLANT: "#5cb85c", DARK: "#5b3e96" };
+const PT_ROWS = [["hp", "HP", "+30 HP"], ["mp", "MP", "+20 MP"], ["atk", "Sức đánh", "+3 ATK"], ["def", "Phòng thủ", "+2 DEF"], ["crit", "Chí mạng", "+0,05%"]];
+const ptsTotal = () => 10 + 5 * (S.lv - 1);
+const ptsUsed = (p = S.pts) => Object.values(p).reduce((a, v) => a + v, 0);
+const ptsFree = () => ptsTotal() - ptsUsed();
+const NAME_RE = /^[\p{L}\p{N}]+( [\p{L}\p{N}]+)*$/u;
+
+const CR = { origin: "VILLAGER", gender: "MALE", name: "", err: "" };
+function openCreate() {
+  CR.name = S.name || ""; CR.origin = S.origin || "VILLAGER"; CR.gender = S.gender || "MALE"; CR.err = "";
+  $("create").hidden = false; renderCreate();
+  setTimeout(() => $("cr-name")?.focus(), 50);
+}
+function renderCreate() {
+  const o = DATA.origins, migr = S.lv > 1 || S.inv.length > 2;
+  const cards = Object.entries(o).map(([k, v]) => `<button type="button" class="ocard" data-origin="${k}" aria-pressed="${CR.origin === k}">
+      <span class="top"><i class="sprite" style="${spriteVars(k, CR.gender, "novice", "4.6cqw")}"></i><b>${esc(v.name)}</b></span>
+      <p>${esc(v.blurb)}</p>
+      <span class="ostats">${["HP", "MP", "ATK", "DEF"].map((n, i) => `<span>${n}<b>${v.base[i]}</b><small>+${String(v.growth[i]).replace(".", ",")}/cấp</small></span>`).join("")}</span>
+      <span class="opass"><strong>${esc(v.passive)}</strong>: ${esc(v.passiveText)}</span></button>`).join("");
+  $("create-body").innerHTML = `<section class="cr-left">
+      <div class="cr-stage"><i class="sprite anim" style="${spriteVars(CR.origin, CR.gender, "novice", "11cqw")}"></i></div>
+      <label class="field">Tên nhân vật<input id="cr-name" maxlength="12" autocomplete="off" spellcheck="false" value="${esc(CR.name)}" placeholder="3 đến 12 ký tự"></label>
+      <div class="field">Giới tính<div class="seg"><button type="button" data-gender="MALE" aria-pressed="${CR.gender === "MALE"}">Nam</button><button type="button" data-gender="FEMALE" aria-pressed="${CR.gender === "FEMALE"}">Nữ</button></div></div>
+      <div class="field">Sau Lễ Khai Thư (Lv10)<div class="cr-future">
+        <div><i class="sprite" style="${spriteVars(CR.origin, CR.gender, "fire", "5cqw")}"></i>Hỏa</div><div><i class="sprite" style="${spriteVars(CR.origin, CR.gender, "water", "5cqw")}"></i>Thủy</div></div></div>
+    </section>
+    <section class="cr-right"><div class="qsec">Chọn xuất thân (không đổi được)</div><div class="cards">${cards}</div>
+      <div class="cr-foot">${CR.err ? `<span class="err">${esc(CR.err)}</span>` : migr ? `<span class="cr-note">Dữ liệu cũ: giữ cấp, đồ và nhiệm vụ; điểm tiềm năng được trả lại để cộng lại.</span>` : `<span class="cr-note">Bắt đầu ở Nhà Học Suối Mơ với 10 điểm tiềm năng.</span>`}
+      <button type="button" class="wbtn green" data-act="create">Vào game</button></div></section>`;
+}
+$("create").addEventListener("input", (e) => {
+  if (e.target.id !== "cr-name") return;
+  CR.name = e.target.value;
+  if (CR.err) { CR.err = ""; $("create").querySelector(".err")?.remove(); }
+});
+$("create").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); finishCreate(); } e.stopPropagation(); });
+$("create").addEventListener("click", (e) => {
+  const t = e.target.closest("button"); if (!t) return;
+  if (t.dataset.origin) CR.origin = t.dataset.origin;
+  else if (t.dataset.gender) CR.gender = t.dataset.gender;
+  else if (t.dataset.act === "create") return finishCreate();
+  renderCreate();
+});
+function finishCreate() {
+  const name = CR.name.trim().replace(/\s+/g, " ");
+  if (name.length < 3 || name.length > 12 || !NAME_RE.test(name)) { CR.err = "Tên 3–12 ký tự, chỉ chữ, số và một dấu cách giữa các từ."; renderCreate(); return; }
+  const fresh = !S.origin;
+  Object.assign(S, { name, origin: CR.origin, gender: CR.gender });
+  if (fresh) S.pts = {};
+  S.gearVer++;
+  const st = stats(); S.hp = st.hp; S.mp = st.mp;
+  $("create").hidden = true;
+  const sc = window.__htk?.scene; sc?.setLook();
+  log(`Chào ${name} (${DATA.origins[S.origin].name}). Có ${ptsFree()} điểm tiềm năng: nhấn C để cộng.`, "lvl");
+  questChanged(); saveGame();
+}
+
+const RITE = { sel: "FIRE" };
+const canRechoose = () => S.cls && Date.now() - S.clsAt < 24 * 3600 * 1000;   // classes §5: free change for 24 h
+function openRite() { RITE.sel = S.cls && S.cls !== "FIRE" ? "FIRE" : S.cls ? "WATER" : "FIRE"; closeDlg(); $("rite").hidden = false; renderRite(); }
+function renderRite() {
+  const all = [...Object.entries(DATA.classes).map(([k, v]) => [k, v, true]), ...Object.entries(DATA.lockedClasses).map(([k, n]) => [k, { name: n }, false])];
+  const list = all.map(([k, v, on]) => `<button type="button" class="ccard" data-cls="${k}" aria-pressed="${RITE.sel === k}"${on ? "" : " disabled"}>
+      <i class="emb" style="--c:${CLASS_COL[k]}"></i><b>${esc(v.name)}</b><small>${on ? (S.cls === k ? "Hệ hiện tại" : esc(v.role)) : "Sắp có"}</small></button>`).join("");
+  const c = DATA.classes[RITE.sel];
+  const skills = c.skills.map((k) => `<div class="sk"><span class="lv">Lv${k.lv}</span><span><b>${esc(k.name)}</b> · ${esc(k.text)}</span><small>${k.mp} MP · ${k.cd}s · ${k.range}</small></div>`).join("");
+  const change = !!S.cls, same = S.cls === RITE.sel;
+  const left = change ? Math.max(0, Math.ceil((S.clsAt + 24 * 3600 * 1000 - Date.now()) / 3600000)) : 0;
+  $("rite-title").textContent = change ? "Đổi hệ phép" : "Lễ Khai Thư";
+  $("rite-body").innerHTML = `<div class="clist">${list}</div>
+    <div class="cdetail"><div class="cr-stage"><i class="sprite anim" style="${spriteVars(S.origin, S.gender, LOOK(RITE.sel), "10cqw")}"></i></div>
+      <div class="cinfo"><h3>${esc(c.name)}</h3>
+        <div class="meta">${esc(c.role)} · vũ khí <b>${esc(c.weapon)}</b> · <b>${esc(c.mods)}</b></div>
+        <div class="opass"><strong>${esc(c.passive)}</strong>: ${esc(c.passiveText)}</div>
+        <div class="sklist">${skills}</div>
+        <div class="cr-foot"><span class="cr-note">${change ? `Đổi miễn phí, còn ${left} giờ. Sau đó tốn 100 Nén Bạc.` : "Nhận Huyền Thư Sơ Bản và vũ khí của hệ. Được đổi hệ miễn phí trong 24 giờ đầu."}</span>
+          <button type="button" class="wbtn green" data-act="rite"${same ? " disabled" : ""}>${same ? "Đang là hệ này" : change ? `Đổi sang ${esc(c.name)}` : `Khai Thư: ${esc(c.name)}`}</button></div>
+      </div></div>`;
+}
+$("rite").addEventListener("click", (e) => {
+  const t = e.target.closest("button"); if (!t) return;
+  if (t.id === "rite-x") { $("rite").hidden = true; return; }
+  if (t.dataset.cls) RITE.sel = t.dataset.cls;
+  else if (t.dataset.act === "rite") return doRite(RITE.sel);
+  renderRite();
+});
+function doRite(cls) {
+  const sc = window.__htk?.scene, c = DATA.classes[cls], first = !S.cls;
+  const wid = { FIRE: "kiem_lua_tap_su", WATER: "truong_thuy_tap_su" }[cls];
+  const oldW = S.equip.weapon && itemDef(S.equip.weapon).cls && itemDef(S.equip.weapon).cls !== cls ? S.equip.weapon : null;
+  const hasW = [...S.inv, S.equip.weapon].some((x) => x && x.id === wid);
+  const need = (oldW ? 1 : 0) + (hasW ? 0 : 1);
+  if (S.inv.length + need > BAG_SIZE) { toast(`Cần ${need} ô trống trong túi.`, true); return; }
+  if (oldW) { S.equip.weapon = null; S.inv.push(oldW); }
+  if (!hasW) addItem(wid, 1);
+  if (first) { S.equip.tome = makeGear("huyen_thu_so_ban", 10, "common"); S.clsAt = Date.now(); }
+  S.cls = cls; S.tideN = 0; S.tideReady = false; S.gearVer++;
+  const st = stats(); S.hp = st.hp; S.mp = st.mp;
+  $("rite").hidden = true;
+  if (sc) {
+    sc.setLook(); sc.cameras.main.flash(300, 255, 240, 200);
+    sc.manaRing(sc.player.x, sc.player.body.bottom - 20, Phaser.Display.Color.HexStringToColor(CLASS_COL[cls]).color);
+    sc.burst(sc.player.x, sc.player.body.bottom - 10, null, cls === "WATER");
+  }
+  const rews = (first ? `<span class="rw"><i class="icon" style="${iconVars("huyen_thu_so_ban")}"></i>Huyền Thư Sơ Bản</span>` : "")
+    + `<span class="rw"><i class="icon" style="${iconVars(DATA.itemDefs[wid].icon)}"></i>${esc(DATA.itemDefs[wid].name)}</span><span class="rw"><span class="badge skill">✦</span>${esc(c.skills[0].name)}</span>`;
+  banner(first ? "Lễ Khai Thư" : "Đổi hệ phép", `${S.name} trở thành ${c.name}`, true, rews);
+  log(`${first ? "Lễ Khai Thư" : "Đổi hệ"}: ${c.name}. Phím 2 ${c.skills[0].name}; ${c.skills[1].name} mở ở Lv${c.skills[1].lv}, ${c.skills[2].name} ở Lv${c.skills[2].lv}. Mặc ${DATA.itemDefs[wid].name} trong Hành trang (B).`, "lvl");
+  questChanged(); invChanged(); saveGame();
+}
+
+function ptsPanel() {
+  const pend = BAG.pend, used = ptsUsed(pend), free = ptsFree() - used;
+  const now = stats(), next = calcStatsPts({ ...Object.fromEntries(PT_ROWS.map(([k]) => [k, (S.pts[k] || 0) + (pend[k] || 0)])) });
+  const show = (k, st) => (k === "crit" ? `${(st.crit * 100).toFixed(2).replace(".", ",")}%` : st[k].toLocaleString("vi-VN"));
+  const rows = PT_ROWS.map(([k, n, per]) => `<div class="prow"><span>${n} <small>${per} mỗi điểm · đã cộng ${S.pts[k] || 0}${pend[k] ? ` <b style="color:#2e7d32">+${pend[k]}</b>` : ""}</small></span>
+      <span class="val">${show(k, now)}${pend[k] ? ` <em>→ ${show(k, next)}</em>` : ""}</span>
+      <span class="pbtns"><button type="button" data-pt="${k}" data-d="-1"${pend[k] ? "" : " disabled"}>−</button><button type="button" data-pt="${k}" data-d="1"${free > 0 ? "" : " disabled"}>+</button><button type="button" data-pt="${k}" data-d="5"${free >= 5 ? "" : " disabled"}>+5</button></span></div>`).join("");
+  return `<div class="ptsfree"><span>Điểm tiềm năng còn</span><b>${free}</b></div>${rows}
+    <div class="pfoot"><button type="button" class="wbtn sm green" data-act="ptsok"${used ? "" : " disabled"}>Xác nhận</button><button type="button" class="wbtn sm ghost" data-act="ptscancel"${used ? "" : " disabled"}>Hủy</button><button type="button" class="wbtn sm" data-act="ptsauto"${free > 0 ? "" : " disabled"}>Cộng gợi ý</button></div>
+    <p class="pnote">Mỗi cấp +5 điểm. Cộng rồi không trả lại miễn phí (Bình Rửa Tiềm Năng). Gợi ý: 2 HP, 2 Sức đánh, 1 Phòng thủ mỗi 5 điểm.</p>`;
+}
+function calcStatsPts(pts) { const keep = S.pts; S.pts = pts; const st = calcStats(); S.pts = keep; return st; }
 
 /* =====================================================================
    Input (keyboard + touch buttons)
@@ -1384,7 +1643,11 @@ class World extends Phaser.Scene {
     }
     this.load.image("r01", "assets/maps/tilesets/r01.png");
     this.load.image("collision", "assets/maps/tilesets/collision.png");
-    this.load.spritesheet("hero", "assets/sprites/hero_hoa.png", { frameWidth: 96, frameHeight: 96 });
+    for (const o of Object.keys(DATA.origins)) for (const g of ["MALE", "FEMALE"]) for (const lk of ["novice", "fire", "water"]) {
+      const key = `p_${o}_${g}_${lk}`.toLowerCase();
+      this.load.spritesheet(key, `assets/sprites/player/${key.slice(2)}.png`, { frameWidth: 96, frameHeight: 96 });
+    }
+    this.load.spritesheet("vfx_thuy", "assets/sprites/vfx_thuy.png", { frameWidth: 96, frameHeight: 96 });
     this.load.spritesheet("npc", "assets/sprites/npc_idle.png", { frameWidth: 96, frameHeight: 96 });
     this.load.spritesheet("vfx", "assets/sprites/vfx_hoa.png", { frameWidth: 96, frameHeight: 96 });
     this.load.spritesheet("items", "assets/sprites/items.png", { frameWidth: 32, frameHeight: 32 });
@@ -1393,14 +1656,31 @@ class World extends Phaser.Scene {
     this.load.on("progress", (p) => { $("ovsub").textContent = `Đang tải… ${Math.round(p * 100)}%`; });
   }
 
+  heroAnims(tex) {   // the hero_* animations always point at the current look
+    if (this.heroTex === tex && this.anims.exists("hero_idle")) return;
+    this.heroTex = tex;
+    const row = (r, n) => Array.from({ length: n }, (_, i) => r * 6 + i);
+    for (const [k, r, n, rate, rep] of [["idle", 0, 4, 6, -1], ["walk", 1, 6, 10, -1], ["run", 2, 6, 12, -1], ["attack", 3, 5, 16, 0], ["cast", 4, 6, 14, 0]]) {
+      if (this.anims.exists(`hero_${k}`)) this.anims.remove(`hero_${k}`);
+      this.anims.create({ key: `hero_${k}`, frames: this.anims.generateFrameNumbers(tex, { frames: row(r, n) }), frameRate: rate, repeat: rep });
+    }
+  }
+
+  setLook() {   // after creating the character or the ceremony
+    const tex = heroTex();
+    if (tex === this.heroTex) return;
+    this.heroAnims(tex);
+    this.player.setTexture(tex, 0).play("hero_idle");
+  }
+
   makeAnims() {
-    if (this.anims.exists("hero_idle")) return;
+    if (this.anims.exists("fx_boom")) { this.heroAnims(heroTex()); return; }
     const A = (key, tex, frames, rate, repeat) => this.anims.create({ key, frames: this.anims.generateFrameNumbers(tex, { frames }), frameRate: rate, repeat });
     const row = (r, n, cols = 6) => Array.from({ length: n }, (_, i) => r * cols + i);
-    A("hero_idle", "hero", row(0, 4), 6, -1); A("hero_walk", "hero", row(1, 6), 10, -1); A("hero_run", "hero", row(2, 6), 12, -1);
-    A("hero_attack", "hero", row(3, 5), 16, 0); A("hero_cast", "hero", row(4, 6), 14, 0);
+    this.heroAnims(heroTex());
     DATA.npcOrder.forEach((id, i) => A(`npc_${id}`, "npc", row(i, 4, 4), 5, -1));
     A("fx_fireball", "vfx", [0, 1, 2, 3], 12, -1); A("fx_boom", "vfx", [4, 5, 6, 7, 8, 9], 16, 0);
+    A("fx_water_proj", "vfx_thuy", [0, 1, 2, 3], 12, -1); A("fx_water_boom", "vfx_thuy", [4, 5, 6, 7, 8, 9], 16, 0);
     const mobAnims = (id, spr) => {
       for (const [a, [r, n]] of Object.entries(spr.rows)) {
         A(`${id}_${a}`, id, row(r, n, 4), a === "idle" ? 6 : a === "move" ? 8 : a === "die" ? 8 : 10, a === "idle" || a === "move" ? -1 : 0);
@@ -1457,7 +1737,7 @@ class World extends Phaser.Scene {
 
     // player
     const px = params.x ?? sp.x, py = params.y ?? sp.y;
-    this.player = this.physics.add.sprite(px, py - 44, "hero").setDepth(20).play("hero_idle");
+    this.player = this.physics.add.sprite(px, py - 44, heroTex()).setDepth(20).play("hero_idle");
     this.player.body.setSize(22, 50).setOffset(37, 38);
     this.player.setCollideWorldBounds(true);
     this.physics.world.gravity.y = 1200;
@@ -1477,11 +1757,12 @@ class World extends Phaser.Scene {
     const K = Phaser.Input.Keyboard.KeyCodes;
     this.keys = this.input.keyboard.addKeys({
       left: K.A, right: K.D, aLeft: K.LEFT, aRight: K.RIGHT, up: K.W, aUp: K.UP, jump: K.SPACE, down: K.S, aDown: K.DOWN,
-      attack: K.J, s1: K.ONE, s2: K.TWO, s3: K.THREE, hp: K.Q, mp: K.E, interact: K.F, sched: K.N,
+      attack: K.J, s1: K.ONE, s2: K.TWO, s3: K.THREE, s4: K.FOUR, hp: K.Q, mp: K.E, interact: K.F, sched: K.N,
       tab: K.TAB, auto: K.G, hunt: K.H, quest: K.L, bag: K.B, bag2: K.I, bag3: K.C,
     });
     this.keys.quest.on("down", () => toggleQuest());
-    for (const k of ["bag", "bag2", "bag3"]) this.keys[k].on("down", () => { if ($("dlg").hidden) toggleBag(); });
+    for (const k of ["bag", "bag2"]) this.keys[k].on("down", () => { if ($("dlg").hidden && $("create").hidden) toggleBag(); });
+    this.keys.bag3.on("down", () => { if ($("dlg").hidden && $("create").hidden) { if ($("bag").hidden) toggleBag(true, "char", null, "pts"); else toggleBag(false); } });
     this.input.keyboard.addCapture("SPACE,UP,DOWN,LEFT,RIGHT,TAB");
     this.keys.sched.on("down", () => toggleSchedule());
     this.keys.tab.on("down", () => this.cycleTarget());
@@ -1500,6 +1781,7 @@ class World extends Phaser.Scene {
     window.__htk = { S, scene: this, F, Q };
     this.herbs = []; this.refreshHerbs(); this.gotoBest = null;
     renderTracker();
+    if (!S.origin && $("create").hidden) openCreate();
     if (S.loaded) { S.loaded = false; S.welcomed = true; log(`Đã tải dữ liệu lưu: Lv ${S.lv}, ${S.quan.toLocaleString("vi-VN")} Quan, túi ${S.inv.length}/${BAG_SIZE}`, "sys"); }
     this.savedAt = this.time.now; this.time.delayedCall(400, saveGame);
     if (this.mapId === THEME_TOWN && !S.welcomed) {
@@ -1522,7 +1804,7 @@ class World extends Phaser.Scene {
   }
 
   down(...names) {
-    const vmap = { left: "left", aLeft: "left", right: "right", aRight: "right", up: "up", aUp: "up", jump: "jump", down: "down", aDown: "down", attack: "attack", s1: "s1", s2: "s2", s3: "s3" };
+    const vmap = { left: "left", aLeft: "left", right: "right", aRight: "right", up: "up", aUp: "up", jump: "jump", down: "down", aDown: "down", attack: "attack", s1: "s1", s2: "s2", s3: "s3", s4: "s4" };
     return names.some((n) => this.keys[n]?.isDown || V[vmap[n]]);
   }
 
@@ -1611,7 +1893,8 @@ class World extends Phaser.Scene {
     this.autoIdleSince = null;
     const dx = t.spr.x - pl.x, adx = Math.abs(dx);
     const tBottom = t.spr.body ? t.spr.body.bottom : t.spr.y;
-    const ranged = S.fire && this.skillReady("fireball") && S.mp >= 10 && Math.abs(t.spr.y - pl.y) < 60;
+    const c0 = S.cls && DATA.classes[S.cls].skills[0];
+    const ranged = c0 && S.lv >= c0.lv && this.skillReady(c0.id) && S.mp >= c0.mp && Math.abs(t.spr.y - pl.y) < 60;
     const reach = (ranged ? 300 : 52) + (t.spr.body ? t.spr.body.width / 2 : 20);
     let vx = adx > reach ? Math.sign(dx) * 180 : 0;
     const blocked = (vx < 0 && pl.body.blocked.left) || (vx > 0 && pl.body.blocked.right);
@@ -1623,8 +1906,11 @@ class World extends Phaser.Scene {
     if (now < this.busyUntil) return;
     const t = this.target; if (!t?.alive) return;
     this.faceTarget();
-    if (S.fire && this.skillReady("slash") && S.mp >= 18 && this.inReach(t, 90)) return this.useSlash();
-    if (S.fire && this.skillReady("fireball") && S.mp >= 10) return this.useFireball();
+    const c = S.cls && DATA.classes[S.cls];
+    if (c) for (let i = c.skills.length - 1; i >= 0; i--) {
+      const sk = c.skills[i], reach = { bolt: 360, beam: 380, lance: 150, wave: 150, slash: 90 }[sk.kind];
+      if (S.lv >= sk.lv && this.skillReady(sk.id) && S.mp >= sk.mp && this.inReach(t, reach)) return this.useClassSkill(i);
+    }
     if (S.lv >= 5 && this.skillReady("burst") && S.mp >= 6 && this.inReach(t, 140)) return this.useBurst();
     if (this.inReach(t, 72)) this.useBasic();
   }
@@ -1668,7 +1954,14 @@ class World extends Phaser.Scene {
   hitMob(m, mult, opts = {}) {
     if (!m.alive) return;
     const p = stats();
+    if (opts.skill && S.origin === "NOBLE") mult *= 1.05;                                 // Gia Truyền
+    if (opts.tide) mult *= 1.15;                                                         // Triều Dâng
+    if (S.cls === "FIRE" && m.burn && this.time.now <= m.burn.until && !opts.dot) mult *= 1.08;   // Lửa Bén
     const r = opts.fixed ? { miss: false, dmg: opts.fixed, crit: false } : F.damage(p, { lv: m.lv, def: m.def }, mult);
+    if (!r.miss && !opts.dot && S.cls === "WATER" && ++S.tideN >= 5) {
+      S.tideN = 0; S.tideReady = true; S.mp = Math.min(p.mp, S.mp + Math.round(p.mp * 0.03));
+      this.floatText(this.player.x, this.player.y - 84, "Triều Dâng", "#7fd1ff", 13);
+    }
     S.combatAt = this.time.now;
     m.aggro = true; m.showBarUntil = this.time.now + 4000;
     const x = m.spr.x, y = m.spr.y - m.spr.displayHeight * 0.35;
@@ -1743,6 +2036,10 @@ class World extends Phaser.Scene {
       toast(`Lên cấp ${S.lv}!`, true); log(`Lên cấp ${S.lv}: HP ${st.hp}, ATK ${st.atk}, DEF ${st.def}`, "lvl");
       this.floatText(this.player.x, this.player.y - 80, `LÊN CẤP ${S.lv}`, "#9eff8a", 22);
       if (S.lv === 5) log("Mở kỹ năng Tụ Mana Chấn (phím 1)", "lvl");
+      log(`+5 điểm tiềm năng (còn ${ptsFree()}): nhấn C để cộng`, "lvl");
+      if (S.lv === 10 && !S.cls) { toast("Đủ Lv10! Gặp Thầy Bạch Vân làm Lễ Khai Thư.", true); }
+      const nsk = S.cls && DATA.classes[S.cls].skills.find((k) => k.lv === S.lv);
+      if (nsk) log(`Mở kỹ năng ${nsk.name}`, "lvl");
       questChanged();
     }
   }
@@ -1912,8 +2209,8 @@ class World extends Phaser.Scene {
     this.tweens.add({ targets: g, y, duration: 160, ease: "Quad.easeIn", onComplete: () => { g.destroy(); this.burst(x, y, 0x7fe0ff); } });
   }
 
-  burst(x, y, color) {
-    const fx = this.add.sprite(x, y - 30, "vfx").setDepth(18).play("fx_boom");
+  burst(x, y, color, water = false) {
+    const fx = this.add.sprite(x, y - 30, water ? "vfx_thuy" : "vfx").setDepth(18).play(water ? "fx_water_boom" : "fx_boom");
     if (color) fx.setTint(color);
     fx.once("animationcomplete", () => fx.destroy());
   }
@@ -2007,31 +2304,61 @@ class World extends Phaser.Scene {
     });
   }
 
-  useFireball() {
-    if (!S.fire) { this.floatText(this.player.x, this.player.y - 70, "Cần hệ Hỏa (Lv10)", "#9aa2bf", 13); return; }
-    if (!this.skillReady("fireball") || S.mp < 10) return;
+  // class skills 1-3 (classes §4): unlock Lv10/20/30, MP and cooldown from content
+  useClassSkill(i) {
+    const c = S.cls && DATA.classes[S.cls], pl = this.player, now = this.time.now;
+    if (!c) { this.floatText(pl.x, pl.y - 70, "Mở ở Lễ Khai Thư (Lv10)", "#9aa2bf", 13); return; }
+    const sk = c.skills[i];
+    if (S.lv < sk.lv) { if (now > (this.lockMsgAt || 0)) { this.lockMsgAt = now + 800; this.floatText(pl.x, pl.y - 70, `${sk.name}: mở ở Lv${sk.lv}`, "#9aa2bf", 13); } return; }
+    if (!this.skillReady(sk.id)) return;
+    if (S.mp < sk.mp) { if (now > (this.lockMsgAt || 0)) { this.lockMsgAt = now + 800; this.floatText(pl.x, pl.y - 70, "Thiếu MP", "#7fd1ff", 13); } return; }
     this.faceTarget();
-    S.mp -= 10; S.cds.fireball = this.time.now + 3000; this.busyUntil = this.time.now + 440;
-    this.player.play("hero_cast");
-    this.chargeGlow(0xffa030, 240);
-    this.time.delayedCall(250, () => {
-      this.hitSpark(this.player.x + this.facing * 34, this.player.y - 6, 0xffb703, true);
-      const fb = this.add.sprite(this.player.x + this.facing * 30, this.player.y - 6, "vfx").setDepth(19).play("fx_fireball").setFlipX(this.facing < 0);
-      this.shots.push({ spr: fb, vx: this.facing * 520, left: 400, mult: 1.2, burn: true, from: "player" });
-    });
-  }
-
-  useSlash() {
-    if (!S.fire) { this.floatText(this.player.x, this.player.y - 70, "Cần hệ Hỏa (Lv10)", "#9aa2bf", 13); return; }
-    if (!this.skillReady("slash") || S.mp < 18) return;
-    this.faceTarget();
-    S.mp -= 18; S.cds.slash = this.time.now + 5000; this.busyUntil = this.time.now + 360;
-    this.player.play("hero_attack");
-    this.time.delayedCall(100, () => this.slashArc(this.facing, 64, 0xff7a2a, 10, 0xffe08a));
-    this.time.delayedCall(140, () => {
-      for (const t of this.targetsIn(this.attackBox(96, 80))) this.hitMob(t, 1.6, { color: 0xffa040 });
-      this.burst(this.player.x + this.facing * 50, this.player.body.bottom - 20, 0xffb070);
-    });
+    S.mp -= sk.mp; S.cds[sk.id] = now + sk.cd * 1000;
+    const tide = S.cls === "WATER" && S.tideReady; if (tide) S.tideReady = false;   // Triều Dâng
+    const o = { skill: true, tide }, fire = S.cls === "FIRE", col = fire ? 0xffa030 : 0x7fd1ff, dir = this.facing;
+    if (sk.kind === "slash" || sk.kind === "lance") { this.busyUntil = now + 360; pl.play("hero_attack"); }
+    else { this.busyUntil = now + 440; pl.play("hero_cast"); this.chargeGlow(col, 240); }
+    if (sk.kind === "bolt") {
+      this.time.delayedCall(250, () => {
+        this.hitSpark(pl.x + dir * 34, pl.y - 6, fire ? 0xffb703 : 0x9fe8ff, true);
+        const spr = this.add.sprite(pl.x + dir * 30, pl.y - 6, fire ? "vfx" : "vfx_thuy").setDepth(19).play(fire ? "fx_fireball" : "fx_water_proj").setFlipX(dir < 0);
+        this.shots.push({ spr, vx: dir * 520, left: 400, mult: sk.mult, burn: fire, water: !fire, opts: o, from: "player" });
+      });
+    } else if (sk.kind === "slash") {
+      this.time.delayedCall(100, () => this.slashArc(dir, 64, 0xff7a2a, 10, 0xffe08a));
+      this.time.delayedCall(140, () => {
+        for (const t of this.targetsIn(this.attackBox(96, 80))) this.hitMob(t, sk.mult, { ...o, color: 0xffa040 });
+        this.burst(pl.x + dir * 50, pl.body.bottom - 20, 0xffb070);
+      });
+    } else if (sk.kind === "lance") {   // straight flame lance, pierces everything in 160 px
+      this.time.delayedCall(120, () => {
+        const y = pl.y - 4, x0 = pl.x + dir * 14, g = this.add.graphics().setDepth(21);
+        g.fillStyle(0xff5a1f, 0.85); g.fillTriangle(x0, y - 9, x0, y + 9, x0 + dir * 170, y);
+        g.fillStyle(0xffe08a, 1); g.fillTriangle(x0, y - 3, x0, y + 3, x0 + dir * 150, y);
+        this.tweens.add({ targets: g, alpha: 0, duration: 260, onComplete: () => g.destroy() });
+        for (const t of this.targetsIn(this.attackBox(170, 70))) this.hitMob(t, sk.mult, { ...o, color: 0xff7a2a });
+        for (let k = 1; k <= 3; k++) this.time.delayedCall(k * 40, () => this.burst(x0 + dir * 50 * k, pl.body.bottom - 12, 0xffa040));
+      });
+    } else if (sk.kind === "wave") {   // wave rolls 170 px forward, hits once, slows 30% for 3 s
+      this.time.delayedCall(220, () => {
+        const x0 = pl.x + dir * 20, yb = pl.body.bottom, g = this.add.graphics({ x: x0, y: yb }).setDepth(21);
+        g.fillStyle(0x3a86ff, 0.75); g.fillEllipse(0, -18, 26, 40); g.fillStyle(0xcfefff, 0.95); g.fillEllipse(dir * 5, -24, 10, 26);
+        this.tweens.add({ targets: g, x: x0 + dir * 170, alpha: { from: 1, to: 0.2 }, duration: 320, onComplete: () => g.destroy() });
+        for (const t of this.targetsIn(this.attackBox(190, 70))) {
+          const delay = Math.min(320, Math.abs(t.spr.x - x0) / 170 * 320);
+          this.time.delayedCall(delay, () => { this.hitMob(t, sk.mult, { ...o, color: 0x9fd8ff }); if (t.alive && t.kind === "mob") t.slowUntil = this.time.now + 3000; });
+        }
+      });
+    } else if (sk.kind === "beam") {   // water beam to the first target within 400 px
+      this.time.delayedCall(260, () => {
+        const y = pl.y - 6, x0 = pl.x + dir * 26;
+        const t = this.nearest(this.targetsIn(new Phaser.Geom.Rectangle(dir > 0 ? x0 : x0 - 400, y - 40, 400, 80)));
+        const x1 = t ? t.spr.x : x0 + dir * 400, g = this.add.graphics().setDepth(21);
+        g.lineStyle(10, 0x3a86ff, 0.7); g.lineBetween(x0, y, x1, y); g.lineStyle(4, 0xe8fbff, 1); g.lineBetween(x0, y, x1, y);
+        this.tweens.add({ targets: g, alpha: 0, duration: 280, onComplete: () => g.destroy() });
+        if (t) { this.hitMob(t, sk.mult, { ...o, color: 0x9fe8ff }); this.burst(x1, t.spr.y + 24, 0x9fd8ff, true); }
+      });
+    }
   }
 
   usePotion(type) {   // Q / E: medium potion when the loss is large, else small (items §8)
@@ -2047,7 +2374,8 @@ class World extends Phaser.Scene {
   drinkPotion(id) {
     const d = DATA.itemDefs[id], type = d.heal_hp ? "hp" : "mp", now = this.time.now;
     if (now < S.potCd[type]) { this.floatText(this.player.x, this.player.y - 60, `Chờ ${Math.ceil((S.potCd[type] - now) / 1000)} giây`, "#9aa2bf", 13); return; }
-    const st = stats(), cur = type === "hp" ? S.hp : S.mp, h = Math.min(d[type === "hp" ? "heal_hp" : "heal_mp"], st[type] - cur);
+    const boost = type === "hp" && S.origin === "ANCIENT" ? 1.15 : 1;
+    const st = stats(), cur = type === "hp" ? S.hp : S.mp, h = Math.min(Math.round(d[type === "hp" ? "heal_hp" : "heal_mp"] * boost), st[type] - cur);
     if (h <= 0 || !takeItem(id, 1)) return;
     if (type === "hp") S.hp += h; else S.mp += h;
     S.potCd[type] = now + POTION_CD;
@@ -2174,8 +2502,13 @@ class World extends Phaser.Scene {
 
     // regen (§3.2): out of combat HP 1%/5s, MP 2%/s; in combat MP 0.5%/s
     const out = now - S.combatAt > 5000;
-    if (out) S.hp = Math.min(st.hp, S.hp + st.hp * 0.01 * dt / 5);
-    S.mp = Math.min(st.mp, S.mp + st.mp * (out ? 0.02 : 0.005) * dt);
+    if (out) S.hp = Math.min(st.hp, S.hp + st.hp * 0.01 * dt / (S.origin === "ANCIENT" ? 3 : 5));   // Ấn Cổ Hộ Thân
+    S.mp = Math.min(st.mp, S.mp + st.mp * (out ? 0.02 : 0.005) * dt * (S.origin === "NOBLE" ? 1.25 : 1));   // Gia Truyền
+    if (S.origin === "VILLAGER" && S.hp > 0 && S.hp < st.hp * 0.3 && now >= S.rallyCd) {             // Không Lùi Bước
+      S.rallyUntil = now + 8000; S.rallyCd = now + 60000;
+      this.floatText(pl.x, pl.y - 84, "Không Lùi Bước!", "#ffd23f", 15); this.manaRing(pl.x, body.bottom - 20, 0xffd23f);
+    }
+    if ((now < S.rallyUntil) !== S.rallyOn) { S.rallyOn = now < S.rallyUntil; S.gearVer++; }
 
     // ladders and hazards
     const tile = this.coll.getTileAtWorldXY(pl.x, body.bottom - 20);
@@ -2223,8 +2556,9 @@ class World extends Phaser.Scene {
     if (!modal) {
       if (this.down("attack")) this.useBasic();
       if (this.down("s1")) this.useBurst();
-      if (this.down("s2")) this.useFireball();
-      if (this.down("s3")) this.useSlash();
+      if (this.down("s2")) this.useClassSkill(0);
+      if (this.down("s3")) this.useClassSkill(1);
+      if (this.down("s4")) this.useClassSkill(2);
       if (ac && ac.attack) this.autoAttack(now);
     }
 
@@ -2251,7 +2585,8 @@ class World extends Phaser.Scene {
     // monsters
     for (const m of this.mobs) {
       if (!m.alive) continue;
-      const spr = m.spr, d = m.d;
+      const spr = m.spr, slow = now < (m.slowUntil || 0), d = slow ? { ...m.d, speed: m.d.speed * 0.7 } : m.d;
+      if (slow !== !!m.slowTint) { m.slowTint = slow; if (slow) spr.setTint(0x9fd8ff); else spr.clearTint(); }
       if (m.burn && now >= m.burn.next) {
         m.burn.next += 1000;
         if (now <= m.burn.until) this.hitMob(m, 0, { fixed: m.burn.dmg, dot: true }); else m.burn = null;
@@ -2328,7 +2663,7 @@ class World extends Phaser.Scene {
       const step = s.vx * dt; s.spr.x += step; s.left -= Math.abs(step);
       if (s.from === "player") {
         const hit = this.targetsIn(new Phaser.Geom.Rectangle(s.spr.x - 12, s.spr.y - 12, 24, 24));
-        if (hit.length) { this.hitMob(hit[0], s.mult, { burn: s.burn }); this.burst(s.spr.x, s.spr.y + 30); s.dead = true; }
+        if (hit.length) { this.hitMob(hit[0], s.mult, { burn: s.burn, ...s.opts }); this.burst(s.spr.x, s.spr.y + 30, null, s.water); s.dead = true; }
       } else if (Math.abs(s.spr.x - pl.x) < 16 && Math.abs(s.spr.y - (pl.y - 6)) < 40) {
         this.hurtPlayer(F.damage({ atk: s.m.atk, lv: s.m.lv, crit: 0.05, critDmg: 1.5 }, { lv: S.lv, def: stats().def }, 1.0), s.spr.x); s.dead = true;
       }
@@ -2419,7 +2754,7 @@ class World extends Phaser.Scene {
   updateHud() {
     const st = stats();
     $("plv").textContent = `Lv ${S.lv}`;
-    $("pname").textContent = S.fire ? "Hỏa Kiếm Sĩ" : "Tân thủ";
+    $("pname").textContent = S.name || "Tân thủ";
     const hpP = Math.max(0, S.hp / st.hp) * 100, mpP = Math.max(0, S.mp / st.mp) * 100;
     $("php").querySelector(".fill").style.width = hpP + "%"; $("php").querySelector(".chip").style.width = hpP + "%";
     $("php").querySelector("span").textContent = `${Math.max(0, Math.round(S.hp))} / ${st.hp}`;
@@ -2427,6 +2762,7 @@ class World extends Phaser.Scene {
     $("pmp").querySelector("span").textContent = `${Math.round(S.mp)} / ${st.mp}`;
     $("pquan").textContent = `${S.quan.toLocaleString("vi-VN")} Quan`;
     $("pbag").textContent = `Túi ${S.inv.length}/${BAG_SIZE}`;
+    if (this.ptsShown !== ptsFree()) { this.ptsShown = ptsFree(); $("btn-bag").innerHTML = `Hành trang${this.ptsShown > 0 ? '<i class="dot"></i>' : ""}`; }
     $("plc").textContent = `LC ${st.power.toLocaleString("vi-VN")}`;
     $("nhp").textContent = potionCount("hp"); $("nmp").textContent = potionCount("mp");
     for (const t of ["hp", "mp"]) document.querySelector(`.act[data-tap="${t}"]`).style.setProperty("--cd", Math.max(0, (S.potCd[t] - this.time.now) / POTION_CD).toFixed(3));
@@ -2435,11 +2771,23 @@ class World extends Phaser.Scene {
     $("expbar").querySelector("span").textContent = `EXP ${S.exp.toLocaleString("vi-VN")} / ${need.toLocaleString("vi-VN")} (${(S.exp / need * 100).toFixed(1)}%)`;
     $("clock").textContent = `${fmtClock(S.t)}  ×${S.speed}`;
     const now = this.time.now;
-    const cdLen = { basic: 1000, burst: 3000, fireball: 3000, slash: 5000 };
+    const csk = S.cls ? DATA.classes[S.cls].skills : [];
+    const labelKey = `${S.cls}|${S.lv}`;
+    if (this.skillLabels !== labelKey) {
+      this.skillLabels = labelKey;
+      [0, 1, 2].forEach((i) => {
+        const el = document.querySelector(`.act[data-skill="c${i}"]`), sk = csk[i];
+        el.querySelector("span").textContent = sk ? sk.name : "—";
+        el.querySelector(".lk")?.remove();
+        if (sk && S.lv < sk.lv) el.insertAdjacentHTML("beforeend", `<small class="lk">Lv${sk.lv}</small>`);
+        el.title = sk ? `${sk.name}: ${sk.text}, ${sk.mp} MP, hồi ${sk.cd} giây` : "Mở ở Lễ Khai Thư (Lv10)";
+      });
+    }
     for (const el of document.querySelectorAll(".act[data-skill]")) {
-      const k = el.dataset.skill;
-      el.style.setProperty("--cd", Math.max(0, (S.cds[k] - now) / cdLen[k]).toFixed(3));
-      el.classList.toggle("locked", (k === "burst" && S.lv < 5) || ((k === "fireball" || k === "slash") && !S.fire));
+      const k = el.dataset.skill, ci = k[0] === "c" ? Number(k[1]) : -1, sk = csk[ci];
+      const id = ci >= 0 ? sk?.id : k, len = ci >= 0 ? (sk ? sk.cd * 1000 : 1) : k === "basic" ? 1000 : 3000;
+      el.style.setProperty("--cd", id ? Math.max(0, ((S.cds[id] || 0) - now) / len).toFixed(3) : 0);
+      el.classList.toggle("locked", (k === "burst" && S.lv < 5) || (ci >= 0 && (!sk || S.lv < sk.lv)));
     }
     $("b-auto").classList.toggle("on", S.auto);
     $("b-hunt").classList.toggle("on", S.hunt);
@@ -2493,9 +2841,8 @@ $("dev-boss").addEventListener("click", () => {
   if (b.map !== S.map) toast(`${DATA.names[b.id]} sẽ xuất hiện ở ${DATA.names[b.map]}. Map này không có boss theo giờ.`, true);
 });
 $("dev-fire").addEventListener("click", () => {
-  if (S.lv < 10) { S.lv = 10; S.exp = 0; }
-  S.fire = true; const st = stats(); S.hp = st.hp; S.mp = st.mp;
-  log("Lễ Khai Thư (thử): đã chọn hệ Hỏa. Phím 2 Hỏa Cầu, phím 3 Trảm Liệt Diễm", "lvl");
+  const sc = window.__htk?.scene; if (!sc || S.lv >= 10) { toast("Đã Lv10 trở lên. Gặp Thầy Bạch Vân ở làng.", true); return; }
+  while (S.lv < 10) sc.gainExp(F.expToNext(S.lv) - S.exp);
 });
 $("dev-lv").addEventListener("click", () => { const sc = window.__htk?.scene; if (sc) sc.gainExp(F.expToNext(S.lv) - S.exp); });
 $("dev-reset").addEventListener("click", (e) => {

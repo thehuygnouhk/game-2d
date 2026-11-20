@@ -1041,6 +1041,33 @@
    "icon": "ao_suoi_mo",
    "level": 9,
    "rarity": "good"
+  },
+  "huyen_thu_so_ban": {
+   "type": "TOME",
+   "slot": "tome",
+   "name": "Huyền Thư Sơ Bản",
+   "icon": "huyen_thu_so_ban",
+   "level": 10,
+   "rarity": "common",
+   "bound": true
+  },
+  "kiem_lua_tap_su": {
+   "type": "WEAPON",
+   "slot": "weapon",
+   "cls": "FIRE",
+   "name": "Kiếm Lửa Tập Sự",
+   "icon": "weapon_fire",
+   "level": 10,
+   "rarity": "common"
+  },
+  "truong_thuy_tap_su": {
+   "type": "WEAPON",
+   "slot": "weapon",
+   "cls": "WATER",
+   "name": "Trượng Thủy Tập Sự",
+   "icon": "weapon_water",
+   "level": 10,
+   "rarity": "common"
   }
  },
  "sets": {
@@ -1062,6 +1089,159 @@
     "potion_mp_m"
    ]
   }
+ },
+ "origins": {
+  "VILLAGER": {
+   "name": "Dân Làng",
+   "base": [
+    220,
+    70,
+    22,
+    9
+   ],
+   "growth": [
+    14,
+    4,
+    1.8,
+    0.9
+   ],
+   "passive": "Không Lùi Bước",
+   "passiveText": "Khi HP dưới 30%: +15% ATK và DEF trong 8 giây (hồi 60 giây)",
+   "blurb": "Con nhà nông, thợ, lớn lên ở các làng. Bền, hợp đỡ đòn."
+  },
+  "NOBLE": {
+   "name": "Thế Gia",
+   "base": [
+    180,
+    120,
+    24,
+    7
+   ],
+   "growth": [
+    11,
+    7,
+    2.0,
+    0.7
+   ],
+   "passive": "Gia Truyền",
+   "passiveText": "Hồi MP +25%, sát thương kỹ năng +5%",
+   "blurb": "Dòng họ lâu đời giữ sách phép qua nhiều đời. Mạnh phép."
+  },
+  "ANCIENT": {
+   "name": "Hậu Duệ Tộc Cổ Thư",
+   "base": [
+    200,
+    100,
+    18,
+    8
+   ],
+   "growth": [
+    13,
+    6,
+    1.5,
+    0.8
+   ],
+   "passive": "Ấn Cổ Hộ Thân",
+   "passiveText": "Ngoài giao tranh hồi 1% HP mỗi 3 giây; bình và hồi máu nhận +15%",
+   "blurb": "Mang dòng máu tộc đã viết Nguyên Điển. Bền bỉ, tự hồi."
+  }
+ },
+ "classes": {
+  "FIRE": {
+   "name": "Hỏa Kiếm Sĩ",
+   "role": "Cận chiến bùng nổ",
+   "weapon": "Kiếm",
+   "mods": "ATK +15%, DEF −5%",
+   "passive": "Lửa Bén",
+   "passiveText": "+8% sát thương lên mục tiêu đang cháy",
+   "look": "fire",
+   "skills": [
+    {
+     "id": "SKL_FIRE_1",
+     "name": "Hỏa Cầu",
+     "lv": 10,
+     "mp": 10,
+     "cd": 3,
+     "mult": 1.2,
+     "kind": "bolt",
+     "range": "Xa",
+     "text": "120% ATK, Cháy 3 giây"
+    },
+    {
+     "id": "SKL_FIRE_2",
+     "name": "Trảm Liệt Diễm",
+     "lv": 20,
+     "mp": 18,
+     "cd": 5,
+     "mult": 1.6,
+     "kind": "slash",
+     "range": "Cận",
+     "text": "160% ATK, vòng cung"
+    },
+    {
+     "id": "SKL_FIRE_3",
+     "name": "Hỏa Thương Xuyên Thiên",
+     "lv": 30,
+     "mp": 28,
+     "cd": 8,
+     "mult": 1.9,
+     "kind": "lance",
+     "range": "Ngắn",
+     "text": "190% ATK, xuyên mọi mục tiêu"
+    }
+   ]
+  },
+  "WATER": {
+   "name": "Thủy Pháp Sư",
+   "role": "Đánh xa diện rộng",
+   "weapon": "Trượng",
+   "mods": "MP +20%",
+   "passive": "Triều Dâng",
+   "passiveText": "Mỗi 5 đòn trúng: kỹ năng kế +15% và hồi 3% MP",
+   "look": "water",
+   "skills": [
+    {
+     "id": "SKL_WATER_1",
+     "name": "Thủy Đạn",
+     "lv": 10,
+     "mp": 10,
+     "cd": 3,
+     "mult": 1.15,
+     "kind": "bolt",
+     "range": "Xa",
+     "text": "115% ATK"
+    },
+    {
+     "id": "SKL_WATER_2",
+     "name": "Sóng Triều",
+     "lv": 20,
+     "mp": 18,
+     "cd": 5,
+     "mult": 1.5,
+     "kind": "wave",
+     "range": "Ngắn",
+     "text": "150% ATK, làm chậm 30% trong 3 giây"
+    },
+    {
+     "id": "SKL_WATER_3",
+     "name": "Thủy Tiễn Xuyên Sóng",
+     "lv": 30,
+     "mp": 28,
+     "cd": 8,
+     "mult": 2.3,
+     "kind": "beam",
+     "range": "Xa",
+     "text": "230% ATK, tia nước"
+    }
+   ]
+  }
+ },
+ "lockedClasses": {
+  "WIND": "Phong Kiếm Khách",
+  "BOLT": "Lôi Chiến Binh",
+  "EARTH": "Thổ Hộ Vệ",
+  "PLANT": "Mộc Thuật Sư",
+  "DARK": "Ám Pháp Sư"
  },
  "where": {
   "NPC001": [

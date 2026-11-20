@@ -115,6 +115,7 @@ Số quái cần giết mỗi cấp (cùng cấp): `≈ 6,3 × L`. Ở Lv50 kho�
 
 - **+5 điểm mỗi cấp** (Lv2–100), cộng 10 điểm khởi đầu: tổng **505** điểm.
 - Cộng điểm tại menu *Nhân vật*; không hoàn tác miễn phí, **Bình Rửa Tiềm Năng** (cửa hàng, 50 Nén Bạc hoặc sự kiện) để reset.
+- Nút **Cộng gợi ý** chia điểm còn lại theo nhịp 2 HP, 2 ATK, 1 DEF cho mỗi 5 điểm; người chơi vẫn phải bấm Xác nhận.
 
 | Chỉ số | Mỗi điểm | Giới hạn |
 |--------|----------|----------|

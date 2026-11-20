@@ -1,0 +1,8 @@
+# prototype item (step A1)
+id: huyen_thu_so_ban
+type: TOME
+nameKey: item.huyen_thu_so_ban.name
+icon: items/huyen_thu_so_ban
+slot: tome
+levelReq: 10
+rarity: common

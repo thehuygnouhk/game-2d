@@ -7,7 +7,7 @@
 | Nhóm | Mã loại | Dải ID | Ví dụ |
 |------|---------|--------|-------|
 | Vũ khí | `WEAPON` | ITM01xxx | Kiếm, Trượng, Đoản Kiếm, Găng, Búa & Khiên, Trượng Hoa, Đao |
-| Huyền Thư | `TOME` | ITM02xxx | Huyền Thư Sơ/Tu/Định Bản |
+| Huyền Thư | `TOME` | ITM02xxx | Huyền Thư Sơ/Tu/Định Bản (khóa khi nhặt: không tháo, không bán) |
 | Giáp & phụ kiện | `ARMOR` | ITM03xxx | Mũ, Áo, Quần, Găng, Giày, Áo Choàng, Bùa, Nhẫn |
 | Tiêu hao | `CONSUMABLE` | ITM04xxx | Bình HP/MP, Lá Thuốc Cổ, thức ăn |
 | Nguyên liệu | `MATERIAL` | ITM05xxx | Đồng Luyện, mảnh, rơi từ quái |
@@ -57,7 +57,9 @@ Dòng % cộng dồn với nhau và với bonus set, rồi nhân vào tổng ch�
 
 ## 3. Ô trang bị (10 ô)
 
-Mở dần: bậc A1 và Phase 1 dùng **4 ô** (Vũ khí, Mũ, Áo, Giày); các ô còn lại mở theo [roadmap](../product/roadmap.md). Mặc đồ cần đạt cấp yêu cầu của món.
+Mở dần: bậc A1 dùng **4 ô** (Vũ khí, Mũ, Áo, Giày); bậc A2 thêm ô **Huyền Thư** (nhận ở Lễ Khai Thư). Các ô còn lại mở theo [roadmap](../product/roadmap.md). Mặc đồ cần đạt cấp yêu cầu của món.
+
+Vũ khí tập sự nhận ở Lễ Khai Thư: **Kiếm Lửa Tập Sự** (Hỏa) và **Trượng Thủy Tập Sự** (Thủy), Lv10, Thường, chỉ hệ đó dùng được. **Huyền Thư Sơ Bản** Lv10 Thường được mặc sẵn vào ô Huyền Thư.
 
 | # | Ô | Loại chỉ số chính | Ghi chú |
 |---|----|-------------------|---------|

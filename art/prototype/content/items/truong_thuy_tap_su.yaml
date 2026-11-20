@@ -1,0 +1,8 @@
+# prototype item (step A1)
+id: truong_thuy_tap_su
+type: WEAPON
+nameKey: item.truong_thuy_tap_su.name
+icon: items/weapon_water
+slot: weapon
+levelReq: 10
+rarity: common

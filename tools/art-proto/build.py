@@ -404,7 +404,36 @@ ITEM_DEFS = {
     "s1_boots": dict(type="ARMOR", slot="boots", set="S1", name="Giày Dân Làng", icon="giay_dan_lang", levelBand=[1, 9]),
     "kiem_go_tap": dict(type="WEAPON", slot="weapon", name="Kiếm Gỗ Tập", icon="kiem_go_tap", level=1, rarity="common"),
     "ao_suoi_mo": dict(type="ARMOR", slot="armor", name="Áo Suối Mơ", icon="ao_suoi_mo", level=9, rarity="good"),
+    # Le Khai Thu (classes §6, quests Q_MAIN_12): bound tome + class weapon
+    "huyen_thu_so_ban": dict(type="TOME", slot="tome", name="Huyền Thư Sơ Bản", icon="huyen_thu_so_ban", level=10, rarity="common", bound=True),
+    "kiem_lua_tap_su": dict(type="WEAPON", slot="weapon", cls="FIRE", name="Kiếm Lửa Tập Sự", icon="weapon_fire", level=10, rarity="common"),
+    "truong_thuy_tap_su": dict(type="WEAPON", slot="weapon", cls="WATER", name="Trượng Thủy Tập Sự", icon="weapon_water", level=10, rarity="common"),
 }
+# Origins and classes for step A2 (classes §2-4). Display text lives in i18n.
+ORIGIN_DATA = {
+    "VILLAGER": dict(name="Dân Làng", base=[220, 70, 22, 9], growth=[14, 4, 1.8, 0.9], passive="Không Lùi Bước",
+                     passiveText="Khi HP dưới 30%: +15% ATK và DEF trong 8 giây (hồi 60 giây)",
+                     blurb="Con nhà nông, thợ, lớn lên ở các làng. Bền, hợp đỡ đòn."),
+    "NOBLE": dict(name="Thế Gia", base=[180, 120, 24, 7], growth=[11, 7, 2.0, 0.7], passive="Gia Truyền",
+                  passiveText="Hồi MP +25%, sát thương kỹ năng +5%",
+                  blurb="Dòng họ lâu đời giữ sách phép qua nhiều đời. Mạnh phép."),
+    "ANCIENT": dict(name="Hậu Duệ Tộc Cổ Thư", base=[200, 100, 18, 8], growth=[13, 6, 1.5, 0.8], passive="Ấn Cổ Hộ Thân",
+                    passiveText="Ngoài giao tranh hồi 1% HP mỗi 3 giây; bình và hồi máu nhận +15%",
+                    blurb="Mang dòng máu tộc đã viết Nguyên Điển. Bền bỉ, tự hồi."),
+}
+CLASS_DATA = {
+    "FIRE": dict(name="Hỏa Kiếm Sĩ", role="Cận chiến bùng nổ", weapon="Kiếm", mods="ATK +15%, DEF −5%", passive="Lửa Bén",
+                 passiveText="+8% sát thương lên mục tiêu đang cháy", look="fire",
+                 skills=[dict(id="SKL_FIRE_1", name="Hỏa Cầu", lv=10, mp=10, cd=3, mult=1.2, kind="bolt", range="Xa", text="120% ATK, Cháy 3 giây"),
+                         dict(id="SKL_FIRE_2", name="Trảm Liệt Diễm", lv=20, mp=18, cd=5, mult=1.6, kind="slash", range="Cận", text="160% ATK, vòng cung"),
+                         dict(id="SKL_FIRE_3", name="Hỏa Thương Xuyên Thiên", lv=30, mp=28, cd=8, mult=1.9, kind="lance", range="Ngắn", text="190% ATK, xuyên mọi mục tiêu")]),
+    "WATER": dict(name="Thủy Pháp Sư", role="Đánh xa diện rộng", weapon="Trượng", mods="MP +20%", passive="Triều Dâng",
+                  passiveText="Mỗi 5 đòn trúng: kỹ năng kế +15% và hồi 3% MP", look="water",
+                  skills=[dict(id="SKL_WATER_1", name="Thủy Đạn", lv=10, mp=10, cd=3, mult=1.15, kind="bolt", range="Xa", text="115% ATK"),
+                          dict(id="SKL_WATER_2", name="Sóng Triều", lv=20, mp=18, cd=5, mult=1.5, kind="wave", range="Ngắn", text="150% ATK, làm chậm 30% trong 3 giây"),
+                          dict(id="SKL_WATER_3", name="Thủy Tiễn Xuyên Sóng", lv=30, mp=28, cd=8, mult=2.3, kind="beam", range="Xa", text="230% ATK, tia nước")]),
+}
+LOCKED_CLASSES = {"WIND": "Phong Kiếm Khách", "BOLT": "Lôi Chiến Binh", "EARTH": "Thổ Hộ Vệ", "PLANT": "Mộc Thuật Sư", "DARK": "Ám Pháp Sư"}
 SETS = {"S1": dict(name="Dân Làng", bonus={"2": "+5% HP", "4": "+8% ATK, +8% DEF"})}
 SHOPS = {"NPC003": dict(name="Tiệm thuốc của Lam Nhi", sells=["potion_hp", "potion_hp_m", "potion_mp", "potion_mp_m"])}
 
@@ -422,6 +451,17 @@ def build_item_content():
             lines.append(f"levelBand: [{v['levelBand'][0]}, {v['levelBand'][1]}]   # rolled from the monster level")
         with open(os.path.join(d, f"{k}.yaml"), "w", encoding="utf-8") as f:
             f.write("# prototype item (step A1)\n" + "\n".join(lines) + "\n")
+    with open(os.path.join(mk("content", "classes"), "origins.yaml"), "w", encoding="utf-8") as f:
+        f.write("# Origins (classes section 2), prototype step A2. base/growth: HP, MP, ATK, DEF\n")
+        for k, v in ORIGIN_DATA.items():
+            f.write(f"{k}:\n  nameKey: origin.{k.lower()}.name\n  base: {v['base']}\n  growth: {v['growth']}\n"
+                    f"  passiveKey: origin.{k.lower()}.passive\n")
+    for k, v in CLASS_DATA.items():
+        with open(os.path.join(mk("content", "classes"), f"{k.lower()}.yaml"), "w", encoding="utf-8") as f:
+            f.write(f"# {k} class, skills 1-3 (classes section 3-4), prototype step A2\nid: {k}\nnameKey: class.{k.lower()}.name\nskills:\n")
+            for sk in v["skills"]:
+                f.write(f"  - {{ id: {sk['id']}, unlockLevel: {sk['lv']}, mp: {sk['mp']}, cooldownSec: {sk['cd']}, "
+                        f"atkMult: {sk['mult']}, shape: {sk['kind']} }}\n")
     with open(os.path.join(mk("content", "shops"), "npc003.yaml"), "w", encoding="utf-8") as f:
         f.write("# Lam Nhi sells potions and buys items back at 25% (economy section 3), prototype step A1\n"
                 "npc: NPC003\nnameKey: shop.npc003.name\ncurrency: SOFT\n"
@@ -478,6 +518,14 @@ dialogue:
     for k, v in ITEM_DEFS.items():
         if k not in QUEST_ITEMS:
             lines.append(f"  {k}: \"{v['name']}\"")
+    lines.append("origin:")
+    for k, v in ORIGIN_DATA.items():
+        lines += [f"  {k.lower()}.name: \"{v['name']}\"", f"  {k.lower()}.passive: \"{v['passive']}: {v['passiveText']}\""]
+    lines.append("class:")
+    for k, v in CLASS_DATA.items():
+        lines.append(f"  {k.lower()}.name: \"{v['name']}\"")
+        for sk in v["skills"]:
+            lines.append(f"  skill.{sk['id'].lower()}: \"{sk['name']}\"")
     lines.append("shop:")
     for k, v in SHOPS.items():
         lines.append(f"  {k.lower()}: \"{v['name']}\"")
@@ -519,10 +567,11 @@ def build_playable():
     for n in ("r01.png", "collision.png"):
         shutil.copy(os.path.join(src_maps, "tilesets", n), os.path.join(root, "maps", "tilesets"))
     sh = os.path.join(OUT, "sheets")
-    shutil.copy(os.path.join(sh, "nhan_vat_hoa.png"), os.path.join(root, "sprites", "hero_hoa.png"))
     shutil.copy(os.path.join(sh, "npc_idle.png"), os.path.join(root, "sprites", "npc_idle.png"))
     shutil.copy(os.path.join(sh, "hieu_ung_hoa.png"), os.path.join(root, "sprites", "vfx_hoa.png"))
     shutil.copy(os.path.join(sh, "vat_pham.png"), os.path.join(root, "sprites", "items.png"))
+    shutil.copy(os.path.join(sh, "hieu_ung_thuy.png"), os.path.join(root, "sprites", "vfx_thuy.png"))
+    build_player_sheets(os.path.join(root, "sprites", "player"))
     mob_rows = {}
     for mid in ("MOB001", "MOB002", "MOB003", "MOB004", "MOB005", "MOB006", "MOB007", "BOSS034", "BOSS035", "BOSS036"):
         fr = monster_frames(mid)
@@ -557,10 +606,34 @@ def build_playable():
         "itemDefs": ITEM_DEFS,
         "sets": SETS,
         "shops": SHOPS,
+        "origins": ORIGIN_DATA,
+        "classes": CLASS_DATA,
+        "lockedClasses": LOCKED_CLASSES,
         "where": where,
     }
     with open(os.path.join(root, "data.json"), "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=1)
+
+
+def build_player_sheets(out):
+    """18 sheets: origin x gender x (novice, fire, water), same row layout as nhan_vat_*.png."""
+    from player_looks import GENDERS, LOOKS, ORIGINS, look_spec, sheet_name
+    os.makedirs(out, exist_ok=True)
+    lineup = []
+    for o in ORIGINS:
+        for g in GENDERS:
+            for lk in LOOKS:
+                spec = look_spec(o, g, lk)
+                ps = poses_for(spec)
+                _, flat = layered_frames(spec, [p for name, _ in ANIMS for p in ps[name]])
+                rows, i = [], 0
+                for name, n in ANIMS:
+                    rows.append(flat[i:i + n])
+                    i += n
+                sheet(rows).save(os.path.join(out, f"{sheet_name(o, g, lk)}.png"))
+                lineup.append(flat[0][10:90, 14:82])
+    from pix import to_image
+    to_image(np.concatenate(lineup, axis=1), 2, (200, 220, 240)).save(os.path.join(mk("preview"), "nguoi_choi_ngoai_hinh.png"))
 
 
 def build_maps():

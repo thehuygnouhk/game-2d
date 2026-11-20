@@ -10,7 +10,7 @@ Toàn bộ được vẽ bằng code ở [`tools/art-proto`](../../tools/art-pro
 |---------|----------|
 | `piskel/` | **File sửa được** trong Piskel: 8 nhân vật theo hệ, 9 NPC, 8 hiệu ứng chiêu, 1 bộ vật phẩm, 1 tileset vùng R01 |
 | `maps/` | **4 bản đồ vùng R01 (Chương 1)** cho Tiled và Phaser: `.tmj`, `.yaml`, tileset, nền parallax, ảnh xem trước (§1.5) |
-| `content/` | Dữ liệu thử Chương 1 theo schema [content-pipeline §3](../../docs/workflows/content-pipeline.md): `monsters/`, `bosses/`, `events/` (lịch boss theo giờ) (§1.6), `quests/` (chuỗi chính tuyến Chương 1, nguồn vật phẩm nhiệm vụ), `items/` (bình, Đồng Luyện, mẫu trang bị bộ S1, phần thưởng nhiệm vụ), `shops/npc003.yaml` (tiệm thuốc của Lam Nhi), `i18n/vi.yaml` (tên, thoại) |
+| `content/` | Dữ liệu thử Chương 1 theo schema [content-pipeline §3](../../docs/workflows/content-pipeline.md): `monsters/`, `bosses/`, `events/` (lịch boss theo giờ) (§1.6), `quests/` (chuỗi chính tuyến Chương 1, nguồn vật phẩm nhiệm vụ), `items/` (bình, Đồng Luyện, mẫu trang bị bộ S1, phần thưởng nhiệm vụ), `shops/npc003.yaml` (tiệm thuốc của Lam Nhi), `classes/` (3 xuất thân, Hỏa và Thủy với kỹ năng 1–3), `i18n/vi.yaml` (tên, thoại) |
 | `sheets/` | Sprite sheet PNG nền trong suốt, dùng cho game hoặc mở bằng Aseprite/LibreSprite |
 | `preview/` | GIF xem nhanh: chiêu thức, di chuyển, NPC, Huyền Thư; ảnh tổng hợp vật phẩm |
 

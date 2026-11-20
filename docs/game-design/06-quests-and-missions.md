@@ -71,6 +71,8 @@ stateDiagram-v2
 | Q_MAIN_11 | Đêm Trước Ngày Lễ | 9 | Thầy Bạch Vân | Cutscene với Thầy, Lam Nhi, Khôi | 1.200 EXP, mở khóa Lv10 |
 | Q_MAIN_12 | **Lễ Khai Thư** | 10 | Thầy Bạch Vân | Vào `I001`, chọn hệ phép | Huyền Thư Sơ Bản, Vũ khí hệ, 1 SP |
 
+> **Tạm thời ở bậc A2** ([roadmap §8](../product/roadmap.md)): DG01 và Q_MAIN_10–11 chưa có, nên Lễ Khai Thư mở qua **Thầy Bạch Vân** ngay khi đạt Lv10, có dấu **!** trên đầu NPC và dòng nhắc ở khung theo dõi. Từ bậc A3, Lễ Khai Thư gắn vào Q_MAIN_12 như bảng trên.
+
 **Mẫu thoại mở đầu `Q_MAIN_01` theo xuất thân:**
 
 - *Dân Làng:* "Hôm nay bạn là người tới nhà học sớm nhất. Thầy Bạch Vân đã ngồi đọc sách bên hiên."
