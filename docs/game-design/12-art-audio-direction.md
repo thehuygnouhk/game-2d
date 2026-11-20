@@ -141,7 +141,7 @@ Mọi đòn trúng phải **nhìn thấy được** ngay cả khi người chơi
 
 | Hạng mục | Quy định |
 |----------|----------|
-| Phong cách | Giấy da + khung kim loại tối, viền vàng; nút bo nhẹ |
+| Phong cách | Nền giấy da, khung **gỗ tối viền vàng** có đinh tán ở góc, tiêu đề trên dải ruy băng đỏ (kiểu NSO/NRO); nút vàng (chính), xanh lá (trả, nhận thưởng), nâu (phụ), bo nhẹ. Mẫu: cửa sổ Nhiệm vụ, Lịch Boss, hộp thoại NPC trong [bản chơi thử](../../prototype/playable/README.md) |
 | Phông chữ | Một phông UI sans hỗ trợ đầy đủ tiếng Việt (đề xuất *Be Vietnam Pro*), phông tiêu đề pixel/serif trang trí (kiểm tra dấu tiếng Việt) |
 | Biểu tượng | 32×32 và 64×64, viền theo độ hiếm |
 | Chân dung NPC | 128×128, tối thiểu 2 biểu cảm (bình thường, vui/giận) |

@@ -76,6 +76,21 @@ Mở bằng nút **Lịch Boss** cạnh mini-map, hoặc tại bảng tin của 
 
 Boss chưa đủ cấp để nhận thưởng (bảo vệ tân thủ, [maps §5.2](05-world-maps-monsters.md#52-quy-tắc-boss-theo-giờ)) hiện ghi chú màu xám.
 
+### 3.1.3 Theo dõi nhiệm vụ
+
+Khung nằm dưới khung nhân vật (dưới khung mục tiêu nếu đang chọn). Bấm vào để mở cửa sổ Nhiệm vụ (§6.4).
+
+| Trạng thái ([quests §2](06-quests-and-missions.md)) | Hiển thị |
+|-----------|----------|
+| Có thể nhận | Tên nhiệm vụ, "Gặp *NPC* để nhận"; viền vàng |
+| Chưa đủ cấp | "Đạt Lv N để nhận", chữ xám |
+| Đang làm | Từng mục tiêu với tiến độ `n/N`; mục xong chuyển xanh |
+| Chờ trả | "✔ Về gặp *NPC*"; viền xanh nhấp nháy |
+
+- Mỗi lần có tiến độ, chữ "*Mục tiêu* n/N" bay lên trên đầu nhân vật.
+- Nhận và trả nhiệm vụ hiện **dải ruy băng** giữa màn hình trong khoảng 3 giây: "Nhận nhiệm vụ" (đỏ), "Hoàn thành nhiệm vụ" (xanh, kèm phần thưởng).
+- Nút **Nhiệm vụ** cạnh nút Lịch Boss có chấm vàng khi có nhiệm vụ để nhận hoặc để trả.
+
 ### 3.2 Bố cục Mobile (ngang)
 
 ```text
@@ -162,6 +177,8 @@ NPC hiện **hộp thoại + menu dọc tối đa 5 mục**:
 
 - Biểu tượng trên đầu NPC: **!** vàng (có nhiệm vụ mới), **?** vàng (nhiệm vụ sẵn sàng trả), **?** xám (đang làm), **🛒** cửa hàng.
 - Gõ **F** hoặc chạm hai lần để nói chuyện, tự dừng chạy khi ở tầm.
+- Trong hộp thoại: phím **1–5** chọn mục; **F**, **Enter** hoặc **Space** chọn mục đầu; **Esc** đóng. Khi hộp thoại hoặc cửa sổ Nhiệm vụ đang mở, nhân vật đứng yên.
+- Mục có nhiệm vụ đứng đầu, kèm dấu **!** hoặc **?** như trên đầu NPC. Trả xong, nếu NPC còn nhiệm vụ kế tiếp thì hiện mục *Còn việc gì nữa ạ?* để nghe ngay.
 
 ## 6. Cửa sổ chính
 
@@ -183,6 +200,19 @@ NPC hiện **hộp thoại + menu dọc tối đa 5 mục**:
 ### 6.4 Nhiệm vụ
 - Tab: **Chính**, **Phụ**, **Ngày/Tuần**, **Sự kiện**.
 - Nhiệm vụ chính ghim; bấm **Đi tới** để tự chạy tới NPC/map (auto-path).
+- **Tab Chính:** bên trái là danh sách theo chương (✓ đã xong, nhiệm vụ hiện tại tô vàng, các nhiệm vụ sau khóa) kèm thanh tiến độ chương. Bên phải là chi tiết:
+  - tên và nhãn trạng thái;
+  - người giao, người trả kèm chân dung;
+  - lời NPC theo trạng thái (lúc giao, lúc đang làm, lúc xong);
+  - **Mục tiêu**: ô đánh dấu, nơi làm (map, quái rơi và tỉ lệ), thanh `n/N`;
+  - **Phần thưởng**: icon EXP, Quan, vật phẩm, chiêu;
+  - nút **Đi tới**, hoặc **Về trả nhiệm vụ** khi đã đủ.
+- **Tab Ngày/Tuần:** Bảng Nhiệm Vụ Pháp Vệ ([quests §7](06-quests-and-missions.md)) vẽ như **bảng gỗ ghim 10 tờ giấy**, mỗi tờ có mã, tên, nội dung, thưởng. Khi chưa mở, bảng đóng dấu "Mở ở Lv10".
+- **Tab Sự kiện:** boss theo giờ và sự kiện tuần, giờ kế tiếp, nút mở Lịch Boss.
+- **Đi tới:**
+  - Tự chạy tới NPC hoặc khu quái của mục tiêu kế tiếp, kể cả qua cổng sang map khác; tự nhảy bậc và hố.
+  - Bấm phím đi để dừng. Tới NPC thì tự mở hộp thoại.
+  - Không tới gần hơn được trong 4,5 giây thì dừng và báo.
 
 ### 6.5 Bản đồ
 - Bản đồ thế giới (R01–R09), điểm đã mở khóa sáng, nút **Dịch chuyển (Bác Tô)** khi ở Town.

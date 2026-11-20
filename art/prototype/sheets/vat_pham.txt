@@ -23,3 +23,9 @@
 22	huyen_thu_tu_ban
 23	huyen_thu_dinh_ban
 24	the_kep_trang
+25	cu_cai_non
+26	thao_duoc
+27	bao_tai
+28	manh_trang
+29	kiem_go_tap
+30	ao_suoi_mo

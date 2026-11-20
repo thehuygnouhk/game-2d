@@ -300,6 +300,163 @@ VI_NAMES = {
 }
 
 
+# Chapter 1 main quests (docs/game-design/06-quests-and-missions.md §4, format §11).
+# Display text lives in the i18n table below, not in the quest records.
+QUEST_ITEMS = {   # quest items: only drop while the quest needs them (quests §4.1)
+    "cu_cai_non": ("Củ Cải Non", {"mob": "MOB002", "chance": 0.5}),
+    "thao_duoc": ("Thảo Dược Suối Mơ", {"node": "M002", "respawnSec": 20}),
+    "bao_tai": ("Bao Tải Bị Lấy", {"mob": "MOB004", "chance": 0.25}),
+    "manh_trang": ("Mảnh Trang", {"mob": "MOB007", "chance": 0.3}),
+}
+REWARD_ITEMS = {"potion_hp": "Bình HP Nhỏ", "kiem_go_tap": "Kiếm Gỗ Tập", "ao_suoi_mo": "Áo Suối Mơ"}
+QUEST_DATA = [
+    # id, level, giver, turnIn, objectives, rewards, prototype-ready
+    ("Q_MAIN_01", 1, "NPC001", "NPC001", [dict(type="TALK", target="NPC002", map="M001")],
+     dict(exp=50, soft=100, items=[("potion_hp", 5)]), True),
+    ("Q_MAIN_02", 1, "NPC001", "NPC001", [dict(type="KILL", target="MOB001", count=5, map="M002")],
+     dict(exp=120, soft=80, items=[("kiem_go_tap", 1)]), True),
+    ("Q_MAIN_03", 2, "NPC040", "NPC040", [dict(type="KILL", target="MOB002", count=6, map="M002"),
+                                          dict(type="COLLECT", target="cu_cai_non", count=4, map="M002")],
+     dict(exp=200, soft=120), True),
+    ("Q_MAIN_04", 3, "NPC003", "NPC003", [dict(type="COLLECT", target="thao_duoc", count=5, map="M002")],
+     dict(exp=300, soft=150, items=[("potion_hp", 3)]), True),
+    ("Q_MAIN_05", 5, "NPC004", "NPC004", [dict(type="TALK", target="NPC004", map="M002"),
+                                          dict(type="USE_SKILL", target="SKL_MANA_BURST", count=3, map="M002")],
+     dict(exp=400, soft=200, skill="SKL_MANA_BURST"), True),
+    ("Q_MAIN_06", 5, "NPC040", "NPC040", [dict(type="KILL", target="MOB003", count=8, map="M003")],
+     dict(exp=600, soft=250), True),
+    ("Q_MAIN_07", 6, "NPC040", "NPC040", [dict(type="KILL", target="MOB004", count=6, map="M003"),
+                                          dict(type="COLLECT", target="bao_tai", count=1, map="M003")],
+     dict(exp=800, soft=300), True),
+    ("Q_MAIN_08", 7, "NPC002", "NPC002", [dict(type="KILL", target="MOB006", count=8, map="M004")],
+     dict(exp=1000, soft=350), True),
+    ("Q_MAIN_09", 8, "NPC003", "NPC003", [dict(type="KILL", target="MOB007", count=6, map="M004"),
+                                          dict(type="COLLECT", target="manh_trang", count=1, map="M004")],
+     dict(exp=1400, soft=400), True),
+    ("Q_MAIN_10", 9, "NPC001", "NPC001", [dict(type="BOSS", target="BOSS001", count=1, map="DG01")],
+     dict(exp=2000, soft=600, items=[("ao_suoi_mo", 1)]), False),
+    ("Q_MAIN_11", 9, "NPC001", "NPC001", [dict(type="TALK", target="NPC001", map="M001")],
+     dict(exp=1200), False),
+    ("Q_MAIN_12", 10, "NPC001", "NPC001", [dict(type="REACH", target="I001", map="I001")],
+     dict(), False),
+]
+QUEST_TEXT = {   # i18n vi: title, objective labels, dialogue (accept / progress / complete / extra talk)
+    "Q_MAIN_01": ("Buổi Sáng Ở Nhà Học", ["Chào Bà Mơ ở bếp nhà học"],
+                  "Sáng nay con đến sớm đấy. Ghé chào Bà Mơ ở bếp rồi quay lại đây, ta có việc nhờ.",
+                  "Bà Mơ ở ngay cạnh nhà học thôi, con.",
+                  "Ăn sáng no rồi mới học được. Cầm mấy bình thuốc này mà dùng.",
+                  {"NPC002": "Ôi, đến sớm thế! Cầm cái bánh này rồi về báo thầy nhé."}),
+    "Q_MAIN_02": ("Dọn Vườn Thuốc", ["Hạ Nấm Lùn"],
+                  "Lũ Nấm Lùn lại mọc tràn ra Đồng Hoa, giẫm nát cả vườn thuốc. Con ra dọn giúp ta năm con.",
+                  "Nấm Lùn ở phía trái Đồng Hoa, đi qua cổng cuối làng là thấy.",
+                  "Vườn thuốc sạch rồi. Thanh kiếm gỗ này hợp tay con đấy.", {}),
+    "Q_MAIN_03": ("Thỏ Phá Ruộng", ["Hạ Thỏ Đốm", "Nhặt Củ Cải Non"],
+                  "Thỏ Đốm đào nát ruộng củ cải của làng rồi! Đuổi chúng đi, nhặt lại giúp lão mấy củ còn lành.",
+                  "Thỏ ở nửa sau Đồng Hoa, gần cối xay gió. Củ cải rơi ra khi hạ thỏ.",
+                  "Củ còn tươi cả. Già này cảm ơn con.", {}),
+    "Q_MAIN_04": ("Hái Thảo Dược", ["Hái Thảo Dược Suối Mơ"],
+                  "Mình cần năm nhánh Thảo Dược Suối Mơ để chế thuốc. Nó mọc lấp lánh trên Đồng Hoa, cậu hái giúp nhé!",
+                  "Thảo dược có đốm sáng xanh. Đứng gần rồi nhấn F (hoặc chạm vào) để hái.",
+                  "Đủ rồi! Mình vừa chế xong mấy bình, cậu cầm đi đường.", {}),
+    "Q_MAIN_05": ("Bài Học Của Khôi", ["Gặp Khôi ở Đồng Hoa", "Đấu tập: Tụ Mana Chấn trúng quái"],
+                  "Muốn mạnh lên thì phải biết dồn mana. Ra Đồng Hoa gặp tớ, tớ chỉ cho.",
+                  "Dồn mana vào lòng bàn tay rồi đẩy ra. Nhấn phím 1, trúng ba lần là được.",
+                  "Khá đấy! Từ giờ Tụ Mana Chấn là chiêu của cậu.",
+                  {"NPC004": "Tới rồi à? Nhìn tớ này: dồn mana, rồi đẩy! Giờ cậu thử với lũ quái quanh đây."}),
+    "Q_MAIN_06": ("Chó Rừng Lạc Bầy", ["Hạ Chó Rừng Non"],
+                  "Đêm qua chó rừng mò tới tận bờ rào. Vào Rừng Mơ Non đuổi bớt tám con giúp lão.",
+                  "Chó Rừng Non ở đầu Rừng Mơ Non, đi hết Đồng Hoa là tới.",
+                  "Đêm nay làng ngủ yên rồi.", {}),
+    "Q_MAIN_07": ("Bao Tải Bị Lấy", ["Hạ Lùn Ném Đá", "Lấy lại Bao Tải Bị Lấy"],
+                  "Bác Tư bên suối bị lũ Lùn Ném Đá cướp mất bao tải hạt giống. Con đòi lại giúp lão.",
+                  "Lùn Ném Đá ở giữa Rừng Mơ Non. Cẩn thận đá bay.",
+                  "Bao tải đây rồi, hạt giống còn nguyên. Bác Tư sẽ mừng lắm.", {}),
+    "Q_MAIN_08": ("Giếng Làng Cạn", ["Hạ Dơi Giếng"],
+                  "Giếng làng cạn dần mà dưới hang toàn dơi. Con xuống Hang Giếng Cạn đuổi tám con đi.",
+                  "Hang Giếng Cạn ở cuối Rừng Mơ Non. Dơi bay thấp, đứng dưới mà đánh.",
+                  "Nước lại róc rách rồi. Tối nay bà nấu canh cho cả làng.", {}),
+    "Q_MAIN_09": ("Tờ Giấy Trắng", ["Hạ Rùa Đá Giếng", "Tìm Mảnh Trang"],
+                  "Rùa đá trong hang có nuốt một tờ giấy không chữ. Cậu tìm giúp mình được không?",
+                  "Rùa Đá Giếng ở sâu trong hang, mai cứng lắm.",
+                  "Trắng tinh… nhưng mình có cảm giác nó đang chờ ai đó viết lên.", {}),
+    "Q_MAIN_10": ("Trang Lạc", ["Hạ Trang Lạc trong hầm ngục DG01"],
+                  "Có thứ gì đó trú trong đáy giếng cạn. Con đủ sức rồi, xuống xem đi.",
+                  "Cổng hầm ngục ở cuối Hang Giếng Cạn.", "Con đã lớn thật rồi.", {}),
+    "Q_MAIN_11": ("Đêm Trước Ngày Lễ", ["Trò chuyện cùng Thầy, Lam Nhi và Khôi"],
+                  "Mai là Lễ Khai Thư. Tối nay ở lại nhà học nhé.", "", "", {}),
+    "Q_MAIN_12": ("Lễ Khai Thư", ["Vào lễ đường, chọn hệ phép"],
+                  "Huyền Thư đang chờ con.", "", "", {}),
+}
+
+
+def _yaml_obj(o):
+    return "{ " + ", ".join(f"{k}: {v}" for k, v in o.items()) + " }"
+
+
+def build_quests():
+    """Chapter 1 quest records + vi i18n (content-pipeline §3.5, quests §11)."""
+    qd, i18n = mk("content", "quests", "main"), mk("content", "i18n")
+    prev = None
+    lines = ["# i18n vi (prototype): display text for quests and quest items", "quest:"]
+    for qid, lv, giver, turn_in, objs, rew, ready in QUEST_DATA:
+        n = qid.split("_")[-1]
+        items = rew.get("items", [])
+        rparts = [f"exp: {rew['exp']}"] if "exp" in rew else []
+        if "soft" in rew:
+            rparts.append(f"soft: {rew['soft']}")
+        if items:
+            rparts.append("items: [ " + ", ".join(f"{{ id: {i}, count: {c} }}" for i, c in items) + " ]")
+        if "skill" in rew:
+            rparts.append(f"skill: {rew['skill']}")
+        note = "" if ready else "# not playable in the browser prototype yet\n"
+        with open(os.path.join(qd, f"{qid.lower()}.yaml"), "w", encoding="utf-8") as f:
+            f.write(f"""{note}id: {qid}
+type: MAIN
+nameKey: quest.main.{n}.title
+descKey: quest.main.{n}.desc
+chapter: 1
+levelMin: {lv}
+prerequisites: [{prev or ""}]
+giver: {giver}
+turnIn: {turn_in}
+objectives:
+""" + "".join(f"  - {_yaml_obj(o)}\n" for o in objs) + f"""rewards: {{ {", ".join(rparts)} }}
+dialogue:
+  accept: dlg.q_main_{n}.accept
+  progress: dlg.q_main_{n}.progress
+  complete: dlg.q_main_{n}.complete
+""")
+        prev = qid
+        title, olabels, acc, prog, comp, extra = QUEST_TEXT[qid]
+        lines += [f"  main.{n}:", f"    title: \"{title}\"", "    objectives:"]
+        lines += [f"      - \"{t}\"" for t in olabels]
+        lines += [f"    accept: \"{acc}\"", f"    progress: \"{prog}\"", f"    complete: \"{comp}\""]
+        for npc, t in extra.items():
+            lines.append(f"    talk.{npc.lower()}: \"{t}\"")
+    lines.append("item:")
+    for k, (name, _) in QUEST_ITEMS.items():
+        lines.append(f"  {k}: \"{name}\"")
+    for k, name in REWARD_ITEMS.items():
+        lines.append(f"  {k}: \"{name}\"")
+    with open(os.path.join(i18n, "vi.yaml"), "w", encoding="utf-8") as f:
+        f.write("\n".join(lines) + "\n")
+    with open(os.path.join(mk("content", "quests"), "quest_items.yaml"), "w", encoding="utf-8") as f:
+        f.write("# Quest item sources (quests section 4.1). Drops only while the quest still needs the item.\n")
+        for k, (_, src) in QUEST_ITEMS.items():
+            f.write(f"{k}: {_yaml_obj(src)}\n")
+
+
+def quest_json():
+    out = []
+    for qid, lv, giver, turn_in, objs, rew, ready in QUEST_DATA:
+        title, olabels, acc, prog, comp, extra = QUEST_TEXT[qid]
+        out.append(dict(id=qid, lv=lv, giver=giver, turnIn=turn_in, ready=ready, title=title,
+                        objectives=[dict(o, label=olabels[i], count=o.get("count", 1)) for i, o in enumerate(objs)],
+                        rewards=dict(rew, items=[[i, c] for i, c in rew.get("items", [])]),
+                        accept=acc, progress=prog, complete=comp, talk=extra))
+    return out
+
+
 def build_playable():
     """Assets + data.json for the browser prototype in prototype/playable (single source with content/)."""
     import json
@@ -329,6 +486,16 @@ def build_playable():
         rows = [a for a in ALL_ANIMS if a in fr]
         sheet([fr[a] for a in rows]).save(os.path.join(root, "sprites", f"{mid.lower()}.png"))
         mob_rows[mid] = {"size": MONSTERS[mid][1], "rows": {a: [i, len(fr[a])] for i, a in enumerate(rows)}}
+    where = {}   # NPC and mob spawn positions per map, for quest auto-path (ui-ux §6.4 "Đi tới")
+    for n in ("m001", "m002", "m003", "m004"):
+        with open(os.path.join(root, "maps", f"{n}.tmj"), encoding="utf-8") as f:
+            tm = json.load(f)
+        for layer in tm["layers"]:
+            for o in layer.get("objects", []):
+                pr = {p["name"]: p["value"] for p in o.get("properties", [])}
+                key = pr.get("id") if o.get("type") == "npc" else pr.get("mob") if o.get("type") == "mob_spawn" else None
+                if key:
+                    where.setdefault(key, []).append([n.upper(), round(o["x"])])
     data = {
         "names": VI_NAMES,
         "npcOrder": [k.split("_")[0] for k in NPCS],
@@ -341,6 +508,10 @@ def build_playable():
         "weeklyEvents": [dict(id="EVT_R01_WELL_NIGHT", name="Đêm Giếng Sáng", boss="BOSS036", map="M004", day=5,
                               start="20:00", end="21:00", everyMin=20)],
         "items": [n for n, _ in all_icons()],
+        "quests": quest_json(),
+        "questItems": {k: dict(name=v[0], **v[1]) for k, v in QUEST_ITEMS.items()},
+        "rewardItems": REWARD_ITEMS,
+        "where": where,
     }
     with open(os.path.join(root, "data.json"), "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=1)
@@ -411,6 +582,12 @@ if __name__ == "__main__":
         build_maps()
         print("maps built into", OUT)
         sys.exit(0)
+    if len(sys.argv) > 2 and sys.argv[2] == "quests":
+        build_items()
+        build_quests()
+        build_playable()
+        print("quests, item icons and playable data built")
+        sys.exit(0)
     if len(sys.argv) > 2 and sys.argv[2] == "playable":
         build_playable()
         print("playable assets built")
@@ -424,11 +601,12 @@ if __name__ == "__main__":
         sys.exit(0)
     build_monsters()
     build_content()
+    build_quests()
     build_maps()
     build_heroes()
-    build_playable()
     build_npcs()
     build_items()
     build_vfx()
     build_tomes()
+    build_playable()   # last: copies the sheets built above
     print("built into", OUT)

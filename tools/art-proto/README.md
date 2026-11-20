@@ -9,14 +9,14 @@ Công cụ vẽ pixel art bằng code để **thử phong cách** nhân vật, s
 | `templates.py` | Đầu, mắt, tóc, ủng, Huyền Thư chấm tay từng pixel |
 | `hero.py` | Bộ vẽ nhân vật theo lớp: đồng phục, áo dài, áo ngắn, áo choàng có huy hiệu quẻ, Huyền Thư 3 ấn bản |
 | `npcs.py` | 8 NPC |
-| `items.py` | 25 icon vật phẩm 32×32 |
+| `items.py` | 31 icon vật phẩm 32×32, gồm vật phẩm nhiệm vụ Chương 1 |
 | `vfx.py` | Hiệu ứng chiêu 8 hệ, hình nộm tập |
 | `demo.py` | Ghép nhân vật thi triển, đạn bay, trúng đích |
 | `tiles_rich.py` | Tileset vùng R01: vách đất bo tròn, cỏ phủ chờm, thác nước, hang đá; nhà phố, Nhà Học có tháp tròn, cối xay gió, giếng, đèn đường |
 | `maps.py` | Bộ dựng map: chọn ô mép theo hàng xóm, xuất Tiled `.tmj` (tileset nhúng) và `.yaml`, nền parallax, ảnh xem trước |
 | `maps_r01.py` | Bố cục M001–M004, khu cấp độ, điểm boss theo giờ, nối cổng |
 | `monsters.py` | 7 quái Chương 1, Trang Lạc và Mảnh Trang, 3 boss theo giờ (kiểu quái thú ma lực) |
-| `build.py` | Xuất toàn bộ vào [`art/prototype`](../../art/prototype/README.md) (`build.py <thư mục> maps` chỉ dựng bản đồ; `build.py <thư mục> monsters` dựng quái, dữ liệu và bản đồ) |
+| `build.py` | Xuất toàn bộ vào [`art/prototype`](../../art/prototype/README.md) (`build.py <thư mục> maps` chỉ dựng bản đồ; `build.py <thư mục> monsters` dựng quái, dữ liệu và bản đồ; `build.py <thư mục> quests` dựng nhiệm vụ, icon và dữ liệu bản chơi thử) |
 | `sample.py` | Bộ mẫu phong cách đầu tiên |
 
 Chạy (cần Python 3, numpy, Pillow):

@@ -1,0 +1,17 @@
+id: Q_MAIN_09
+type: MAIN
+nameKey: quest.main.09.title
+descKey: quest.main.09.desc
+chapter: 1
+levelMin: 8
+prerequisites: [Q_MAIN_08]
+giver: NPC003
+turnIn: NPC003
+objectives:
+  - { type: KILL, target: MOB007, count: 6, map: M004 }
+  - { type: COLLECT, target: manh_trang, count: 1, map: M004 }
+rewards: { exp: 1400, soft: 400 }
+dialogue:
+  accept: dlg.q_main_09.accept
+  progress: dlg.q_main_09.progress
+  complete: dlg.q_main_09.complete

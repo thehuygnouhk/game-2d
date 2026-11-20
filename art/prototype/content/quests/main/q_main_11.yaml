@@ -1,0 +1,17 @@
+# not playable in the browser prototype yet
+id: Q_MAIN_11
+type: MAIN
+nameKey: quest.main.11.title
+descKey: quest.main.11.desc
+chapter: 1
+levelMin: 9
+prerequisites: [Q_MAIN_10]
+giver: NPC001
+turnIn: NPC001
+objectives:
+  - { type: TALK, target: NPC001, map: M001 }
+rewards: { exp: 1200 }
+dialogue:
+  accept: dlg.q_main_11.accept
+  progress: dlg.q_main_11.progress
+  complete: dlg.q_main_11.complete

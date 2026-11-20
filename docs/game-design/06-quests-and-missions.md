@@ -64,7 +64,7 @@ stateDiagram-v2
 | Q_MAIN_04 | Hái Thảo Dược | 3 | Lam Nhi | Thu thập 5 Thảo Dược Suối Mơ, giao Lam Nhi | 300 EXP, 150 Quan, 3 Bình HP Nhỏ |
 | Q_MAIN_05 | Bài Học Của Khôi | 5 | Khôi | Gặp Khôi ở M002; đấu tập học **Tụ Mana Chấn** | 400 EXP, 200 Quan, Tụ Mana Chấn |
 | Q_MAIN_06 | Chó Rừng Lạc Bầy | 5 | Cụ Trương | Hạ 8 Chó Rừng Non (M003) | 600 EXP, 250 Quan |
-| Q_MAIN_07 | Bao Tải Bị Lấy | 6 | Dân làng | Hạ 6 Lùn Ném Đá, nhặt Bao Tải Bị Lấy | 800 EXP, 300 Quan |
+| Q_MAIN_07 | Bao Tải Bị Lấy | 6 | Cụ Trương (thay bác Tư bên suối) | Hạ 6 Lùn Ném Đá, nhặt Bao Tải Bị Lấy | 800 EXP, 300 Quan |
 | Q_MAIN_08 | Giếng Làng Cạn | 7 | Bà Mơ | Vào M004, hạ 8 Dơi Giếng | 1.000 EXP, 350 Quan |
 | Q_MAIN_09 | Tờ Giấy Trắng | 8 | Lam Nhi | Hạ 6 Rùa Đá Giếng, nhặt Mảnh Trang | 1.400 EXP, 400 Quan |
 | Q_MAIN_10 | **Trang Lạc** | 9 | Thầy Bạch Vân | Hạ BOSS001 trong hầm ngục DG01 (một mình hoặc nhóm) | 2.000 EXP, 600 Quan, Áo Suối Mơ |
@@ -76,6 +76,19 @@ stateDiagram-v2
 - *Dân Làng:* "Hôm nay bạn là người tới nhà học sớm nhất. Thầy Bạch Vân đã ngồi đọc sách bên hiên."
 - *Thế Gia:* "Gia đình gửi bạn về làng này để học thuốc và học chữ. Thầy Bạch Vân gật đầu chào, không hỏi thêm gì."
 - *Hậu Duệ Tộc Cổ Thư:* "Những vệt chữ mờ trên cổ tay khiến lũ trẻ trong làng tò mò. Thầy Bạch Vân luôn bảo chúng: chữ nào cũng có câu chuyện của nó."
+
+### 4.1 Vật phẩm nhiệm vụ
+
+Vật phẩm nhiệm vụ **chỉ rơi khi người chơi đang nhận nhiệm vụ và còn thiếu**. Chúng nằm ở tab *Nhiệm vụ* của túi, không bán, không giao dịch, mất khi trả nhiệm vụ.
+
+| Vật phẩm | Nhiệm vụ | Nguồn |
+|----------|----------|-------|
+| Củ Cải Non | Q_MAIN_03 | Thỏ Đốm, 50% mỗi con |
+| Thảo Dược Suối Mơ | Q_MAIN_04 | 8 bụi thảo dược phát sáng trên Đồng Hoa (M002). Chỉ người đang nhận nhiệm vụ thấy; hái bằng F hoặc chạm; mọc lại sau 20 giây |
+| Bao Tải Bị Lấy | Q_MAIN_07 | Lùn Ném Đá, 25% |
+| Mảnh Trang | Q_MAIN_09 | Rùa Đá Giếng, 30% |
+
+Dữ liệu thử của chuỗi Chương 1 (định dạng §11) nằm ở [`art/prototype/content/quests`](../../art/prototype/README.md); chữ hiển thị ở `content/i18n/vi.yaml`.
 
 ## 5. Chính tuyến — Chương 2 (Lv 10–24) tóm lược
 

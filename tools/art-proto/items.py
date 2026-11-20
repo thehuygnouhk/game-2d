@@ -185,6 +185,110 @@ def bookmark():
     return cv
 
 
+# ---- quest items and Chapter 1 quest rewards (docs/game-design/06-quests-and-missions.md §4) ----
+def radish():
+    cv = canvas(S, S)
+    leaf_r = ramp("#4caf50", light="#9be27f", dark="#2b6e33", outline="#123d1c")
+    for pts in (((15, 12), (9, 2), (7, 5), (12, 12)), ((16, 12), (17, 1), (20, 3), (18, 12)),
+                ((17, 12), (25, 4), (26, 8), (19, 13))):
+        paint(cv, g.poly(list(pts)), leaf_r, shade=(0, 1, 1))
+    body = g.ellipse(16, 18, 7.5, 6.5) | g.poly([(9, 19), (23, 19), (16, 30)])
+    paint(cv, body, ramp("#f08bb0", light="#ffe0ec", dark="#b8507a", outline="#4a1630"), shade=(1, 1, 2))
+    fill(cv, g.ellipse(16, 13, 6, 1.6) & body, hex_rgb("#fff3f7"))
+    for (a, b) in (((11, 21), (13, 21)), ((19, 23), (21, 23)), ((14, 26), (15, 26))):
+        fill(cv, g.capsule(*a, *b, 0.3) & body, hex_rgb("#b8507a"))
+    put(cv, 12, 15, WHITE)
+    return cv
+
+
+def herb_sprig():
+    cv = canvas(S, S)
+    stem = ramp("#3f8f4a", light="#7cc96b", outline="#123d1c")
+    fill(cv, dilate4(g.polyline([(16, 30), (15, 22), (16, 14), (15, 7)], 0.6)), stem.o)
+    fill(cv, g.polyline([(16, 30), (15, 22), (16, 14), (15, 7)], 0.6), stem.b)
+    leaf_r = ramp("#5cb85c", light="#b5ec95", dark="#2f7a3a", outline="#123d1c")
+    for (cx, cy, side) in ((15, 24, -1), (16, 20, 1), (15, 15, -1), (16, 11, 1)):
+        tip = (cx + side * 9, cy - 4)
+        m = g.poly([(cx, cy), (cx + side * 4, cy - 4), tip, (cx + side * 5, cy + 1)])
+        paint(cv, m, leaf_r, shade=(0, 1, 1))
+        fill(cv, g.capsule(cx, cy, cx + side * 6, cy - 3, 0.3) & m, leaf_r.d)
+    glow = ramp("#7fe7ff", light="#e8fbff", dark="#2fa8d0", outline="#0c4a5e")
+    for (fx, fy) in ((15, 5), (24, 13), (7, 18)):
+        paint(cv, g.disc(fx, fy, 2.4), glow, shade=None)
+        put(cv, fx, fy, WHITE)
+    for (sx, sy) in ((27, 6), (5, 9)):
+        fill(cv, g.capsule(sx - 1.5, sy, sx + 1.5, sy, 0.3) | g.capsule(sx, sy - 1.5, sx, sy + 1.5, 0.3), hex_rgb("#e8fbff"))
+    return cv
+
+
+def sack():
+    cv = canvas(S, S)
+    burlap = ramp("#c9a26b", light="#ecd3a2", dark="#8f6a3a", outline="#3d2a12")
+    body = g.poly([(9, 12), (23, 12), (27, 20), (26, 27), (21, 30), (11, 30), (6, 27), (5, 20)])
+    neck = g.poly([(12, 6), (20, 6), (19, 12), (13, 12)])
+    paint(cv, body, burlap, shade=(1, 1, 2))
+    paint(cv, neck, burlap, shade=(0, 1, 1))
+    paint(cv, g.poly([(9, 3), (14, 6), (18, 6), (23, 3), (21, 9), (11, 9)]), burlap, shade=None)
+    rope = ramp("#7a4a24", light="#b07a44", outline="#2a1608")
+    paint(cv, g.capsule(11, 12, 21, 12, 1.2), rope, shade=None)
+    paint(cv, g.capsule(21, 12, 24, 16, 0.8), rope, shade=None)
+    patch = g.rect(15, 19, 21, 24)
+    paint(cv, patch, ramp("#a07a4a", light="#c9a26b", outline="#3d2a12"), shade=None)
+    for k in range(3):
+        put(cv, 16 + k * 2, 19, hex_rgb("#f3e2b8"))
+        put(cv, 16 + k * 2, 24, hex_rgb("#f3e2b8"))
+    for (x, y) in ((8, 22), (10, 26), (24, 22)):
+        put(cv, x, y, burlap.d)
+    return cv
+
+
+def torn_page():
+    cv = canvas(S, S)
+    paper = ramp("#fbf6ea", light="#ffffff", dark="#d8cdb2", outline="#5a4a2e")
+    pts = [(7, 4), (24, 3), (26, 12), (23, 15), (26, 19), (22, 23), (25, 28), (9, 29), (6, 21), (8, 16), (5, 11)]
+    page = g.poly(pts)
+    paint(cv, page, paper, shade=(1, 1, 1))
+    for y in (9, 13, 17, 21, 25):
+        fill(cv, g.capsule(9, y, 20, y, 0.25) & page, hex_rgb("#ece3cf"))
+    glint = hex_rgb("#bfe8ff")
+    fill(cv, g.capsule(17, 10, 21, 10, 0.4) | g.capsule(19, 8, 19, 12, 0.4), glint)
+    put(cv, 19, 10, WHITE)
+    put(cv, 11, 22, glint)
+    return cv
+
+
+def wooden_sword():
+    cv = canvas(S, S)
+    wood = ramp("#c48d5c", light="#e8bf8a", dark="#8a5a32", outline="#3e2417")
+    blade = g.capsule(10, 22, 25, 7, 2.2) | g.poly([(24, 5), (28, 4), (27, 8)])
+    paint(cv, blade, wood, shade=(1, 1, 2))
+    fill(cv, g.capsule(12, 19, 24, 7, 0.4) & blade, wood.l)
+    guard = g.capsule(6, 18, 14, 26, 1.6)
+    paint(cv, guard, ramp("#7a4a24", light="#a8703c", outline="#2a1608"), shade=None)
+    grip = g.capsule(4, 28, 9, 23, 1.6)
+    paint(cv, grip, ramp("#3a5a8a", light="#6a8ac0", outline="#14223a"), shade=None)
+    for k in range(2):
+        fill(cv, g.capsule(5 + k * 2, 25 + k * 0, 7 + k * 2, 27 - k * 0, 0.3) & grip, hex_rgb("#14223a"))
+    paint(cv, g.disc(4, 29, 1.6), ramp("#e8b04a", light="#ffe7a3", outline="#5a3a0a"), shade=None)
+    return cv
+
+
+def tunic():
+    cv = canvas(S, S)
+    cloth = ramp("#3a8f86", light="#6fc9bd", dark="#22605a", outline="#0c2a26")
+    body = g.poly([(11, 5), (21, 5), (28, 10), (25, 16), (22, 14), (22, 28), (10, 28), (10, 14), (7, 16), (4, 10)])
+    paint(cv, body, cloth, shade=(1, 1, 2))
+    gold = hex_rgb("#e8b04a")
+    fill(cv, g.poly([(13, 5), (19, 5), (16, 11)]), hex_rgb("#f3e2b8"))
+    fill(cv, g.capsule(16, 11, 16, 27, 0.4), gold)
+    fill(cv, g.capsule(10, 26, 22, 26, 0.5) & body, gold)
+    fill(cv, g.capsule(10, 20, 22, 20, 0.6) & body, hex_rgb("#7a4a24"))
+    put(cv, 16, 20, gold)
+    fill(cv, g.capsule(5, 11, 8, 15, 0.4) & body, gold)
+    fill(cv, g.capsule(27, 11, 24, 15, 0.4) & body, gold)
+    return cv
+
+
 def all_icons():
     icons = []
     for name in CLASSES:
@@ -197,4 +301,6 @@ def all_icons():
               ("la_thuoc_co", leaf()), ("choi_bay", broom()),
               ("huyen_thu_so_ban", tome_icon("draft")), ("huyen_thu_tu_ban", tome_icon("revised")),
               ("huyen_thu_dinh_ban", tome_icon("final")), ("the_kep_trang", bookmark())]
+    icons += [("cu_cai_non", radish()), ("thao_duoc", herb_sprig()), ("bao_tai", sack()),
+              ("manh_trang", torn_page()), ("kiem_go_tap", wooden_sword()), ("ao_suoi_mo", tunic())]
     return icons

@@ -10,7 +10,7 @@ python3 -m http.server 8000 --directory prototype/playable
 
 Mở `http://localhost:8000`, bấm vào màn chơi rồi dùng bàn phím hoặc chuột.
 
-**Điện thoại, máy tính bảng:** xoay ngang. Bên trái là **cần điều khiển** (kéo ngang để đi, kéo lên để nhảy, leo thang hoặc qua cổng, kéo xuống để xuống nền). Bên phải là cụm nút: **Đánh** (to), 3 kỹ năng xếp vòng cung, **Nhảy**, 2 bình thuốc, và **Tự đánh**, **Treo máy**, **Đổi mục tiêu**. Chạm vào quái để khóa mục tiêu, chạm lại để bỏ; chạm NPC ở gần để nói chuyện. Trên máy tính, bật "Hiện phím ảo" trong công cụ thử để xem cần điều khiển.
+**Điện thoại, máy tính bảng:** xoay ngang. Bên trái là **cần điều khiển** (kéo ngang để đi, kéo lên để nhảy, leo thang hoặc qua cổng, kéo xuống để xuống nền). Bên phải là cụm nút: **Đánh** (to), 3 kỹ năng xếp vòng cung, **Nhảy**, 2 bình thuốc, và **Tự đánh**, **Treo máy**, **Đổi mục tiêu**. Chạm vào quái để khóa mục tiêu, chạm lại để bỏ; chạm NPC ở gần để nói chuyện, chạm bụi thảo dược ở gần để hái. Chạm khung Nhiệm vụ dưới thanh máu để mở bảng Nhiệm vụ. Trên máy tính, bật "Hiện phím ảo" trong công cụ thử để xem cần điều khiển.
 
 | Phím | Việc |
 |------|------|
@@ -24,8 +24,10 @@ Mở `http://localhost:8000`, bấm vào màn chơi rồi dùng bàn phím hoặ
 | G | Tự đánh (Lv1, 100% EXP): đánh mục tiêu, tự chuyển con kế, tự uống bình khi HP < 40% |
 | H | Treo máy (Lv20, 70% EXP và Quan, không đánh boss); nút "Mở Treo máy sớm" để thử |
 | Q, E | Bình Máu, Bình Mana |
-| F | Nói chuyện (Cụ Trương mở Lịch Boss) |
-| N | Lịch Boss |
+| F | Nói chuyện với NPC, hái thảo dược |
+| L | Bảng Nhiệm vụ (Esc đóng) |
+| 1–5, F, Esc trong hộp thoại NPC | Chọn mục, chọn mục đầu, đóng |
+| N | Lịch Boss (cũng có ở bảng tin của Cụ Trương) |
 
 ## Mô phỏng gì, theo tài liệu nào
 
@@ -42,13 +44,15 @@ Mở `http://localhost:8000`, bấm vào màn chơi rồi dùng bàn phím hoặ
 | Mục tiêu, mũi tên, phím ảo trên điện thoại | [ui-ux §3.2–3.3](../../docs/game-design/11-ui-ux-spec.md) |
 | Tự đánh và Treo máy | [combat §8](../../docs/game-design/04-combat-and-progression.md) |
 | Bản đồ đi tới được (nhảy 3 ô, đảo cỏ xuyên từ dưới) | [maps §1.1](../../docs/game-design/05-world-maps-monsters.md), quy tắc V016 |
+| Chuỗi chính tuyến Chương 1 Q_MAIN_01–09: nhận, làm, trả, thưởng; vật phẩm nhiệm vụ chỉ rơi khi còn thiếu; bụi Thảo Dược | [quests §2–4.1](../../docs/game-design/06-quests-and-missions.md), dữ liệu ở [`art/prototype/content/quests`](../../art/prototype/README.md) |
+| Khung theo dõi nhiệm vụ, dấu ! ? trên đầu NPC, hộp thoại NPC, cửa sổ Nhiệm vụ 4 tab, nút Đi tới, dải ruy băng nhận/trả | [ui-ux §3.1.3, §5, §6.4](../../docs/game-design/11-ui-ux-spec.md), [art §7](../../docs/game-design/12-art-audio-direction.md) |
 
-Giá trị **chưa có trong tài liệu**, dùng tạm cho bản thử: cách tự cộng điểm tiềm năng (mỗi cấp 2 HP, 2 ATK, 1 DEF), bình thuốc hồi 40%, hệ số chiêu boss (dậm 180%, lao 200%, sà 200%, mưa pha lê 120%).
+Giá trị **chưa có trong tài liệu**, dùng tạm cho bản thử: cách tự cộng điểm tiềm năng (mỗi cấp 2 HP, 2 ATK, 1 DEF), bình thuốc hồi 40%, hệ số chiêu boss (dậm 180%, lao 200%, sà 200%, mưa pha lê 120%). Q_MAIN_05: phần "đấu tập với Khôi" thay bằng "Tụ Mana Chấn trúng quái 3 lần" vì bản thử chưa có đấu tập. Q_MAIN_10–12 hiện trong bảng nhưng chưa làm được (cần hầm ngục DG01 và lễ đường).
 
-**Công cụ thử** dưới màn chơi: tốc độ giờ (×1, ×60, ×300), gọi boss của map ngay, boss còn 20% máu để đánh một mình (bật sẵn), tăng tỉ lệ Tinh anh và Thủ lĩnh ×10, thử hệ Hỏa, +1 cấp.
+**Công cụ thử** dưới màn chơi: tốc độ giờ (×1, ×60, ×300), gọi boss của map ngay, boss còn 20% máu để đánh một mình (bật sẵn), tăng tỉ lệ Tinh anh và Thủ lĩnh ×10, thử hệ Hỏa, +1 cấp, xong mục tiêu nhiệm vụ hiện tại (để xem nhanh các nhiệm vụ sau).
 
 ## Dựng lại asset
 
-`assets/` do `python3 tools/art-proto/build.py` sinh ra (bước `build_playable`), cùng nguồn với dữ liệu thử ở `art/prototype/content`. Không sửa tay trong `assets/`.
+`assets/` do `python3 tools/art-proto/build.py` sinh ra (bước `build_playable`), cùng nguồn với dữ liệu thử ở `art/prototype/content`. Không sửa tay trong `assets/`. Chỉ dựng lại nhiệm vụ, icon và `data.json`: `python3 tools/art-proto/build.py art/prototype quests`.
 
 Chưa có: hầm ngục DG01 (Trang Lạc), map Thượng Đô, nhặt đồ theo quyền sát thương, nhóm, nhiều khu.

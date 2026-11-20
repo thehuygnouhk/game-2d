@@ -45,7 +45,8 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
 .hud { position: absolute; pointer-events: none; font-size: 1.35cqw; line-height: 1.25; text-shadow: 0 1px 0 #000, 0 0 3px #000; }
 .box { background: var(--panel); border: 1px solid var(--line); border-radius: 0.5cqw; padding: 0.6cqw 0.8cqw; }
 
-#hud-player { left: 1cqw; top: 1cqw; width: 24cqw; display: grid; gap: 0.35cqw; }
+#hud-left { left: 1cqw; top: 1cqw; width: 24cqw; display: flex; flex-direction: column; gap: 0.6cqw; align-items: flex-start; }
+#hud-player { display: grid; gap: 0.35cqw; width: 24cqw; box-sizing: border-box; }
 .who { display: flex; justify-content: space-between; font-weight: 700; }
 .who .lv { color: var(--gold); }
 .bar { position: relative; height: 1.25cqw; background: #2a1414; border-radius: 0.3cqw; overflow: hidden; border: 1px solid #000; }
@@ -103,9 +104,10 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
 #joy { left: 2cqw; bottom: 3.2cqw; width: 15cqw; height: 15cqw; border-radius: 50%; background: radial-gradient(circle, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)); border: 0.2cqw solid rgba(255, 255, 255, 0.22); pointer-events: auto; touch-action: none; display: none; }
 #joy .knob { position: absolute; left: 50%; top: 50%; width: 6cqw; height: 6cqw; margin: -3cqw 0 0 -3cqw; border-radius: 50%; background: rgba(240, 194, 74, 0.55); border: 0.2cqw solid rgba(255, 255, 255, 0.6); pointer-events: none; }
 #stage.touch-on #joy { display: block; }
-#stage.touch-on #log { bottom: auto; top: 14cqw; width: 30cqw; }
+#stage.touch-on #log { bottom: auto; top: 25cqw; width: 30cqw; }
+#stage.touch-on #log div:nth-last-child(n+5) { display: none; }
 
-#target { left: 1cqw; top: 8.6cqw; width: 22cqw; display: grid; gap: 0.3cqw; }
+#target { width: 22cqw; display: grid; gap: 0.3cqw; }
 #target .tname { font-weight: 700; font-size: 1.15cqw; display: flex; justify-content: space-between; gap: 0.6cqw; }
 #target .tname em { font-style: normal; color: var(--muted); font-weight: 600; }
 
@@ -120,15 +122,16 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
 #expbar i { display: block; height: 100%; background: linear-gradient(90deg, #3a8fd0, var(--exp)); width: 0; transition: width 0.3s; }
 #expbar span { position: absolute; inset: 0; text-align: center; font-size: 1cqw; font-weight: 700; line-height: 1.6cqw; }
 
-#schedule { left: 50%; top: 50%; transform: translate(-50%, -50%); width: 70cqw; max-height: 44cqw; overflow: auto; pointer-events: auto; background: var(--panel-solid); border: 1px solid #5b4ab0; border-radius: 0.8cqw; padding: 1.2cqw 1.4cqw; }
-#schedule h2 { margin: 0 0 0.6cqw; font-size: 1.8cqw; font-weight: 800; display: flex; justify-content: space-between; align-items: center; gap: 1cqw; }
+#schedule { left: 50%; top: 50%; transform: translate(-50%, -48%); width: 72cqw; max-height: 46cqw; display: flex; flex-direction: column; }
+#schedule .win-body { overflow: auto; padding: 1cqw 1.2cqw; }
 #schedule table { width: 100%; border-collapse: collapse; font-size: 1.15cqw; }
-#schedule th { text-align: left; color: var(--muted); font-weight: 600; padding: 0.4cqw; border-bottom: 1px solid var(--line); }
-#schedule td { padding: 0.55cqw 0.4cqw; border-bottom: 1px solid #222846; vertical-align: top; }
-#schedule .times b { color: var(--gold); }
+#schedule th { text-align: left; color: var(--ink-soft); font-weight: 800; padding: 0.4cqw; border-bottom: 0.15cqw solid var(--paper-3); text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.95cqw; }
+#schedule td { padding: 0.55cqw 0.4cqw; border-bottom: 0.1cqw dashed var(--paper-3); vertical-align: top; }
+#schedule td b { color: var(--ink-red); }
+#schedule .times b { color: #b0281a; text-decoration: underline; }
 .pill { display: inline-block; border-radius: 99px; padding: 0.1cqw 0.7cqw; font-weight: 700; font-size: 1cqw; white-space: nowrap; }
-.pill.wait { background: #24304f; color: #b8c8f0; } .pill.live { background: #6a1b1b; color: #ffd0d0; } .pill.dead { background: #1f3d22; color: #b8f0bc; } .pill.gone { background: #33333d; color: #c8c8d2; }
-#schedule .note { color: var(--muted); font-size: 1cqw; margin-top: 0.6cqw; }
+.pill.wait { background: #24304f; color: #d8e4ff; } .pill.live { background: #9a1c1c; color: #ffe0e0; } .pill.dead { background: #2f6a35; color: #e0ffe2; } .pill.gone { background: #5a5560; color: #eeeaf2; }
+#schedule .note { color: var(--ink-soft); font-size: 1cqw; margin-top: 0.6cqw; font-weight: 600; }
 
 #overlay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(5, 6, 14, 0.72); text-align: center; pointer-events: auto; cursor: pointer; }
 #overlay .card { display: grid; gap: 0.8cqw; justify-items: center; font-size: 1.4cqw; }
@@ -144,27 +147,192 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
 .tools button, .tools select { font: inherit; font-size: 14px; color: var(--ink); background: #232a48; border: 1px solid #3d4777; border-radius: 6px; padding: 6px 10px; cursor: pointer; }
 .tools button:hover { background: #2f3860; } .tools button:focus-visible, .tools select:focus-visible, .tools input:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
-@media (prefers-reduced-motion: reduce) { .bar .chip, .bar .fill, #expbar i { transition: none; } }
+
+/* ---------------- quest UI: dark wood frame with gold trim (NSO) around cream paper (NRO) ---------------- */
+:root {
+  --wood-1: #6b3f1d; --wood-2: #3d2210; --wood-3: #22120a;
+  --gold-1: #ffe7a3; --gold-2: #e9b949; --gold-3: #a8701c;
+  --paper-1: #fbf0d3; --paper-2: #f1dfb1; --paper-3: #cfb27a;
+  --ink-brown: #4a2e14; --ink-red: #8a1c12; --ink-soft: #7a5a36; --ink-green: #2f6a35;
+}
+.win { position: absolute; pointer-events: auto; color: var(--ink-brown); text-shadow: none; font-size: 1.2cqw; line-height: 1.35; box-sizing: border-box;
+  background: repeating-linear-gradient(93deg, rgba(255, 255, 255, 0.035) 0 0.25cqw, transparent 0.25cqw 0.9cqw), linear-gradient(180deg, var(--wood-1), var(--wood-2));
+  border-radius: 1.1cqw; padding: 1.4cqw 0.7cqw 0.7cqw;
+  box-shadow: 0 0 0 0.18cqw var(--wood-3), 0 0 0 0.4cqw var(--gold-2), 0 0 0 0.55cqw var(--wood-3), 0 1.2cqw 3cqw rgba(0, 0, 0, 0.6), inset 0 0.15cqw 0 rgba(255, 231, 163, 0.35); }
+.win .stud { position: absolute; width: 1.1cqw; height: 1.1cqw; transform: rotate(45deg); border: 0.12cqw solid var(--wood-3); background: radial-gradient(circle at 35% 30%, #fff6cc, var(--gold-2) 45%, var(--gold-3) 85%); }
+.stud.tl { left: -0.6cqw; top: -0.6cqw; } .stud.tr { right: -0.6cqw; top: -0.6cqw; } .stud.bl { left: -0.6cqw; bottom: -0.6cqw; } .stud.br { right: -0.6cqw; bottom: -0.6cqw; }
+.win-head { position: absolute; left: 0; right: 0; top: -1.7cqw; display: flex; justify-content: center; pointer-events: none; }
+.ribbon { display: inline-block; padding: 0.35cqw 3.4cqw 0.45cqw; font-weight: 800; font-size: 1.6cqw; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold-1); white-space: nowrap;
+  background: linear-gradient(180deg, #c84a2e, #7c2213); border-top: 0.16cqw solid var(--gold-2); border-bottom: 0.16cqw solid var(--gold-2);
+  text-shadow: 0 0.14cqw 0 #3a0c04; filter: drop-shadow(0 0.3cqw 0.3cqw rgba(0, 0, 0, 0.5));
+  clip-path: polygon(0 0, 100% 0, 95% 50%, 100% 100%, 0 100%, 5% 50%); }
+.win-x { pointer-events: auto; position: absolute; right: -1.1cqw; top: 0.9cqw; width: 2.6cqw; height: 2.6cqw; border-radius: 50%; cursor: pointer; font: inherit; font-weight: 800; font-size: 1.3cqw; line-height: 1; color: #fff3d6;
+  background: radial-gradient(circle at 35% 30%, #ff8a6a, #b0281a 60%, #6a1208); border: 0.18cqw solid var(--gold-2); box-shadow: 0 0.2cqw 0 var(--wood-3); }
+.win-x:hover { filter: brightness(1.15); } .win-x:focus-visible, .wbtn:focus-visible, .win-tabs button:focus-visible, .qrow:focus-visible, #dlg .menu button:focus-visible, #qtrack:focus-visible { outline: 0.2cqw solid var(--gold-1); outline-offset: 0.15cqw; }
+.paper { background: radial-gradient(120% 80% at 15% 0%, rgba(255, 255, 255, 0.6), transparent 55%), radial-gradient(90% 70% at 100% 100%, rgba(190, 140, 70, 0.3), transparent 60%), var(--paper-1);
+  border: 0.14cqw solid var(--gold-3); border-radius: 0.5cqw; box-shadow: inset 0 0 1.6cqw rgba(140, 90, 30, 0.35); }
+.win-tabs { display: flex; gap: 0.35cqw; padding: 0 0.8cqw; position: relative; z-index: 1; }
+.win-tabs button { position: relative; top: 0.16cqw; font: inherit; font-weight: 700; font-size: 1.1cqw; cursor: pointer; color: #f3dcae; padding: 0.4cqw 1.3cqw 0.45cqw; border-radius: 0.7cqw 0.7cqw 0 0;
+  border: 0.14cqw solid var(--gold-3); border-bottom: none; background: linear-gradient(180deg, #7d4a22, #4b2a12); }
+.win-tabs button:hover { color: var(--gold-1); }
+.win-tabs button[aria-selected="true"] { color: var(--ink-red); background: linear-gradient(180deg, #fffaf0, var(--paper-1)); border-color: var(--gold-2); }
+.win-tabs .dot { position: absolute; top: -0.35cqw; right: -0.35cqw; width: 0.9cqw; height: 0.9cqw; border-radius: 50%; background: #e5484d; border: 0.12cqw solid #fff3d6; }
+
+.wbtn { font: inherit; font-weight: 800; font-size: 1.15cqw; cursor: pointer; padding: 0.45cqw 1.5cqw; border-radius: 0.6cqw; color: #fff8e6; text-shadow: 0 0.12cqw 0 rgba(0, 0, 0, 0.45); white-space: nowrap;
+  border: 0.15cqw solid #5a2a00; background: linear-gradient(180deg, #ffd36b, #e08e1b 55%, #b8650c); box-shadow: inset 0 0.15cqw 0 rgba(255, 255, 255, 0.5), 0 0.25cqw 0 #5a2a00; }
+.wbtn:hover { filter: brightness(1.08); }
+.wbtn:active { transform: translateY(0.15cqw); box-shadow: inset 0 0.15cqw 0 rgba(255, 255, 255, 0.5), 0 0.1cqw 0 #5a2a00; }
+.wbtn.green { border-color: #123d1c; background: linear-gradient(180deg, #a6e98a, #4caf50 55%, #2f7a3a); box-shadow: inset 0 0.15cqw 0 rgba(255, 255, 255, 0.5), 0 0.25cqw 0 #123d1c; }
+.wbtn.ghost { border-color: #2a1608; background: linear-gradient(180deg, #8a6a4a, #5a3e24); box-shadow: inset 0 0.15cqw 0 rgba(255, 255, 255, 0.25), 0 0.25cqw 0 #2a1608; }
+.wbtn:disabled { filter: grayscale(0.8); opacity: 0.6; cursor: default; }
+
+.portrait { --s: calc(var(--box, 2.6cqw) / 40); width: var(--box, 2.6cqw); height: var(--box, 2.6cqw); flex: none; border-radius: 50%; image-rendering: pixelated;
+  background: url(assets/sprites/npc_idle.png) calc(-28 * var(--s)) calc((-96 * var(--r) - 22) * var(--s)) / calc(384 * var(--s)) calc(864 * var(--s)) no-repeat, radial-gradient(circle at 50% 40%, #4a6a9a, #1c2640);
+  border: 0.14cqw solid var(--gold-2); box-shadow: 0 0 0 0.1cqw var(--wood-3); }
+.icon { --s: calc(var(--box, 2.4cqw) / 32); display: inline-block; flex: none; width: var(--box, 2.4cqw); height: var(--box, 2.4cqw); image-rendering: pixelated;
+  background: url(assets/sprites/items.png) calc(-32 * var(--c) * var(--s)) calc(-32 * var(--r) * var(--s)) / calc(256 * var(--s)) calc(128 * var(--s)) no-repeat; }
+
+/* quest window */
+#quest { left: 50%; top: 50%; transform: translate(-50%, -47%); width: 78cqw; height: 45cqw; display: flex; flex-direction: column; }
+#quest .win-body { flex: 1; min-height: 0; display: grid; grid-template-columns: 23cqw 1fr; gap: 1.1cqw; padding: 1cqw 1.1cqw; }
+.qlist { overflow: auto; display: flex; flex-direction: column; gap: 0.3cqw; padding-right: 0.8cqw; border-right: 0.12cqw dashed var(--paper-3); }
+.qchap { padding: 0 0.2cqw 0.4cqw; display: grid; gap: 0.3cqw; }
+.qchap b { color: var(--ink-red); font-size: 1.15cqw; font-weight: 800; display: flex; justify-content: space-between; }
+.qchap b span { color: var(--ink-soft); font-weight: 700; }
+.qchap .track { height: 0.6cqw; border-radius: 99px; background: #e3cf9f; border: 0.1cqw solid var(--paper-3); overflow: hidden; }
+.qchap .track i { display: block; height: 100%; background: linear-gradient(90deg, #e9b949, #e08e1b); }
+.qrow { display: grid; grid-template-columns: 1.9cqw 1fr auto; align-items: center; gap: 0.55cqw; padding: 0.4cqw 0.5cqw; border-radius: 0.45cqw; font: inherit; font-size: 1.08cqw; font-weight: 700; cursor: pointer; border: 0.12cqw solid transparent; background: none; color: inherit; text-align: left; }
+.qrow:hover { background: rgba(255, 255, 255, 0.45); }
+.qrow.sel { background: linear-gradient(90deg, rgba(233, 185, 73, 0.6), rgba(233, 185, 73, 0.12)); border-color: var(--gold-3); }
+.qrow .ic { width: 1.9cqw; height: 1.9cqw; border-radius: 50%; display: grid; place-items: center; font-size: 1cqw; font-weight: 800; color: #fff; box-shadow: inset 0 -0.15cqw 0 rgba(0, 0, 0, 0.25); }
+.qrow.done .ic { background: #4f9a4a; } .qrow.cur .ic { background: radial-gradient(circle at 35% 30%, #ffe07a, #d9951a); color: #5a2a00; } .qrow.lock .ic { background: #b5a68e; }
+.qrow.lock { color: #9a8a72; } .qrow.done { color: #5f7f4a; }
+.qrow small { color: var(--ink-soft); font-weight: 600; font-size: 0.92cqw; }
+.qdetail { overflow: auto; display: flex; flex-direction: column; gap: 0.75cqw; padding-right: 0.3cqw; min-width: 0; }
+.qtitle { display: flex; align-items: center; gap: 0.8cqw; flex-wrap: wrap; }
+.qtitle h3 { margin: 0; font-size: 2cqw; font-weight: 800; color: var(--ink-red); letter-spacing: 0.01em; }
+.qtag { font-size: 0.88cqw; font-weight: 800; padding: 0.15cqw 0.65cqw; border-radius: 99px; background: var(--ink-red); color: var(--gold-1); letter-spacing: 0.06em; text-transform: uppercase; }
+.qtag.ok { background: var(--ink-green); color: #eaffdf; } .qtag.lock { background: #8a7a65; color: #f3ead8; } .qtag.go { background: #b8650c; color: #fff3d6; }
+.qmeta { display: flex; flex-wrap: wrap; gap: 0.5cqw 1.4cqw; font-size: 1.02cqw; color: var(--ink-soft); font-weight: 600; align-items: center; }
+.qmeta b { color: var(--ink-brown); }
+.npc-chip { display: inline-flex; align-items: center; gap: 0.4cqw; --box: 2.2cqw; }
+.qquote { position: relative; margin: 0; padding: 0.6cqw 1cqw 0.6cqw 4.4cqw; min-height: 3.6cqw; font-size: 1.12cqw; font-style: italic; line-height: 1.45; background: rgba(255, 255, 255, 0.42); border-radius: 0.5cqw; border-left: 0.3cqw solid var(--gold-3); display: flex; align-items: center; }
+.qquote .portrait { --box: 3cqw; position: absolute; left: 0.6cqw; top: 0.55cqw; }
+.qsec { font-size: 0.98cqw; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-3); display: flex; align-items: center; gap: 0.6cqw; }
+.qsec::after { content: ""; flex: 1; height: 0.12cqw; background: linear-gradient(90deg, var(--gold-3), transparent); }
+.qobjs { display: grid; gap: 0.5cqw; }
+.qobj { display: grid; grid-template-columns: 1.6cqw 1fr 12cqw; gap: 0.7cqw; align-items: center; font-size: 1.12cqw; font-weight: 700; }
+.qobj .cb { width: 1.4cqw; height: 1.4cqw; border: 0.15cqw solid var(--ink-soft); border-radius: 0.3cqw; background: #fffaf0; display: grid; place-items: center; color: #fff; font-size: 0.95cqw; line-height: 1; }
+.qobj.ok .cb { background: #4f9a4a; border-color: #25602e; }
+.qobj.ok .lbl { color: #4f7a3f; }
+.qobj .where { display: block; font-size: 0.92cqw; color: var(--ink-soft); font-weight: 600; }
+.qprog { position: relative; height: 1.45cqw; border-radius: 99px; background: #e8d6a8; border: 0.12cqw solid var(--ink-soft); overflow: hidden; }
+.qprog i { position: absolute; inset: 0 auto 0 0; background: linear-gradient(180deg, #ffd66b, #e08e1b); transition: width 0.3s; }
+.qobj.ok .qprog i { background: linear-gradient(180deg, #a6e98a, #4f9a4a); }
+.qprog span { position: absolute; inset: 0; text-align: center; font-size: 0.95cqw; line-height: 1.25cqw; font-weight: 800; color: var(--ink-brown); font-variant-numeric: tabular-nums; }
+.qrew { display: flex; flex-wrap: wrap; gap: 0.6cqw; }
+.rw { display: inline-flex; align-items: center; gap: 0.45cqw; padding: 0.25cqw 0.8cqw 0.25cqw 0.3cqw; border-radius: 0.5cqw; color: var(--gold-1); font-weight: 800; font-size: 1.05cqw;
+  background: linear-gradient(180deg, #5a3418, #3d2210); border: 0.12cqw solid var(--gold-3); box-shadow: inset 0 0.1cqw 0 rgba(255, 231, 163, 0.25); }
+.rw small { color: #f3dcae; font-weight: 700; font-size: 0.9cqw; }
+.rw .badge { width: 2.4cqw; height: 2.4cqw; border-radius: 50%; display: grid; place-items: center; font-size: 0.75cqw; font-weight: 800; color: #06243a; background: radial-gradient(circle at 35% 30%, #dff6ff, #5bbbe8 60%, #1f6f9f); border: 0.12cqw solid #0b3550; }
+.rw .badge.skill { color: #fff; background: radial-gradient(circle at 35% 30%, #c8e8ff, #3a86ff 55%, #1a3f8a); font-size: 1.1cqw; }
+.qactions { margin-top: auto; padding-top: 0.4cqw; display: flex; gap: 0.8cqw; justify-content: flex-end; align-items: center; }
+.qactions .hint { margin-right: auto; font-size: 0.95cqw; color: var(--ink-soft); font-weight: 600; }
+.qempty { grid-column: 1 / -1; display: grid; place-items: center; align-content: center; gap: 0.8cqw; text-align: center; color: var(--ink-soft); font-weight: 600; font-size: 1.15cqw; --box: 4.8cqw; }
+.qempty b { color: var(--ink-red); font-size: 1.5cqw; }
+/* daily board tab: pinned notes on a cork board */
+.board { grid-column: 1 / -1; display: grid; grid-template-rows: auto 1fr; gap: 0.7cqw; min-height: 0; }
+.board-head { display: flex; justify-content: space-between; align-items: center; gap: 1cqw; font-weight: 600; font-size: 1.05cqw; color: var(--ink-soft); }
+.board-head b { color: var(--ink-red); font-size: 1.3cqw; font-weight: 800; }
+.notes { position: relative; overflow: auto; display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(2, 1fr); gap: 1.4cqw 1.1cqw; padding: 1.2cqw 1.1cqw; border-radius: 0.5cqw; border: 0.35cqw solid #6b3f1d;
+  background: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.08) 0 0.15cqw, transparent 0.2cqw) 0 0 / 1.3cqw 1.3cqw, radial-gradient(circle at 70% 60%, rgba(0, 0, 0, 0.08) 0 0.15cqw, transparent 0.2cqw) 0 0 / 1.7cqw 1.7cqw, #b98a55;
+  box-shadow: inset 0 0 1.2cqw rgba(0, 0, 0, 0.35); }
+.note { position: relative; display: flex; flex-direction: column; gap: 0.25cqw; background: linear-gradient(180deg, #fffaf0, #f6e9c8); padding: 1.3cqw 0.8cqw 0.7cqw; font-size: 1cqw; line-height: 1.35; box-shadow: 0 0.3cqw 0.45cqw rgba(0, 0, 0, 0.3); transform: rotate(var(--rot, 0deg)); color: var(--ink-brown); font-weight: 600; }
+.note::before { content: ""; position: absolute; top: 0.25cqw; left: 50%; width: 1cqw; height: 1cqw; margin-left: -0.5cqw; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ff9a8a, #c0392b 60%, #6a1208); box-shadow: 0 0.15cqw 0.2cqw rgba(0, 0, 0, 0.45); }
+.note b { display: block; color: var(--ink-red); font-size: 1.15cqw; font-weight: 800; }
+.note .code { font-size: 0.8cqw; color: var(--ink-soft); font-weight: 800; letter-spacing: 0.06em; }
+.note .rwd { margin-top: auto; padding-top: 0.35cqw; border-top: 0.1cqw dashed var(--paper-3); font-weight: 800; color: var(--ink-green); }
+.stamp { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(-10deg); padding: 0.4cqw 1.6cqw; border: 0.35cqw double #b0281a; border-radius: 0.6cqw; color: #b0281a; font-weight: 800; font-size: 2.2cqw; letter-spacing: 0.12em; text-transform: uppercase; background: rgba(255, 245, 225, 0.82); text-align: center; line-height: 1.2; pointer-events: none; }
+.stamp small { display: block; font-size: 0.95cqw; letter-spacing: 0.02em; text-transform: none; font-weight: 700; }
+.evlist { grid-column: 1 / -1; overflow: auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.9cqw; align-content: start; }
+.ev { display: grid; gap: 0.3cqw; padding: 0.8cqw 1cqw; border-radius: 0.5cqw; background: rgba(255, 255, 255, 0.45); border: 0.12cqw solid var(--paper-3); font-size: 1.02cqw; font-weight: 600; color: var(--ink-soft); }
+.ev b { color: var(--ink-red); font-size: 1.2cqw; font-weight: 800; }
+.ev .pill { justify-self: start; }
+
+/* HUD quest tracker (ui-ux §3.1) */
+#qtrack { pointer-events: auto; cursor: pointer; width: 24cqw; box-sizing: border-box; font: inherit; text-align: left; color: var(--ink); display: grid; gap: 0.15cqw; padding: 0.45cqw 0.7cqw 0.5cqw 0.9cqw;
+  background: linear-gradient(180deg, rgba(48, 27, 11, 0.9), rgba(28, 15, 6, 0.9)); border: 0.12cqw solid var(--gold-3); border-radius: 0.5cqw; box-shadow: inset 0.3cqw 0 0 var(--gold-2); text-shadow: 0 1px 0 #000; }
+#qtrack:hover { border-color: var(--gold-2); }
+#qtrack > span { display: block; }
+#qtrack .qh { display: flex; justify-content: space-between; font-size: 0.85cqw; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-2); }
+#qtrack .qh kbd { font: inherit; letter-spacing: 0; color: var(--muted); }
+#qtrack .qn { font-weight: 800; color: var(--gold-1); font-size: 1.15cqw; }
+#qtrack .qo { font-size: 1.05cqw; display: flex; justify-content: space-between; gap: 0.6cqw; font-weight: 600; }
+#qtrack .qo b { color: #ffd23f; font-variant-numeric: tabular-nums; }
+#qtrack .qo.ok { color: #9eff8a; } #qtrack .qo.ok b { color: #9eff8a; }
+#qtrack .qo.go { color: #ffd23f; font-weight: 700; } #qtrack .qo.dim { color: var(--muted); }
+#qtrack.ready { border-color: #7dff8a; box-shadow: inset 0.3cqw 0 0 #7dff8a; animation: qpulse 1.2s ease-in-out infinite; }
+#qtrack.avail { border-color: #ffd23f; box-shadow: inset 0.3cqw 0 0 #ffd23f; }
+@keyframes qpulse { 50% { box-shadow: inset 0.3cqw 0 0 #7dff8a, 0 0 1cqw rgba(125, 255, 138, 0.6); } }
+.btn .dot { display: inline-block; width: 0.8cqw; height: 0.8cqw; margin-left: 0.4cqw; border-radius: 50%; background: #ffd23f; vertical-align: 0.1cqw; box-shadow: 0 0 0.4cqw #ffd23f; }
+
+/* NPC dialog (ui-ux §5, NRO style) */
+#dlg { left: 50%; bottom: 3.2cqw; transform: translateX(-50%); width: 66cqw; display: grid; grid-template-columns: 10.5cqw 1fr; gap: 1.1cqw; padding: 1.2cqw; }
+#dlg .face { --box: 10.5cqw; --s: calc(var(--box) / 56); width: var(--box); height: var(--box); border-radius: 0.6cqw; image-rendering: pixelated; align-self: start;
+  background: url(assets/sprites/npc_idle.png) calc(-20 * var(--s)) calc((-96 * var(--r) - 16) * var(--s)) / calc(384 * var(--s)) calc(864 * var(--s)) no-repeat, radial-gradient(circle at 50% 35%, #5a7ab0, #1c2640 75%);
+  border: 0.22cqw solid var(--gold-2); box-shadow: 0 0 0 0.12cqw var(--wood-3), inset 0 0 1cqw rgba(0, 0, 0, 0.5); }
+#dlg .say { display: grid; gap: 0.7cqw; align-content: start; min-width: 0; }
+#dlg .nm { justify-self: start; margin-top: -2.1cqw; font-size: 1.25cqw; padding: 0.25cqw 2.2cqw 0.3cqw; }
+#dlg .txt { padding: 0.8cqw 1.1cqw; font-size: 1.25cqw; line-height: 1.5; min-height: 4.2cqw; font-weight: 600; }
+#dlg .txt em { font-style: normal; color: var(--ink-red); font-weight: 800; }
+#dlg .menu { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5cqw; }
+#dlg .menu button { font: inherit; font-weight: 700; font-size: 1.12cqw; text-align: left; padding: 0.45cqw 0.8cqw; border-radius: 0.5cqw; cursor: pointer; color: #fff3d6; display: flex; gap: 0.55cqw; align-items: center;
+  background: linear-gradient(180deg, #7d4a22, #4b2a12); border: 0.13cqw solid var(--gold-3); box-shadow: inset 0 0.1cqw 0 rgba(255, 231, 163, 0.25); }
+#dlg .menu button:hover { border-color: var(--gold-1); background: linear-gradient(180deg, #9a5e2c, #5e3416); }
+#dlg .menu kbd { font: inherit; font-size: 0.85cqw; color: var(--gold-2); min-width: 1.1cqw; }
+#dlg .menu .mk { width: 1.5cqw; height: 1.5cqw; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 1cqw; flex: none; background: #ffd23f; color: #4a2000; box-shadow: 0 0 0.4cqw rgba(255, 210, 63, 0.7); }
+#dlg .menu .mk.ok { background: #7dff8a; color: #0d3a12; box-shadow: 0 0 0.4cqw rgba(125, 255, 138, 0.7); }
+#dlg .menu .mk.dim { background: #b5a68e; color: #3a2e20; box-shadow: none; }
+
+/* accept / complete banner */
+#qbanner { left: 50%; top: 14cqw; transform: translateX(-50%); display: grid; justify-items: center; gap: 0.4cqw; text-align: center; pointer-events: none; }
+#qbanner .ribbon { font-size: 2.1cqw; padding: 0.45cqw 4cqw 0.55cqw; }
+#qbanner.done .ribbon { background: linear-gradient(180deg, #4caf50, #1f6a2a); }
+#qbanner .sub { font-weight: 800; font-size: 1.6cqw; color: var(--gold-1); text-shadow: 0 0.15cqw 0 #000, 0 0 0.6cqw #000; }
+#qbanner .rews { display: flex; gap: 0.6cqw; justify-content: center; flex-wrap: wrap; }
+#qbanner.show { animation: bannerIn 2.8s ease forwards; }
+@keyframes bannerIn { 0% { opacity: 0; transform: translateX(-50%) scale(0.7); } 9% { opacity: 1; transform: translateX(-50%) scale(1.06); } 15% { transform: translateX(-50%) scale(1); } 82% { opacity: 1; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { #qbanner.show { animation: bannerFade 2.8s linear forwards; } #qtrack.ready { animation: none; } }
+@keyframes bannerFade { 0%, 85% { opacity: 1; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .bar .chip, .bar .fill, #expbar i, .qprog i { transition: none; } }
 .tools input[type="checkbox"] { width: 18px; height: 18px; }
 </style>
 
 <div class="wrap">
   <header>
     <h1>Huyền Thư Ký <small>Chương 1 · bản chơi thử</small></h1>
-    <div class="keys"><b>A D</b> / <b>← →</b> đi · <b>W</b> / <b>Space</b> nhảy · <b>S</b> xuống, leo · <b>J</b> đánh · <b>1 2 3</b> chiêu · <b>Tab</b> đổi mục tiêu · <b>G</b> tự đánh · <b>H</b> treo máy · <b>Q E</b> bình · <b>F</b> nói chuyện · <b>↑</b> qua cổng · <b>N</b> Lịch Boss</div>
+    <div class="keys"><b>A D</b> / <b>← →</b> đi · <b>W</b> / <b>Space</b> nhảy · <b>S</b> xuống, leo · <b>J</b> đánh · <b>1 2 3</b> chiêu · <b>Tab</b> đổi mục tiêu · <b>G</b> tự đánh · <b>H</b> treo máy · <b>Q E</b> bình · <b>F</b> nói chuyện, hái · <b>L</b> Nhiệm vụ · <b>↑</b> qua cổng · <b>N</b> Lịch Boss</div>
   </header>
 
   <div id="stage">
     <div id="game"></div>
-    <div id="hud-player" class="hud box">
+    <div id="hud-left" class="hud">
+    <div id="hud-player" class="box">
       <div class="who"><span id="pname">Tân thủ</span><span class="lv" id="plv">Lv 1</span></div>
       <div class="bar" id="php"><i class="chip"></i><i class="fill"></i><span></span></div>
       <div class="bar mp" id="pmp"><i class="fill"></i><span></span></div>
       <div class="money"><span id="pquan">0 Quan</span><em id="pbag">Túi: 0 món</em></div>
     </div>
+    <div id="target" class="box" hidden>
+      <div class="tname"><span id="tname"></span><em id="tkind"></em></div>
+      <div class="bar" id="thp"><i class="chip"></i><i class="fill"></i><span></span></div>
+    </div>
+    <button id="qtrack" type="button" aria-label="Nhiệm vụ đang làm, bấm để mở bảng Nhiệm vụ"></button>
+    </div>
     <div id="hud-right" class="hud">
       <div id="clock" class="box">--:--</div>
       <div id="mapname">—</div>
+      <button class="btn" id="btn-quest" type="button">Nhiệm vụ</button>
       <button class="btn" id="btn-sched" type="button">Lịch Boss</button>
       <button class="btn" id="btn-full" type="button">Toàn màn hình</button>
     </div>
@@ -175,10 +343,6 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
     </div>
     <div id="toast" class="hud"></div>
     <div id="log" class="hud"></div>
-    <div id="target" class="hud box" hidden>
-      <div class="tname"><span id="tname"></span><em id="tkind"></em></div>
-      <div class="bar" id="thp"><i class="chip"></i><i class="fill"></i><span></span></div>
-    </div>
     <div id="joy" class="hud" aria-label="Cần điều khiển: kéo để đi, kéo lên để nhảy"><div class="knob"></div></div>
     <div id="actions" class="hud">
       <button class="pill-btn" id="b-hunt" data-tap="hunt" type="button">Treo máy <kbd>H</kbd></button>
@@ -193,14 +357,40 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
       <button class="act big" data-k="attack" data-skill="basic" type="button"><kbd>J</kbd><span>Đánh</span><i class="cd"></i></button>
     </div>
     <div id="expbar" class="hud"><i></i><span></span></div>
-    <div id="schedule" class="hud" hidden>
-      <h2>Lịch Boss <button class="btn" id="btn-close" type="button">Đóng</button></h2>
-      <table>
-        <thead><tr><th>Boss</th><th>Nơi xuất hiện</th><th>Giờ xuất hiện</th><th>Trạng thái</th></tr></thead>
-        <tbody id="schedrows"></tbody>
-      </table>
-      <div class="note">Boss xuất hiện ở 1 khu ngẫu nhiên, thông báo trước 5 phút, bỏ đi sau 30 phút. Người cao hơn boss quá 10 cấp không nhận vật phẩm.</div>
+    <div id="schedule" class="win" role="dialog" aria-label="Lịch Boss" hidden>
+      <i class="stud tl"></i><i class="stud tr"></i><i class="stud bl"></i><i class="stud br"></i>
+      <div class="win-head"><span class="ribbon">Lịch Boss</span></div>
+      <button class="win-x" id="btn-close" type="button" aria-label="Đóng">✕</button>
+      <div class="win-body paper">
+        <table>
+          <thead><tr><th>Boss</th><th>Nơi xuất hiện</th><th>Giờ xuất hiện</th><th>Trạng thái</th></tr></thead>
+          <tbody id="schedrows"></tbody>
+        </table>
+        <div class="note">Boss xuất hiện ở 1 khu ngẫu nhiên, thông báo trước 5 phút, bỏ đi sau 30 phút. Người cao hơn boss quá 10 cấp không nhận vật phẩm.</div>
+      </div>
     </div>
+    <div id="quest" class="win" role="dialog" aria-label="Nhiệm vụ" hidden>
+      <i class="stud tl"></i><i class="stud tr"></i><i class="stud bl"></i><i class="stud br"></i>
+      <div class="win-head"><span class="ribbon">Nhiệm vụ</span></div>
+      <button class="win-x" id="quest-x" type="button" aria-label="Đóng">✕</button>
+      <nav class="win-tabs" role="tablist">
+        <button type="button" role="tab" data-tab="main">Chính</button>
+        <button type="button" role="tab" data-tab="side">Phụ</button>
+        <button type="button" role="tab" data-tab="daily">Ngày/Tuần</button>
+        <button type="button" role="tab" data-tab="event">Sự kiện</button>
+      </nav>
+      <div class="win-body paper" id="quest-body"></div>
+    </div>
+    <div id="dlg" class="win" role="dialog" hidden>
+      <i class="stud tl"></i><i class="stud tr"></i><i class="stud bl"></i><i class="stud br"></i>
+      <div class="face" id="dlg-face"></div>
+      <div class="say">
+        <span class="ribbon nm" id="dlg-name"></span>
+        <div class="txt paper" id="dlg-text"></div>
+        <div class="menu" id="dlg-menu"></div>
+      </div>
+    </div>
+    <div id="qbanner" class="hud" hidden><span class="ribbon"></span><span class="sub"></span><div class="rews"></div></div>
     <div id="overlay"><div class="card"><strong>Nhấn để vào game</strong><span id="ovsub">Đang tải bản đồ và nhân vật…</span></div></div>
     <div id="rotate">Xoay ngang màn hình để chơi</div>
   </div>
@@ -215,6 +405,7 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
         <button id="dev-boss" type="button">Boss của map này xuất hiện ngay</button>
         <button id="dev-fire" type="button">Thử hệ Hỏa (lên Lv10)</button>
         <button id="dev-lv" type="button">+1 cấp</button>
+        <button id="dev-quest" type="button">Xong mục tiêu nhiệm vụ hiện tại</button>
       </div>
       <label><input type="checkbox" id="dev-weak" checked> Boss còn 20% máu (để đánh một mình)</label>
       <label><input type="checkbox" id="dev-rare"> Tinh anh, Thủ lĩnh ra dày ×10</label>
@@ -306,6 +497,7 @@ const S = {
   t: 0, speed: 60, weekday0: new Date().getDay(), map: "M001", spawnAt: null,
   bosses: {}, cds: { basic: 0, burst: 0, fireball: 0, slash: 0 }, combatAt: -1e9,
   dev: { weak: true, rare: false }, auto: false, hunt: false, huntUnlocked: false,
+  q: { i: 0, st: "idle", prog: [] }, goto: null,   // current main quest (quests §2) and auto-path target (ui-ux §6.4)
 };
 { const d = new Date(); S.t = d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60; }
 const stats = () => F.player(S.lv, S.fire);
@@ -393,6 +585,340 @@ function renderSchedule() {
   }
   $("schedrows").innerHTML = rows.join("");
 }
+
+
+/* =====================================================================
+   Quests (docs/game-design/06-quests-and-missions.md §2-4, §7;
+   ui-ux §3.1 tracker, §5 NPC dialog, §6.4 quest window)
+   ===================================================================== */
+const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const NPC_LINES = {
+  NPC001: "Mỗi trang sách đều có chỗ của nó. Đi săn cẩn thận nhé.",
+  NPC002: "Ăn no rồi hẵng đi, con.",
+  NPC003: "Mình đang chế thuốc, cậu mang Đồng Luyện về cho mình nhé!",
+  NPC004: "Ra Đồng Hoa đi, Vua Nấm Lùn sắp xuất hiện đấy.",
+  NPC040: "Lịch boss dán trên bảng tin làng đây, xem đi con.",
+};
+const DAILY = [   // quests §7: Bảng Nhiệm Vụ Pháp Vệ templates
+  ["D01", "Dọn Dẹp Quái", "Hạ 60–100 quái ở map hợp cấp", "EXP, Quan"],
+  ["D02", "Thu Thập Nguyên Liệu", "Thu thập 15–30 nguyên liệu", "EXP, Đồng Luyện"],
+  ["D03", "Đấu Tập", "Thắng 2–3 trận đấu tập hoặc Đấu Trường", "EXP, Huy hiệu"],
+  ["D04", "Hầm Ngục Hằng Ngày", "Hoàn thành 1 hầm ngục", "EXP, Điểm Cống Hiến"],
+  ["D05", "Săn Tinh Anh", "Hạ 3–5 quái Tinh anh", "EXP, trang bị Tốt"],
+  ["D06", "Ủng Hộ Đội", "Góp Quan vào quỹ Đội", "Điểm Cống Hiến"],
+  ["D07", "Giao Thư", "Giao thư giữa 3 NPC", "EXP"],
+  ["D08", "Cường Hóa", "Cường hóa trang bị 1 lần", "Quan"],
+  ["D09", "Nấu Ăn Cho Bà Hai Bánh", "Nộp 5 Thức ăn", "Bình tăng buff"],
+  ["D10", "Điểm Danh Pháp Vệ", "Đăng nhập, nhận quà", "Nén Bạc nhỏ, Thẻ Auto"],
+];
+const PLACE = { DG01: "Hầm ngục DG01", I001: "Lễ đường Khai Thư" };
+const mapName = (m) => DATA.names[m] || PLACE[m] || m;
+const iconVars = (name) => { const i = Math.max(0, DATA.items.indexOf(name)); return `--c:${i % 8};--r:${Math.floor(i / 8)}`; };
+const faceVars = (id) => `--r:${Math.max(0, DATA.npcOrder.indexOf(id))}`;
+const uiModal = () => !$("quest").hidden || !$("dlg").hidden;
+function npcMark(id) {
+  const q = Q.cur(), st = Q.state();
+  if (!q || st === "end" || st === "proto") return null;
+  if (st === "avail" && q.giver === id) return ["!", "#ffd23f"];
+  if (st === "lvl" && q.giver === id) return ["!", "#9aa2bf"];
+  if (st === "ready" && q.turnIn === id) return ["?", "#ffd23f"];
+  if (st === "active" && Q.talkHere(id) >= 0) return ["!", "#ffd23f"];
+  if (st === "active" && q.turnIn === id) return ["?", "#9aa2bf"];
+  return null;
+}
+
+const Q = {
+  cur() { return DATA.quests[S.q.i] || null; },
+  state() {
+    const q = this.cur();
+    if (!q) return "end";
+    if (!q.ready) return "proto";
+    if (S.q.st === "idle") return S.lv >= q.lv ? "avail" : "lvl";
+    return S.q.st;                                   // active | ready
+  },
+  got(k) { return S.q.prog[k] || 0; },
+  done(k) { return this.got(k) >= this.cur().objectives[k].count; },
+  talkHere(id) {
+    if (S.q.st !== "active") return -1;
+    return this.cur().objectives.findIndex((o, k) => o.type === "TALK" && o.target === id && !this.done(k) && (!o.map || o.map === S.map));
+  },
+  needs(item) {
+    return S.q.st === "active" && this.cur().objectives.some((o, k) => o.type === "COLLECT" && o.target === item && !this.done(k));
+  },
+  event(type, target, n = 1) {
+    if (S.q.st !== "active") return false;
+    const q = this.cur(), sc = window.__htk?.scene;
+    let hit = false;
+    q.objectives.forEach((o, k) => {
+      if (o.type !== type || o.target !== target || this.done(k)) return;
+      if ((type === "TALK" || type === "USE_SKILL") && o.map && o.map !== S.map) return;
+      S.q.prog[k] = Math.min(o.count, this.got(k) + n); hit = true;
+      if (sc && type !== "TALK") sc.floatText(sc.player.x, sc.player.y - 92, `${o.label} ${this.got(k)}/${o.count}`, this.done(k) ? "#9eff8a" : "#ffd23f", 14);
+      if (this.done(k)) log(`Xong mục tiêu: ${o.label}${o.count > 1 ? ` ${o.count}/${o.count}` : ""}`, "lvl");
+    });
+    if (hit && q.objectives.every((_, k) => this.done(k))) {
+      S.q.st = "ready";
+      toast(`Xong "${q.title}". Về gặp ${DATA.names[q.turnIn]} để nhận thưởng.`, true);
+      log(`[Nhiệm vụ] Về gặp ${DATA.names[q.turnIn]} để trả "${q.title}"`, "sys");
+    }
+    if (hit) questChanged();
+    return hit;
+  },
+  accept() {
+    const q = this.cur();
+    S.q.st = "active"; S.q.prog = q.objectives.map(() => 0);
+    log(`[Nhiệm vụ] Nhận: ${q.title}`, "sys");
+    banner("Nhận nhiệm vụ", q.title, false);
+    this.event("TALK", q.giver);                     // meeting the giver on the right map counts (Q_MAIN_05)
+    questChanged();
+  },
+  complete(scene) {
+    const q = this.cur(), r = q.rewards;
+    if (r.exp) scene.gainExp(r.exp);
+    if (r.soft) S.quan += r.soft;
+    for (const [id, n] of r.items) { if (id === "potion_hp") S.potions.hp += n; else S.bag += n; }
+    const parts = [r.exp && `+${r.exp} EXP`, r.soft && `+${r.soft} Quan`, ...r.items.map(([id, n]) => `${DATA.rewardItems[id]} ×${n}`), r.skill && "chiêu Tụ Mana Chấn"].filter(Boolean);
+    log(`[Nhiệm vụ] Hoàn thành: ${q.title} · ${parts.join(", ")}`, "lvl");
+    if (r.skill) log("Đã thuộc Tụ Mana Chấn (phím 1)", "lvl");
+    banner("Hoàn thành nhiệm vụ", q.title, true, rewardChips(q));
+    S.q = { i: S.q.i + 1, st: "idle", prog: [] };
+    questChanged();
+  },
+  // where "Đi tới" walks to (ui-ux §6.4): NPC or monster zone, possibly on another map
+  dest() {
+    const q = this.cur(), st = this.state();
+    if (!q || st === "end" || st === "proto") return null;
+    const npc = (id, map) => { const w = DATA.where[id] || []; const e = (map && w.find((x) => x[0] === map)) || w.find((x) => x[0] === S.map) || w[0]; return e && { map: e[0], x: e[1], npc: id, label: DATA.names[id] }; };
+    const zone = (mob, map, label) => { const e = (DATA.where[mob] || []).find((x) => x[0] === map); return e && { map, x: e[1], label }; };
+    if (st === "avail" || st === "lvl") return npc(q.giver);
+    if (st === "ready") return npc(q.turnIn);
+    const k = q.objectives.findIndex((_, k) => !this.done(k)), o = q.objectives[k];
+    if (o.type === "TALK") return npc(o.target, o.map);
+    if (o.type === "KILL") return zone(o.target, o.map, `khu ${DATA.names[o.target]}`);
+    if (o.type === "USE_SKILL") return zone("MOB001", o.map, `khu ${DATA.names.MOB001}`);
+    if (o.type === "COLLECT") {
+      const src = DATA.questItems[o.target];
+      return src.mob ? zone(src.mob, o.map, `khu ${DATA.names[src.mob]}`) : { map: src.node, x: HERB_COLS[0] * 32 + 16, label: "bụi thảo dược" };
+    }
+    return null;
+  },
+};
+const HERB_COLS = [7, 13, 24, 33, 44, 51, 70, 79];   // M002 tile columns for Thảo Dược Suối Mơ (quests §4.1)
+
+function rewardChips(q) {
+  const r = q.rewards, out = [];
+  if (r.exp) out.push(`<span class="rw"><span class="badge">EXP</span>+${r.exp.toLocaleString("vi-VN")}</span>`);
+  if (r.soft) out.push(`<span class="rw"><i class="icon" style="${iconVars("quan")}"></i>${r.soft.toLocaleString("vi-VN")} <small>Quan</small></span>`);
+  for (const [id, n] of r.items) out.push(`<span class="rw"><i class="icon" style="${iconVars(id)}"></i>${esc(DATA.rewardItems[id])}${n > 1 ? ` <small>×${n}</small>` : ""}</span>`);
+  if (r.skill) out.push(`<span class="rw"><span class="badge skill">✦</span>Tụ Mana Chấn <small>chiêu</small></span>`);
+  if (!out.length) out.push(`<span class="rw">Huyền Thư Sơ Bản, vũ khí hệ</span>`);
+  return out.join("");
+}
+
+function objWhere(o) {
+  if (o.type === "COLLECT") {
+    const src = DATA.questItems[o.target];
+    return src.mob ? `rơi từ ${DATA.names[src.mob]} (${Math.round(src.chance * 100)}%) · ${mapName(o.map)}` : `hái ở bụi thảo dược phát sáng · ${mapName(o.map)}`;
+  }
+  if (o.type === "USE_SKILL") return `phím 1 · ${mapName(o.map)}`;
+  return mapName(o.map);
+}
+
+function questChanged() {
+  renderTracker();
+  if (!$("quest").hidden) renderQuest();
+  window.__htk?.scene?.refreshHerbs?.();
+}
+
+function renderTracker() {
+  if (!DATA) return;
+  const q = Q.cur(), st = Q.state(), el = $("qtrack");
+  el.className = st === "ready" ? "ready" : st === "avail" ? "avail" : "";
+  let body;
+  if (st === "end" || !q) body = `<span class="qn">Chương 1</span><span class="qo dim">Đã hết nhiệm vụ của bản thử</span>`;
+  else if (st === "proto") body = `<span class="qn">${esc(q.title)}</span><span class="qo dim">Cần ${esc(mapName(q.objectives[0].map))}, chưa có trong bản thử</span>`;
+  else if (st === "lvl") body = `<span class="qn">${esc(q.title)}</span><span class="qo dim">Đạt Lv ${q.lv} để nhận</span>`;
+  else if (st === "avail") body = `<span class="qn">${esc(q.title)}</span><span class="qo go">Gặp ${esc(DATA.names[q.giver])} để nhận</span>`;
+  else if (st === "ready") body = `<span class="qn">${esc(q.title)}</span><span class="qo ok">✔ Về gặp ${esc(DATA.names[q.turnIn])}</span>`;
+  else body = `<span class="qn">${esc(q.title)}</span>` + q.objectives.map((o, k) =>
+    `<span class="qo${Q.done(k) ? " ok" : ""}"><span>${esc(o.label)}</span><b>${o.count > 1 ? `${Q.got(k)}/${o.count}` : Q.done(k) ? "✔" : "…"}</b></span>`).join("");
+  el.innerHTML = `<span class="qh"><span>Nhiệm vụ</span><kbd>L</kbd></span>${body}`;
+  $("btn-quest").innerHTML = `Nhiệm vụ${st === "avail" || st === "ready" ? '<i class="dot"></i>' : ""}`;
+}
+
+const UI = { tab: "main", sel: null };
+function toggleQuest(force) {
+  const el = $("quest");
+  el.hidden = force === undefined ? !el.hidden : !force;
+  if (!el.hidden) { UI.sel = null; closeDlg(); $("qbanner").hidden = true; renderQuest(); }
+}
+function openQuest(tab) { UI.tab = tab || "main"; toggleQuest(true); }
+
+function renderQuest() {
+  if (!DATA) return;
+  for (const b of document.querySelectorAll("#quest .win-tabs button")) {
+    const on = b.dataset.tab === UI.tab; b.setAttribute("aria-selected", on);
+    b.querySelector(".dot")?.remove();
+    if (b.dataset.tab === "main" && ["avail", "ready"].includes(Q.state())) b.insertAdjacentHTML("beforeend", '<i class="dot"></i>');
+  }
+  const body = $("quest-body");
+  if (UI.tab === "main") body.innerHTML = renderMainTab();
+  else if (UI.tab === "side") body.innerHTML = `<div class="qempty"><i class="icon" style="${iconVars("la_thuoc_co")}"></i><b>Chưa có nhiệm vụ phụ</b><span>Nhiệm vụ phụ của dân làng (thu thập, giao thư, nhờ vả) sẽ có ở bản sau.<br>Làm chuỗi chính tuyến trước nhé.</span></div>`;
+  else if (UI.tab === "daily") body.innerHTML = renderDailyTab();
+  else body.innerHTML = renderEventTab();
+}
+
+function renderMainTab() {
+  const qs = DATA.quests, cur = S.q.i, st = Q.state();
+  const sel = UI.sel ?? Math.min(cur, qs.length - 1);
+  const curIc = { avail: "!", lvl: "!", active: "…", ready: "?", proto: "!" }[st] || "!";
+  const rows = qs.map((q, k) => {
+    const cls = k < cur ? "done" : k === cur ? "cur" : "lock";
+    const ic = k < cur ? "✓" : k === cur ? curIc : k + 1;
+    return `<button type="button" class="qrow ${cls}${k === sel ? " sel" : ""}" data-k="${k}"><span class="ic">${ic}</span><span>${esc(q.title)}</span><small>Lv${q.lv}</small></button>`;
+  }).join("");
+  const nDone = Math.min(cur, qs.length);
+  return `<aside class="qlist"><div class="qchap"><b>Chương 1 · Suối Mơ <span>${nDone}/${qs.length}</span></b><div class="track"><i style="width:${nDone / qs.length * 100}%"></i></div></div>${rows}</aside>
+    <section class="qdetail">${renderDetail(qs[sel], sel)}</section>`;
+}
+
+function renderDetail(q, k) {
+  const cur = S.q.i;
+  const st = k < cur ? "done" : k > cur ? "locked" : Q.state();
+  const [tagText, tagCls] = { done: ["Đã xong", "ok"], locked: ["Chưa mở", "lock"], avail: ["Có thể nhận", "go"], lvl: [`Cần Lv${q.lv}`, "lock"],
+    active: ["Đang làm", ""], ready: ["Chờ trả", "ok"], proto: ["Chưa có trong bản thử", "lock"] }[st];
+  const quote = { done: q.complete, locked: "Hoàn thành nhiệm vụ trước để mở.", avail: q.accept, lvl: q.accept, active: q.progress,
+    ready: `Đã đủ mục tiêu. Về gặp ${DATA.names[q.turnIn]} để nhận thưởng.`, proto: q.accept }[st];
+  const speaker = st === "ready" || st === "done" ? q.turnIn : q.giver;
+  const live = k === cur && (st === "active" || st === "ready");
+  const objs = q.objectives.map((o, i) => {
+    const got = st === "done" ? o.count : live ? Q.got(i) : 0, ok = got >= o.count;
+    return `<div class="qobj${ok ? " ok" : ""}"><span class="cb">${ok ? "✓" : ""}</span><span class="lbl">${esc(o.label)}<span class="where">${esc(objWhere(o))}</span></span>
+      <span class="qprog"><i style="width:${got / o.count * 100}%"></i><span>${got}/${o.count}</span></span></div>`;
+  }).join("");
+  const people = q.giver === q.turnIn
+    ? `<span class="npc-chip">Giao và trả: <i class="portrait" style="${faceVars(q.giver)}"></i><b>${esc(DATA.names[q.giver])}</b></span>`
+    : `<span class="npc-chip">Giao: <i class="portrait" style="${faceVars(q.giver)}"></i><b>${esc(DATA.names[q.giver])}</b></span><span class="npc-chip">Trả: <i class="portrait" style="${faceVars(q.turnIn)}"></i><b>${esc(DATA.names[q.turnIn])}</b></span>`;
+  let act = "";
+  if (k === cur && st === "ready") act = `<button type="button" class="wbtn green" data-act="go">Về trả nhiệm vụ</button>`;
+  else if (k === cur && (st === "avail" || st === "lvl" || st === "active")) act = `<button type="button" class="wbtn" data-act="go">Đi tới</button>`;
+  const hint = st === "proto" ? "Cần hầm ngục DG01, sẽ có ở bản sau" : st === "lvl" ? `Đạt Lv ${q.lv} rồi gặp ${DATA.names[q.giver]}` : "Phím L mở hoặc đóng bảng";
+  return `<div class="qtitle"><h3>${esc(q.title)}</h3><span class="qtag ${tagCls}">${tagText}</span></div>
+    <div class="qmeta"><span>Chính tuyến · <b>Chương 1</b> · từ <b>Lv${q.lv}</b></span>${people}</div>
+    <p class="qquote"><i class="portrait" style="${faceVars(speaker)}"></i>“${esc(quote)}”</p>
+    <div class="qsec">Mục tiêu</div><div class="qobjs">${objs}</div>
+    <div class="qsec">Phần thưởng</div><div class="qrew">${rewardChips(q)}</div>
+    <div class="qactions"><span class="hint">${esc(hint)}</span>${act}<button type="button" class="wbtn ghost" data-act="close">Đóng</button></div>`;
+}
+
+function renderDailyTab() {
+  const rot = [-2, 1.5, -1, 2.2, -1.6, 1.2, -2.4, 1.6, -0.8, 2];
+  const notes = DAILY.map(([code, name, what, rw], i) => `<div class="note" style="--rot:${rot[i]}deg"><span class="code">${code}</span><b>${esc(name)}</b>${esc(what)}<div class="rwd">${esc(rw)}</div></div>`).join("");
+  const stamp = S.lv < 10 ? `Mở ở Lv10<small>Thầy Ký Bảng, Trụ Sở Pháp Vệ (Thượng Đô)</small>` : `Chưa có trong bản thử<small>Gặp Thầy Ký Bảng ở Trụ Sở Pháp Vệ (Thượng Đô)</small>`;
+  return `<div class="board"><div class="board-head"><span><b>Bảng Nhiệm Vụ Pháp Vệ</b> · 10 nhiệm vụ mỗi ngày, làm mới lúc 00:00</span><span>Hạng D (Lv10–29) · thưởng ×1,0 · đủ 10 nhận rương Nén Bạc nhỏ</span></div>
+    <div class="notes">${notes}<div class="stamp">${stamp}</div></div></div>`;
+}
+
+function renderEventTab() {
+  const cards = Object.values(S.bosses).map((b) => {
+    const ev = Object.values(DATA.events).find((e) => e.boss === b.id);
+    const st = b.status === "live" ? `<span class="pill live">Đang xuất hiện · còn ${fmtDur(b.until - S.t)}</span>` : `<span class="pill wait">Lần tới sau ${fmtDur(b.at - S.t)}</span>`;
+    return `<div class="ev"><b>Boss theo giờ: ${esc(DATA.names[b.id])}</b><span>${esc(DATA.names[b.map])} · ${ev.times.join(", ")}</span>${st}</div>`;
+  });
+  for (const w of DATA.weeklyEvents) cards.push(`<div class="ev"><b>${esc(w.name)}</b><span>Thứ Sáu ${w.start}–${w.end}, ${esc(DATA.names[w.boss])} xuất hiện ở mọi khu ${esc(DATA.names[w.map])}, mỗi ${w.everyMin} phút</span><span class="pill wait">Hằng tuần</span></div>`);
+  return `<div class="evlist">${cards.join("")}<div class="qactions" style="grid-column:1/-1"><span class="hint">Giờ trong game, theo tốc độ đang chọn</span><button type="button" class="wbtn" data-act="sched">Mở Lịch Boss</button><button type="button" class="wbtn ghost" data-act="close">Đóng</button></div></div>`;
+}
+
+$("quest").addEventListener("click", (e) => {
+  const t = e.target.closest("button"); if (!t) return;
+  if (t.dataset.tab) { UI.tab = t.dataset.tab; renderQuest(); }
+  else if (t.dataset.k) { UI.sel = Number(t.dataset.k); renderQuest(); }
+  else if (t.dataset.act === "close" || t.id === "quest-x") toggleQuest(false);
+  else if (t.dataset.act === "sched") { toggleQuest(false); toggleSchedule(true); }
+  else if (t.dataset.act === "go") goQuest();
+});
+$("qtrack").addEventListener("click", () => openQuest("main"));
+$("btn-quest").addEventListener("click", () => openQuest("main"));
+
+function goQuest() {
+  const d = Q.dest(); if (!d) return;
+  S.goto = d;
+  const sc = window.__htk?.scene; if (sc) sc.gotoBest = null;
+  toggleQuest(false);
+  toast(`Tự đi tới ${d.label}${d.map !== S.map ? ` (${DATA.names[d.map]})` : ""}. Bấm phím đi để dừng.`, true);
+}
+
+/* NPC dialog: portrait, line, up to 5 choices (ui-ux §5) */
+const DLG = { menu: [] };
+function closeDlg() { $("dlg").hidden = true; DLG.menu = []; }
+function renderDlg(id, html, menu) {
+  $("dlg-face").style.cssText = faceVars(id);
+  $("dlg-name").textContent = DATA.names[id] || id;
+  $("dlg-text").innerHTML = html;
+  DLG.menu = menu.slice(0, 5);
+  $("dlg-menu").innerHTML = DLG.menu.map((m, i) => `<button type="button" data-i="${i}"><kbd>${i + 1}</kbd>${m.mk ? `<span class="mk ${m.cls || ""}">${m.mk}</span>` : ""}<span>${esc(m.label)}</span></button>`).join("");
+  $("quest").hidden = true;
+  $("dlg").hidden = false;
+}
+$("dlg-menu").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) DLG.menu[Number(b.dataset.i)]?.fn(); });
+
+function openDlg(id, scene) {
+  let q = Q.cur(), text = esc(NPC_LINES[id] || "…");
+  const menu = [];
+  const ti = Q.talkHere(id);
+  if (ti >= 0) { text = esc(q.talk[id] || text); Q.event("TALK", id); }
+  const st = Q.state();
+  if (st === "avail" && q.giver === id) {
+    text = esc(q.accept);
+    menu.push({ label: `Nhận nhiệm vụ: ${q.title}`, mk: "!", fn: () => { Q.accept(); closeDlg(); } });
+  } else if (st === "lvl" && q.giver === id) {
+    text += `<br><em>Đạt Lv ${q.lv} rồi quay lại nhận “${esc(q.title)}”.</em>`;
+  } else if (st === "ready" && q.turnIn === id) {
+    text = `Xong rồi à? Để ta xem nào… <em>“${esc(q.title)}”</em>`;
+    menu.push({ label: `Trả nhiệm vụ: ${q.title}`, mk: "?", cls: "ok", fn: () => finishQuest(id, scene) });
+  } else if (st === "active" && q.turnIn === id && ti < 0) {
+    text = esc(q.progress);
+    menu.push({ label: `Xem nhiệm vụ: ${q.title}`, mk: "?", cls: "dim", fn: () => { closeDlg(); openQuest("main"); } });
+  }
+  if (id === "NPC040") menu.push({ label: "Xem Lịch Boss (bảng tin làng)", fn: () => { closeDlg(); toggleSchedule(true); } });
+  menu.push({ label: "Đóng", fn: closeDlg });
+  renderDlg(id, text, menu);
+}
+
+function finishQuest(id, scene) {
+  const q = Q.cur();
+  Q.complete(scene);
+  const next = Q.cur(), more = next && next.ready && next.giver === id;
+  renderDlg(id, esc(q.complete), more
+    ? [{ label: `Còn việc gì nữa ạ?`, mk: "!", fn: () => openDlg(id, scene) }, { label: "Đóng", fn: closeDlg }]
+    : [{ label: "Đóng", fn: closeDlg }]);
+}
+
+function banner(title, sub, done, rews = "") {
+  const b = $("qbanner");
+  b.hidden = false; b.classList.remove("show"); void b.offsetWidth;
+  b.classList.toggle("done", done);
+  b.querySelector(".ribbon").textContent = title;
+  b.querySelector(".sub").textContent = sub;
+  b.querySelector(".rews").innerHTML = rews;
+  b.classList.add("show");
+  clearTimeout(banner.t); banner.t = setTimeout(() => { b.hidden = true; }, 2900);
+}
+
+// dialog keys: 1-5 pick, F / Enter / Space first choice, Esc closes. Runs before Phaser's own listeners.
+window.addEventListener("keydown", (e) => {
+  const k = e.key;
+  if (!$("dlg").hidden) {
+    let i = -1;
+    if (/^[1-5]$/.test(k)) i = Number(k) - 1;
+    else if (k === "f" || k === "F" || k === "Enter" || k === " ") i = 0;
+    else if (k === "Escape") i = DLG.menu.length - 1;
+    if (i >= 0 && DLG.menu[i]) { e.preventDefault(); e.stopImmediatePropagation(); DLG.menu[i].fn(); }
+    return;
+  }
+  if (k === "Escape" && !$("quest").hidden) { e.preventDefault(); toggleQuest(false); }
+  else if (k === "Escape" && !$("schedule").hidden) toggleSchedule();
+}, true);
 
 /* =====================================================================
    Input (keyboard + touch buttons)
@@ -515,7 +1041,8 @@ class World extends Phaser.Scene {
       const spr = this.add.sprite(o.x, o.y - 41, "npc").setDepth(10).play(`npc_${id}`);
       if (o.x > W / 2) spr.setFlipX(true);
       const label = this.add.text(o.x, o.y - 92, DATA.names[id] || id, this.textStyle(13, "#ffe08a")).setOrigin(0.5, 1).setDepth(40);
-      return { id, x: o.x, y: o.y, spr, label };
+      const mark = this.add.text(o.x, o.y - 110, "", { ...this.textStyle(28, "#ffd23f"), strokeThickness: 6 }).setOrigin(0.5, 1).setDepth(41);
+      return { id, x: o.x, y: o.y, spr, label, mark };
     });
     this.spawns = objs.filter((o) => o.type === "mob_spawn").map((o) => ({ x: o.x, y: o.y, mob: prop(o, "mob"), count: prop(o, "count"), radius: prop(o, "radius"), respawn: prop(o, "respawnSec") }));
     this.bossSpawns = objs.filter((o) => o.type === "boss_spawn").map((o) => ({ x: o.x, y: o.y, boss: prop(o, "boss") }));
@@ -544,8 +1071,9 @@ class World extends Phaser.Scene {
     this.keys = this.input.keyboard.addKeys({
       left: K.A, right: K.D, aLeft: K.LEFT, aRight: K.RIGHT, up: K.W, aUp: K.UP, jump: K.SPACE, down: K.S, aDown: K.DOWN,
       attack: K.J, s1: K.ONE, s2: K.TWO, s3: K.THREE, hp: K.Q, mp: K.E, interact: K.F, sched: K.N,
-      tab: K.TAB, auto: K.G, hunt: K.H,
+      tab: K.TAB, auto: K.G, hunt: K.H, quest: K.L,
     });
+    this.keys.quest.on("down", () => toggleQuest());
     this.input.keyboard.addCapture("SPACE,UP,DOWN,LEFT,RIGHT,TAB");
     this.keys.sched.on("down", () => toggleSchedule());
     this.keys.tab.on("down", () => this.cycleTarget());
@@ -561,8 +1089,14 @@ class World extends Phaser.Scene {
 
     $("mapname").textContent = `${DATA.names[this.mapId]} · Khu 1`;
     log(`Vào ${DATA.names[this.mapId]}`, "sys");
-    window.__htk = { S, scene: this, F };
-    if (this.mapId === THEME_TOWN && !S.welcomed) { S.welcomed = true; log("Gặp Cụ Trương (F) để xem lịch boss.", "sys"); }
+    window.__htk = { S, scene: this, F, Q };
+    this.herbs = []; this.refreshHerbs(); this.gotoBest = null;
+    renderTracker();
+    if (this.mapId === THEME_TOWN && !S.welcomed) {
+      S.welcomed = true;
+      log("Thầy Bạch Vân (dấu ! vàng) đang chờ bạn. Nhấn L để mở bảng Nhiệm vụ.", "sys");
+      log("Cụ Trương giữ bảng tin làng có Lịch Boss.", "sys");
+    }
     $("overlay").hidden = false; $("ovsub").textContent = "Bấm vào màn chơi rồi dùng bàn phím, chuột hoặc phím ảo";
     if (S.started) $("overlay").hidden = true;
   }
@@ -604,6 +1138,12 @@ class World extends Phaser.Scene {
   }
 
   pickAt(x, y) {
+    if (uiModal()) return;
+    for (const h of this.herbs) {
+      if (h.taken || Math.abs(h.x - x) > 22 || Math.abs(h.y - 15 - y) > 24) continue;
+      if (this.nearHerb() === h) this.pickHerb(h); else this.floatText(h.x, h.y - 36, "Lại gần để hái", "#9aa2bf", 12);
+      return;
+    }
     for (const n of this.npcs) {
       if (!n.spr.getBounds().contains(x, y)) continue;
       if (Math.abs(n.x - this.player.x) < 160) this.interact(n); else this.floatText(n.x, n.y - 100, "Lại gần để nói chuyện", "#9aa2bf", 12);
@@ -766,6 +1306,7 @@ class World extends Phaser.Scene {
       this.cameras.main.flash(250, 255, 240, 200);
       return;
     }
+    this.questKill(m);
     if (!m.temp) {
       const s = m.s; s.alive--;
       this.time.delayedCall((s.respawn || 10) * 1000, () => { if (this.scene.isActive()) this.spawnMob(s); });
@@ -790,6 +1331,7 @@ class World extends Phaser.Scene {
       toast(`Lên cấp ${S.lv}!`, true); log(`Lên cấp ${S.lv}: HP ${st.hp}, ATK ${st.atk}, DEF ${st.def}`, "lvl");
       this.floatText(this.player.x, this.player.y - 80, `LÊN CẤP ${S.lv}`, "#9eff8a", 22);
       if (S.lv === 5) log("Mở kỹ năng Tụ Mana Chấn (phím 1)", "lvl");
+      questChanged();
     }
   }
 
@@ -1047,7 +1589,9 @@ class World extends Phaser.Scene {
       const cx = this.player.x + this.facing * 90;
       this.manaRing(cx, this.player.body.bottom - 30, 0x7fd1ff);
       this.burst(cx, this.player.body.bottom - 10, 0x9fd8ff);
-      for (const t of this.targetsIn(new Phaser.Geom.Rectangle(cx - 60, this.player.body.bottom - 90, 120, 90))) this.hitMob(t, 1.2);
+      const hits = this.targetsIn(new Phaser.Geom.Rectangle(cx - 60, this.player.body.bottom - 90, 120, 90));
+      for (const t of hits) this.hitMob(t, 1.2);
+      if (hits.length) Q.event("USE_SKILL", "SKL_MANA_BURST");
     });
   }
 
@@ -1087,18 +1631,92 @@ class World extends Phaser.Scene {
   }
 
   interact(npc) {
+    if (uiModal() || this.deadUntil) return;
+    if (!npc) { const h = this.nearHerb(); if (h) { this.pickHerb(h); return; } }
     const n = npc || this.npcs.find((n) => Math.abs(n.x - this.player.x) < 60 && Math.abs(n.y - this.player.body.bottom) < 80);
     if (!n) return;
-    const lines = {
-      NPC001: "Mỗi trang sách đều có chỗ của nó. Đi săn cẩn thận nhé.",
-      NPC002: "Ăn no rồi hẵng đi, con.",
-      NPC003: "Mình đang chế thuốc, cậu mang Đồng Luyện về cho mình nhé!",
-      NPC004: "Ra Đồng Hoa đi, Vua Nấm Lùn sắp xuất hiện đấy.",
-      NPC040: "Lịch boss dán trên bảng tin đây, xem đi.",
-    };
-    const bub = this.add.text(n.x, n.y - 110, lines[n.id] || "…", this.textStyle(13, "#ffffff")).setOrigin(0.5, 1).setDepth(61).setWordWrapWidth(260);
-    this.time.delayedCall(2600, () => bub.destroy());
-    if (n.id === "NPC040") toggleSchedule(true);
+    S.goto = null;
+    openDlg(n.id, this);
+  }
+
+  /* ---------------- quest world objects (quests §4.1) ---------------- */
+  surfaceAt(tx) {
+    for (let ty = 0; ty < this.map.height; ty++) {
+      const t = this.coll.getTileAt(tx, ty);
+      if (t && (t.index === 1 || t.index === 2)) return t.pixelY;
+    }
+    return null;
+  }
+
+  refreshHerbs() {
+    if (!this.herbs) return;
+    const need = this.mapId === DATA.questItems.thao_duoc.node && Q.needs("thao_duoc");
+    if (!need) { for (const h of this.herbs) h.destroy(); this.herbs = []; return; }
+    if (this.herbs.length) return;
+    const T = this.map.tileWidth, frame = DATA.items.indexOf("thao_duoc");
+    for (const tx of HERB_COLS) {
+      const y = this.surfaceAt(tx); if (y == null) continue;
+      const x = tx * T + T / 2;
+      const spr = this.add.sprite(x, y - 15, "items", frame).setDepth(12);
+      spr.preFX?.addGlow(0x7fe7ff, 3, 0, false, 0.1, 8);
+      const bob = this.tweens.add({ targets: spr, y: y - 19, duration: 900, yoyo: true, repeat: -1, ease: "Sine.easeInOut", delay: Math.random() * 600 });
+      const label = this.add.text(x, y - 34, "F: Hái", this.textStyle(12, "#bff4ff")).setOrigin(0.5, 1).setDepth(40).setVisible(false);
+      this.herbs.push({ x, y, spr, label, taken: false, destroy() { bob.stop(); spr.destroy(); label.destroy(); } });
+    }
+  }
+
+  nearHerb() {
+    const pl = this.player;
+    return this.herbs.find((h) => !h.taken && Math.abs(h.x - pl.x) < 44 && Math.abs(h.y - pl.body.bottom) < 70);
+  }
+
+  pickHerb(h) {
+    if (h.taken || !Q.needs("thao_duoc")) return;
+    h.taken = true; h.label.setVisible(false); h.spr.setVisible(false);
+    const fly = this.add.sprite(h.x, h.y - 15, "items", DATA.items.indexOf("thao_duoc")).setDepth(50);
+    this.tweens.add({ targets: fly, x: this.player.x, y: this.player.y - 30, scale: 0.4, alpha: 0.2, duration: 280, ease: "Quad.easeIn", onComplete: () => fly.destroy() });
+    this.manaRing(h.x, h.y - 6, 0x7fe7ff);
+    log(`Hái: ${DATA.questItems.thao_duoc.name}`, "sys");
+    Q.event("COLLECT", "thao_duoc");
+    this.time.delayedCall(DATA.questItems.thao_duoc.respawnSec * 1000, () => { if (h.spr.active) { h.taken = false; h.spr.setVisible(true); } });
+  }
+
+  questKill(m) {
+    Q.event("KILL", m.id);
+    for (const [item, src] of Object.entries(DATA.questItems)) {
+      if (src.mob === m.id && Q.needs(item) && Math.random() < src.chance) {
+        this.dropLoot({ kind: "quest", item, icon: item, name: src.name, rarity: "common" }, m.spr.x, m.spr.y);
+      }
+    }
+  }
+
+  /* ---------------- quest auto-path "Đi tới" (ui-ux §6.4) ---------------- */
+  gotoControl(now) {
+    const g = S.goto;
+    if (!g || this.deadUntil) return null;
+    const pl = this.player, b = pl.body;
+    let tx = g.x;
+    if (g.map !== this.mapId) {
+      const ci = MAPS.indexOf(this.mapId), ti = MAPS.indexOf(g.map);
+      const p = ti < 0 ? null : this.portals.find((p) => p.to === MAPS[ci + Math.sign(ti - ci)]);
+      if (!p) { S.goto = null; return null; }
+      tx = p.x + p.w / 2;
+      if (this.nearPortal() && Math.abs(pl.x - tx) < p.w / 2 + 4) { this.tryPortal(); return { vx: 0, jump: false }; }
+    } else if (Math.abs(pl.x - tx) < 30 && b.blocked.down) {
+      S.goto = null; this.gotoBest = null;
+      const n = g.npc && this.npcs.find((n) => n.id === g.npc);
+      if (n) this.time.delayedCall(120, () => this.interact(n));
+      else { this.floatText(pl.x, pl.y - 80, `Đã tới ${g.label}`, "#ffd23f", 14); log(`Đã tới ${g.label}`, "sys"); }
+      return { vx: 0, jump: false };
+    }
+    const d = Math.abs(pl.x - tx);
+    if (this.gotoBest == null || d < this.gotoBest - 8) { this.gotoBest = d; this.gotoAt = now; }
+    else if (now - this.gotoAt > 4500) { S.goto = null; this.gotoBest = null; toast("Không tự đi tiếp được. Bạn tự đi nốt nhé.", true); return null; }
+    const dir = Math.sign(tx - pl.x) || 1;
+    const ahead = this.coll.getTileAtWorldXY(pl.x + dir * 24, b.bottom + 6);
+    const gap = !(ahead && (ahead.index === 1 || ahead.index === 2));
+    const blocked = (dir < 0 && b.blocked.left) || (dir > 0 && b.blocked.right);
+    return { vx: dir * 180, jump: b.blocked.down && (blocked || gap) };
   }
 
   tryPortal() {
@@ -1138,7 +1756,8 @@ class World extends Phaser.Scene {
     // ladders and hazards
     const tile = this.coll.getTileAtWorldXY(pl.x, body.bottom - 20);
     const onLadder = tile && tile.index === 3;
-    const upKey = this.down("up", "aUp"), downKey = this.down("down", "aDown");
+    const modal = uiModal();
+    const upKey = !modal && this.down("up", "aUp"), downKey = !modal && this.down("down", "aDown");
     if (onLadder && (upKey || downKey) && !this.climbing) { this.climbing = true; body.setAllowGravity(false); }
     if (this.climbing && (!onLadder || this.down("jump"))) { this.climbing = false; body.setAllowGravity(true); }
     const foot = this.coll.getTileAtWorldXY(pl.x, body.bottom - 6) || this.coll.getTileAtWorldXY(pl.x, body.bottom + 2);
@@ -1148,13 +1767,15 @@ class World extends Phaser.Scene {
     }
 
     // movement
-    const left = this.down("left", "aLeft"), right = this.down("right", "aRight");
+    const left = !modal && this.down("left", "aLeft"), right = !modal && this.down("right", "aRight");
+    if ((left || right) && S.goto) { S.goto = null; this.gotoBest = null; log("Dừng tự đi", "sys"); }
     const busy = now < this.busyUntil;
-    const ac = this.autoControl(now);
+    const go = modal ? null : this.gotoControl(now);
+    const ac = modal ? null : this.autoControl(now);
     let vx = 0;
     if (!busy || !body.blocked.down) {
       if (left) vx -= 180; if (right) vx += 180;
-      if (!left && !right && ac) vx = ac.vx;
+      if (!left && !right) vx = go ? go.vx : ac ? ac.vx : 0;
     }
     if (vx) this.facing = Math.sign(vx);
     pl.setFlipX(this.facing < 0);
@@ -1162,7 +1783,7 @@ class World extends Phaser.Scene {
     if (this.climbing) {
       body.setVelocityY(upKey ? -120 : downKey ? 120 : 0); body.setVelocityX(vx * 0.4);
     } else {
-      const jumpPressed = (this.down("jump") || (upKey && !this.nearPortal()) || (ac && ac.jump && !left && !right)) && body.blocked.down;
+      const jumpPressed = ((!modal && this.down("jump")) || (upKey && !this.nearPortal()) || (go && go.jump) || (!go && ac && ac.jump && !left && !right)) && body.blocked.down;
       if (jumpPressed) body.setVelocityY(-500);
       if (downKey && body.blocked.down) {
         const below = this.coll.getTileAtWorldXY(pl.x, body.bottom + 4);
@@ -1174,12 +1795,13 @@ class World extends Phaser.Scene {
     this.prevUp = upKey;
 
     // actions
-    if (this.down("attack")) this.useBasic();
-    if (this.down("s1")) this.useBurst();
-    if (this.down("s2")) this.useFireball();
-    if (this.down("s3")) this.useSlash();
-    if (ac && ac.attack) this.autoAttack(now);
-    const inter = V.interact; if (inter && !this.prevInteract) this.interact(); this.prevInteract = inter;
+    if (!modal) {
+      if (this.down("attack")) this.useBasic();
+      if (this.down("s1")) this.useBurst();
+      if (this.down("s2")) this.useFireball();
+      if (this.down("s3")) this.useSlash();
+      if (ac && ac.attack) this.autoAttack(now);
+    }
 
     // player anim: re-check after this frame's actions, and let attack/cast animations finish
     const actKey = pl.anims.isPlaying ? pl.anims.currentAnim?.key : null;
@@ -1297,6 +1919,7 @@ class World extends Phaser.Scene {
         dr.done = true; dr.spr.destroy();
         const o = dr.o;
         if (o.kind === "quan") { S.quan += o.n; this.floatText(pl.x, pl.y - 70, `+${o.n} Quan`, "#f0c24a", 14); }
+        else if (o.kind === "quest") { log(`Nhặt: ${o.name} (vật phẩm nhiệm vụ)`, "sys"); Q.event("COLLECT", o.item); }
         else {
           if (o.kind === "potion") S.potions[o.type]++; else S.bag++;
           const [rn, col] = RARITY[o.rarity];
@@ -1327,6 +1950,13 @@ class World extends Phaser.Scene {
       if (k >= 1 && !t.fired) { t.fired = true; t.onDone?.(); }
     }
     this.tele = this.tele.filter((t) => !t.fired);
+    // NPC quest marks (ui-ux §5): ! new quest, ? ready to hand in (yellow) or in progress (grey)
+    for (const n of this.npcs) {
+      const mk = npcMark(n.id);
+      n.mark.setVisible(!!mk);
+      if (mk) n.mark.setText(mk[0]).setColor(mk[1]).setY(n.y - 106 + Math.sin(now / 220) * 3);
+    }
+    for (const h of this.herbs) h.label.setVisible(!h.taken && Math.abs(h.x - pl.x) < 70 && Math.abs(h.y - pl.body.bottom) < 90);
     // monster bars + labels
     const b = this.bars; b.clear();
     for (const m of this.mobs) {
@@ -1436,6 +2066,13 @@ $("dev-fire").addEventListener("click", () => {
   log("Lễ Khai Thư (thử): đã chọn hệ Hỏa. Phím 2 Hỏa Cầu, phím 3 Trảm Liệt Diễm", "lvl");
 });
 $("dev-lv").addEventListener("click", () => { const sc = window.__htk?.scene; if (sc) sc.gainExp(F.expToNext(S.lv) - S.exp); });
+$("dev-quest").addEventListener("click", () => {
+  const q = Q.cur(), st = Q.state();
+  if (!q || st === "end" || st === "proto") { toast("Không còn nhiệm vụ làm được trong bản thử.", true); return; }
+  if (st === "lvl") { toast(`Cần Lv ${q.lv}. Bấm +1 cấp trước.`, true); return; }
+  if (st === "avail") Q.accept();
+  if (S.q.st === "active") { S.q.prog = q.objectives.map((o) => o.count); S.q.st = "ready"; questChanged(); log(`[Thử] Xong mục tiêu "${q.title}". Về gặp ${DATA.names[q.turnIn]}.`, "sys"); }
+});
 
 new Phaser.Game({
   type: Phaser.AUTO, parent: "game", width: 960, height: 540, pixelArt: true, backgroundColor: "#0d1020",

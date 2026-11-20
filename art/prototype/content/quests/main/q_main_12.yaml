@@ -1,0 +1,17 @@
+# not playable in the browser prototype yet
+id: Q_MAIN_12
+type: MAIN
+nameKey: quest.main.12.title
+descKey: quest.main.12.desc
+chapter: 1
+levelMin: 10
+prerequisites: [Q_MAIN_11]
+giver: NPC001
+turnIn: NPC001
+objectives:
+  - { type: REACH, target: I001, map: I001 }
+rewards: {  }
+dialogue:
+  accept: dlg.q_main_12.accept
+  progress: dlg.q_main_12.progress
+  complete: dlg.q_main_12.complete

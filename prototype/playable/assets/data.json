@@ -530,6 +530,517 @@
   "huyen_thu_so_ban",
   "huyen_thu_tu_ban",
   "huyen_thu_dinh_ban",
-  "the_kep_trang"
- ]
+  "the_kep_trang",
+  "cu_cai_non",
+  "thao_duoc",
+  "bao_tai",
+  "manh_trang",
+  "kiem_go_tap",
+  "ao_suoi_mo"
+ ],
+ "quests": [
+  {
+   "id": "Q_MAIN_01",
+   "lv": 1,
+   "giver": "NPC001",
+   "turnIn": "NPC001",
+   "ready": true,
+   "title": "Buổi Sáng Ở Nhà Học",
+   "objectives": [
+    {
+     "type": "TALK",
+     "target": "NPC002",
+     "map": "M001",
+     "label": "Chào Bà Mơ ở bếp nhà học",
+     "count": 1
+    }
+   ],
+   "rewards": {
+    "exp": 50,
+    "soft": 100,
+    "items": [
+     [
+      "potion_hp",
+      5
+     ]
+    ]
+   },
+   "accept": "Sáng nay con đến sớm đấy. Ghé chào Bà Mơ ở bếp rồi quay lại đây, ta có việc nhờ.",
+   "progress": "Bà Mơ ở ngay cạnh nhà học thôi, con.",
+   "complete": "Ăn sáng no rồi mới học được. Cầm mấy bình thuốc này mà dùng.",
+   "talk": {
+    "NPC002": "Ôi, đến sớm thế! Cầm cái bánh này rồi về báo thầy nhé."
+   }
+  },
+  {
+   "id": "Q_MAIN_02",
+   "lv": 1,
+   "giver": "NPC001",
+   "turnIn": "NPC001",
+   "ready": true,
+   "title": "Dọn Vườn Thuốc",
+   "objectives": [
+    {
+     "type": "KILL",
+     "target": "MOB001",
+     "count": 5,
+     "map": "M002",
+     "label": "Hạ Nấm Lùn"
+    }
+   ],
+   "rewards": {
+    "exp": 120,
+    "soft": 80,
+    "items": [
+     [
+      "kiem_go_tap",
+      1
+     ]
+    ]
+   },
+   "accept": "Lũ Nấm Lùn lại mọc tràn ra Đồng Hoa, giẫm nát cả vườn thuốc. Con ra dọn giúp ta năm con.",
+   "progress": "Nấm Lùn ở phía trái Đồng Hoa, đi qua cổng cuối làng là thấy.",
+   "complete": "Vườn thuốc sạch rồi. Thanh kiếm gỗ này hợp tay con đấy.",
+   "talk": {}
+  },
+  {
+   "id": "Q_MAIN_03",
+   "lv": 2,
+   "giver": "NPC040",
+   "turnIn": "NPC040",
+   "ready": true,
+   "title": "Thỏ Phá Ruộng",
+   "objectives": [
+    {
+     "type": "KILL",
+     "target": "MOB002",
+     "count": 6,
+     "map": "M002",
+     "label": "Hạ Thỏ Đốm"
+    },
+    {
+     "type": "COLLECT",
+     "target": "cu_cai_non",
+     "count": 4,
+     "map": "M002",
+     "label": "Nhặt Củ Cải Non"
+    }
+   ],
+   "rewards": {
+    "exp": 200,
+    "soft": 120,
+    "items": []
+   },
+   "accept": "Thỏ Đốm đào nát ruộng củ cải của làng rồi! Đuổi chúng đi, nhặt lại giúp lão mấy củ còn lành.",
+   "progress": "Thỏ ở nửa sau Đồng Hoa, gần cối xay gió. Củ cải rơi ra khi hạ thỏ.",
+   "complete": "Củ còn tươi cả. Già này cảm ơn con.",
+   "talk": {}
+  },
+  {
+   "id": "Q_MAIN_04",
+   "lv": 3,
+   "giver": "NPC003",
+   "turnIn": "NPC003",
+   "ready": true,
+   "title": "Hái Thảo Dược",
+   "objectives": [
+    {
+     "type": "COLLECT",
+     "target": "thao_duoc",
+     "count": 5,
+     "map": "M002",
+     "label": "Hái Thảo Dược Suối Mơ"
+    }
+   ],
+   "rewards": {
+    "exp": 300,
+    "soft": 150,
+    "items": [
+     [
+      "potion_hp",
+      3
+     ]
+    ]
+   },
+   "accept": "Mình cần năm nhánh Thảo Dược Suối Mơ để chế thuốc. Nó mọc lấp lánh trên Đồng Hoa, cậu hái giúp nhé!",
+   "progress": "Thảo dược có đốm sáng xanh. Đứng gần rồi nhấn F (hoặc chạm vào) để hái.",
+   "complete": "Đủ rồi! Mình vừa chế xong mấy bình, cậu cầm đi đường.",
+   "talk": {}
+  },
+  {
+   "id": "Q_MAIN_05",
+   "lv": 5,
+   "giver": "NPC004",
+   "turnIn": "NPC004",
+   "ready": true,
+   "title": "Bài Học Của Khôi",
+   "objectives": [
+    {
+     "type": "TALK",
+     "target": "NPC004",
+     "map": "M002",
+     "label": "Gặp Khôi ở Đồng Hoa",
+     "count": 1
+    },
+    {
+     "type": "USE_SKILL",
+     "target": "SKL_MANA_BURST",
+     "count": 3,
+     "map": "M002",
+     "label": "Đấu tập: Tụ Mana Chấn trúng quái"
+    }
+   ],
+   "rewards": {
+    "exp": 400,
+    "soft": 200,
+    "skill": "SKL_MANA_BURST",
+    "items": []
+   },
+   "accept": "Muốn mạnh lên thì phải biết dồn mana. Ra Đồng Hoa gặp tớ, tớ chỉ cho.",
+   "progress": "Dồn mana vào lòng bàn tay rồi đẩy ra. Nhấn phím 1, trúng ba lần là được.",
+   "complete": "Khá đấy! Từ giờ Tụ Mana Chấn là chiêu của cậu.",
+   "talk": {
+    "NPC004": "Tới rồi à? Nhìn tớ này: dồn mana, rồi đẩy! Giờ cậu thử với lũ quái quanh đây."
+   }
+  },
+  {
+   "id": "Q_MAIN_06",
+   "lv": 5,
+   "giver": "NPC040",
+   "turnIn": "NPC040",
+   "ready": true,
+   "title": "Chó Rừng Lạc Bầy",
+   "objectives": [
+    {
+     "type": "KILL",
+     "target": "MOB003",
+     "count": 8,
+     "map": "M003",
+     "label": "Hạ Chó Rừng Non"
+    }
+   ],
+   "rewards": {
+    "exp": 600,
+    "soft": 250,
+    "items": []
+   },
+   "accept": "Đêm qua chó rừng mò tới tận bờ rào. Vào Rừng Mơ Non đuổi bớt tám con giúp lão.",
+   "progress": "Chó Rừng Non ở đầu Rừng Mơ Non, đi hết Đồng Hoa là tới.",
+   "complete": "Đêm nay làng ngủ yên rồi.",
+   "talk": {}
+  },
+  {
+   "id": "Q_MAIN_07",
+   "lv": 6,
+   "giver": "NPC040",
+   "turnIn": "NPC040",
+   "ready": true,
+   "title": "Bao Tải Bị Lấy",
+   "objectives": [
+    {
+     "type": "KILL",
+     "target": "MOB004",
+     "count": 6,
+     "map": "M003",
+     "label": "Hạ Lùn Ném Đá"
+    },
+    {
+     "type": "COLLECT",
+     "target": "bao_tai",
+     "count": 1,
+     "map": "M003",
+     "label": "Lấy lại Bao Tải Bị Lấy"
+    }
+   ],
+   "rewards": {
+    "exp": 800,
+    "soft": 300,
+    "items": []
+   },
+   "accept": "Bác Tư bên suối bị lũ Lùn Ném Đá cướp mất bao tải hạt giống. Con đòi lại giúp lão.",
+   "progress": "Lùn Ném Đá ở giữa Rừng Mơ Non. Cẩn thận đá bay.",
+   "complete": "Bao tải đây rồi, hạt giống còn nguyên. Bác Tư sẽ mừng lắm.",
+   "talk": {}
+  },
+  {
+   "id": "Q_MAIN_08",
+   "lv": 7,
+   "giver": "NPC002",
+   "turnIn": "NPC002",
+   "ready": true,
+   "title": "Giếng Làng Cạn",
+   "objectives": [
+    {
+     "type": "KILL",
+     "target": "MOB006",
+     "count": 8,
+     "map": "M004",
+     "label": "Hạ Dơi Giếng"
+    }
+   ],
+   "rewards": {
+    "exp": 1000,
+    "soft": 350,
+    "items": []
+   },
+   "accept": "Giếng làng cạn dần mà dưới hang toàn dơi. Con xuống Hang Giếng Cạn đuổi tám con đi.",
+   "progress": "Hang Giếng Cạn ở cuối Rừng Mơ Non. Dơi bay thấp, đứng dưới mà đánh.",
+   "complete": "Nước lại róc rách rồi. Tối nay bà nấu canh cho cả làng.",
+   "talk": {}
+  },
+  {
+   "id": "Q_MAIN_09",
+   "lv": 8,
+   "giver": "NPC003",
+   "turnIn": "NPC003",
+   "ready": true,
+   "title": "Tờ Giấy Trắng",
+   "objectives": [
+    {
+     "type": "KILL",
+     "target": "MOB007",
+     "count": 6,
+     "map": "M004",
+     "label": "Hạ Rùa Đá Giếng"
+    },
+    {
+     "type": "COLLECT",
+     "target": "manh_trang",
+     "count": 1,
+     "map": "M004",
+     "label": "Tìm Mảnh Trang"
+    }
+   ],
+   "rewards": {
+    "exp": 1400,
+    "soft": 400,
+    "items": []
+   },
+   "accept": "Rùa đá trong hang có nuốt một tờ giấy không chữ. Cậu tìm giúp mình được không?",
+   "progress": "Rùa Đá Giếng ở sâu trong hang, mai cứng lắm.",
+   "complete": "Trắng tinh… nhưng mình có cảm giác nó đang chờ ai đó viết lên.",
+   "talk": {}
+  },
+  {
+   "id": "Q_MAIN_10",
+   "lv": 9,
+   "giver": "NPC001",
+   "turnIn": "NPC001",
+   "ready": false,
+   "title": "Trang Lạc",
+   "objectives": [
+    {
+     "type": "BOSS",
+     "target": "BOSS001",
+     "count": 1,
+     "map": "DG01",
+     "label": "Hạ Trang Lạc trong hầm ngục DG01"
+    }
+   ],
+   "rewards": {
+    "exp": 2000,
+    "soft": 600,
+    "items": [
+     [
+      "ao_suoi_mo",
+      1
+     ]
+    ]
+   },
+   "accept": "Có thứ gì đó trú trong đáy giếng cạn. Con đủ sức rồi, xuống xem đi.",
+   "progress": "Cổng hầm ngục ở cuối Hang Giếng Cạn.",
+   "complete": "Con đã lớn thật rồi.",
+   "talk": {}
+  },
+  {
+   "id": "Q_MAIN_11",
+   "lv": 9,
+   "giver": "NPC001",
+   "turnIn": "NPC001",
+   "ready": false,
+   "title": "Đêm Trước Ngày Lễ",
+   "objectives": [
+    {
+     "type": "TALK",
+     "target": "NPC001",
+     "map": "M001",
+     "label": "Trò chuyện cùng Thầy, Lam Nhi và Khôi",
+     "count": 1
+    }
+   ],
+   "rewards": {
+    "exp": 1200,
+    "items": []
+   },
+   "accept": "Mai là Lễ Khai Thư. Tối nay ở lại nhà học nhé.",
+   "progress": "",
+   "complete": "",
+   "talk": {}
+  },
+  {
+   "id": "Q_MAIN_12",
+   "lv": 10,
+   "giver": "NPC001",
+   "turnIn": "NPC001",
+   "ready": false,
+   "title": "Lễ Khai Thư",
+   "objectives": [
+    {
+     "type": "REACH",
+     "target": "I001",
+     "map": "I001",
+     "label": "Vào lễ đường, chọn hệ phép",
+     "count": 1
+    }
+   ],
+   "rewards": {
+    "items": []
+   },
+   "accept": "Huyền Thư đang chờ con.",
+   "progress": "",
+   "complete": "",
+   "talk": {}
+  }
+ ],
+ "questItems": {
+  "cu_cai_non": {
+   "name": "Củ Cải Non",
+   "mob": "MOB002",
+   "chance": 0.5
+  },
+  "thao_duoc": {
+   "name": "Thảo Dược Suối Mơ",
+   "node": "M002",
+   "respawnSec": 20
+  },
+  "bao_tai": {
+   "name": "Bao Tải Bị Lấy",
+   "mob": "MOB004",
+   "chance": 0.25
+  },
+  "manh_trang": {
+   "name": "Mảnh Trang",
+   "mob": "MOB007",
+   "chance": 0.3
+  }
+ },
+ "rewardItems": {
+  "potion_hp": "Bình HP Nhỏ",
+  "kiem_go_tap": "Kiếm Gỗ Tập",
+  "ao_suoi_mo": "Áo Suối Mơ"
+ },
+ "where": {
+  "NPC001": [
+   [
+    "M001",
+    432
+   ]
+  ],
+  "NPC002": [
+   [
+    "M001",
+    656
+   ]
+  ],
+  "NPC040": [
+   [
+    "M001",
+    880
+   ]
+  ],
+  "NPC003": [
+   [
+    "M001",
+    1008
+   ],
+   [
+    "M002",
+    816
+   ]
+  ],
+  "NPC004": [
+   [
+    "M001",
+    1328
+   ],
+   [
+    "M002",
+    2256
+   ]
+  ],
+  "MOB001": [
+   [
+    "M002",
+    336
+   ],
+   [
+    "M002",
+    400
+   ]
+  ],
+  "MOB002": [
+   [
+    "M002",
+    1680
+   ],
+   [
+    "M002",
+    1968
+   ],
+   [
+    "M002",
+    2448
+   ]
+  ],
+  "MOB003": [
+   [
+    "M003",
+    464
+   ],
+   [
+    "M003",
+    784
+   ]
+  ],
+  "MOB004": [
+   [
+    "M003",
+    1168
+   ],
+   [
+    "M003",
+    1680
+   ]
+  ],
+  "MOB005": [
+   [
+    "M003",
+    2224
+   ],
+   [
+    "M003",
+    2704
+   ]
+  ],
+  "MOB006": [
+   [
+    "M004",
+    400
+   ],
+   [
+    "M004",
+    784
+   ]
+  ],
+  "MOB007": [
+   [
+    "M004",
+    1328
+   ],
+   [
+    "M004",
+    1776
+   ]
+  ]
+ }
 }

@@ -1,0 +1,16 @@
+id: Q_MAIN_06
+type: MAIN
+nameKey: quest.main.06.title
+descKey: quest.main.06.desc
+chapter: 1
+levelMin: 5
+prerequisites: [Q_MAIN_05]
+giver: NPC040
+turnIn: NPC040
+objectives:
+  - { type: KILL, target: MOB003, count: 8, map: M003 }
+rewards: { exp: 600, soft: 250 }
+dialogue:
+  accept: dlg.q_main_06.accept
+  progress: dlg.q_main_06.progress
+  complete: dlg.q_main_06.complete

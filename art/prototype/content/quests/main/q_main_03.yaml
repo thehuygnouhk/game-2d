@@ -1,0 +1,17 @@
+id: Q_MAIN_03
+type: MAIN
+nameKey: quest.main.03.title
+descKey: quest.main.03.desc
+chapter: 1
+levelMin: 2
+prerequisites: [Q_MAIN_02]
+giver: NPC040
+turnIn: NPC040
+objectives:
+  - { type: KILL, target: MOB002, count: 6, map: M002 }
+  - { type: COLLECT, target: cu_cai_non, count: 4, map: M002 }
+rewards: { exp: 200, soft: 120 }
+dialogue:
+  accept: dlg.q_main_03.accept
+  progress: dlg.q_main_03.progress
+  complete: dlg.q_main_03.complete

@@ -1,0 +1,100 @@
+# i18n vi (prototype): display text for quests and quest items
+quest:
+  main.01:
+    title: "Buổi Sáng Ở Nhà Học"
+    objectives:
+      - "Chào Bà Mơ ở bếp nhà học"
+    accept: "Sáng nay con đến sớm đấy. Ghé chào Bà Mơ ở bếp rồi quay lại đây, ta có việc nhờ."
+    progress: "Bà Mơ ở ngay cạnh nhà học thôi, con."
+    complete: "Ăn sáng no rồi mới học được. Cầm mấy bình thuốc này mà dùng."
+    talk.npc002: "Ôi, đến sớm thế! Cầm cái bánh này rồi về báo thầy nhé."
+  main.02:
+    title: "Dọn Vườn Thuốc"
+    objectives:
+      - "Hạ Nấm Lùn"
+    accept: "Lũ Nấm Lùn lại mọc tràn ra Đồng Hoa, giẫm nát cả vườn thuốc. Con ra dọn giúp ta năm con."
+    progress: "Nấm Lùn ở phía trái Đồng Hoa, đi qua cổng cuối làng là thấy."
+    complete: "Vườn thuốc sạch rồi. Thanh kiếm gỗ này hợp tay con đấy."
+  main.03:
+    title: "Thỏ Phá Ruộng"
+    objectives:
+      - "Hạ Thỏ Đốm"
+      - "Nhặt Củ Cải Non"
+    accept: "Thỏ Đốm đào nát ruộng củ cải của làng rồi! Đuổi chúng đi, nhặt lại giúp lão mấy củ còn lành."
+    progress: "Thỏ ở nửa sau Đồng Hoa, gần cối xay gió. Củ cải rơi ra khi hạ thỏ."
+    complete: "Củ còn tươi cả. Già này cảm ơn con."
+  main.04:
+    title: "Hái Thảo Dược"
+    objectives:
+      - "Hái Thảo Dược Suối Mơ"
+    accept: "Mình cần năm nhánh Thảo Dược Suối Mơ để chế thuốc. Nó mọc lấp lánh trên Đồng Hoa, cậu hái giúp nhé!"
+    progress: "Thảo dược có đốm sáng xanh. Đứng gần rồi nhấn F (hoặc chạm vào) để hái."
+    complete: "Đủ rồi! Mình vừa chế xong mấy bình, cậu cầm đi đường."
+  main.05:
+    title: "Bài Học Của Khôi"
+    objectives:
+      - "Gặp Khôi ở Đồng Hoa"
+      - "Đấu tập: Tụ Mana Chấn trúng quái"
+    accept: "Muốn mạnh lên thì phải biết dồn mana. Ra Đồng Hoa gặp tớ, tớ chỉ cho."
+    progress: "Dồn mana vào lòng bàn tay rồi đẩy ra. Nhấn phím 1, trúng ba lần là được."
+    complete: "Khá đấy! Từ giờ Tụ Mana Chấn là chiêu của cậu."
+    talk.npc004: "Tới rồi à? Nhìn tớ này: dồn mana, rồi đẩy! Giờ cậu thử với lũ quái quanh đây."
+  main.06:
+    title: "Chó Rừng Lạc Bầy"
+    objectives:
+      - "Hạ Chó Rừng Non"
+    accept: "Đêm qua chó rừng mò tới tận bờ rào. Vào Rừng Mơ Non đuổi bớt tám con giúp lão."
+    progress: "Chó Rừng Non ở đầu Rừng Mơ Non, đi hết Đồng Hoa là tới."
+    complete: "Đêm nay làng ngủ yên rồi."
+  main.07:
+    title: "Bao Tải Bị Lấy"
+    objectives:
+      - "Hạ Lùn Ném Đá"
+      - "Lấy lại Bao Tải Bị Lấy"
+    accept: "Bác Tư bên suối bị lũ Lùn Ném Đá cướp mất bao tải hạt giống. Con đòi lại giúp lão."
+    progress: "Lùn Ném Đá ở giữa Rừng Mơ Non. Cẩn thận đá bay."
+    complete: "Bao tải đây rồi, hạt giống còn nguyên. Bác Tư sẽ mừng lắm."
+  main.08:
+    title: "Giếng Làng Cạn"
+    objectives:
+      - "Hạ Dơi Giếng"
+    accept: "Giếng làng cạn dần mà dưới hang toàn dơi. Con xuống Hang Giếng Cạn đuổi tám con đi."
+    progress: "Hang Giếng Cạn ở cuối Rừng Mơ Non. Dơi bay thấp, đứng dưới mà đánh."
+    complete: "Nước lại róc rách rồi. Tối nay bà nấu canh cho cả làng."
+  main.09:
+    title: "Tờ Giấy Trắng"
+    objectives:
+      - "Hạ Rùa Đá Giếng"
+      - "Tìm Mảnh Trang"
+    accept: "Rùa đá trong hang có nuốt một tờ giấy không chữ. Cậu tìm giúp mình được không?"
+    progress: "Rùa Đá Giếng ở sâu trong hang, mai cứng lắm."
+    complete: "Trắng tinh… nhưng mình có cảm giác nó đang chờ ai đó viết lên."
+  main.10:
+    title: "Trang Lạc"
+    objectives:
+      - "Hạ Trang Lạc trong hầm ngục DG01"
+    accept: "Có thứ gì đó trú trong đáy giếng cạn. Con đủ sức rồi, xuống xem đi."
+    progress: "Cổng hầm ngục ở cuối Hang Giếng Cạn."
+    complete: "Con đã lớn thật rồi."
+  main.11:
+    title: "Đêm Trước Ngày Lễ"
+    objectives:
+      - "Trò chuyện cùng Thầy, Lam Nhi và Khôi"
+    accept: "Mai là Lễ Khai Thư. Tối nay ở lại nhà học nhé."
+    progress: ""
+    complete: ""
+  main.12:
+    title: "Lễ Khai Thư"
+    objectives:
+      - "Vào lễ đường, chọn hệ phép"
+    accept: "Huyền Thư đang chờ con."
+    progress: ""
+    complete: ""
+item:
+  cu_cai_non: "Củ Cải Non"
+  thao_duoc: "Thảo Dược Suối Mơ"
+  bao_tai: "Bao Tải Bị Lấy"
+  manh_trang: "Mảnh Trang"
+  potion_hp: "Bình HP Nhỏ"
+  kiem_go_tap: "Kiếm Gỗ Tập"
+  ao_suoi_mo: "Áo Suối Mơ"
