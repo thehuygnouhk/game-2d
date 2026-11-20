@@ -78,7 +78,7 @@ Bản thử bố cục và đồ họa vùng R01 (M001–M004, file Tiled kèm �
 
 | Loại | Tên | Mô tả |
 |------|-----|-------|
-| Instance cốt truyện | Lễ Khai Thư (`I001`) | Cutscene + chọn hệ, 1 người |
+| Instance cốt truyện | Lễ Khai Thư (`I001`) | Cutscene + chọn hệ, 1 người. Sân lễ ban đêm có **Đài Khai Thư**; vào bằng cách nói chuyện với Thầy Bạch Vân khi nhận Q_MAIN_12, không có cổng. Ra bằng cổng về Nhà Học Suối Mơ |
 | Instance cốt truyện | Ký Ức Tộc Cổ Thư (`I002`) | Flashback Chương 6 |
 | Hall | **Sảnh Đội** (`I010`) | Nhà của Đội, có kho Đội, bảng nhiệm vụ Đội |
 | Hall | Đài Huyền Thư (`I011`) | Đổi khe, nâng ấn bản Huyền Thư |
@@ -190,7 +190,7 @@ Cấp quái và hệ xác định công thức chỉ số ở [combat §5](04-co
 
 | ID | Tên | Cấp | Loại | Map | Cơ chế chính |
 |----|-----|-----|------|-----|--------------|
-| BOSS001 | **Trang Lạc** | 9 | Mini (instance) | Hầm ngục DG01 (cửa vào ở M004) | Rách thành 4 Mảnh Trang ở 50% HP. Chỉ có trong instance riêng nên Q_MAIN_10 làm được bất cứ lúc nào; **không** đứng thường trực ngoài map |
+| BOSS001 | **Trang Lạc** | 9 | Mini (instance) | Hầm ngục DG01 (cửa vào ở M004) | Rách thành 4 Mảnh Trang ở 50% HP. Chỉ có trong instance riêng nên Q_MAIN_10 làm được bất cứ lúc nào; **không** đứng thường trực ngoài map. Chi tiết ở §5.3 |
 | BOSS002 | Lợn Rừng Chúa | 12 | Mini | M009 | Húc theo đường thẳng, vùng báo hiệu |
 | BOSS003 | Người Đá Nghiên Chúa | 22 | Mini | M011 | Đập đất, đá rơi |
 | BOSS004 | Kẻ Trộm Quyển | 24 | Boss | M011 | Hút MP, dịch chuyển |
@@ -246,6 +246,18 @@ Thông báo toàn máy chủ trước **5 phút**. Phần thưởng gửi **qua 
 | Xem lịch | Bảng tin làng của **Cụ Trương (NPC040)** và mục *Lịch Boss* trên giao diện hiển thị lần xuất hiện kế tiếp |
 | Sự kiện | Khi có sự kiện (ví dụ **Đêm Giếng Sáng**), lịch dày hơn hoặc boss xuất hiện ở **mọi khu**; định nghĩa trong `events/*.yaml` |
 
+### 5.3 Trang Lạc (BOSS001)
+
+Sinh vật làm từ trang giấy bị xóa. Chỉ số: Mini-boss Lv9 ([combat §2.1](04-combat-and-progression.md)), rồi nhân hệ số một mình của hầm ngục (§6.1).
+
+| Chiêu | Mã | Cách đánh | Sát thương |
+|-------|----|-----------|-----------|
+| Quét Trang | `BSKL_PAGE_SWIPE` | Vùng chữ nhật 150 × 60 px trước mặt, báo hiệu 0,9 giây | 150% ATK |
+| Bão Trang | `BSKL_PAGE_STORM` | Cứ 3 chiêu có 1 lần: 4 vòng tròn bán kính 34 px quanh người chơi, báo hiệu 1,2 giây, trang giấy rơi xuống | 120% ATK mỗi vòng |
+| Rách Trang | `BSKL_TEAR_APART` | Ở **50% HP**: boss rách thành **4 Mảnh Trang** bay lượn (mỗi mảnh 12,5% HP tối đa của boss, ATK bằng boss). Thân boss biến mất, thanh máu boss chuyển thành tổng máu các mảnh | 100% ATK mỗi cú chém |
+
+Hạ đủ 4 Mảnh Trang là hạ Trang Lạc. Các mảnh không cho EXP riêng; boss trả thưởng một lần khi mảnh cuối rơi.
+
 ## 6. Hầm Ngục & Raid
 
 | ID | Tên | Nhóm | Cấp | Giới hạn vào | Boss cuối | Thưởng đặc trưng |
@@ -278,6 +290,17 @@ Thông báo toàn máy chủ trước **5 phút**. Phần thưởng gửi **qua 
 - Khóa nhóm khi bắt đầu. Có thể vào lại trong 5 phút khi mất kết nối.
 - Chia thưởng theo cơ chế trong [combat §6](04-combat-and-progression.md).
 - Độ khó **Thường / Khó / Ác Mộng** (khóa theo Lực Chiến), quái +40% / +100% chỉ số, thưởng +50% / +150%.
+
+### 6.2 DG01 Hang Giếng Cạn (hầm ngục hướng dẫn)
+
+| Mục | Quy tắc |
+|-----|---------|
+| Vào | Cổng ở cuối Hang Giếng Cạn (M004), cạnh đài đá. Cần **Lv9**. Không giới hạn lượt; mỗi lần vào là instance mới |
+| Thời gian | **30 phút**, đồng hồ trên HUD. Hết giờ hoặc gục ngã: instance đóng, về cổng ở M004 (vẫn mất 2% EXP như khi chết thường) |
+| Bố cục | Phòng 1: 5 Dơi Giếng Lv9–10. Phòng 2 (bậc đá, hố chông): 4 Rùa Đá Giếng Lv10–11. Hành lang: 2 Dơi Giếng Lv10. Sàn đấu: Trang Lạc. Quái **không hồi sinh** trong instance |
+| Boss | Trang Lạc thức dậy khi người chơi tới gần sàn đấu (cách điểm boss 420 px) |
+| Kết thúc | Hạ boss: nhận EXP và Quan của boss, **Rương Tân Thủ** xuất hiện; cổng bên phải đưa về M004 |
+| **Rương Tân Thủ** | 300 Quan (× hệ số thưởng theo số người, một mình ×0,8 = 240), 3 Bình HP Vừa, 1 trang bị bộ S1 Lv9 **Tốt** (ô ngẫu nhiên). Cần 2 ô trống trong túi |
 
 ## 7. Sinh quái (spawn)
 

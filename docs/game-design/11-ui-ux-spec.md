@@ -228,6 +228,15 @@ NPC hiện **hộp thoại + menu dọc tối đa 5 mục**:
 - Danh sách 7 kỹ năng của hệ; chi tiết cấp hiện tại và cấp kế tiếp; nút *Nâng cấp* hiển thị SP/Quan cần.
 - Kéo kỹ năng lên **hotbar**.
 
+### 6.3.1 Cảnh truyện, hầm ngục, hết chương
+
+- **Cảnh truyện:**
+  - dùng hộp thoại NPC: chân dung người đang nói (người chơi có chân dung của chính mình), một nút **Tiếp ▸**, lời cuối là **Xong**;
+  - cảnh đêm phủ lớp màu xanh đêm có sao lên màn chơi.
+- **Hầm ngục:** tên map trên HUD kèm "còn mm:ss". Thanh máu boss ở đỉnh màn hình; khi Trang Lạc rách thì đổi thành "Mảnh Trang · còn n/4" với tổng máu các mảnh.
+- **Rương:** rương phát sáng nhấp nhô, chữ "F: Mở rương" khi lại gần; mở ra hiện dải ruy băng kèm phần thưởng.
+- **Thẻ "Hết Chương 1":** khung chuẩn, lá thư trên giấy, 4 ô (thời gian chơi, cấp, Lực Chiến, hệ phép), dòng giới thiệu chương sau, nút **Về làng**.
+
 ### 6.4 Nhiệm vụ
 - Tab: **Chính**, **Phụ**, **Ngày/Tuần**, **Sự kiện**.
 - Nhiệm vụ chính ghim; bấm **Đi tới** để tự chạy tới NPC/map (auto-path).

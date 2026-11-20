@@ -233,7 +233,7 @@ Nâng đủ 7 kỹ năng lên cấp 7 tốn **105 SP**, trong khi chỉ có **91
 
 | Quy tắc | Giá trị |
 |---------|---------|
-| Đổi hệ lần đầu | **Miễn phí** trong 24 giờ đầu sau Lễ Khai Thư |
+| Đổi hệ lần đầu | **Miễn phí** trong 24 giờ đầu sau Lễ Khai Thư. Ở Chương 1 làm tại **Bà Mơ** (NPC002) vì Thầy Bạch Vân đã rời làng |
 | Đổi hệ sau đó | **100 Nén Bạc**, bắt buộc chờ 30 ngày giữa hai lần |
 | Hậu quả | Thu hồi SP, hoàn lại 100% SP nhưng mất Quan đã trả. **Vũ khí** hệ cũ tự tháo vào túi (không mặc được vũ khí hệ khác, [items §3](07-items-and-equipment.md)) và nhận vũ khí tập sự của hệ mới nếu chưa có; giáp, phụ kiện hệ khác vẫn mặc được nhưng mất **bonus set** |
 | **Khe Huyền Thư (Lv80+)** | Có 2 khe build. Khe A hệ chính, khe B (Phong Ấn Xạ Thủ hoặc hệ phụ) |

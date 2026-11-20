@@ -358,6 +358,24 @@ def potion_big(color):
     return cv
 
 
+def chest():
+    cv = canvas(S, S)
+    wood = ramp("#9c6b43", light="#c48d5c", dark="#6e4527", outline="#2a1608")
+    gold = ramp("#e0a83a", light="#ffe08a", dark="#a8681f", outline="#4a2a08")
+    lid = g.poly([(5, 13), (8, 7), (24, 7), (27, 13)])
+    box = g.rect(5, 13, 27, 27)
+    paint(cv, box, wood, shade=(1, 1, 2))
+    paint(cv, lid, wood, shade=(0, 1, 1))
+    for x in (8, 23):
+        paint(cv, g.rect(x, 8, x + 1, 27), gold, shade=None)
+    paint(cv, g.rect(5, 13, 27, 14), gold, shade=None)
+    paint(cv, g.rect(14, 12, 18, 18), gold, shade=None)
+    fill(cv, g.rect(15, 15, 17, 16), hex_rgb("#2a1608"))
+    for (sx, sy) in ((27, 4), (4, 6)):
+        fill(cv, g.capsule(sx - 1.5, sy, sx + 1.5, sy, 0.3) | g.capsule(sx, sy - 1.5, sx, sy + 1.5, 0.3), hex_rgb("#fff3b0"))
+    return cv
+
+
 def all_icons():
     icons = []
     for name in CLASSES:
@@ -373,5 +391,6 @@ def all_icons():
     icons += [("cu_cai_non", radish()), ("thao_duoc", herb_sprig()), ("bao_tai", sack()),
               ("manh_trang", torn_page()), ("kiem_go_tap", wooden_sword()), ("ao_suoi_mo", tunic())]
     icons += [("kiem_dan_lang", iron_sword()), ("mu_dan_lang", cap()), ("ao_dan_lang", villager_tunic()),
-              ("giay_dan_lang", boots()), ("potion_hp_m", potion_big("#e63946")), ("potion_mp_m", potion_big("#3a86ff"))]
+              ("giay_dan_lang", boots()), ("potion_hp_m", potion_big("#e63946")), ("potion_mp_m", potion_big("#3a86ff")),
+              ("ruong_tan_thu", chest())]
     return icons

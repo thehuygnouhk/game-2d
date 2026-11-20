@@ -293,7 +293,8 @@ def build_monsters():
 VI_NAMES = {
     "MOB001": "Nấm Lùn", "MOB002": "Thỏ Đốm", "MOB003": "Chó Rừng Non", "MOB004": "Lùn Ném Đá",
     "MOB005": "Nhện Mực", "MOB006": "Dơi Giếng", "MOB007": "Rùa Đá Giếng", "BOSS001": "Trang Lạc",
-    "BOSS034": "Vua Nấm Lùn", "BOSS035": "Chó Rừng Đầu Đàn", "BOSS036": "Dơi Chúa Giếng",
+    "BOSS034": "Vua Nấm Lùn", "BOSS035": "Chó Rừng Đầu Đàn", "BOSS036": "Dơi Chúa Giếng", "BOSS001_SHARD": "Mảnh Trang",
+    "DG01": "Hầm Ngục Hang Giếng Cạn", "I001": "Lễ Đường Khai Thư",
     "M001": "Nhà Học Suối Mơ", "M002": "Đồng Hoa Suối Mơ", "M003": "Rừng Mơ Non", "M004": "Hang Giếng Cạn",
     "NPC001": "Thầy Bạch Vân", "NPC002": "Bà Mơ", "NPC003": "Lam Nhi", "NPC004": "Khôi", "NPC005": "Chấp Bút Hạc Minh",
     "NPC040": "Cụ Trương", "NPC042": "Thợ Rèn Tư", "NPC024": "Cô Kim Thoa", "NPC053": "Cụ Tiễn",
@@ -317,9 +318,9 @@ QUEST_DATA = [
      dict(exp=120, soft=80, items=[("kiem_go_tap", 1)]), True),
     ("Q_MAIN_03", 2, "NPC040", "NPC040", [dict(type="KILL", target="MOB002", count=6, map="M002"),
                                           dict(type="COLLECT", target="cu_cai_non", count=4, map="M002")],
-     dict(exp=200, soft=120), True),
+     dict(exp=350, soft=120), True),
     ("Q_MAIN_04", 3, "NPC003", "NPC003", [dict(type="COLLECT", target="thao_duoc", count=5, map="M002")],
-     dict(exp=300, soft=150, items=[("potion_hp", 3)]), True),
+     dict(exp=600, soft=150, items=[("potion_hp", 3)]), True),
     ("Q_MAIN_05", 5, "NPC004", "NPC004", [dict(type="TALK", target="NPC004", map="M002"),
                                           dict(type="USE_SKILL", target="SKL_MANA_BURST", count=3, map="M002")],
      dict(exp=400, soft=200, skill="SKL_MANA_BURST"), True),
@@ -334,11 +335,11 @@ QUEST_DATA = [
                                           dict(type="COLLECT", target="manh_trang", count=1, map="M004")],
      dict(exp=1400, soft=400), True),
     ("Q_MAIN_10", 9, "NPC001", "NPC001", [dict(type="BOSS", target="BOSS001", count=1, map="DG01")],
-     dict(exp=2000, soft=600, items=[("ao_suoi_mo", 1)]), False),
-    ("Q_MAIN_11", 9, "NPC001", "NPC001", [dict(type="TALK", target="NPC001", map="M001")],
-     dict(exp=1200), False),
+     dict(exp=2000, soft=600, items=[("ao_suoi_mo", 1)]), True),
+    ("Q_MAIN_11", 9, "NPC001", "NPC001", [dict(type="SCENE", target="Q_MAIN_11", map="M001")],
+     dict(exp=1200, unlockLevel=10), True),
     ("Q_MAIN_12", 10, "NPC001", "NPC001", [dict(type="REACH", target="I001", map="I001")],
-     dict(), False),
+     dict(), True),
 ]
 QUEST_TEXT = {   # i18n vi: title, objective labels, dialogue (accept / progress / complete / extra talk)
     "Q_MAIN_01": ("Buổi Sáng Ở Nhà Học", ["Chào Bà Mơ ở bếp nhà học"],
@@ -380,12 +381,15 @@ QUEST_TEXT = {   # i18n vi: title, objective labels, dialogue (accept / progress
                   "Rùa Đá Giếng ở sâu trong hang, mai cứng lắm.",
                   "Trắng tinh… nhưng mình có cảm giác nó đang chờ ai đó viết lên.", {}),
     "Q_MAIN_10": ("Trang Lạc", ["Hạ Trang Lạc trong hầm ngục DG01"],
-                  "Có thứ gì đó trú trong đáy giếng cạn. Con đủ sức rồi, xuống xem đi.",
-                  "Cổng hầm ngục ở cuối Hang Giếng Cạn.", "Con đã lớn thật rồi.", {}),
-    "Q_MAIN_11": ("Đêm Trước Ngày Lễ", ["Trò chuyện cùng Thầy, Lam Nhi và Khôi"],
-                  "Mai là Lễ Khai Thư. Tối nay ở lại nhà học nhé.", "", "", {}),
-    "Q_MAIN_12": ("Lễ Khai Thư", ["Vào lễ đường, chọn hệ phép"],
-                  "Huyền Thư đang chờ con.", "", "", {}),
+                  "Tờ giấy trắng dưới giếng không tự nhiên mà có. Thứ gì đó đang trú trong đáy hang. Con đủ sức rồi, xuống xem đi.",
+                  "Cổng hầm ngục ở cuối Hang Giếng Cạn, cạnh đài đá. Cần Lv9.",
+                  "Một sinh vật làm từ trang giấy bị xóa… Con làm tốt lắm. Áo này thầy may sẵn cho con.", {}),
+    "Q_MAIN_11": ("Đêm Trước Ngày Lễ", ["Ngồi lại cùng Thầy, Lam Nhi và Khôi"],
+                  "Mai là Lễ Khai Thư. Tối nay cả ba đứa ở lại nhà học với thầy nhé.",
+                  "Thầy đang đợi ở nhà học.", "Ngủ sớm đi. Mai thầy đợi ở lễ đường.", {}),
+    "Q_MAIN_12": ("Lễ Khai Thư", ["Đặt tay lên Đài Khai Thư, chọn hệ phép"],
+                  "Huyền Thư đang chờ con. Theo thầy vào lễ đường.",
+                  "Đài Khai Thư ở giữa lễ đường. Lại gần rồi nhấn F.", "", {}),
 }
 
 
@@ -404,6 +408,7 @@ ITEM_DEFS = {
     "s1_boots": dict(type="ARMOR", slot="boots", set="S1", name="Giày Dân Làng", icon="giay_dan_lang", levelBand=[1, 9]),
     "kiem_go_tap": dict(type="WEAPON", slot="weapon", name="Kiếm Gỗ Tập", icon="kiem_go_tap", level=1, rarity="common"),
     "ao_suoi_mo": dict(type="ARMOR", slot="armor", name="Áo Suối Mơ", icon="ao_suoi_mo", level=9, rarity="good"),
+    "ruong_tan_thu": dict(type="MISC", name="Rương Tân Thủ", icon="ruong_tan_thu", value=0),
     # Le Khai Thu (classes §6, quests Q_MAIN_12): bound tome + class weapon
     "huyen_thu_so_ban": dict(type="TOME", slot="tome", name="Huyền Thư Sơ Bản", icon="huyen_thu_so_ban", level=10, rarity="common", bound=True),
     "kiem_lua_tap_su": dict(type="WEAPON", slot="weapon", cls="FIRE", name="Kiếm Lửa Tập Sự", icon="weapon_fire", level=10, rarity="common"),
@@ -432,6 +437,29 @@ CLASS_DATA = {
                   skills=[dict(id="SKL_WATER_1", name="Thủy Đạn", lv=10, mp=10, cd=3, mult=1.15, kind="bolt", range="Xa", text="115% ATK"),
                           dict(id="SKL_WATER_2", name="Sóng Triều", lv=20, mp=18, cd=5, mult=1.5, kind="wave", range="Ngắn", text="150% ATK, làm chậm 30% trong 3 giây"),
                           dict(id="SKL_WATER_3", name="Thủy Tiễn Xuyên Sóng", lv=30, mp=28, cd=8, mult=2.3, kind="beam", range="Xa", text="230% ATK, tia nước")]),
+}
+# Dungeon DG01 (maps §6-6.1) and story scenes of Chapter 1 (lore ch.1)
+DUNGEONS = {
+    "DG01": dict(minLevel=9, timeLimitMin=30, boss="BOSS001", entry="M004",
+                 solo=dict(hp=0.3, atk=0.7, reward=0.8),                    # maps §6.1, n = 1
+                 bossTier=dict(hp=10, atk=1.3, def_=1.2, exp=10, quan=8),     # combat §2.1 Mini-boss
+                 chest=dict(soft=300, items=[["potion_hp_m", 3]], gear=dict(level=9, rarity="good"))),
+}
+BOSS_SKILLS = {   # BOSS001 Trang Lac (maps §5): multipliers of the boss ATK
+    "BSKL_PAGE_SWIPE": dict(name="Quét Trang", mult=1.5, telegraphMs=900, shape="rect 150x60 in front"),
+    "BSKL_PAGE_STORM": dict(name="Bão Trang", mult=1.2, telegraphMs=1200, shape="4 circles r34 around the player"),
+    "BSKL_TEAR_APART": dict(name="Rách Trang", atHp=0.5, shards=4, shardHp=0.125, shardMult=1.0),
+}
+SCENES = {
+    "Q_MAIN_11": [["NPC001", "Ngồi xuống đây cả ba. Mai là Lễ Khai Thư rồi."],
+                  ["NPC003", "Con hồi hộp quá thầy ạ. Lỡ Huyền Thư của con chẳng chịu mở thì sao?"],
+                  ["NPC004", "Mở hay không thì cậu vẫn chế thuốc giỏi nhất làng mà."],
+                  ["NPC001", "Huyền Thư không chọn người mạnh nhất. Nó chọn người biết mình muốn viết gì."],
+                  ["PLAYER", "Con muốn biết tờ giấy trắng dưới giếng là gì, và ai đã xóa nó."],
+                  ["NPC001", "…Ngủ sớm đi. Mai thầy đợi ở lễ đường."]],
+    "Q_MAIN_12": [["NPC001", "Huyền Thư đã nhận con. Từ nay con tự viết đường đi của mình."],
+                  ["NPC001", "Thầy còn vài trang sách cũ phải đi tìm lại. Đừng lo cho thầy."]],
+    "LETTER": "Đừng tìm thầy. Hãy tìm Mười Hai Quyển.",
 }
 LOCKED_CLASSES = {"WIND": "Phong Kiếm Khách", "BOLT": "Lôi Chiến Binh", "EARTH": "Thổ Hộ Vệ", "PLANT": "Mộc Thuật Sư", "DARK": "Ám Pháp Sư"}
 SETS = {"S1": dict(name="Dân Làng", bonus={"2": "+5% HP", "4": "+8% ATK, +8% DEF"})}
@@ -518,6 +546,13 @@ dialogue:
     for k, v in ITEM_DEFS.items():
         if k not in QUEST_ITEMS:
             lines.append(f"  {k}: \"{v['name']}\"")
+    lines.append("scene:")
+    for k, v in SCENES.items():
+        if isinstance(v, str):
+            lines.append(f"  {k.lower()}: \"{v}\"")
+        else:
+            for i, (who, text) in enumerate(v):
+                lines.append(f"  {k.lower()}.{i + 1}: \"{text}\"   # {who}")
     lines.append("origin:")
     for k, v in ORIGIN_DATA.items():
         lines += [f"  {k.lower()}.name: \"{v['name']}\"", f"  {k.lower()}.passive: \"{v['passive']}: {v['passiveText']}\""]
@@ -560,7 +595,7 @@ def build_playable():
     for sub in ("maps/tilesets", "maps/backgrounds", "sprites"):
         os.makedirs(os.path.join(root, sub), exist_ok=True)
     src_maps = os.path.join(OUT, "maps")
-    for n in ("m001", "m002", "m003", "m004"):
+    for n in ("m001", "m002", "m003", "m004", "dg01", "i001"):
         shutil.copy(os.path.join(src_maps, f"{n}.tmj"), os.path.join(root, "maps", f"{n}.tmj"))
         for k in ("far", "mid", "near"):
             shutil.copy(os.path.join(src_maps, "backgrounds", f"{n}_{k}.png"), os.path.join(root, "maps", "backgrounds"))
@@ -573,19 +608,20 @@ def build_playable():
     shutil.copy(os.path.join(sh, "hieu_ung_thuy.png"), os.path.join(root, "sprites", "vfx_thuy.png"))
     build_player_sheets(os.path.join(root, "sprites", "player"))
     mob_rows = {}
-    for mid in ("MOB001", "MOB002", "MOB003", "MOB004", "MOB005", "MOB006", "MOB007", "BOSS034", "BOSS035", "BOSS036"):
+    for mid in ("MOB001", "MOB002", "MOB003", "MOB004", "MOB005", "MOB006", "MOB007", "BOSS001", "BOSS001_SHARD",
+                "BOSS034", "BOSS035", "BOSS036"):
         fr = monster_frames(mid)
         rows = [a for a in ALL_ANIMS if a in fr]
         sheet([fr[a] for a in rows]).save(os.path.join(root, "sprites", f"{mid.lower()}.png"))
         mob_rows[mid] = {"size": MONSTERS[mid][1], "rows": {a: [i, len(fr[a])] for i, a in enumerate(rows)}}
     where = {}   # NPC and mob spawn positions per map, for quest auto-path (ui-ux §6.4 "Đi tới")
-    for n in ("m001", "m002", "m003", "m004"):
+    for n in ("m001", "m002", "m003", "m004", "dg01", "i001"):
         with open(os.path.join(root, "maps", f"{n}.tmj"), encoding="utf-8") as f:
             tm = json.load(f)
         for layer in tm["layers"]:
             for o in layer.get("objects", []):
                 pr = {p["name"]: p["value"] for p in o.get("properties", [])}
-                key = pr.get("id") if o.get("type") == "npc" else pr.get("mob") if o.get("type") == "mob_spawn" else None
+                key = {"npc": pr.get("id"), "mob_spawn": pr.get("mob"), "boss_spawn": pr.get("boss")}.get(o.get("type"))
                 if key:
                     where.setdefault(key, []).append([n.upper(), round(o["x"])])
     data = {
@@ -596,6 +632,12 @@ def build_playable():
                            ranged=mid in ("MOB004", "MOB005"), sprite=mob_rows[mid]) for mid, v in MOB_DATA.items()},
         "bosses": {bid: dict(level=v[0], element=v[1], kind=v[2], skills=v[3], sprite=mob_rows.get(bid),
                              flying=bid == "BOSS036") for bid, v in BOSS_DATA.items() if bid in mob_rows},
+        "minions": {"BOSS001_SHARD": dict(level=[9, 9], element="NONE", kind="MINION", ai="AGGRESSIVE", aggro=600, speed=110,
+                                          skills=["MOBSKL_PAGE_CUT"], flying=True, fleeBelowHp=0, ranged=False,
+                                          sprite=mob_rows["BOSS001_SHARD"])},
+        "dungeons": DUNGEONS,
+        "bossSkills": BOSS_SKILLS,
+        "scenes": SCENES,
         "events": {eid: dict(boss=v[0], times=v[1], maps=v[2], zones=v[3]) for eid, v in EVENTS.items()},
         "weeklyEvents": [dict(id="EVT_R01_WELL_NIGHT", name="Đêm Giếng Sáng", boss="BOSS036", map="M004", day=5,
                               start="20:00", end="21:00", everyMin=20)],
@@ -657,7 +699,7 @@ def build_maps():
     hero = layered_frames(HEROES["fire"], idle("sword")[:1])[1][0]
     from monsters import monster_frames
     mob_spr = {m: monster_frames(m) for m in ("MOB001", "MOB002", "MOB003", "MOB004", "MOB005", "MOB006", "MOB007",
-                                              "BOSS034", "BOSS035", "BOSS036")}
+                                              "BOSS001", "BOSS034", "BOSS035", "BOSS036")}
     flying = {"MOB006": 27, "BOSS036": 54}
     region = build_region(S)
     problems = []
@@ -669,7 +711,7 @@ def build_maps():
         raise SystemExit("unreachable map content:\n  " + "\n  ".join(problems))
     for mid, B in region.items():
         name = mid.lower()
-        bgs = dict(zip(("bg_far", "bg_mid", "bg_near"), MP.bg_rich(B.theme, B.h * 32, seed=int(mid[1:]))))
+        bgs = dict(zip(("bg_far", "bg_mid", "bg_near"), MP.bg_rich(B.theme, B.h * 32, seed=int("".join(c for c in mid if c.isdigit())))))
         bg_names = {}
         for k, img in bgs.items():
             fn = f"{name}_{k[3:]}.png"

@@ -169,10 +169,11 @@ class MapBuilder:
         y = self.feet(tx) if y_tile is None else y_tile * TS
         self.npcs.append(dict(id=nid, x=self.px(tx), y=y))
 
-    def spawn(self, mob, tx, count, radius_tiles, respawn, y_tile=None, note=""):
+    def spawn(self, mob, tx, count, radius_tiles, respawn, y_tile=None, note="", level=None):
+        """level: (min, max) override, e.g. dungeon monsters stronger than the field ones."""
         y = self.feet(tx) if y_tile is None else y_tile * TS
         self.spawns.append(dict(mob=mob, x=self.px(tx), y=y, radius=radius_tiles * TS, count=count,
-                                respawnSec=respawn, note=note))
+                                respawnSec=respawn, note=note, level=level))
 
     def boss_spawn(self, boss, tx, event, y_tile=None):
         y = self.feet(tx) if y_tile is None else y_tile * TS
@@ -350,9 +351,10 @@ def write_tmj(B, path, region_png, region_size, bg_names, bg_h):
     for n in B.npcs:
         add("npc", n["id"], n["x"], n["y"], props={"id": n["id"]}, point=True)
     for s in B.spawns:
-        add("mob_spawn", s["mob"], s["x"], s["y"],
-            props={"mob": s["mob"], "count": s["count"], "radius": s["radius"], "respawnSec": s["respawnSec"]},
-            point=True)
+        props = {"mob": s["mob"], "count": s["count"], "radius": s["radius"], "respawnSec": s["respawnSec"]}
+        if s.get("level"):
+            props.update(levelMin=s["level"][0], levelMax=s["level"][1])
+        add("mob_spawn", s["mob"], s["x"], s["y"], props=props, point=True)
     for b in B.boss_spawns:
         add("boss_spawn", b["boss"], b["x"], b["y"], props={"boss": b["boss"], "event": b["event"]}, point=True)
     for z in B.safe:

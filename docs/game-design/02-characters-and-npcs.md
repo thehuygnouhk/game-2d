@@ -14,7 +14,7 @@
 | ID | Tên | Vai trò | Vị trí | Chức năng chính |
 |----|-----|---------|--------|-----------------|
 | NPC001 | **Thầy Bạch Vân** | Thầy lang du hành, người dạy nhà học | M001; mất tích sau Lễ Khai Thư, trở lại ở Chương 7 | Hướng dẫn tân thủ, nhiệm vụ Chương 1, **Lễ Khai Thư** (Lv10) |
-| NPC002 | **Bà Mơ** | Người giữ nhà học | M001 | Nhiệm vụ làng sau khi thầy đi, **đổi tên nhân vật** (tốn Nén Bạc) |
+| NPC002 | **Bà Mơ** | Người giữ nhà học | M001 | Nhiệm vụ làng sau khi thầy đi, **đổi tên nhân vật** (tốn Nén Bạc); sau khi thầy đi, nhận việc **đổi hệ phép miễn phí** trong 24 giờ đầu ([classes §5](03-origins-classes-skills.md)) |
 | NPC003 | **Lam Nhi** | Bạn, học trò thầy lang | M001–M004, sau xuất hiện ở các chương | Chuỗi **Bạn Đồng Hành**, chế thuốc nhỏ; **tiệm thuốc ở làng**: bán Bình HP/MP Nhỏ và Vừa, mua lại đồ (cửa hàng duy nhất trước Thượng Đô) |
 | NPC004 | **Khôi** | Bạn, người thừa kế bí mật của Xích Sa | M001, M005; trục Chương 5 | Chuỗi **Bạn Đồng Hành** |
 | NPC005 | **Chấp Bút Hạc Minh** | Người đứng đầu Pháp Vệ Đoàn | M008 | Nhiệm vụ chính cấp cao, lễ phong hạng, **Mùa Giải** |

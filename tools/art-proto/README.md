@@ -15,7 +15,7 @@ Công cụ vẽ pixel art bằng code để **thử phong cách** nhân vật, s
 | `demo.py` | Ghép nhân vật thi triển, đạn bay, trúng đích |
 | `tiles_rich.py` | Tileset vùng R01: vách đất bo tròn, cỏ phủ chờm, thác nước, hang đá; nhà phố, Nhà Học có tháp tròn, cối xay gió, giếng, đèn đường |
 | `maps.py` | Bộ dựng map: chọn ô mép theo hàng xóm, xuất Tiled `.tmj` (tileset nhúng) và `.yaml`, nền parallax, ảnh xem trước |
-| `maps_r01.py` | Bố cục M001–M004, khu cấp độ, điểm boss theo giờ, nối cổng |
+| `maps_r01.py` | Bố cục M001–M004, hầm ngục DG01, lễ đường I001, khu cấp độ, điểm boss, nối cổng |
 | `monsters.py` | 7 quái Chương 1, Trang Lạc và Mảnh Trang, 3 boss theo giờ (kiểu quái thú ma lực) |
 | `build.py` | Xuất toàn bộ vào [`art/prototype`](../../art/prototype/README.md) (`build.py <thư mục> maps` chỉ dựng bản đồ; `build.py <thư mục> monsters` dựng quái, dữ liệu và bản đồ; `build.py <thư mục> content` dựng nhiệm vụ, vật phẩm, icon và dữ liệu bản chơi thử) |
 | `sample.py` | Bộ mẫu phong cách đầu tiên |

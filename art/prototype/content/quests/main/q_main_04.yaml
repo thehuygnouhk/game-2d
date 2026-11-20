@@ -9,7 +9,7 @@ giver: NPC003
 turnIn: NPC003
 objectives:
   - { type: COLLECT, target: thao_duoc, count: 5, map: M002 }
-rewards: { exp: 300, soft: 150, items: [ { id: potion_hp, count: 3 } ] }
+rewards: { exp: 600, soft: 150, items: [ { id: potion_hp, count: 3 } ] }
 dialogue:
   accept: dlg.q_main_04.accept
   progress: dlg.q_main_04.progress

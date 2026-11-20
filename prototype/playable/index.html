@@ -407,6 +407,19 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
 .doll { grid-template-rows: 4.8cqw 4.8cqw 4.8cqw; grid-template-areas: "hat hero weapon" "armor hero boots" ". tome ."; }
 .eq[data-slot="tome"] { grid-area: tome; justify-self: center; }
 
+/* end of chapter card */
+#chapter { left: 50%; top: 50%; transform: translate(-50%, -48%); width: 58cqw; display: flex; flex-direction: column; }
+#chapter .win-body { display: grid; gap: 0.9cqw; padding: 1.4cqw 1.8cqw; justify-items: center; text-align: center; }
+#chapter h3 { margin: 0; font-size: 1.3cqw; color: var(--ink-soft); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.letter { width: 100%; box-sizing: border-box; padding: 1.2cqw 1.6cqw; background: #fffaf0; border: 0.12cqw solid var(--paper-3); box-shadow: 0 0.3cqw 0.6cqw rgba(0, 0, 0, 0.18); transform: rotate(-0.8deg); text-align: left; }
+.letter p { margin: 0; font-family: Georgia, "Times New Roman", serif; font-style: italic; font-size: 1.7cqw; color: #3a2a18; line-height: 1.5; }
+.letter small { display: block; margin-top: 0.6cqw; text-align: right; font-family: Georgia, serif; font-size: 1.1cqw; color: var(--ink-soft); }
+.chstats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6cqw; width: 100%; }
+.chstats span { display: grid; gap: 0.1cqw; padding: 0.5cqw; border-radius: 0.45cqw; background: rgba(122, 90, 54, 0.1); font-size: 0.9cqw; font-weight: 700; color: var(--ink-soft); }
+.chstats b { font-size: 1.4cqw; color: var(--ink-red); }
+.chnext { font-size: 1.05cqw; color: var(--ink-soft); font-weight: 600; }
+#dlg .face.pc { background: var(--img) calc(-20 * var(--s)) calc(-16 * var(--s)) / calc(576 * var(--s)) calc(480 * var(--s)) no-repeat, radial-gradient(circle at 50% 35%, #5a7ab0, #1c2640 75%); }
+
 /* NPC dialog (ui-ux §5) */
 #dlg { left: 50%; bottom: 3.2cqw; transform: translateX(-50%); width: 66cqw; display: grid; grid-template-columns: 10.5cqw 1fr; gap: 1.1cqw; padding: 1.2cqw; }
 #dlg .face { --box: 10.5cqw; --s: calc(var(--box) / 56); width: var(--box); height: var(--box); border-radius: 0.6cqw; image-rendering: pixelated; align-self: start;
@@ -535,6 +548,11 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
       <button class="win-x" id="rite-x" type="button" aria-label="Đóng">✕</button>
       <div class="win-body paper" id="rite-body"></div>
     </div>
+    <div id="chapter" class="win" role="dialog" aria-label="Hết Chương 1" hidden>
+      <i class="stud tl"></i><i class="stud tr"></i><i class="stud bl"></i><i class="stud br"></i>
+      <div class="win-head"><span class="ribbon">Hết Chương 1</span></div>
+      <div class="win-body paper" id="chapter-body"></div>
+    </div>
     <div id="dlg" class="win" role="dialog" hidden>
       <i class="stud tl"></i><i class="stud tr"></i><i class="stud bl"></i><i class="stud br"></i>
       <div class="face" id="dlg-face"></div>
@@ -557,7 +575,8 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
       </label>
       <div class="row">
         <button id="dev-boss" type="button">Boss của map này xuất hiện ngay</button>
-        <button id="dev-fire" type="button">Lên Lv10 (thử Lễ Khai Thư)</button>
+        <button id="dev-dg" type="button">Nhảy tới Trang Lạc (Lv9)</button>
+        <button id="dev-fire" type="button">Nhảy tới Lễ Khai Thư (Lv10)</button>
         <button id="dev-lv" type="button">+1 cấp</button>
         <button id="dev-quest" type="button">Xong mục tiêu nhiệm vụ hiện tại</button>
         <button id="dev-reset" type="button">Xóa dữ liệu lưu, chơi lại từ đầu</button>
@@ -892,9 +911,8 @@ const PLACE = { DG01: "Hầm ngục DG01", I001: "Lễ đường Khai Thư" };
 const mapName = (m) => DATA.names[m] || PLACE[m] || m;
 const iconVars = (name) => { const i = Math.max(0, DATA.items.indexOf(name)); return `--c:${i % 8};--r:${Math.floor(i / 8)}`; };
 const faceVars = (id) => `--r:${Math.max(0, DATA.npcOrder.indexOf(id))}`;
-const uiModal = () => !$("quest").hidden || !$("dlg").hidden || !$("bag").hidden || !$("create").hidden || !$("rite").hidden;
+const uiModal = () => !$("quest").hidden || !$("dlg").hidden || !$("bag").hidden || !$("create").hidden || !$("rite").hidden || !$("chapter").hidden;
 function npcMark(id) {
-  if (id === "NPC001" && S.lv >= 10 && !S.cls) return ["!", "#ffd23f"];
   const q = Q.cur(), st = Q.state();
   if (!q || st === "end" || st === "proto") return null;
   if (st === "avail" && q.giver === id) return ["!", "#ffd23f"];
@@ -949,11 +967,15 @@ const Q = {
     banner("Nhận nhiệm vụ", q.title, false);
     this.event("TALK", q.giver);                     // meeting the giver on the right map counts (Q_MAIN_05)
     questChanged();
+    const sc = window.__htk?.scene;
+    if (q.id === "Q_MAIN_11") setTimeout(() => playScene("Q_MAIN_11", () => { Q.event("SCENE", "Q_MAIN_11"); finishQuest("NPC001", sc); }), 300);
+    if (q.id === "Q_MAIN_12") setTimeout(startCeremonyTrip, 900);
   },
   complete(scene) {
     const q = this.cur(), r = q.rewards;
     const need = slotsFor(r.items);
     if (S.inv.length + need > BAG_SIZE) { toast(`Túi cần ${need} ô trống để nhận thưởng. Bán bớt đồ ở Lam Nhi.`, true); return false; }
+    if (r.unlockLevel) S.capOpen = true;
     if (r.exp) scene.gainExp(r.exp);
     if (r.soft) S.quan += r.soft;
     for (const [id, n] of r.items) addItem(id, n);
@@ -976,6 +998,9 @@ const Q = {
     const k = q.objectives.findIndex((_, k) => !this.done(k)), o = q.objectives[k];
     if (o.type === "TALK") return npc(o.target, o.map);
     if (o.type === "KILL") return zone(o.target, o.map, `khu ${DATA.names[o.target]}`);
+    if (o.type === "BOSS") return zone(o.target, o.map, DATA.names[o.target]);
+    if (o.type === "REACH") return S.map === o.map ? { map: o.map, x: ALTAR_X, label: "Đài Khai Thư" } : npc(q.giver, "M001");
+    if (o.type === "SCENE") return npc(q.giver, "M001");
     if (o.type === "USE_SKILL") return zone("MOB001", o.map, `khu ${DATA.names.MOB001}`);
     if (o.type === "COLLECT") {
       const src = DATA.questItems[o.target];
@@ -1002,6 +1027,8 @@ function objWhere(o) {
     return src.mob ? `rơi từ ${DATA.names[src.mob]} (${Math.round(src.chance * 100)}%) · ${mapName(o.map)}` : `hái ở bụi thảo dược phát sáng · ${mapName(o.map)}`;
   }
   if (o.type === "USE_SKILL") return `phím 1 · ${mapName(o.map)}`;
+  if (o.type === "BOSS") return `${mapName(o.map)} · cổng ở cuối Hang Giếng Cạn, cần Lv9`;
+  if (o.type === "SCENE") return "Nhà Học Suối Mơ, buổi tối";
   return mapName(o.map);
 }
 
@@ -1017,8 +1044,7 @@ function renderTracker() {
   const q = Q.cur(), st = Q.state(), el = $("qtrack");
   el.className = st === "ready" ? "ready" : st === "avail" ? "avail" : "";
   let body;
-  if (S.lv >= 10 && !S.cls) { el.className = "avail"; body = `<span class="qn">Lễ Khai Thư</span><span class="qo go">Gặp Thầy Bạch Vân để chọn hệ phép</span>`; }
-  else if (st === "end" || !q) body = `<span class="qn">Chương 1</span><span class="qo dim">Đã hết nhiệm vụ của bản thử</span>`;
+  if (st === "end" || !q) body = `<span class="qn">Chương 1</span><span class="qo dim">Đã hết nhiệm vụ của bản thử</span>`;
   else if (st === "proto") body = `<span class="qn">${esc(q.title)}</span><span class="qo dim">Cần ${esc(mapName(q.objectives[0].map))}, chưa có trong bản thử</span>`;
   else if (st === "lvl") body = `<span class="qn">${esc(q.title)}</span><span class="qo dim">Đạt Lv ${q.lv} để nhận</span>`;
   else if (st === "avail") body = `<span class="qn">${esc(q.title)}</span><span class="qo go">Gặp ${esc(DATA.names[q.giver])} để nhận</span>`;
@@ -1135,7 +1161,7 @@ function goQuest() {
 const DLG = { menu: [] };
 function closeDlg() { $("dlg").hidden = true; DLG.menu = []; }
 function renderDlg(id, html, menu) {
-  $("dlg-face").style.cssText = faceVars(id);
+  $("dlg-face").style.cssText = faceVars(id); $("dlg-face").classList.remove("pc");
   $("dlg-name").textContent = DATA.names[id] || id;
   $("dlg-text").innerHTML = html;
   DLG.menu = menu.slice(0, 5);
@@ -1163,8 +1189,11 @@ function openDlg(id, scene) {
     text = esc(q.progress);
     menu.push({ label: `Xem nhiệm vụ: ${q.title}`, mk: "?", cls: "dim", fn: () => { closeDlg(); openQuest("main"); } });
   }
-  if (id === "NPC001" && S.lv >= 10 && !S.cls) { text = "Con đủ mười tuổi phép rồi. Huyền Thư đang chờ con, chọn con đường của mình đi."; menu.unshift({ label: "Lễ Khai Thư: chọn hệ phép", mk: "!", fn: openRite }); }
-  else if (id === "NPC001" && canRechoose()) menu.push({ label: "Đổi hệ phép (miễn phí trong 24 giờ)", fn: openRite });
+  if (id === "NPC001" && st === "active" && q.id === "Q_MAIN_12") {
+    if (S.map === "I001") { text = esc(q.progress); menu.unshift({ label: "Đặt tay lên Đài Khai Thư", mk: "!", fn: () => { closeDlg(); useAltar(); } }); }
+    else menu.unshift({ label: "Vào lễ đường", mk: "!", fn: startCeremonyTrip });
+  }
+  if (id === (chapterDone() ? "NPC002" : "NPC001") && canRechoose() && S.map !== "I001") menu.push({ label: "Đổi hệ phép (miễn phí trong 24 giờ)", fn: openRite });
   if (DATA.shops[id]) menu.push({ label: "Mua bán: bình thuốc, bán đồ", fn: () => openShop(id) });
   if (id === "NPC040") menu.push({ label: "Xem Lịch Boss (bảng tin làng)", fn: () => { closeDlg(); toggleSchedule(true); } });
   menu.push({ label: "Đóng", fn: closeDlg });
@@ -1218,7 +1247,7 @@ function saveGame() {
   if (!DATA || S.noSave) return;
   const pl = window.__htk?.scene?.player;
   const d = { v: 2, at: Date.now(), lv: S.lv, exp: S.exp, quan: S.quan, hp: Math.round(S.hp), mp: Math.round(S.mp),
-    name: S.name, gender: S.gender, origin: S.origin, cls: S.cls, clsAt: S.clsAt, pts: S.pts,
+    name: S.name, gender: S.gender, origin: S.origin, cls: S.cls, clsAt: S.clsAt, pts: S.pts, playMs: Math.round(S.playMs || 0),
     inv: S.inv, equip: S.equip, q: S.q, sold: S.sold, welcomed: !!S.welcomed, huntUnlocked: S.huntUnlocked,
     map: S.map, x: pl?.active ? Math.round(pl.x) : null, y: pl?.body ? Math.round(pl.body.bottom) : null };
   try { localStorage.setItem(SAVE_KEY, JSON.stringify(d)); S.dirty = false; } catch (_) { /* storage blocked: keep playing without saving */ }
@@ -1232,7 +1261,7 @@ function loadGame() {
   const cls = d.cls || (d.fire ? "FIRE" : null);
   Object.assign(S, { lv: d.lv | 0 || 1, exp: d.exp || 0, quan: d.quan || 0, welcomed: d.welcomed, huntUnlocked: !!d.huntUnlocked,
     name: d.name || "", gender: d.gender === "FEMALE" ? "FEMALE" : "MALE", origin: DATA.origins[d.origin] ? d.origin : null,
-    cls: DATA.classes[cls] ? cls : null, clsAt: d.clsAt || (cls ? Date.now() : 0), pts: d.pts || {},
+    cls: DATA.classes[cls] ? cls : null, clsAt: d.clsAt || (cls ? Date.now() : 0), pts: d.pts || {}, playMs: d.playMs || 0,
     inv: (d.inv || []).filter(known).slice(0, BAG_SIZE), sold: (d.sold || []).filter((x) => x && known(x.it)), q: d.q || S.q });
   for (const [slot] of SLOTS) S.equip[slot] = known(d.equip?.[slot]) ? d.equip[slot] : null;
   if (S.cls && !S.equip.tome) S.equip.tome = makeGear("huyen_thu_so_ban", 10, "common");
@@ -1241,6 +1270,8 @@ function loadGame() {
   S.gearVer++;
   const st = stats(); S.hp = Math.min(st.hp, d.hp || st.hp); S.mp = Math.min(st.mp, d.mp || st.mp);
   S.loaded = true;
+  const inst = { DG01: "M004", I001: "M001" }[d.map];
+  if (inst) return { map: inst };
   return { map: MAPS.includes(d.map) ? d.map : "M001", x: d.x ?? undefined, y: d.y ?? undefined };
 }
 addEventListener("pagehide", saveGame);
@@ -1566,6 +1597,7 @@ function doRite(cls) {
   banner(first ? "Lễ Khai Thư" : "Đổi hệ phép", `${S.name} trở thành ${c.name}`, true, rews);
   log(`${first ? "Lễ Khai Thư" : "Đổi hệ"}: ${c.name}. Phím 2 ${c.skills[0].name}; ${c.skills[1].name} mở ở Lv${c.skills[1].lv}, ${c.skills[2].name} ở Lv${c.skills[2].lv}. Mặc ${DATA.itemDefs[wid].name} trong Hành trang (B).`, "lvl");
   questChanged(); invChanged(); saveGame();
+  if (first && Q.cur()?.id === "Q_MAIN_12" && S.q.st === "active") setTimeout(ceremonyDone, 1200);
 }
 
 function ptsPanel() {
@@ -1580,6 +1612,60 @@ function ptsPanel() {
     <p class="pnote">Mỗi cấp +5 điểm. Cộng rồi không trả lại miễn phí (Bình Rửa Tiềm Năng). Gợi ý: 2 HP, 2 Sức đánh, 1 Phòng thủ mỗi 5 điểm.</p>`;
 }
 function calcStatsPts(pts) { const keep = S.pts; S.pts = pts; const st = calcStats(); S.pts = keep; return st; }
+
+
+/* =====================================================================
+   Chapter 1 story: Q_MAIN_10-12, scenes, level cap, chapter end (quests §4, lore ch.1)
+   ===================================================================== */
+const ALTAR_X = 15.5 * 32;                       // Đài Khai Thư in I001 (boss_altar at tile 14, 3 tiles wide)
+const chapterDone = () => S.q.i >= DATA.quests.length;
+const levelCap = () => (S.capOpen || S.q.i > DATA.quests.findIndex((q) => q.id === "Q_MAIN_11") ? 100 : 9);   // Q_MAIN_11 opens Lv10
+function playScene(key, onDone) {
+  const lines = DATA.scenes[key], sc = window.__htk?.scene;
+  let i = 0;
+  sc?.nightOverlay(true);
+  const show = () => {
+    const [who, text] = lines[i], last = i === lines.length - 1;
+    renderDlg(who === "PLAYER" ? "NPC001" : who, esc(text), [{ label: last ? "Xong" : "Tiếp ▸", fn: () => { if (last) { closeDlg(); if (sc && sc.mapId !== "I001") sc.nightOverlay(false); onDone?.(); } else { i++; show(); } } }]);
+    const face = $("dlg-face");
+    face.classList.toggle("pc", who === "PLAYER");
+    if (who === "PLAYER") { face.style.cssText = `--img:url(assets/sprites/player/${sheetOf(S.origin || "VILLAGER", S.gender, LOOK(S.cls))}.png)`; $("dlg-name").textContent = S.name; }
+  };
+  show();
+}
+function startCeremonyTrip() {   // Q_MAIN_12: Thầy takes the player to the ceremony ground
+  closeDlg();
+  const sc = window.__htk?.scene; if (!sc) return;
+  sc.cameras.main.fadeOut(400, 10, 12, 30);
+  sc.time.delayedCall(420, () => sc.scene.restart({ map: "I001" }));
+}
+function useAltar() {
+  const q = Q.cur();
+  if (!q || q.id !== "Q_MAIN_12" || S.q.st !== "active") { toast("Đài Khai Thư im lặng.", true); return; }
+  if (!S.cls) openRite(); else ceremonyDone();
+}
+function ceremonyDone() {   // after the class is chosen at the altar
+  Q.event("REACH", "I001");
+  const sc = window.__htk?.scene;
+  playScene("Q_MAIN_12", () => {
+    if (Q.cur()?.id === "Q_MAIN_12" && S.q.st === "ready") Q.complete(sc);
+    showChapterEnd();
+  });
+}
+function showChapterEnd() {
+  const st = stats(), min = Math.round((S.playMs || 0) / 60000);
+  $("chapter-body").innerHTML = `<h3>Chương 1 · Làng Suối Mơ</h3>
+    <div class="letter"><p>“${esc(DATA.scenes.LETTER)}”</p><small>— Bạch Vân. Lá thư để lại trên bàn nhà học, sáng hôm sau.</small></div>
+    <div class="chstats"><span>Thời gian chơi<b>${min} phút</b></span><span>Cấp<b>Lv ${S.lv}</b></span><span>Lực Chiến<b>${st.power.toLocaleString("vi-VN")}</b></span><span>Hệ phép<b>${S.cls ? esc(DATA.classes[S.cls].name) : "—"}</b></span></div>
+    <p class="chnext">Chương 2: Thượng Đô và Mùa Tuyển Thư (sắp có). Trong 24 giờ đầu có thể đổi hệ phép ở Bà Mơ.</p>
+    <button type="button" class="wbtn green" data-act="home">Về làng</button>`;
+  $("chapter").hidden = false; $("qbanner").hidden = true; closeDlg(); saveGame();
+}
+$("chapter").addEventListener("click", (e) => {
+  if (!e.target.closest("[data-act=home]")) return;
+  $("chapter").hidden = true;
+  window.__htk?.scene?.scene.restart({ map: "M001" });
+});
 
 /* =====================================================================
    Input (keyboard + touch buttons)
@@ -1618,7 +1704,8 @@ coarse.addEventListener?.("change", applyTouch);
 /* =====================================================================
    Scenes
    ===================================================================== */
-const MAPS = ["M001", "M002", "M003", "M004"];
+const MAPS = ["M001", "M002", "M003", "M004", "DG01"];   // portal chain used by "Đi tới"
+const ALL_MAPS = [...MAPS, "I001"];                         // I001 is entered through Thầy Bạch Vân
 const THEME_TOWN = "M001";
 
 class Boot extends Phaser.Scene {
@@ -1636,7 +1723,7 @@ class World extends Phaser.Scene {
   constructor() { super("world"); }
 
   preload() {
-    for (const m of MAPS) {
+    for (const m of ALL_MAPS) {
       const n = m.toLowerCase();
       this.load.tilemapTiledJSON(n, `assets/maps/${n}.tmj`);
       for (const k of ["far", "mid", "near"]) this.load.image(`${n}_${k}`, `assets/maps/backgrounds/${n}_${k}.png`);
@@ -1652,7 +1739,7 @@ class World extends Phaser.Scene {
     this.load.spritesheet("vfx", "assets/sprites/vfx_hoa.png", { frameWidth: 96, frameHeight: 96 });
     this.load.spritesheet("items", "assets/sprites/items.png", { frameWidth: 32, frameHeight: 32 });
     for (const [id, m] of Object.entries(DATA.mobs)) this.load.spritesheet(id, `assets/sprites/${id.toLowerCase()}.png`, { frameWidth: m.sprite.size, frameHeight: m.sprite.size });
-    for (const [id, b] of Object.entries(DATA.bosses)) if (b.sprite) this.load.spritesheet(id, `assets/sprites/${id.toLowerCase()}.png`, { frameWidth: b.sprite.size, frameHeight: b.sprite.size });
+    for (const [id, b] of Object.entries({ ...DATA.bosses, ...DATA.minions })) if (b.sprite) this.load.spritesheet(id, `assets/sprites/${id.toLowerCase()}.png`, { frameWidth: b.sprite.size, frameHeight: b.sprite.size });
     this.load.on("progress", (p) => { $("ovsub").textContent = `Đang tải… ${Math.round(p * 100)}%`; });
   }
 
@@ -1687,7 +1774,7 @@ class World extends Phaser.Scene {
       }
     };
     for (const [id, m] of Object.entries(DATA.mobs)) mobAnims(id, m.sprite);
-    for (const [id, b] of Object.entries(DATA.bosses)) if (b.sprite) mobAnims(id, b.sprite);
+    for (const [id, b] of Object.entries({ ...DATA.bosses, ...DATA.minions })) if (b.sprite) mobAnims(id, b.sprite);
   }
 
   create(params) {
@@ -1720,10 +1807,10 @@ class World extends Phaser.Scene {
       const g = this.add.graphics().setDepth(4);
       g.fillStyle(0x7fd1ff, 0.18); g.fillEllipse(p.x + p.w / 2, p.y + p.h - 6, p.w + 10, 18);
       g.lineStyle(2, 0x7fd1ff, 0.7); g.strokeEllipse(p.x + p.w / 2, p.y + p.h - 6, p.w + 10, 18);
-      const to = MAPS.includes(p.to) ? DATA.names[p.to] : p.to === "DG01" ? "Hầm ngục DG01" : "Thượng Đô";
+      const to = DATA.names[p.to] || "Thượng Đô";
       this.add.text(p.x + p.w / 2, p.y + 4, `↑ ${to}`, this.textStyle(13, "#bfe8ff")).setOrigin(0.5, 1).setDepth(40);
     }
-    this.npcs = objs.filter((o) => o.type === "npc").map((o) => {
+    this.npcs = objs.filter((o) => o.type === "npc" && !(prop(o, "id") === "NPC001" && this.mapId === "M001" && chapterDone())).map((o) => {
       const id = prop(o, "id");
       const spr = this.add.sprite(o.x, o.y - 41, "npc").setDepth(10).play(`npc_${id}`);
       if (o.x > W / 2) spr.setFlipX(true);
@@ -1731,7 +1818,11 @@ class World extends Phaser.Scene {
       const mark = this.add.text(o.x, o.y - 110, "", { ...this.textStyle(28, "#ffd23f"), strokeThickness: 6 }).setOrigin(0.5, 1).setDepth(41);
       return { id, x: o.x, y: o.y, spr, label, mark };
     });
-    this.spawns = objs.filter((o) => o.type === "mob_spawn").map((o) => ({ x: o.x, y: o.y, mob: prop(o, "mob"), count: prop(o, "count"), radius: prop(o, "radius"), respawn: prop(o, "respawnSec") }));
+    this.spawns = objs.filter((o) => o.type === "mob_spawn").map((o) => ({ x: o.x, y: o.y, mob: prop(o, "mob"), count: prop(o, "count"), radius: prop(o, "radius"), respawn: prop(o, "respawnSec"),
+      level: prop(o, "levelMin") ? [prop(o, "levelMin"), prop(o, "levelMax")] : null }));
+    this.dungeon = DATA.dungeons[this.mapId] || null;   // maps §6.1: instance, solo scaling, no respawn
+    if (this.dungeon && !(S.dg && S.dg.map === this.mapId)) S.dg = { map: this.mapId, until: Date.now() + this.dungeon.timeLimitMin * 60000, bossDown: false, chest: false };
+    this.dgBoss = null; this.chest = null;
     this.bossSpawns = objs.filter((o) => o.type === "boss_spawn").map((o) => ({ x: o.x, y: o.y, boss: prop(o, "boss") }));
     const sp = objs.find((o) => o.type === "spawn_player");
 
@@ -1776,10 +1867,12 @@ class World extends Phaser.Scene {
     this.keys.interact.on("down", () => this.interact());
     this.prevUp = false; this.prevInteract = false;
 
-    $("mapname").textContent = `${DATA.names[this.mapId]} · Khu 1`;
+    $("mapname").textContent = this.dungeon ? `${DATA.names[this.mapId]} · còn ${fmtDur((S.dg.until - Date.now()) / 60000)}` : `${DATA.names[this.mapId]} · Khu 1`;
     log(`Vào ${DATA.names[this.mapId]}`, "sys");
     window.__htk = { S, scene: this, F, Q };
     this.herbs = []; this.refreshHerbs(); this.gotoBest = null;
+    this.night = null; if (this.mapId === "I001") this.nightOverlay(true);
+    this.cameras.main.fadeIn(300, 10, 12, 30);
     renderTracker();
     if (!S.origin && $("create").hidden) openCreate();
     if (S.loaded) { S.loaded = false; S.welcomed = true; log(`Đã tải dữ liệu lưu: Lv ${S.lv}, ${S.quan.toLocaleString("vi-VN")} Quan, túi ${S.inv.length}/${BAG_SIZE}`, "sys"); }
@@ -1812,7 +1905,7 @@ class World extends Phaser.Scene {
   candidates(range = 700) {
     const pl = this.player, out = [];
     for (const m of this.mobs) if (m.alive && Math.abs(m.spr.x - pl.x) < range && Math.abs(m.spr.y - pl.y) < 260) out.push(m);
-    if (this.boss?.alive && Math.abs(this.boss.spr.x - pl.x) < range) out.push(this.boss);
+    if (this.boss?.alive && this.boss.targetable !== false && Math.abs(this.boss.spr.x - pl.x) < range) out.push(this.boss);
     const d = (m) => Phaser.Math.Distance.Between(pl.x, pl.y, m.spr.x, m.spr.y);
     return out.sort((a, b) => d(a) - d(b));
   }
@@ -1831,6 +1924,7 @@ class World extends Phaser.Scene {
 
   pickAt(x, y) {
     if (uiModal()) return;
+    if (this.chest && this.chest.spr.getBounds().contains(x, y)) { if (Math.abs(this.chest.x - this.player.x) < 70) this.openChest(); else this.floatText(this.chest.x, this.chest.y - 70, "Lại gần để mở", "#9aa2bf", 12); return; }
     for (const h of this.herbs) {
       if (h.taken || Math.abs(h.x - x) > 22 || Math.abs(h.y - 15 - y) > 24) continue;
       if (this.nearHerb() === h) this.pickHerb(h); else this.floatText(h.x, h.y - 36, "Lại gần để hái", "#9aa2bf", 12);
@@ -1841,7 +1935,7 @@ class World extends Phaser.Scene {
       if (Math.abs(n.x - this.player.x) < 160) this.interact(n); else this.floatText(n.x, n.y - 100, "Lại gần để nói chuyện", "#9aa2bf", 12);
       return;
     }
-    const all = this.mobs.filter((m) => m.alive).concat(this.boss?.alive ? [this.boss] : []);
+    const all = this.mobs.filter((m) => m.alive).concat(this.boss?.alive && this.boss.targetable !== false ? [this.boss] : []);
     const hit = all.find((m) => m.spr.getBounds().contains(x, y));
     if (hit) this.setTarget(this.target === hit ? null : hit);
   }
@@ -1917,8 +2011,9 @@ class World extends Phaser.Scene {
 
   /* ---------------- monsters ---------------- */
   spawnMob(s, initial = false, forceTier = null, temp = false) {
-    const d = DATA.mobs[s.mob];
-    const lv = d.level[0] + Math.floor(Math.random() * (d.level[1] - d.level[0] + 1));
+    const d = DATA.mobs[s.mob] || DATA.minions[s.mob];
+    const band = s.level || d.level;
+    const lv = band[0] + Math.floor(Math.random() * (band[1] - band[0] + 1));
     const boost = S.dev.rare ? 10 : 1;
     let tier = forceTier || "normal";
     if (!forceTier) {
@@ -1926,7 +2021,7 @@ class World extends Phaser.Scene {
       if (!leaderAlive && Math.random() < boost / 60) tier = "leader";
       else if (Math.random() < boost / 15) tier = "elite";
     }
-    const base = F.mob(lv), T = F.TIER[tier];
+    const base = F.mob(lv), T = F.TIER[tier], solo = this.dungeon ? this.dungeon.solo : { hp: 1, atk: 1, reward: 1 };
     const x = s.x + (Math.random() * 2 - 1) * (s.radius || 64) * 0.8;
     const y = d.flying ? s.y - 40 - Math.random() * 40 : s.y - 40;
     const spr = this.physics.add.sprite(x, y, s.mob).setDepth(15).play(`${s.mob}_idle`);
@@ -1938,8 +2033,8 @@ class World extends Phaser.Scene {
     if (tier !== "normal" && spr.preFX) spr.preFX.addGlow(tier === "elite" ? 0xc58bff : 0xffa040, 3, 0, false, 0.1, 10);
     const m = {
       kind: "mob", id: s.mob, d, lv, tier, spr, s, temp,
-      hp: Math.round(base.hp * T.hp), maxHp: Math.round(base.hp * T.hp), atk: Math.round(base.atk * T.atk), def: Math.round(base.def * T.def),
-      exp: Math.round(base.exp * T.exp), shownHp: 1, chipHp: 1, alive: true, state: "idle", next: this.time.now + 500 + Math.random() * 1500,
+      hp: Math.round(base.hp * T.hp * solo.hp), maxHp: Math.round(base.hp * T.hp * solo.hp), atk: Math.round(base.atk * T.atk * solo.atk), def: Math.round(base.def * T.def),
+      exp: Math.round(base.exp * T.exp * solo.reward), shownHp: 1, chipHp: 1, alive: true, state: "idle", next: this.time.now + 500 + Math.random() * 1500,
       aggro: false, atkReady: 0, hurtUntil: 0, homeX: x, homeY: y, dir: 1, showBarUntil: 0,
     };
     const prefix = tier === "elite" ? "[Tinh anh] " : tier === "leader" ? "[Thủ lĩnh] " : "";
@@ -1971,7 +2066,8 @@ class World extends Phaser.Scene {
     else if (r.crit) { this.floatText(x, y - 6, `Chí mạng ${r.dmg}`, "#ffd23f", 22); this.hitSpark(x, y + 10, 0xffd23f, true); this.cameras.main.shake(80, 0.004); }
     else { this.floatText(x, y, `${r.dmg}`, "#ffffff", 17); this.hitSpark(x, y + 10, opts.color ?? 0xfff3d0); }
     if (opts.burn) m.burn = { until: this.time.now + 3000, next: this.time.now + 1000, dmg: Math.max(1, Math.round(p.atk * 0.2 / 3)) };
-    if (m.kind === "boss") { m.b.hp = m.hp; }
+    if (m.kind === "boss" && m.b) m.b.hp = m.hp;
+    if (m.dungeonBoss && !m.torn) m.hp = Math.max(1, m.hp);   // the tear at 50% always happens first
     if (m.hp <= 0) { this.killMob(m); return; }
     if (m.kind === "mob") {
       m.hurtUntil = this.time.now + 220;
@@ -1984,6 +2080,7 @@ class World extends Phaser.Scene {
   }
 
   killMob(m) {
+    if (m.dungeonBoss) return;   // Trang Lạc ends when its four pages are gone
     m.alive = false; m.hp = 0;
     const isBoss = m.kind === "boss";
     const id = m.id, name = DATA.names[id];
@@ -1993,6 +2090,12 @@ class World extends Phaser.Scene {
     m.label.destroy();
     const tier = isBoss ? "boss" : m.tier;
     if (this.target === m) this.target = null;
+    if (m.shardOf) {   // Mảnh Trang: no own reward, the boss pays out when the last page falls
+      if (this.target === m) this.target = null;
+      m.spr.body.enable = false; m.spr.play(`${m.id}_die`); m.spr.once("animationcomplete", () => m.spr.destroy()); m.label.destroy();
+      if (!this.mobs.some((x) => x.alive && x.shardOf === m.shardOf)) this.dungeonBossDown(m.shardOf);
+      return;
+    }
     const gain = Math.max(1, Math.round(m.exp * F.expMod(S.lv - m.lv) * (S.hunt ? 0.7 : 1)));
     const tag = tier === "elite" ? "Tinh anh " : tier === "leader" ? "Thủ lĩnh " : "";
     log(`Hạ ${tag}${name} Lv${m.lv} · +${gain} EXP`, "exp");
@@ -2010,7 +2113,7 @@ class World extends Phaser.Scene {
       return;
     }
     this.questKill(m);
-    if (!m.temp) {
+    if (!m.temp && !this.dungeon) {
       const s = m.s; s.alive--;
       this.time.delayedCall((s.respawn || 10) * 1000, () => { if (this.scene.isActive()) this.spawnMob(s); });
     }
@@ -2030,17 +2133,22 @@ class World extends Phaser.Scene {
 
   gainExp(n) {
     S.exp += n;
-    while (S.exp >= F.expToNext(S.lv) && S.lv < 100) {
+    const cap = Math.min(100, levelCap());
+    while (S.exp >= F.expToNext(S.lv) && S.lv < cap) {
       S.exp -= F.expToNext(S.lv); S.lv++;
       const st = stats(); S.hp = st.hp; S.mp = st.mp;
       toast(`Lên cấp ${S.lv}!`, true); log(`Lên cấp ${S.lv}: HP ${st.hp}, ATK ${st.atk}, DEF ${st.def}`, "lvl");
       this.floatText(this.player.x, this.player.y - 80, `LÊN CẤP ${S.lv}`, "#9eff8a", 22);
       if (S.lv === 5) log("Mở kỹ năng Tụ Mana Chấn (phím 1)", "lvl");
       log(`+5 điểm tiềm năng (còn ${ptsFree()}): nhấn C để cộng`, "lvl");
-      if (S.lv === 10 && !S.cls) { toast("Đủ Lv10! Gặp Thầy Bạch Vân làm Lễ Khai Thư.", true); }
+
       const nsk = S.cls && DATA.classes[S.cls].skills.find((k) => k.lv === S.lv);
       if (nsk) log(`Mở kỹ năng ${nsk.name}`, "lvl");
       questChanged();
+    }
+    if (S.lv >= cap && cap < 100 && S.exp >= F.expToNext(S.lv)) {   // quests §4: Q_MAIN_11 opens Lv10
+      S.exp = F.expToNext(S.lv) - 1;
+      if (!this.capWarned) { this.capWarned = true; toast(`Đã tới giới hạn Lv${cap}. Làm xong "Đêm Trước Ngày Lễ" để lên tiếp.`, true); }
     }
   }
 
@@ -2096,7 +2204,97 @@ class World extends Phaser.Scene {
     this.cameras.main.shake(300, 0.004);
   }
 
-  bossAtk() { const m = this.boss; return { atk: m.atk * (m.b.enraged ? 2 : 1), lv: m.lv, crit: 0.05, critDmg: 1.5 }; }
+  bossAtk() { const m = this.boss; return { atk: m.atk * (m.b?.enraged ? 2 : 1), lv: m.lv, crit: 0.05, critDmg: 1.5 }; }
+
+  /* ---------------- DG01 Trang Lạc (maps §5, §6) ---------------- */
+  spawnDungeonBoss() {
+    const dg = this.dungeon, bs = this.bossSpawns.find((s) => s.boss === dg.boss);
+    if (!bs || this.dgBoss || S.dg.bossDown) return;
+    const d = DATA.bosses[dg.boss], base = F.mob(d.level), T = dg.bossTier, solo = dg.solo;
+    const spr = this.physics.add.sprite(bs.x, bs.y - 80, dg.boss).setDepth(16).play(`${dg.boss}_idle`).setFlipX(true);
+    spr.body.setSize(80, 70).setOffset(40, 82); this.mobGroup.add(spr);
+    const maxHp = Math.round(base.hp * T.hp * solo.hp);
+    const m = { kind: "boss", dungeonBoss: true, id: dg.boss, d, lv: d.level, spr, hp: maxHp, maxHp, atk: Math.round(base.atk * T.atk * solo.atk),
+      def: Math.round(base.def * T.def_), exp: Math.round(base.exp * T.exp * solo.reward), quan: Math.round(base.quan * T.quan * solo.reward),
+      alive: true, next: this.time.now + 1800, cycle: 0, phaseDone: {} };
+    m.label = this.add.text(bs.x, spr.y, "", this.textStyle(1, "#000")).setVisible(false);
+    m.onHit = () => this.trangTear(m);
+    this.boss = this.dgBoss = m;
+    $("bossbar").hidden = false;
+    this.cameras.main.shake(320, 0.005);
+    toast("Trang Lạc thức dậy từ những trang giấy bị xóa!", true); log(`[Hầm ngục] Trang Lạc Lv${m.lv} xuất hiện`, "sys");
+  }
+
+  trangTear(m) {   // BSKL_TEAR_APART: at 50% HP the boss tears into four Mảnh Trang
+    const sk = DATA.bossSkills.BSKL_TEAR_APART;
+    if (m.torn || m.hp / m.maxHp > sk.atHp) return;
+    m.torn = true; m.targetable = false;
+    if (this.target === m) this.target = null;
+    this.tele = [];
+    m.spr.play(`${m.id}_skill2`); m.spr.body.setVelocity(0, 0);
+    this.cameras.main.flash(220, 255, 255, 255);
+    toast("Trang Lạc rách thành 4 Mảnh Trang!", true);
+    this.time.delayedCall(700, () => {
+      this.tweens.add({ targets: m.spr, alpha: 0, duration: 300 });
+      m.spr.body.enable = false;
+      m.shardMax = 0;
+      for (let i = 0; i < sk.shards; i++) {
+        const sx = m.spr.x + (i - 1.5) * 70, s = { x: sx, y: m.spr.y + 40, mob: "BOSS001_SHARD", radius: 120, respawn: 0, alive: 0 };
+        const sh = this.spawnMob(s, true, "normal", true);
+        sh.hp = sh.maxHp = Math.round(m.maxHp * sk.shardHp); sh.atk = Math.round(m.atk * sk.shardMult); sh.def = m.def;
+        sh.exp = 0; sh.shardOf = m; sh.aggro = true; sh.homeY = m.spr.y - 30 - (i % 2) * 40;
+        m.shardMax += sh.maxHp;
+      }
+    });
+  }
+
+  dungeonBossDown(m) {
+    if (!m.alive) return;
+    m.alive = false; S.dg.bossDown = true;
+    const gain = Math.max(1, Math.round(m.exp * F.expMod(S.lv - m.lv)));
+    log(`Hạ Trang Lạc Lv${m.lv} · +${gain} EXP`, "exp");
+    this.floatText(this.player.x, this.player.y - 60, `+${gain} EXP`, "#7fd1ff", 16);
+    this.gainExp(gain);
+    this.dropLoot({ kind: "quan", n: m.quan }, m.spr.x, m.spr.y + 40);
+    Q.event("BOSS", m.id);
+    toast("Đã hạ Trang Lạc! Mở Rương Tân Thủ rồi ra cổng bên phải.", true);
+    this.cameras.main.flash(300, 255, 240, 200);
+    $("bossbar").hidden = true; this.boss = null;
+    m.spr.destroy(); m.label.destroy();
+    this.spawnChest(m.spr.x, this.surfaceAt(Math.floor(m.spr.x / this.map.tileWidth), m.spr.y) ?? m.spr.y + 60);
+  }
+
+  spawnChest(x, y) {
+    if (S.dg.chest) return;
+    const spr = this.add.sprite(x, y - 30, "items", DATA.items.indexOf("ruong_tan_thu")).setScale(2).setDepth(12);
+    spr.preFX?.addGlow(0xffe08a, 4, 0, false, 0.1, 10);
+    this.tweens.add({ targets: spr, y: y - 34, duration: 700, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
+    const label = this.add.text(x, y - 66, "F: Mở rương", this.textStyle(13, "#ffe08a")).setOrigin(0.5, 1).setDepth(40);
+    this.chest = { x, y, spr, label };
+  }
+
+  openChest() {   // Rương Tân Thủ (maps §6): Quan, potions and one S1 Lv9 Tốt item, x solo reward on Quan
+    const c = this.chest, dg = this.dungeon, ch = dg.chest; if (!c || S.dg.chest) return;
+    const need = slotsFor(ch.items) + 1;
+    if (S.inv.length + need > BAG_SIZE) { toast(`Cần ${need} ô trống trong túi để mở rương.`, true); return; }
+    S.dg.chest = true;
+    const soft = Math.round(ch.soft * dg.solo.reward); S.quan += soft;
+    for (const [id, n] of ch.items) addItem(id, n);
+    const g = makeGear(S1_GEAR[Math.floor(Math.random() * 4)], ch.gear.level, ch.gear.rarity); addItem(null, 1, g);
+    this.manaRing(c.x, c.y - 10, 0xffe08a); this.burst(c.x, c.y, 0xffe08a);
+    this.tweens.killTweensOf(c.spr); this.tweens.add({ targets: c.spr, alpha: 0, scale: 2.6, duration: 400, onComplete: () => c.spr.destroy() }); c.label.destroy();
+    const parts = [`${soft} Quan`, ...ch.items.map(([id, n]) => `${DATA.itemDefs[id].name} ×${n}`), `${itemName(g)} Lv${g.lv} (Tốt)`];
+    log(`Rương Tân Thủ: ${parts.join(", ")}`, "lvl");
+    banner("Rương Tân Thủ", parts.join(" · "), true);
+    this.chest = null; saveGame();
+  }
+
+  leaveDungeon(reason) {
+    toast(reason, true); log(`[Hầm ngục] ${reason}`, "bad");
+    const back = this.portals.find((p) => p.to === this.dungeon.entry);
+    S.dg = null;
+    this.scene.restart({ map: this.dungeon.entry, x: back?.toX, y: back?.toY });
+  }
 
   bossPhase(m) {
     const pct = m.hp / m.maxHp;
@@ -2135,6 +2333,38 @@ class World extends Phaser.Scene {
     spr.setFlipX(dx < 0);
     const ready = now >= m.next;
     const fast = m.hp / m.maxHp < 0.5 ? 0.7 : 1;
+    if (m.id === "BOSS001") {
+      if (m.torn) { spr.body.setVelocityX(0); return; }
+      if (ready && dist < 300) {
+        const storm = ++m.cycle % 3 === 0;
+        m.next = now + (storm ? 4200 : 3000) * fast;
+        spr.body.setVelocityX(0);
+        if (storm) {   // BSKL_PAGE_STORM: pages rain on circles around the player
+          const sk = DATA.bossSkills.BSKL_PAGE_STORM;
+          spr.play("BOSS001_skill2"); m.busy = now + sk.telegraphMs + 300;
+          for (let i = 0; i < 4; i++) {
+            const sh = { type: "circle", x: pl.x + (i - 1.5) * 64 + (Math.random() - 0.5) * 24, y: feetY - 4, r: 34 };
+            this.telegraph(sh, sk.telegraphMs + i * 80, () => {
+              this.pageFall(sh.x, sh.y);
+              if (this.inShape(sh, pl.x, pl.body.bottom - 10)) this.hurtPlayer(F.damage(this.bossAtk(), { lv: S.lv, def: stats().def }, sk.mult), sh.x);
+            });
+          }
+        } else {       // BSKL_PAGE_SWIPE: a sweep in front of the boss
+          const sk = DATA.bossSkills.BSKL_PAGE_SWIPE, dir = Math.sign(dx) || 1;
+          const sh = { type: "rect", x: dir > 0 ? spr.x : spr.x - 150, y: spr.body.bottom - 60, w: 150, h: 60 };
+          spr.play("BOSS001_idle"); m.busy = now + sk.telegraphMs + 400;
+          this.telegraph(sh, sk.telegraphMs, () => {
+            spr.play("BOSS001_attack");
+            this.slashArcAt(spr.x + dir * 30, spr.body.bottom - 34, dir, 90, 0xf3ead2);
+            if (this.inShape(sh, pl.x, pl.body.bottom - 10)) this.hurtPlayer(F.damage(this.bossAtk(), { lv: S.lv, def: stats().def }, sk.mult), spr.x);
+          });
+        }
+        return;
+      }
+      spr.body.setVelocityX(dist > 90 ? Math.sign(dx) * 60 : 0);
+      spr.play(dist > 90 ? "BOSS001_move" : "BOSS001_idle", true);
+      if (dist < 80 && now > (m.melee || 0)) { m.melee = now + 1500; this.hurtPlayer(F.damage(this.bossAtk(), { lv: S.lv, def: stats().def }, 1.0), spr.x); }
+    }
     if (m.id === "BOSS034") {
       if (ready && dist < 300) {
         m.next = now + 5200 * fast; m.busy = now + 2100;
@@ -2202,6 +2432,22 @@ class World extends Phaser.Scene {
     }
   }
 
+  pageFall(x, y) {
+    const g = this.add.graphics().setDepth(17);
+    g.fillStyle(0xf3ead2, 1); g.fillRect(-7, -9, 14, 18); g.lineStyle(1, 0x6b5a3a, 1); g.strokeRect(-7, -9, 14, 18);
+    g.lineStyle(1, 0xbfb08a, 1); for (let k = -5; k <= 5; k += 4) g.lineBetween(-4, k, 4, k);
+    g.setPosition(x, y - 220).setAngle(-20);
+    this.tweens.add({ targets: g, y: y - 8, angle: 25, duration: 220, ease: "Quad.easeIn", onComplete: () => { g.destroy(); this.burst(x, y, 0xf3ead2); } });
+  }
+
+  slashArcAt(x, y, dir, radius, color) {
+    const g = this.add.graphics({ x, y }).setDepth(21), D = Phaser.Math.DegToRad;
+    const [a0, a1, ccw] = dir > 0 ? [D(-80), D(55), false] : [D(260), D(125), true];
+    g.lineStyle(14, 0x2a1408, 0.4); g.beginPath(); g.arc(0, 0, radius, a0, a1, ccw); g.strokePath();
+    g.lineStyle(10, color, 0.95); g.beginPath(); g.arc(0, 0, radius, a0, a1, ccw); g.strokePath();
+    this.tweens.add({ targets: g, scale: { from: 0.8, to: 1.15 }, alpha: { from: 1, to: 0 }, duration: 240, onComplete: () => g.destroy() });
+  }
+
   shard(x, y) {
     const g = this.add.graphics().setDepth(17);
     g.fillStyle(0x7fe0ff, 1); g.fillTriangle(-5, 0, 0, -16, 5, 0); g.fillStyle(0xffffff, 1); g.fillTriangle(-1, -2, 0, -12, 1, -2);
@@ -2266,7 +2512,7 @@ class World extends Phaser.Scene {
   targetsIn(rect) {
     const out = [];
     for (const m of this.mobs) if (m.alive && Phaser.Geom.Intersects.RectangleToRectangle(rect, m.spr.getBounds())) out.push(m);
-    if (this.boss?.alive && Phaser.Geom.Intersects.RectangleToRectangle(rect, this.boss.spr.body ? new Phaser.Geom.Rectangle(this.boss.spr.body.x, this.boss.spr.body.y, this.boss.spr.body.width, this.boss.spr.body.height) : this.boss.spr.getBounds())) out.push(this.boss);
+    if (this.boss?.alive && this.boss.targetable !== false && Phaser.Geom.Intersects.RectangleToRectangle(rect, this.boss.spr.body ? new Phaser.Geom.Rectangle(this.boss.spr.body.x, this.boss.spr.body.y, this.boss.spr.body.width, this.boss.spr.body.height) : this.boss.spr.getBounds())) out.push(this.boss);
     return out;
   }
 
@@ -2384,6 +2630,9 @@ class World extends Phaser.Scene {
 
   interact(npc) {
     if (uiModal() || this.deadUntil) return;
+    const pl = this.player;
+    if (!npc && this.chest && Math.abs(this.chest.x - pl.x) < 70) { this.openChest(); return; }
+    if (!npc && this.mapId === "I001" && Math.abs(ALTAR_X - pl.x) < 70) { useAltar(); return; }
     if (!npc) { const h = this.nearHerb(); if (h) { this.pickHerb(h); return; } }
     const n = npc || this.npcs.find((n) => Math.abs(n.x - this.player.x) < 60 && Math.abs(n.y - this.player.body.bottom) < 80);
     if (!n) return;
@@ -2391,9 +2640,17 @@ class World extends Phaser.Scene {
     openDlg(n.id, this);
   }
 
+  nightOverlay(on) {   // night for the ceremony ground and the eve scene: a fixed dark layer with stars
+    if (on && !this.night) {
+      this.night = [this.add.rectangle(0, 0, 960, 540, 0x0a1033, 0.55).setOrigin(0)];
+      for (let i = 0; i < 40; i++) this.night.push(this.add.circle(Math.random() * 960, Math.random() * 200, Math.random() < 0.2 ? 1.6 : 1, 0xfff8dc, 0.5 + Math.random() * 0.5));
+      for (const o of this.night) o.setScrollFactor(0).setDepth(34);
+    } else if (!on && this.night) { for (const o of this.night) o.destroy(); this.night = null; }
+  }
+
   /* ---------------- quest world objects (quests §4.1) ---------------- */
-  surfaceAt(tx) {
-    for (let ty = 0; ty < this.map.height; ty++) {
+  surfaceAt(tx, fromY = 0) {   // first standable tile at or below fromY (pixels)
+    for (let ty = Math.max(0, Math.floor(fromY / this.map.tileHeight)); ty < this.map.height; ty++) {
       const t = this.coll.getTileAt(tx, ty);
       if (t && (t.index === 1 || t.index === 2)) return t.pixelY;
     }
@@ -2453,7 +2710,11 @@ class World extends Phaser.Scene {
       const p = ti < 0 ? null : this.portals.find((p) => p.to === MAPS[ci + Math.sign(ti - ci)]);
       if (!p) { S.goto = null; return null; }
       tx = p.x + p.w / 2;
-      if (this.nearPortal() && Math.abs(pl.x - tx) < p.w / 2 + 4) { this.tryPortal(); return { vx: 0, jump: false }; }
+      if (this.nearPortal() && Math.abs(pl.x - tx) < p.w / 2 + 4) {
+        const dg = DATA.dungeons[p.to];
+        if (dg && S.lv < dg.minLevel) { S.goto = null; toast(`Cần Lv${dg.minLevel} để vào ${DATA.names[p.to]}.`, true); return null; }
+        this.tryPortal(); return { vx: 0, jump: false };
+      }
     } else if (Math.abs(pl.x - tx) < 30 && b.blocked.down) {
       S.goto = null; this.gotoBest = null;
       const n = g.npc && this.npcs.find((n) => n.id === g.npc);
@@ -2475,7 +2736,10 @@ class World extends Phaser.Scene {
     const pl = this.player;
     const p = this.portals.find((p) => pl.x >= p.x - 10 && pl.x <= p.x + p.w + 10 && pl.body.bottom >= p.y && pl.body.bottom <= p.y + p.h + 10);
     if (!p) return false;
-    if (!MAPS.includes(p.to)) { toast(p.to === "DG01" ? "Hầm ngục DG01 (Trang Lạc) chưa có trong bản thử." : "Thượng Đô chưa có trong bản thử.", true); return true; }
+    if (!ALL_MAPS.includes(p.to)) { toast("Thượng Đô chưa có trong bản thử (Chương 2).", true); return true; }
+    const dg = DATA.dungeons[p.to];
+    if (dg && S.lv < dg.minLevel) { toast(`Cần Lv${dg.minLevel} để vào ${DATA.names[p.to]}.`, true); return true; }
+    if (dg) S.dg = { map: p.to, until: Date.now() + dg.timeLimitMin * 60000, bossDown: false, chest: false };
     this.scene.restart({ map: p.to, x: p.toX, y: p.toY });
     return true;
   }
@@ -2493,11 +2757,21 @@ class World extends Phaser.Scene {
       body.setVelocityX(0);
       if (now >= this.deadUntil) {
         this.deadUntil = 0; S.hp = st.hp; S.mp = st.mp; pl.clearTint(); pl.anims.resume();
+        if (this.dungeon) { this.leaveDungeon("Bạn đã gục ngã, hầm ngục đóng lại. Vào lại từ Hang Giếng Cạn."); return; }
         const sp = this.map.getObjectLayer("objects").objects.find((o) => o.type === "spawn_player");
         pl.setPosition(sp.x, sp.y - 44); this.invulnUntil = now + 3000;
         log("Hồi sinh (bất khả xâm phạm 3 giây)", "sys");
       }
       this.updateWorld(now, dt); this.updateHud(); return;
+    }
+
+    S.playMs = (S.playMs || 0) + Math.min(dtMs, 250);
+    if (this.dungeon && S.dg) {
+      if (Date.now() > S.dg.until) { this.leaveDungeon("Hết 30 phút, hầm ngục đóng lại."); return; }
+      const bs = this.bossSpawns[0];
+      if (!this.dgBoss && !S.dg.bossDown && bs && pl.x > bs.x - 420) this.spawnDungeonBoss();
+      if (this.chest) this.chest.label.setVisible(Math.abs(this.chest.x - pl.x) < 120);
+      if ((this.frameT = (this.frameT || 0) + 1) % 20 === 0) $("mapname").textContent = `${DATA.names[this.mapId]} · còn ${fmtDur((S.dg.until - Date.now()) / 60000)}`;
     }
 
     // regen (§3.2): out of combat HP 1%/5s, MP 2%/s; in combat MP 0.5%/s
@@ -2804,11 +3078,12 @@ class World extends Phaser.Scene {
       $("thp").querySelector("span").textContent = `${Math.max(0, tg.hp).toLocaleString("vi-VN")} / ${tg.maxHp.toLocaleString("vi-VN")}`;
     }
     if (this.boss?.alive) {
-      const m = this.boss, p = Math.max(0, m.hp / m.maxHp) * 100;
-      $("bname").textContent = `${DATA.names[m.id]} · Lv ${m.lv}${m.b.enraged ? " · CUỒNG NỘ" : ""}`;
+      const m = this.boss, pages = m.torn ? this.mobs.filter((x) => x.alive && x.shardOf === m) : null;
+      const hp = pages ? pages.reduce((a, x) => a + x.hp, 0) : m.hp, max = pages ? m.shardMax || 1 : m.maxHp, p = Math.max(0, hp / max) * 100;
+      $("bname").textContent = pages ? `Mảnh Trang · còn ${pages.length}/4` : `${DATA.names[m.id]} · Lv ${m.lv}${m.b?.enraged ? " · CUỒNG NỘ" : ""}`;
       $("bhp").querySelector(".fill").style.width = p + "%"; $("bhp").querySelector(".chip").style.width = p + "%";
-      $("bhp").querySelector("span").textContent = `${Math.max(0, m.hp).toLocaleString("vi-VN")} / ${m.maxHp.toLocaleString("vi-VN")}`;
-      $("bsub").textContent = `Bỏ đi sau ${fmtDur(m.b.until - S.t)}${S.lv > m.lv + 10 ? " · bạn quá cấp, không nhận vật phẩm" : ""}`;
+      $("bhp").querySelector("span").textContent = `${Math.max(0, hp).toLocaleString("vi-VN")} / ${max.toLocaleString("vi-VN")}`;
+      $("bsub").textContent = m.dungeonBoss ? `Hầm ngục · còn ${fmtDur((S.dg.until - Date.now()) / 60000)}` : `Bỏ đi sau ${fmtDur(m.b.until - S.t)}${S.lv > m.lv + 10 ? " · bạn quá cấp, không nhận vật phẩm" : ""}`;
     }
     if (!$("schedule").hidden && (this.frameN = (this.frameN || 0) + 1) % 15 === 0) renderSchedule();
   }
@@ -2840,9 +3115,19 @@ $("dev-boss").addEventListener("click", () => {
   b.at = S.t + 0.05; b.warned = true;
   if (b.map !== S.map) toast(`${DATA.names[b.id]} sẽ xuất hiện ở ${DATA.names[b.map]}. Map này không có boss theo giờ.`, true);
 });
-$("dev-fire").addEventListener("click", () => {
-  const sc = window.__htk?.scene; if (!sc || S.lv >= 10) { toast("Đã Lv10 trở lên. Gặp Thầy Bạch Vân ở làng.", true); return; }
-  while (S.lv < 10) sc.gainExp(F.expToNext(S.lv) - S.exp);
+$("dev-fire").addEventListener("click", () => {   // skip to Q_MAIN_12 to try the ceremony
+  if (!S.origin) return;
+  S.q = { i: DATA.quests.findIndex((q) => q.id === "Q_MAIN_12"), st: "idle", prog: [] };
+  if (S.lv < 10) { S.lv = 10; S.exp = 0; } S.gearVer++;
+  const st = stats(); S.hp = st.hp; S.mp = st.mp; questChanged();
+  toast("Đã tới Lễ Khai Thư: gặp Thầy Bạch Vân ở làng.", true);
+});
+$("dev-dg").addEventListener("click", () => {     // skip to Q_MAIN_10 (DG01)
+  if (!S.origin) return;
+  S.q = { i: DATA.quests.findIndex((q) => q.id === "Q_MAIN_10"), st: "idle", prog: [] };
+  if (S.lv < 9) { S.lv = 9; S.exp = 0; } S.gearVer++;
+  const st = stats(); S.hp = st.hp; S.mp = st.mp; questChanged();
+  toast("Đã tới nhiệm vụ Trang Lạc: gặp Thầy Bạch Vân, rồi xuống Hang Giếng Cạn.", true);
 });
 $("dev-lv").addEventListener("click", () => { const sc = window.__htk?.scene; if (sc) sc.gainExp(F.expToNext(S.lv) - S.exp); });
 $("dev-reset").addEventListener("click", (e) => {

@@ -10,7 +10,7 @@ python3 -m http.server 8000 --directory prototype/playable
 
 Mở `http://localhost:8000`, bấm vào màn chơi rồi dùng bàn phím hoặc chuột.
 
-**Lần đầu vào game:** tạo nhân vật (tên, Nam/Nữ, 1 trong 3 xuất thân), sau đó nhấn **C** để cộng 10 điểm tiềm năng. Đạt **Lv10** thì gặp Thầy Bạch Vân làm **Lễ Khai Thư**, chọn Hỏa Kiếm Sĩ hoặc Thủy Pháp Sư; trong 24 giờ đầu được đổi hệ miễn phí.
+**Lần đầu vào game:** tạo nhân vật (tên, Nam/Nữ, 1 trong 3 xuất thân), sau đó nhấn **C** để cộng 10 điểm tiềm năng. Làm chuỗi chính tuyến tới cuối: hạ **Trang Lạc** trong hầm ngục DG01 (cổng cuối Hang Giếng Cạn, cần Lv9), xem cảnh **Đêm Trước Ngày Lễ** (xong mới lên được Lv10), rồi theo Thầy vào **Lễ Đường Khai Thư**, đặt tay lên đài để chọn Hỏa Kiếm Sĩ hoặc Thủy Pháp Sư. Hết chương có thẻ "Hết Chương 1" ghi thời gian chơi; Thầy rời làng, Bà Mơ nhận việc đổi hệ miễn phí trong 24 giờ đầu.
 
 **Lưu game:** tự lưu trên trình duyệt này (cấp, EXP, Quan, túi đồ, đồ đang mặc, nhiệm vụ, map và vị trí) mỗi 10 giây, khi đổi map, khi mua bán hoặc mặc đồ, và khi đóng tab. Mở lại là chơi tiếp. Muốn chơi lại từ đầu: nút "Xóa dữ liệu lưu" trong công cụ thử. Chế độ ẩn danh hoặc trình duyệt chặn lưu trữ thì vẫn chơi được nhưng không lưu.
 
@@ -56,15 +56,17 @@ Mở `http://localhost:8000`, bấm vào màn chơi rồi dùng bàn phím hoặ
 | Quái rơi trang bị (Thường 6%, Tốt 2%, Hiếm 0,3%, Sử Thi 0,03%; Tinh anh, Thủ lĩnh cao hơn), Đồng Luyện, bình | [combat §6, §2.1.1](../../docs/game-design/04-combat-and-progression.md) |
 | Bình HP/MP Nhỏ và Vừa (150/600 HP, 80/300 MP), hồi 8 giây | [items §8](../../docs/game-design/07-items-and-equipment.md) |
 | Tiệm thuốc của Lam Nhi: mua bình, bán đồ 25% giá trị, mua lại trong 30 phút, bán nhanh đồ Thường | [economy §3](../../docs/game-design/08-economy-and-monetization.md), [items §4.1](../../docs/game-design/07-items-and-equipment.md), [ui-ux §6.2](../../docs/game-design/11-ui-ux-spec.md) |
+| Hầm ngục DG01 (Lv9, 30 phút, một mình: quái 30% HP, 70% ATK, thưởng ×0,8; không hồi sinh; gục ngã là ra), Trang Lạc (Quét Trang, Bão Trang, rách thành 4 Mảnh Trang ở 50%), Rương Tân Thủ | [maps §5.3, §6.1–6.2](../../docs/game-design/05-world-maps-monsters.md) |
+| Q_MAIN_10–12: cảnh truyện, giới hạn Lv9, lễ đường I001 ban đêm, thẻ hết chương | [quests §4](../../docs/game-design/06-quests-and-missions.md), [ui-ux §6.3.1](../../docs/game-design/11-ui-ux-spec.md) |
 | Chuỗi chính tuyến Chương 1 Q_MAIN_01–09: nhận, làm, trả, thưởng; vật phẩm nhiệm vụ chỉ rơi khi còn thiếu; bụi Thảo Dược | [quests §2–4.1](../../docs/game-design/06-quests-and-missions.md), dữ liệu ở [`art/prototype/content/quests`](../../art/prototype/README.md) |
 | Khung theo dõi nhiệm vụ, dấu ! ? trên đầu NPC, hộp thoại NPC, cửa sổ Nhiệm vụ 4 tab, nút Đi tới, dải ruy băng nhận/trả | [ui-ux §3.1.3, §5, §6.4](../../docs/game-design/11-ui-ux-spec.md), [art §7](../../docs/game-design/12-art-audio-direction.md) |
 
-Giá trị **chưa có trong tài liệu**, dùng tạm cho bản thử: hệ số chiêu boss (dậm 180%, lao 200%, sà 200%, mưa pha lê 120%). Q_MAIN_05: phần "đấu tập với Khôi" thay bằng "Tụ Mana Chấn trúng quái 3 lần" vì bản thử chưa có đấu tập. Q_MAIN_10–12 hiện trong bảng nhưng chưa làm được (cần hầm ngục DG01 và lễ đường).
+Giá trị **chưa có trong tài liệu**, dùng tạm cho bản thử: hệ số chiêu boss (dậm 180%, lao 200%, sà 200%, mưa pha lê 120%). Q_MAIN_05: phần "đấu tập với Khôi" thay bằng "Tụ Mana Chấn trúng quái 3 lần" vì bản thử chưa có đấu tập. Q_MAIN_12 chưa trao 1 Điểm Kỹ Năng vì chưa có nâng kỹ năng.
 
-**Công cụ thử** dưới màn chơi: tốc độ giờ (×1, ×60, ×300), gọi boss của map ngay, boss còn 20% máu để đánh một mình (bật sẵn), tăng tỉ lệ Tinh anh và Thủ lĩnh ×10, lên Lv10 để thử Lễ Khai Thư, +1 cấp (lên Lv20, Lv30 để thử kỹ năng 2, 3), xong mục tiêu nhiệm vụ hiện tại (để xem nhanh các nhiệm vụ sau), xóa dữ liệu lưu.
+**Công cụ thử** dưới màn chơi: tốc độ giờ (×1, ×60, ×300), gọi boss của map ngay, boss còn 20% máu để đánh một mình (bật sẵn), tăng tỉ lệ Tinh anh và Thủ lĩnh ×10, nhảy tới Trang Lạc (Lv9) hoặc tới Lễ Khai Thư (Lv10), +1 cấp (lên Lv20, Lv30 để thử kỹ năng 2, 3), xong mục tiêu nhiệm vụ hiện tại (để xem nhanh các nhiệm vụ sau), xóa dữ liệu lưu.
 
 ## Dựng lại asset
 
 `assets/` do `python3 tools/art-proto/build.py` sinh ra (bước `build_playable`), cùng nguồn với dữ liệu thử ở `art/prototype/content`. Không sửa tay trong `assets/`. Chỉ dựng lại nhiệm vụ, vật phẩm, icon và `data.json`: `python3 tools/art-proto/build.py art/prototype content`.
 
-Chưa có: hầm ngục DG01 (Trang Lạc), map Thượng Đô, nhặt đồ theo quyền sát thương, nhóm, nhiều khu, cường hóa, đồ mặc hiện trên hình nhân vật.
+Chưa có: map Thượng Đô (Chương 2), nhặt đồ theo quyền sát thương, nhóm, nhiều khu, cường hóa, đồ mặc hiện trên hình nhân vật.

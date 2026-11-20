@@ -181,8 +181,59 @@ def m004(S):
     return B
 
 
+def dg01(S):
+    """DG01 Hang Gieng Can dungeon (maps §6): two monster rooms and the Trang Lac arena. Instance, no respawn."""
+    B = MapBuilder("DG01", "Ham Nguc Hang Gieng Can", 72, 20, S, "DUNGEON", (9, 12), "R01", "cave",
+                   "audio/bgm/r01_dungeon", pk="PEACE", zone_cap=5)
+    h = [17] * 72
+    for x in range(23, 41):
+        h[x] = 15                       # raised rock shelf (room 2)
+    B.ground_profile(h, prefix="cave")
+    B.block(0, 0, 71, 2, prefix="cave")
+    B.block(10, 3, 18, 3, prefix="cave")
+    B.block(44, 3, 47, 5, prefix="cave")   # low ceiling before the arena
+    B.carve(30, 15, 33, 16)                 # spike pit on the shelf
+    B.block(31, 12, 32, 12, prefix="cave", oneway=True)
+    B.finalize()
+    B.spikes(30, 33, 16)
+    for x in list(range(3, 10)) + list(range(19, 44)) + list(range(48, 71)):
+        if x % 3 == 1:
+            B.tiles["decor"][3, x] = B._t("stalactite")
+    for x, n in ((5, "crystal_violet"), (20, "crystal_blue"), (37, "crystal_violet"), (50, "crystal_blue"),
+                 (56, "crystal_violet"), (66, "crystal_violet"), (69, "crystal_blue")):
+        B.tiles["decor"][B.surface(x) - 1, x] = B._t(n)
+    B.scatter(["mushrooms", "rock"], 0.15, seed=11, avoid=[(52, 70)])
+    B.player_spawn = (B.px(3), B.feet(3))
+    B.spawn("MOB006", 14, 5, 5, 0, y_tile=13, note="phong 1: Doi Gieng (bay), Lv9-10", level=(9, 10))
+    B.spawn("MOB007", 36, 4, 4, 0, note="phong 2: Rua Da Gieng tren bac da, Lv10-11", level=(10, 11))
+    B.spawn("MOB006", 45, 2, 2, 0, y_tile=14, note="hanh lang: Doi Gieng, Lv10", level=(10, 10))
+    B.boss_spawn("BOSS001", 62, "DG01")
+    B.portal("P01", 1, "M004", 0, 0)
+    B.portal("P02", 70, "M004", 0, 0)
+    return B
+
+
+def i001(S):
+    """I001 Le duong Khai Thu: story instance for Q_MAIN_12 (maps §2.1), one screen, night."""
+    B = MapBuilder("I001", "Le Duong Khai Thu", 32, 14, S, "INSTANCE", (10, 10), "R01", "village",
+                   "audio/bgm/r01_ceremony", zone_cap=1)
+    B.ground_profile([11] * 32)
+    B.finalize()
+    B.on_ground("tree_big", 0)
+    B.on_ground("lamp", 8)
+    B.on_ground("boss_altar", 14)
+    B.on_ground("lamp", 23)
+    B.on_ground("tree_small", 27)
+    B.scatter(["flowers_a", "flowers_b", "grass_tall_a"], 0.3, seed=12, avoid=[(12, 20)])
+    B.player_spawn = (B.px(4), B.feet(4))
+    B.npc("NPC001", 19)
+    B.portal("P01", 1, "M001", 0, 0)
+    B.safe.append((0, 0, B.w * TS, B.h * TS))
+    return B
+
+
 def build_region(S):
-    maps = {B.id: B for B in (m001(S), m002(S), m003(S), m004(S))}
+    maps = {B.id: B for B in (m001(S), m002(S), m003(S), m004(S), dg01(S), i001(S))}
     # arrival points: two tiles inside the matching portal of the target map
     for B in maps.values():
         for p in B.portals:
@@ -195,4 +246,6 @@ def build_region(S):
             q = back[0]
             tx = q["x"] // TS + (2 if q["x"] < T_.w * TS / 2 else -2)
             p["toX"], p["toY"] = T_.px(tx), T_.feet(tx)
+    m1 = maps["M001"]   # the ceremony ground is entered by talking to Thay Bach Van: come back next to him
+    maps["I001"].portals[0].update(toX=m1.px(11), toY=m1.feet(11))
     return maps

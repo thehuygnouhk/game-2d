@@ -48,7 +48,7 @@ Vòng ngắn (phút): đánh quái, nhặt đồ. Vòng trung (ngày): nhiệm v
 | Thường | ×1 | ×1 |
 | Tinh anh (elite) | ×3 | ×3 |
 | Thủ lĩnh (leader) | ×6 | ×6 |
-| Mini-boss | ×10 | ×10 |
+| Mini-boss | ×10 | ×10 (ATK ×1,3, DEF ×1,2, Quan ×8) |
 | Boss | ×40 | ×40 |
 | Boss thế giới | ×200 | ×200 |
 

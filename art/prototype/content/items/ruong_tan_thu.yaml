@@ -1,0 +1,6 @@
+# prototype item (step A1)
+id: ruong_tan_thu
+type: MISC
+nameKey: item.ruong_tan_thu.name
+icon: items/ruong_tan_thu
+value: 0

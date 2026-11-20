@@ -8,7 +8,8 @@
 |----------|----------|
 | [vision-and-scope](product/vision-and-scope.md) | Tầm nhìn, trụ cột, đối tượng, **bảng đối chiếu cơ chế NS/NRO → HTK**, phạm vi, KPI, rủi ro, quyết định mở |
 | [requirements](product/requirements.md) | Yêu cầu chức năng (FR) và phi chức năng (NFR), truy vết |
-| [roadmap](product/roadmap.md) | 6 phase, mốc, tiêu chí hoàn thành, đội ngũ, rủi ro |
+| [roadmap](product/roadmap.md) | 6 phase, mốc, tiêu chí hoàn thành, đội ngũ, rủi ro; lộ trình bậc thang cho đội nhỏ (§8) |
+| [chapter1-pacing](reports/chapter1-pacing.md) | Báo cáo mô phỏng nhịp chơi Chương 1 (`tools/sim/chapter1.py`) |
 | [legal-and-compliance](product/legal-and-compliance.md) | IP, quy định game, dữ liệu cá nhân, thanh toán, điều khoản |
 | [reskin-plan](product/reskin-plan.md) | **Kế hoạch thương mại với IP gốc thay thế:** cần đổi gì, giữ gì, quy trình, danh sách kiểm tra |
 | [reskin-spec](product/reskin-spec.md) | **Đặc tả mức đã chọn (nội bộ; Bước 2 đã áp dụng, chờ duyệt §9):** giữ concept, đổi tên + 6 điểm nhận diện, tám chương mới, thuật ngữ, việc kỹ thuật |

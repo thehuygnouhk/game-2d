@@ -35,3 +35,4 @@
 34	giay_dan_lang
 35	potion_hp_m
 36	potion_mp_m
+37	ruong_tan_thu

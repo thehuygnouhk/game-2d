@@ -73,22 +73,22 @@ quest:
     title: "Trang Lạc"
     objectives:
       - "Hạ Trang Lạc trong hầm ngục DG01"
-    accept: "Có thứ gì đó trú trong đáy giếng cạn. Con đủ sức rồi, xuống xem đi."
-    progress: "Cổng hầm ngục ở cuối Hang Giếng Cạn."
-    complete: "Con đã lớn thật rồi."
+    accept: "Tờ giấy trắng dưới giếng không tự nhiên mà có. Thứ gì đó đang trú trong đáy hang. Con đủ sức rồi, xuống xem đi."
+    progress: "Cổng hầm ngục ở cuối Hang Giếng Cạn, cạnh đài đá. Cần Lv9."
+    complete: "Một sinh vật làm từ trang giấy bị xóa… Con làm tốt lắm. Áo này thầy may sẵn cho con."
   main.11:
     title: "Đêm Trước Ngày Lễ"
     objectives:
-      - "Trò chuyện cùng Thầy, Lam Nhi và Khôi"
-    accept: "Mai là Lễ Khai Thư. Tối nay ở lại nhà học nhé."
-    progress: ""
-    complete: ""
+      - "Ngồi lại cùng Thầy, Lam Nhi và Khôi"
+    accept: "Mai là Lễ Khai Thư. Tối nay cả ba đứa ở lại nhà học với thầy nhé."
+    progress: "Thầy đang đợi ở nhà học."
+    complete: "Ngủ sớm đi. Mai thầy đợi ở lễ đường."
   main.12:
     title: "Lễ Khai Thư"
     objectives:
-      - "Vào lễ đường, chọn hệ phép"
-    accept: "Huyền Thư đang chờ con."
-    progress: ""
+      - "Đặt tay lên Đài Khai Thư, chọn hệ phép"
+    accept: "Huyền Thư đang chờ con. Theo thầy vào lễ đường."
+    progress: "Đài Khai Thư ở giữa lễ đường. Lại gần rồi nhấn F."
     complete: ""
 item:
   cu_cai_non: "Củ Cải Non"
@@ -107,9 +107,20 @@ item:
   s1_boots: "Giày Dân Làng"
   kiem_go_tap: "Kiếm Gỗ Tập"
   ao_suoi_mo: "Áo Suối Mơ"
+  ruong_tan_thu: "Rương Tân Thủ"
   huyen_thu_so_ban: "Huyền Thư Sơ Bản"
   kiem_lua_tap_su: "Kiếm Lửa Tập Sự"
   truong_thuy_tap_su: "Trượng Thủy Tập Sự"
+scene:
+  q_main_11.1: "Ngồi xuống đây cả ba. Mai là Lễ Khai Thư rồi."   # NPC001
+  q_main_11.2: "Con hồi hộp quá thầy ạ. Lỡ Huyền Thư của con chẳng chịu mở thì sao?"   # NPC003
+  q_main_11.3: "Mở hay không thì cậu vẫn chế thuốc giỏi nhất làng mà."   # NPC004
+  q_main_11.4: "Huyền Thư không chọn người mạnh nhất. Nó chọn người biết mình muốn viết gì."   # NPC001
+  q_main_11.5: "Con muốn biết tờ giấy trắng dưới giếng là gì, và ai đã xóa nó."   # PLAYER
+  q_main_11.6: "…Ngủ sớm đi. Mai thầy đợi ở lễ đường."   # NPC001
+  q_main_12.1: "Huyền Thư đã nhận con. Từ nay con tự viết đường đi của mình."   # NPC001
+  q_main_12.2: "Thầy còn vài trang sách cũ phải đi tìm lại. Đừng lo cho thầy."   # NPC001
+  letter: "Đừng tìm thầy. Hãy tìm Mười Hai Quyển."
 origin:
   villager.name: "Dân Làng"
   villager.passive: "Không Lùi Bước: Khi HP dưới 30%: +15% ATK và DEF trong 8 giây (hồi 60 giây)"

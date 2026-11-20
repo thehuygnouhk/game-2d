@@ -60,8 +60,8 @@ stateDiagram-v2
 |----|-----|-----|-----|----------|--------|
 | Q_MAIN_01 | Buổi Sáng Ở Nhà Học | 1 | Thầy Bạch Vân | Nói chuyện Thầy Bạch Vân và Bà Mơ | 50 EXP, 100 Quan, 5 Bình HP Nhỏ |
 | Q_MAIN_02 | Dọn Vườn Thuốc | 1 | Thầy Bạch Vân | Hạ 5 Nấm Lùn (M002) | 120 EXP, 80 Quan, Kiếm Gỗ Tập |
-| Q_MAIN_03 | Thỏ Phá Ruộng | 2 | Cụ Trương | Hạ 6 Thỏ Đốm, nhặt 4 Củ Cải Non | 200 EXP, 120 Quan |
-| Q_MAIN_04 | Hái Thảo Dược | 3 | Lam Nhi | Thu thập 5 Thảo Dược Suối Mơ, giao Lam Nhi | 300 EXP, 150 Quan, 3 Bình HP Nhỏ |
+| Q_MAIN_03 | Thỏ Phá Ruộng | 2 | Cụ Trương | Hạ 6 Thỏ Đốm, nhặt 4 Củ Cải Non | 350 EXP, 120 Quan |
+| Q_MAIN_04 | Hái Thảo Dược | 3 | Lam Nhi | Thu thập 5 Thảo Dược Suối Mơ, giao Lam Nhi | 600 EXP, 150 Quan, 3 Bình HP Nhỏ |
 | Q_MAIN_05 | Bài Học Của Khôi | 5 | Khôi | Gặp Khôi ở M002; đấu tập học **Tụ Mana Chấn** | 400 EXP, 200 Quan, Tụ Mana Chấn |
 | Q_MAIN_06 | Chó Rừng Lạc Bầy | 5 | Cụ Trương | Hạ 8 Chó Rừng Non (M003) | 600 EXP, 250 Quan |
 | Q_MAIN_07 | Bao Tải Bị Lấy | 6 | Cụ Trương (thay bác Tư bên suối) | Hạ 6 Lùn Ném Đá, nhặt Bao Tải Bị Lấy | 800 EXP, 300 Quan |
@@ -71,7 +71,20 @@ stateDiagram-v2
 | Q_MAIN_11 | Đêm Trước Ngày Lễ | 9 | Thầy Bạch Vân | Cutscene với Thầy, Lam Nhi, Khôi | 1.200 EXP, mở khóa Lv10 |
 | Q_MAIN_12 | **Lễ Khai Thư** | 10 | Thầy Bạch Vân | Vào `I001`, chọn hệ phép | Huyền Thư Sơ Bản, Vũ khí hệ, 1 SP |
 
-> **Tạm thời ở bậc A2** ([roadmap §8](../product/roadmap.md)): DG01 và Q_MAIN_10–11 chưa có, nên Lễ Khai Thư mở qua **Thầy Bạch Vân** ngay khi đạt Lv10, có dấu **!** trên đầu NPC và dòng nhắc ở khung theo dõi. Từ bậc A3, Lễ Khai Thư gắn vào Q_MAIN_12 như bảng trên.
+**Cuối Chương 1 (bậc A3):**
+- **Q_MAIN_10:** hạ Trang Lạc trong DG01 ([maps §5.3, §6.2](05-world-maps-monsters.md)).
+- **Q_MAIN_11:**
+  - Nhận nhiệm vụ là chạy ngay cảnh đêm ở nhà học: 6 lời thoại của Thầy, Lam Nhi, Khôi và người chơi, nói về nỗi lo trước lễ và tờ giấy trắng dưới giếng.
+  - Xong cảnh thì nhiệm vụ tự hoàn thành.
+  - **Giới hạn Lv9:** trước khi xong Q_MAIN_11, nhân vật không lên quá Lv9; EXP dư dừng ở sát mốc và được dùng ngay khi mở giới hạn.
+- **Q_MAIN_12:**
+  - Nhận nhiệm vụ là Thầy đưa người chơi vào lễ đường `I001`.
+  - Đặt tay lên **Đài Khai Thư** (nhấn F hoặc nói với Thầy) để mở cửa sổ Lễ Khai Thư ([classes §3](03-origins-classes-skills.md)).
+  - Chọn hệ xong, Thầy nói lời chia tay, nhiệm vụ tự hoàn thành, rồi hiện thẻ **"Hết Chương 1"**: lá thư *"Đừng tìm thầy. Hãy tìm Mười Hai Quyển."*, thời gian chơi, cấp, Lực Chiến, hệ phép.
+  - Về làng thì Thầy Bạch Vân không còn ở nhà học ([characters](02-characters-and-npcs.md)).
+- Điểm Kỹ Năng (1 SP) của Q_MAIN_12 chờ hệ nâng kỹ năng.
+
+**Cân bằng:** EXP của Q_MAIN_03 (200 → 350) và Q_MAIN_04 (300 → 600) đã nâng để bỏ bức tường cày ở phút thứ 6, theo [báo cáo nhịp chơi Chương 1](../reports/chapter1-pacing.md). Ước tính trọn chương khoảng 47 phút.
 
 **Mẫu thoại mở đầu `Q_MAIN_01` theo xuất thân:**
 
