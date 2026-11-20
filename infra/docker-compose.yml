@@ -1,0 +1,33 @@
+# Local services (docs/guides/developer-setup-guide.md §2). Databases are used from step B3;
+# the game server runs here with:  docker compose -f infra/docker-compose.yml --profile app up --build
+name: htk
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: htk
+      POSTGRES_PASSWORD: htk
+      POSTGRES_DB: htk
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U htk"]
+      interval: 5s
+      retries: 10
+  redis:
+    image: redis:7
+    ports: ["6379:6379"]
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    ports: ["1025:1025", "8025:8025"]
+  game-server:
+    profiles: [app]
+    build:
+      context: ..
+      dockerfile: apps/game-server/Dockerfile
+    environment:
+      GAME_WS_PORT: "7001"
+      DEV_GUEST: "1"
+    ports: ["7001:7001"]
+volumes:
+  pgdata:

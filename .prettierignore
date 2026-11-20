@@ -1,0 +1,6 @@
+prototype/
+art/
+docs/
+pnpm-lock.yaml
+**/dist/
+*.md

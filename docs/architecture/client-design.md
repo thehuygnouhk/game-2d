@@ -96,6 +96,12 @@ khi nhận snapshot (có lastProcessedSeq):
 
 Mô hình vật lý di chuyển **dùng chung** từ `packages/shared/physics`.
 
+Hiện thực (bậc B1, `apps/web-client/src/world/`):
+- Vòng bước cố định 50 ms chạy theo **đồng hồ thật** (`performance.now()`), không theo `delta` của Phaser. Lý do: Phaser làm mượt và giới hạn `delta` khi khung hình chậm, khiến game chạy chậm hơn server.
+- Khung chậm: bù tối đa 10 bước (0,5 giây), phần dư bỏ đi.
+- Hình nhân vật nội suy giữa hai bước gần nhất.
+- Người khác: mỗi snapshot ghi một mẫu cho **mọi** thực thể đang thấy, kể cả thực thể không đổi, để người đã đứng yên không bị ngoại suy quá chỗ dừng.
+
 ### 5.2 Thực thể khác (interpolation)
 
 - Giữ **bộ đệm snapshot 100 ms** và nội suy giữa hai snapshot.

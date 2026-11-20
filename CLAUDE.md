@@ -4,7 +4,7 @@ Hướng dẫn cho Claude Code (và cộng tác viên) khi làm việc trong rep
 
 ## Dự án
 
-**Huyền Thư Ký (HTK, tên tạm)** là MMORPG 2D cuộn ngang theo cơ chế Ninja School Online / Ngọc Rồng Online, với thế giới gốc của dự án (bản reskin, Draft v0.2). Concept tham khảo Black Clover, nhưng đã đổi toàn bộ tên và 6 điểm nhận diện; bản fan cũ chỉ còn trong lịch sử git (commit `6131e84` trở về trước). Repo hiện ở **giai đoạn thiết kế**: chỉ có tài liệu, chưa có mã nguồn. Điểm vào: `README.md`, `docs/README.md`.
+**Huyền Thư Ký (HTK, tên tạm)** là MMORPG 2D cuộn ngang theo cơ chế Ninja School Online / Ngọc Rồng Online, với thế giới gốc của dự án (bản reskin, Draft v0.2). Concept tham khảo Black Clover, nhưng đã đổi toàn bộ tên và 6 điểm nhận diện; bản fan cũ chỉ còn trong lịch sử git (commit `6131e84` trở về trước). Repo có tài liệu thiết kế, **bản chơi thử** trình duyệt (`prototype/playable`, chơi một mình, đã dừng phát triển sau bậc A3) và **khung dự án thật** từ bậc B1 (monorepo pnpm: `apps/game-server`, `apps/web-client`, `packages/shared`). Lộ trình theo bậc: `docs/product/roadmap.md` §8. Điểm vào: `README.md`, `docs/README.md`.
 
 ## Quy tắc quan trọng
 
@@ -29,9 +29,14 @@ Hướng dẫn cho Claude Code (và cộng tác viên) khi làm việc trong rep
 
 TypeScript monorepo (pnpm): client **Phaser 3 + Preact + Vite**; server **Node.js 20 + `ws` + MessagePack**; dữ liệu **PostgreSQL 16 + Redis 7**; kiểm thử **Vitest, Playwright, k6**. Cấu trúc thư mục kế hoạch: `docs/architecture/system-architecture.md` §6.
 
-## Lệnh (kế hoạch, Phase 0)
+## Lệnh
 
-Chưa tồn tại cho đến khi khung dự án được tạo. Danh sách mục tiêu: `docs/guides/developer-setup-guide.md` §5. Khi tạo khung dự án, phải bám đúng danh sách lệnh này.
+Danh sách chuẩn ở `docs/guides/developer-setup-guide.md` §5; thêm lệnh mới phải bám danh sách này. Đã có:
+- `pnpm dev` (server `ws://localhost:7001` + client `http://localhost:5173`);
+- `pnpm lint`, `typecheck`, `test`, `test:e2e`, `build`, `map:check`;
+- `pnpm check:ip` (kiểm tra rò rỉ tên IP), `pnpm check:links`.
+
+Lệnh của bậc sau in ra bậc sẽ có. Trước khi commit mã: chạy `pnpm lint && pnpm typecheck && pnpm test`.
 
 ## Khi chỉnh sửa tài liệu
 

@@ -1,0 +1,6 @@
+{
+  "name": "@htk/config",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Shared tool settings: tsconfig.base.json, eslint.config.js and .prettierrc.json live at the repo root and are referenced from here."
+}

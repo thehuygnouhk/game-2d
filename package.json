@@ -1,0 +1,51 @@
+{
+  "name": "htk",
+  "private": true,
+  "description": "Huyền Thư Ký: 2D side-scrolling MMORPG (monorepo)",
+  "type": "module",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n server,client -c yellow,cyan \"pnpm dev:server\" \"pnpm dev:client\"",
+    "dev:client": "pnpm --filter @htk/web-client dev",
+    "dev:server": "pnpm --filter @htk/game-server dev",
+    "dev:api": "node tools/checks/not-yet.mjs dev:api B3",
+    "build": "pnpm -r build",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "test:int": "node tools/checks/not-yet.mjs test:int B3",
+    "test:e2e": "pnpm --filter @htk/web-client test:e2e",
+    "content:validate": "node tools/checks/not-yet.mjs content:validate B2",
+    "content:build": "node tools/checks/not-yet.mjs content:build B2",
+    "map:check": "pnpm --filter @htk/game-server map:check",
+    "db:migrate": "node tools/checks/not-yet.mjs db:migrate B3",
+    "db:seed": "node tools/checks/not-yet.mjs db:seed B3",
+    "db:reset": "node tools/checks/not-yet.mjs db:reset B3",
+    "sim:exp": "python3 tools/sim/chapter1.py",
+    "sim:ttk": "node tools/checks/not-yet.mjs sim:ttk B2",
+    "sim:economy": "node tools/checks/not-yet.mjs sim:economy C",
+    "bots": "node tools/checks/not-yet.mjs bots B2",
+    "load:ws": "node tools/checks/not-yet.mjs load:ws B2",
+    "check:ip": "node tools/checks/ip-leak.mjs",
+    "check:links": "node tools/checks/links.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "concurrently": "^9.2.5",
+    "eslint": "^9.39.5",
+    "globals": "^16.5.0",
+    "prettier": "^3.10.1",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.73.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}

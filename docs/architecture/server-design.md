@@ -100,7 +100,12 @@ classDiagram
 ### 4.1 Mô hình
 
 - **Tile-based AABB**: kích thước hộp nhân vật 24×48 px; tile 32 px.
-- Vật lý rời rạc theo tick 50 ms; trọng lực `g = 1800 px/s²`, tốc nhảy ban đầu `-560 px/s` (cao ~3 ô).
+- Vật lý rời rạc theo tick 50 ms (`packages/shared/src/physics/body.ts`, dùng chung cho client và server):
+  - tốc chạy 180 px/s (9 px mỗi tick);
+  - trọng lực `g = 1200 px/s²`, tốc nhảy ban đầu `-544 px/s`, rơi tối đa 960 px/s. Nhảy cao **103 px** (hơn 3 ô một chút), khớp luật map V016 (bậc tối đa 3 ô) và bản chơi thử.
+  - **Lý do đổi** từ `g = 1800`, `-560 px/s`: bộ số cũ ở bước 50 ms chỉ nhảy được khoảng 2,7 ô, không lên được bậc 3 ô đã kiểm chứng trên map.
+- **Xác định (deterministic):** sau mỗi bước, vị trí làm tròn tới px nguyên, `vy` làm tròn tới bội số 8 (khớp lượng tử hóa `int8 × 8` của snapshot). Cùng chuỗi input thì client và server ra cùng kết quả.
+- Nhấn xuống khi đứng trên nền một chiều: rơi xuyên qua trong 6 tick. Thang (tile 3) và bẫy (tile 4) chưa có trong mô phỏng chung (đến ở bậc B2).
 - **Nền một chiều** và **thang** là tile đặc biệt trong lớp collision của map.
 - Server **mô phỏng lại** chuyển động từ input (không tin vị trí client).
 
@@ -108,9 +113,11 @@ classDiagram
 
 Client gửi **`C_MOVE_INPUT`** gồm `{ seq, dir(-1/0/1), jump, down, tickClient }`, tối đa 20 gói/s. Server:
 
-1. Đưa vào hàng đợi theo `seq`, áp dụng ở tick kế tiếp.
-2. Gửi lại `lastProcessedSeq` trong snapshot.
-3. Nếu vị trí client lệch > **6 px** sau khi client tái mô phỏng, server gửi `S_CORRECTION`.
+1. Đưa vào hàng đợi theo `seq` (tối đa 12, bỏ gói cũ, bỏ gói trùng hoặc đã xử lý). **Mỗi input là một bước vật lý.**
+2. **Hạn mức bước:** mỗi tick cộng 1 lượt, để dành tối đa 3 lượt bù trễ mạng; mỗi input tiêu 1 lượt. Vì vậy người chơi không đi nhanh hơn 1 bước/tick về lâu dài, dù gửi dồn input.
+3. Không nhận được input trong 10 tick mà đang ở trên không: server tự cho rơi để thân không treo lơ lửng.
+4. Gửi lại `lastProcessedSeq` (`ack`) trong mỗi snapshot.
+5. Client đối chiếu ở **mọi** snapshot: đặt lại theo trạng thái server rồi phát lại input chưa được xác nhận. Lệch > **6 px** thì giật về ngay, lệch nhỏ thì nội suy. Vì client tự đối chiếu, bậc B1 chưa dùng `S_CORRECTION`.
 
 ### 4.3 Kiểm tra chống gian lận chuyển động
 

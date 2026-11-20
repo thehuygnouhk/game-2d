@@ -2,7 +2,21 @@
 
 > **Trạng thái:** Draft v0.1 · **Liên quan:** [system-architecture](../architecture/system-architecture.md) · [development-workflow](../workflows/development-workflow.md) · [infrastructure](../architecture/infrastructure-devops.md)
 
-> **Lưu ý quan trọng:** Repo hiện mới chứa **tài liệu thiết kế**. Các lệnh dưới đây là **đích đến của Phase 0** ([roadmap](../product/roadmap.md)), chưa tồn tại cho tới khi khung dự án được tạo. Tài liệu này là **hợp đồng** để khung dự án được dựng theo.
+> **Trạng thái:** khung dự án đã có từ **bậc B1** ([roadmap §8](../product/roadmap.md)): `apps/game-server`, `apps/web-client`, `packages/shared`, `packages/config`, `infra/docker-compose.yml`, CI. Lệnh nào ở §5 chưa có thì báo bậc sẽ có. Tài liệu này vẫn là **hợp đồng** cho các phần còn lại.
+
+### Chạy nhanh bậc B1 (chưa cần Docker)
+
+```bash
+corepack enable
+pnpm install
+cp .env.example .env
+```
+
+```bash
+pnpm dev
+```
+
+Mở `http://localhost:5173` ở **hai** cửa sổ trình duyệt, nhập hai tên khác nhau và vào game: hai nhân vật thấy nhau đi lại trên M001. Game server chạy với vé khách (`DEV_GUEST=1`, [network-protocol §3.1.1](../architecture/network-protocol.md)). Máy khác trong cùng mạng mở `http://<ip-máy-chạy>:5173`.
 
 ## 1. Yêu cầu
 
@@ -86,6 +100,11 @@ File `.env` (không commit). Mẫu `.env.example`:
 | `GM_REQUIRE_MFA` | `false` (local) | **Bắt buộc `true` ở staging/production** |
 
 ## 5. Lệnh thường dùng
+
+Trạng thái ở bậc B1:
+- **Đã có:** `dev`, `dev:client`, `dev:server`, `build`, `lint`, `typecheck`, `test`, `test:e2e`, `map:check`, `sim:exp` (gọi `tools/sim/chapter1.py`).
+- **Thêm ngoài danh sách:** `check:ip` (kiểm tra rò rỉ tên IP), `check:links` (liên kết tài liệu), `format`, `format:check`.
+- **Chưa có:** các lệnh còn lại in ra bậc sẽ có rồi thoát với mã 1.
 
 | Lệnh | Mô tả |
 |------|-------|

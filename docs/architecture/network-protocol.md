@@ -66,6 +66,21 @@ sequenceDiagram
 
 Mất kết nối < 30s: client mở WSS mới và gửi `C_RESUME {resumeToken, lastServerSeq}`. Server trả `S_ENTER_WORLD` đầy đủ (trạng thái hiện tại) và token mới.
 
+### 3.1.1 Bậc B1: vé khách tạm thời
+
+Chưa có API đăng nhập (đến ở bậc B3), nên game server chạy với `DEV_GUEST=1` nhận vé `ticket = "guest:<tên>"`:
+- tên theo luật tên nhân vật ([classes §2.1](../game-design/03-origins-classes-skills.md));
+- `C_HELLO` có thêm trường tùy chọn `appearance {origin, gender}` để người khác thấy đúng ngoại hình;
+- không có `DEV_GUEST=1` thì mọi vé bị từ chối bằng `E_AUTH`. **Không bật biến này ở môi trường thật.**
+
+`S_ENTER_WORLD` ở bậc B1 gồm:
+- `you`: id thực thể của mình;
+- `character {name, appearance}`, `map {id, zone}`, `tick`;
+- `body {x, y, vy, st}`;
+- `entities`: các `S_ENTITY_SPAWN` đang trong vùng nhìn.
+
+`S_ENTITY_SPAWN` của người chơi gồm `id, kind: "player", name, appearance, x, y, st, f`.
+
 ### 3.2 Đá phiên
 
 Đăng nhập mới cùng tài khoản: phiên cũ nhận `S_KICK {reason:"DUPLICATE_LOGIN"}` rồi đóng.
@@ -104,6 +119,8 @@ interface EntityDelta {
 
 - Gửi **10 Hz**; thực thể không đổi thì không gửi.
 - `S_ENTITY_SPAWN` mô tả đầy đủ khi thực thể vào AOI; `S_ENTITY_DESPAWN` khi rời.
+
+`st` (trạng thái di chuyển): `0` đứng, `1` chạy, `2` nhảy lên, `3` rơi; `st < 2` nghĩa là đang đứng trên nền. Snapshot được gửi khi có thực thể đổi **hoặc** `ack` của client đó đổi.
 
 ### 5.2 Hiệu chỉnh vị trí
 

@@ -1,0 +1,143 @@
+:root {
+  color-scheme: dark;
+  --bg: #0d1020;
+  --ink: #f2ead8;
+  --muted: #9aa2bf;
+  --gold: #f0c24a;
+  --panel: rgba(12, 14, 28, 0.88);
+  --line: #2c3354;
+  --font: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+[hidden] {
+  display: none !important;
+}
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+}
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px max(16px, env(safe-area-inset-left));
+}
+#stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  container-type: inline-size;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 0 0 1px var(--line);
+}
+#game {
+  position: absolute;
+  inset: 0;
+}
+#game canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  image-rendering: pixelated;
+}
+.hud {
+  position: absolute;
+  left: 1cqw;
+  top: 1cqw;
+  padding: 0.5cqw 0.9cqw;
+  border-radius: 0.5cqw;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  font-size: 1.3cqw;
+  font-weight: 700;
+}
+.hud .ok {
+  color: #9eff8a;
+}
+.hud .bad {
+  color: #ff9a9a;
+}
+.hud em {
+  font-style: normal;
+  color: var(--muted);
+  font-weight: 600;
+}
+.card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(92%, 420px);
+  display: grid;
+  gap: 12px;
+  padding: 20px 22px;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid #5b4ab0;
+}
+.card h1 {
+  margin: 0;
+  font-size: 24px;
+  color: var(--gold);
+}
+.card .sub {
+  margin: -6px 0 4px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.card label {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.card input,
+.card select,
+.card button {
+  font: inherit;
+  font-size: 15px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #3d4777;
+  background: #1a2040;
+  color: var(--ink);
+}
+.card .row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.card button {
+  cursor: pointer;
+  font-weight: 800;
+  background: linear-gradient(180deg, #ffd36b, #e08e1b);
+  color: #3a1f00;
+  border-color: #5a2a00;
+}
+.card button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.card .err {
+  margin: 0;
+  min-height: 1.2em;
+  color: #ff9a9a;
+  font-size: 13px;
+}
+input:focus-visible,
+select:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+.keys {
+  color: var(--muted);
+  font-size: 13px;
+}
+.keys b {
+  color: var(--ink);
+}
