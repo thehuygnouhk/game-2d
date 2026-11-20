@@ -1,0 +1,8 @@
+# prototype item (step A1)
+id: kiem_go_tap
+type: WEAPON
+nameKey: item.kiem_go_tap.name
+icon: items/kiem_go_tap
+slot: weapon
+levelReq: 1
+rarity: common

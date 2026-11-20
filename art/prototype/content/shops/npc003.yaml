@@ -1,0 +1,6 @@
+# Lam Nhi sells potions and buys items back at 25% (economy section 3), prototype step A1
+npc: NPC003
+nameKey: shop.npc003.name
+currency: SOFT
+sells: [ potion_hp, potion_hp_m, potion_mp, potion_mp_m ]
+buyBack: { ratio: 0.25, windowMin: 30 }

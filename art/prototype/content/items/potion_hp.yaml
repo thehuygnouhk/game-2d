@@ -1,0 +1,8 @@
+# prototype item (step A1)
+id: potion_hp
+type: CONSUMABLE
+nameKey: item.potion_hp.name
+icon: items/potion_hp
+value: 20
+healHp: 150
+stack: 999

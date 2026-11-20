@@ -1,0 +1,8 @@
+# prototype item (step A1)
+id: s1_boots
+type: ARMOR
+nameKey: item.s1_boots.name
+icon: items/giay_dan_lang
+slot: boots
+set: S1
+levelBand: [1, 9]   # rolled from the monster level

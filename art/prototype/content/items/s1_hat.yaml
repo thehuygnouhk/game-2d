@@ -1,0 +1,8 @@
+# prototype item (step A1)
+id: s1_hat
+type: ARMOR
+nameKey: item.s1_hat.name
+icon: items/mu_dan_lang
+slot: hat
+set: S1
+levelBand: [1, 9]   # rolled from the monster level

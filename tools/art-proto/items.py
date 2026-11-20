@@ -289,6 +289,75 @@ def tunic():
     return cv
 
 
+# ---- set S1 "Dan Lang" (items §5) and medium potions (items §8) ----
+def iron_sword():
+    cv = canvas(S, S)
+    steel = ramp("#c9d1dc", light="#ffffff", dark="#7d8798", outline="#232a36")
+    blade = g.capsule(11, 21, 26, 6, 2.0) | g.poly([(25, 4), (29, 3), (28, 7)])
+    paint(cv, blade, steel, shade=(1, 1, 2))
+    fill(cv, g.capsule(13, 18, 25, 6, 0.35) & blade, steel.l)
+    paint(cv, g.capsule(6, 17, 15, 26, 1.7), ramp("#8a5a32", light="#b8844e", outline="#2a1608"), shade=None)
+    grip = g.capsule(4, 28, 9, 23, 1.5)
+    paint(cv, grip, ramp("#6b3f1d", light="#9a6a3a", outline="#22120a"), shade=None)
+    paint(cv, g.disc(4, 29, 1.7), ramp("#c9d1dc", light="#ffffff", outline="#232a36"), shade=None)
+    return cv
+
+
+def cap():
+    cv = canvas(S, S)
+    felt = ramp("#8a6a3a", light="#c49a5c", dark="#5a4020", outline="#24180a")
+    crown = g.ellipse(16, 16, 9, 8) & (g.py < 19)
+    brim = g.ellipse(16, 20, 13, 3.2)
+    paint(cv, brim, felt, shade=(0, 1, 1))
+    paint(cv, crown, felt, shade=(1, 1, 2))
+    fill(cv, g.rect(8, 17, 24, 18) & crown, hex_rgb("#3a8f86"))
+    paint(cv, g.poly([(21, 12), (28, 5), (29, 7), (23, 14)]), ramp("#e8e0c8", light="#ffffff", outline="#5a4a2e"), shade=None)
+    put(cv, 12, 11, felt.l)
+    return cv
+
+
+def villager_tunic():
+    cv = canvas(S, S)
+    cloth = ramp("#a8784a", light="#d4a676", dark="#6e4a28", outline="#2a1608")
+    body = g.poly([(11, 5), (21, 5), (28, 10), (25, 16), (22, 14), (22, 28), (10, 28), (10, 14), (7, 16), (4, 10)])
+    paint(cv, body, cloth, shade=(1, 1, 2))
+    fill(cv, g.poly([(13, 5), (19, 5), (16, 10)]), hex_rgb("#f3e2b8"))
+    fill(cv, g.capsule(10, 20, 22, 20, 0.7) & body, hex_rgb("#3a8f86"))
+    for y in (12, 15, 24):
+        put(cv, 16, y, hex_rgb("#e8b04a"))
+    fill(cv, g.capsule(11, 27, 21, 27, 0.4) & body, cloth.d)
+    return cv
+
+
+def boots():
+    cv = canvas(S, S)
+    leather = ramp("#7a4a24", light="#b07a44", dark="#4e2c12", outline="#1e0f06")
+    for dx in (0, 11):
+        shaft = g.rect(6 + dx, 8, 12 + dx, 21)
+        foot = g.poly([(6 + dx, 19), (13 + dx, 19), (17 + dx, 23), (17 + dx, 27), (5 + dx, 27)])
+        paint(cv, shaft | foot, leather, shade=(1, 1, 2))
+        fill(cv, g.rect(6 + dx, 8, 12 + dx, 9) & shaft, hex_rgb("#c49a5c"))
+        fill(cv, g.rect(5 + dx, 26, 17 + dx, 27) & foot, hex_rgb("#2a1608"))
+        put(cv, 9 + dx, 14, hex_rgb("#e8b04a"))
+    return cv
+
+
+def potion_big(color):
+    cv = canvas(S, S)
+    glass = ramp("#cfe3ef", light="#ffffff", dark="#93b2c4", outline="#2a3a48")
+    body = g.ellipse(16, 20, 10, 9)
+    neck = g.rect(13, 5, 18, 12)
+    paint(cv, body | neck, glass, shade=(1, 1, 1))
+    liquid = ramp(color)
+    fill(cv, body & (g.py > 15), liquid.b)
+    fill(cv, body & (g.py > 24), liquid.d)
+    fill(cv, g.capsule(9, 16, 23, 16, 0.5) & body, liquid.l)
+    fill(cv, g.rect(6, 19, 25, 21) & body, hex_rgb("#e8b04a"))
+    paint(cv, g.rect(12, 2, 19, 5), ramp("#9c6b43", light="#c48d5c", outline="#3e2417"), shade=None)
+    fill(cv, g.capsule(10, 13, 10, 20, 0.6), WHITE)
+    return cv
+
+
 def all_icons():
     icons = []
     for name in CLASSES:
@@ -303,4 +372,6 @@ def all_icons():
               ("huyen_thu_dinh_ban", tome_icon("final")), ("the_kep_trang", bookmark())]
     icons += [("cu_cai_non", radish()), ("thao_duoc", herb_sprig()), ("bao_tai", sack()),
               ("manh_trang", torn_page()), ("kiem_go_tap", wooden_sword()), ("ao_suoi_mo", tunic())]
+    icons += [("kiem_dan_lang", iron_sword()), ("mu_dan_lang", cap()), ("ao_dan_lang", villager_tunic()),
+              ("giay_dan_lang", boots()), ("potion_hp_m", potion_big("#e63946")), ("potion_mp_m", potion_big("#3a86ff"))]
     return icons

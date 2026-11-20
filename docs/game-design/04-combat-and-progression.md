@@ -263,10 +263,13 @@ stateDiagram-v2
 | Quan | 90% (số lượng ở §5.1) |
 | Nguyên liệu | 25% |
 | Vật phẩm tiêu hao | 8% |
+| Trang bị **Thường** (trắng) | 6% |
 | Trang bị **Tốt** (xanh lá) | 2% |
 | Trang bị **Hiếm** (xanh dương) | 0,3% |
 | Trang bị **Sử Thi** (tím) | 0,03% |
 
+- Trang bị rơi ra lấy **cấp của quái** (vùng R01: bộ S1 Dân Làng, Lv1–9), ô ngẫu nhiên trong các ô đang mở ([items §3](07-items-and-equipment.md)).
+- Dòng **Thường 6%** thêm ở bậc A1 ([roadmap §8](../product/roadmap.md)): người mới cần thấy đồ rơi sớm để học vòng lặp nhặt, mặc, bán. Đồ Thường bán lại 25% giá trị nên chỉ là nguồn Quan nhỏ. Chạy thử: khoảng 1 món trang bị mỗi 12 quái thường.
 - Tinh anh và Thủ lĩnh có lượt rơi thêm theo §2.1.1.
 - Boss có bảng riêng, đảm bảo **tối thiểu 1 vật phẩm** và có cơ chế **bảo đảm (pity)**: sau 20 lần hạ boss mà chưa có Sử Thi thì lượt thứ 21 chắc chắn rơi.
 - Trong nhóm: chế độ **Nhặt tự do** hoặc **Luân phiên**.

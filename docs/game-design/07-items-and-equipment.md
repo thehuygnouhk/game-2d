@@ -40,7 +40,24 @@
 | **Khóa tài khoản** | Chia sẻ cho nhân vật cùng tài khoản |
 | **Hết hạn** | Vật phẩm có thời hạn (thẻ, buff, trang phục thử) |
 
+### 2.2 Giá trị dòng phụ (bản đầu)
+
+Bậc A1 dùng 6 dòng đầu, mỗi dòng xuất hiện tối đa một lần trên một món. Các dòng còn lại (ACC, EVA, hồi HP/MP, giảm hồi chiêu, hệ sát thương) thêm khi cơ chế tương ứng có trong game.
+
+| Dòng | Giá trị (món cấp `L`) |
+|------|-----------------------|
+| HP | `+8·L` |
+| MP | `+5·L` |
+| ATK% | +3% |
+| DEF% | +3% |
+| CRIT% | +1% |
+| CRIT DMG | +5% |
+
+Dòng % cộng dồn với nhau và với bonus set, rồi nhân vào tổng chỉ số ([combat §3.4](04-combat-and-progression.md)).
+
 ## 3. Ô trang bị (10 ô)
+
+Mở dần: bậc A1 và Phase 1 dùng **4 ô** (Vũ khí, Mũ, Áo, Giày); các ô còn lại mở theo [roadmap](../product/roadmap.md). Mặc đồ cần đạt cấp yêu cầu của món.
 
 | # | Ô | Loại chỉ số chính | Ghi chú |
 |---|----|-------------------|---------|
@@ -74,6 +91,15 @@ Trang bị có cấp yêu cầu `L`. Chỉ số gốc **trước** hệ số đ�
 
 Chỉ số cuối = `gốc × hệ số độ hiếm × (1 + 0,06 × cấp cường hóa)`.
 
+### 4.1 Giá trị và giá bán
+
+- **Trang bị:** giá trị = `(20·L + 30) × hệ số giá` (Thường ×1, Tốt ×2, Hiếm ×5, Sử Thi ×15).
+- **Tiêu hao:** giá trị bằng giá mua (§8).
+- **Nguyên liệu:** Đồng Luyện Sơ 40, Trung 160 (bậc Cao, Tinh xác định khi có cường hóa).
+- Bán cho NPC được **25% giá trị** ([economy §3](08-economy-and-monetization.md)). Ví dụ: Mũ Lv4 Tốt có giá trị 220, bán được 55 Quan.
+- Bán món **Hiếm trở lên** phải bấm xác nhận lần hai.
+- **Bán nhanh** chỉ bán đồ Thường đang nằm trong túi.
+
 ## 5. Các bậc Set theo cấp
 
 Mỗi bậc set có 6 mảnh (Vũ khí, Mũ, Áo, Quần, Găng, Giày). Chủ đề đặt theo các Đội.
@@ -96,6 +122,8 @@ Mỗi bậc set có 6 mảnh (Vũ khí, Mũ, Áo, Quần, Găng, Giày). Chủ �
 | 2 | +5% HP |
 | 4 | +8% ATK và +8% DEF |
 | 6 | **Hiệu ứng set riêng theo hệ** (ví dụ S3 Hỏa: Hỏa Cầu bắn thêm 1 viên) |
+
+Bộ **S1 Dân Làng** không theo hệ, dùng được cả trước và sau Lễ Khai Thư. Ở bậc A1 bộ có 4 món theo 4 ô đang mở; bonus 2 và 4 món áp dụng như trên. Vật phẩm nhiệm vụ Chương 1: **Kiếm Gỗ Tập** (Vũ khí Lv1 Thường, Q_MAIN_02) và **Áo Suối Mơ** (Áo Lv9 Tốt, Q_MAIN_10) không thuộc bộ.
 
 Ba mảnh đầu của set bất kỳ cùng hệ được tính **Set kích hoạt** (giống set kích hoạt NRO): +10% sát thương kỹ năng cùng hệ.
 

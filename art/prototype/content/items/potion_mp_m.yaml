@@ -1,0 +1,8 @@
+# prototype item (step A1)
+id: potion_mp_m
+type: CONSUMABLE
+nameKey: item.potion_mp_m.name
+icon: items/potion_mp_m
+value: 64
+healMp: 300
+stack: 999

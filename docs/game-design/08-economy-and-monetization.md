@@ -51,6 +51,7 @@
 
 | NPC | Bán |
 |-----|-----|
+| Lam Nhi (NPC003, M001–M002) | Bình HP/MP Nhỏ và Vừa; mua lại đồ. Cửa hàng của vùng R01 |
 | Bác Theo (NPC041, M006) | Bình HP/MP, Cuộn Dịch Chuyển, trang bị Thường |
 | Bà Hai Bánh (NPC025, M015) | Thức ăn buff |
 | Lang Tám (NPC027) | Thảo dược, thuốc giải độc |

@@ -536,7 +536,13 @@
   "bao_tai",
   "manh_trang",
   "kiem_go_tap",
-  "ao_suoi_mo"
+  "ao_suoi_mo",
+  "kiem_dan_lang",
+  "mu_dan_lang",
+  "ao_dan_lang",
+  "giay_dan_lang",
+  "potion_hp_m",
+  "potion_mp_m"
  ],
  "quests": [
   {
@@ -928,6 +934,134 @@
   "potion_hp": "Bình HP Nhỏ",
   "kiem_go_tap": "Kiếm Gỗ Tập",
   "ao_suoi_mo": "Áo Suối Mơ"
+ },
+ "itemDefs": {
+  "potion_hp": {
+   "type": "CONSUMABLE",
+   "name": "Bình HP Nhỏ",
+   "icon": "potion_hp",
+   "value": 20,
+   "heal_hp": 150,
+   "stack": 999
+  },
+  "potion_hp_m": {
+   "type": "CONSUMABLE",
+   "name": "Bình HP Vừa",
+   "icon": "potion_hp_m",
+   "value": 80,
+   "heal_hp": 600,
+   "stack": 999
+  },
+  "potion_mp": {
+   "type": "CONSUMABLE",
+   "name": "Bình MP Nhỏ",
+   "icon": "potion_mp",
+   "value": 16,
+   "heal_mp": 80,
+   "stack": 999
+  },
+  "potion_mp_m": {
+   "type": "CONSUMABLE",
+   "name": "Bình MP Vừa",
+   "icon": "potion_mp_m",
+   "value": 64,
+   "heal_mp": 300,
+   "stack": 999
+  },
+  "dong_luyen_1": {
+   "type": "MATERIAL",
+   "name": "Đồng Luyện Sơ",
+   "icon": "dong_luyen_1",
+   "value": 40,
+   "stack": 9999
+  },
+  "dong_luyen_2": {
+   "type": "MATERIAL",
+   "name": "Đồng Luyện Trung",
+   "icon": "dong_luyen_2",
+   "value": 160,
+   "stack": 9999
+  },
+  "s1_weapon": {
+   "type": "WEAPON",
+   "slot": "weapon",
+   "set": "S1",
+   "name": "Kiếm Dân Làng",
+   "icon": "kiem_dan_lang",
+   "levelBand": [
+    1,
+    9
+   ]
+  },
+  "s1_hat": {
+   "type": "ARMOR",
+   "slot": "hat",
+   "set": "S1",
+   "name": "Mũ Dân Làng",
+   "icon": "mu_dan_lang",
+   "levelBand": [
+    1,
+    9
+   ]
+  },
+  "s1_armor": {
+   "type": "ARMOR",
+   "slot": "armor",
+   "set": "S1",
+   "name": "Áo Dân Làng",
+   "icon": "ao_dan_lang",
+   "levelBand": [
+    1,
+    9
+   ]
+  },
+  "s1_boots": {
+   "type": "ARMOR",
+   "slot": "boots",
+   "set": "S1",
+   "name": "Giày Dân Làng",
+   "icon": "giay_dan_lang",
+   "levelBand": [
+    1,
+    9
+   ]
+  },
+  "kiem_go_tap": {
+   "type": "WEAPON",
+   "slot": "weapon",
+   "name": "Kiếm Gỗ Tập",
+   "icon": "kiem_go_tap",
+   "level": 1,
+   "rarity": "common"
+  },
+  "ao_suoi_mo": {
+   "type": "ARMOR",
+   "slot": "armor",
+   "name": "Áo Suối Mơ",
+   "icon": "ao_suoi_mo",
+   "level": 9,
+   "rarity": "good"
+  }
+ },
+ "sets": {
+  "S1": {
+   "name": "Dân Làng",
+   "bonus": {
+    "2": "+5% HP",
+    "4": "+8% ATK, +8% DEF"
+   }
+  }
+ },
+ "shops": {
+  "NPC003": {
+   "name": "Tiệm thuốc của Lam Nhi",
+   "sells": [
+    "potion_hp",
+    "potion_hp_m",
+    "potion_mp",
+    "potion_mp_m"
+   ]
+  }
  },
  "where": {
   "NPC001": [

@@ -1,0 +1,8 @@
+# prototype item (step A1)
+id: ao_suoi_mo
+type: ARMOR
+nameKey: item.ao_suoi_mo.name
+icon: items/ao_suoi_mo
+slot: armor
+levelReq: 9
+rarity: good

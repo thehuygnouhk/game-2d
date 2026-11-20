@@ -10,7 +10,7 @@ Toàn bộ được vẽ bằng code ở [`tools/art-proto`](../../tools/art-pro
 |---------|----------|
 | `piskel/` | **File sửa được** trong Piskel: 8 nhân vật theo hệ, 9 NPC, 8 hiệu ứng chiêu, 1 bộ vật phẩm, 1 tileset vùng R01 |
 | `maps/` | **4 bản đồ vùng R01 (Chương 1)** cho Tiled và Phaser: `.tmj`, `.yaml`, tileset, nền parallax, ảnh xem trước (§1.5) |
-| `content/` | Dữ liệu thử Chương 1 theo schema [content-pipeline §3](../../docs/workflows/content-pipeline.md): `monsters/`, `bosses/`, `events/` (lịch boss theo giờ) (§1.6), `quests/` (chuỗi chính tuyến Chương 1, nguồn vật phẩm nhiệm vụ), `i18n/vi.yaml` (tên và thoại nhiệm vụ) |
+| `content/` | Dữ liệu thử Chương 1 theo schema [content-pipeline §3](../../docs/workflows/content-pipeline.md): `monsters/`, `bosses/`, `events/` (lịch boss theo giờ) (§1.6), `quests/` (chuỗi chính tuyến Chương 1, nguồn vật phẩm nhiệm vụ), `items/` (bình, Đồng Luyện, mẫu trang bị bộ S1, phần thưởng nhiệm vụ), `shops/npc003.yaml` (tiệm thuốc của Lam Nhi), `i18n/vi.yaml` (tên, thoại) |
 | `sheets/` | Sprite sheet PNG nền trong suốt, dùng cho game hoặc mở bằng Aseprite/LibreSprite |
 | `preview/` | GIF xem nhanh: chiêu thức, di chuyển, NPC, Huyền Thư; ảnh tổng hợp vật phẩm |
 
@@ -62,7 +62,7 @@ Các lớp trong `.piskel` (từ sau ra trước, theo paper-doll ở [art-audio
 
 ### 1.4 Vật phẩm (icon 32×32)
 
-31 icon, thứ tự trong `sheets/vat_pham.txt`: vũ khí 8 hệ, bình HP, bình MP, Đồng Luyện 4 bậc, Hạt Nguyên (2 màu), Trang Rời, Quan, Nén Bạc, Lá Thuốc Cổ, Chổi Bay, Huyền Thư Sơ/Tu/Định Bản, Thẻ Kẹp Trang; vật phẩm và phần thưởng nhiệm vụ Chương 1: Củ Cải Non, Thảo Dược Suối Mơ, Bao Tải Bị Lấy, Mảnh Trang, Kiếm Gỗ Tập, Áo Suối Mơ.
+37 icon, thứ tự trong `sheets/vat_pham.txt`: vũ khí 8 hệ, bình HP, bình MP, Đồng Luyện 4 bậc, Hạt Nguyên (2 màu), Trang Rời, Quan, Nén Bạc, Lá Thuốc Cổ, Chổi Bay, Huyền Thư Sơ/Tu/Định Bản, Thẻ Kẹp Trang; vật phẩm và phần thưởng nhiệm vụ Chương 1: Củ Cải Non, Thảo Dược Suối Mơ, Bao Tải Bị Lấy, Mảnh Trang, Kiếm Gỗ Tập, Áo Suối Mơ; bộ S1 Dân Làng (Kiếm, Mũ, Áo, Giày); Bình HP Vừa, Bình MP Vừa.
 
 ### 1.5 Bản đồ vùng R01 – Làng Suối Mơ (Chương 1)
 

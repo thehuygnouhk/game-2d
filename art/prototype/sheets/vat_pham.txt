@@ -29,3 +29,9 @@
 28	manh_trang
 29	kiem_go_tap
 30	ao_suoi_mo
+31	kiem_dan_lang
+32	mu_dan_lang
+33	ao_dan_lang
+34	giay_dan_lang
+35	potion_hp_m
+36	potion_mp_m

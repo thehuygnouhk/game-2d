@@ -49,6 +49,7 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
 #hud-player { display: grid; gap: 0.35cqw; width: 24cqw; box-sizing: border-box; }
 .who { display: flex; justify-content: space-between; font-weight: 700; }
 .who .lv { color: var(--gold); }
+.who .lc { color: #ffb36b; font-size: 0.95cqw; margin-left: auto; margin-right: 0.8cqw; }
 .bar { position: relative; height: 1.25cqw; background: #2a1414; border-radius: 0.3cqw; overflow: hidden; border: 1px solid #000; }
 .bar i { position: absolute; inset: 0 auto 0 0; display: block; }
 .bar .chip { background: var(--hp-chip); transition: width 0.6s ease 0.25s; }
@@ -190,7 +191,7 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
   background: url(assets/sprites/npc_idle.png) calc(-28 * var(--s)) calc((-96 * var(--r) - 22) * var(--s)) / calc(384 * var(--s)) calc(864 * var(--s)) no-repeat, radial-gradient(circle at 50% 40%, #4a6a9a, #1c2640);
   border: 0.14cqw solid var(--gold-2); box-shadow: 0 0 0 0.1cqw var(--wood-3); }
 .icon { --s: calc(var(--box, 2.4cqw) / 32); display: inline-block; flex: none; width: var(--box, 2.4cqw); height: var(--box, 2.4cqw); image-rendering: pixelated;
-  background: url(assets/sprites/items.png) calc(-32 * var(--c) * var(--s)) calc(-32 * var(--r) * var(--s)) / calc(256 * var(--s)) calc(128 * var(--s)) no-repeat; }
+  background: url(assets/sprites/items.png) calc(-32 * var(--c) * var(--s)) calc(-32 * var(--r) * var(--s)) / calc(256 * var(--s)) calc(var(--item-h, 160) * var(--s)) no-repeat; }
 
 /* quest window */
 #quest { left: 50%; top: 50%; transform: translate(-50%, -47%); width: 78cqw; height: 45cqw; display: flex; flex-direction: column; }
@@ -276,6 +277,64 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
 @keyframes qpulse { 50% { box-shadow: inset 0.3cqw 0 0 #7dff8a, 0 0 1cqw rgba(125, 255, 138, 0.6); } }
 .btn .dot { display: inline-block; width: 0.8cqw; height: 0.8cqw; margin-left: 0.4cqw; border-radius: 50%; background: #ffd23f; vertical-align: 0.1cqw; box-shadow: 0 0 0.4cqw #ffd23f; }
 
+
+/* ---------------- bag, equipment and shop (items §2-5, §10; ui-ux §6.1-6.2; economy §3) ---------------- */
+#bag { left: 50%; top: 50%; transform: translate(-50%, -47%); width: 80cqw; height: 45cqw; display: flex; flex-direction: column; }
+#bag .win-body { flex: 1; min-height: 0; display: grid; grid-template-columns: 23cqw 27.2cqw 1fr; gap: 1cqw; padding: 1cqw; }
+.bag-left, .bag-mid, .bag-detail { min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 0.6cqw; }
+.bag-left { border-right: 0.12cqw dashed var(--paper-3); padding-right: 0.9cqw; overflow: auto; }
+.bag-detail { border-left: 0.12cqw dashed var(--paper-3); padding-left: 0.9cqw; overflow: auto; }
+.doll { display: grid; grid-template-columns: 4.8cqw 1fr 4.8cqw; grid-template-rows: 4.8cqw 4.8cqw; gap: 0.5cqw; grid-template-areas: "hat hero weapon" "armor hero boots"; padding: 0.5cqw; border-radius: 0.5cqw;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.75), rgba(233, 185, 73, 0.18) 70%); border: 0.12cqw solid var(--paper-3); }
+.doll .hero { grid-area: hero; justify-self: center; align-self: center; --s: calc(10cqw / 96); width: 10cqw; height: 10cqw; image-rendering: pixelated;
+  background: url(assets/sprites/hero_hoa.png) 0 0 / calc(576 * var(--s)) calc(480 * var(--s)) no-repeat; }
+.cell, .eq { position: relative; box-sizing: border-box; width: 4.15cqw; height: 4.15cqw; padding: 0; border-radius: 0.45cqw; border: 0.16cqw solid var(--edge, #b9a47c); display: grid; place-items: center;
+  background: linear-gradient(180deg, #fffaf0, #efdcae); cursor: pointer; font: inherit; color: inherit; --box: 3cqw; box-shadow: inset 0 -0.2cqw 0 rgba(120, 80, 30, 0.18); }
+.cell.empty { cursor: default; background: rgba(239, 220, 174, 0.5); border-style: dashed; border-color: #cdb78a; box-shadow: none; }
+.cell.r-good, .eq.r-good { --edge: #4caf50; background: linear-gradient(180deg, #f3fff0, #cdeec5); }
+.cell.r-rare, .eq.r-rare { --edge: #2196f3; background: linear-gradient(180deg, #eef7ff, #c6e0fb); }
+.cell.r-epic, .eq.r-epic { --edge: #9c27b0; background: linear-gradient(180deg, #faefff, #e2c7f0); }
+.eq { width: 4.8cqw; height: 4.8cqw; --box: 3.5cqw; }
+.eq.none { background: linear-gradient(180deg, #5a3418, #3d2210); --edge: var(--gold-3); }
+.eq .ph { color: #d9b77a; font-size: 0.85cqw; font-weight: 700; }
+.eq[data-slot="hat"] { grid-area: hat; } .eq[data-slot="weapon"] { grid-area: weapon; } .eq[data-slot="armor"] { grid-area: armor; } .eq[data-slot="boots"] { grid-area: boots; }
+.cell.sel, .eq.sel { outline: 0.24cqw solid var(--gold-2); outline-offset: 0.06cqw; }
+.cell .n { position: absolute; right: 0.2cqw; bottom: 0.05cqw; font-size: 0.85cqw; font-weight: 800; color: #fff; text-shadow: 0 0 0.2cqw #000, 0 0.08cqw 0 #000; }
+.cell .lv { position: absolute; left: 0.25cqw; top: 0.05cqw; font-size: 0.72cqw; font-weight: 800; color: var(--ink-soft); }
+.cell.cant .lv { color: #c0392b; } .cell.cant .icon { opacity: 0.55; }
+.cell .up { position: absolute; right: 0.2cqw; top: 0; font-size: 0.95cqw; font-weight: 800; color: #2e9a3a; }
+.bag-grid { display: grid; grid-template-columns: repeat(6, 4.15cqw); gap: 0.35cqw; align-content: start; }
+.bag-tabs { display: flex; gap: 0.3cqw; flex-wrap: wrap; }
+.bag-tabs button { font: inherit; font-size: 0.92cqw; font-weight: 700; padding: 0.2cqw 0.65cqw; border-radius: 99px; border: 0.12cqw solid var(--paper-3); background: rgba(255, 255, 255, 0.5); color: var(--ink-soft); cursor: pointer; }
+.bag-tabs button[aria-pressed="true"] { background: var(--ink-red); color: var(--gold-1); border-color: var(--ink-red); }
+.bag-foot { display: flex; align-items: center; justify-content: space-between; gap: 0.6cqw; font-size: 1cqw; font-weight: 700; color: var(--ink-soft); margin-top: auto; flex-wrap: wrap; }
+.bag-foot .q { color: #9a5a00; font-weight: 800; }
+.wbtn.sm { font-size: 0.95cqw; padding: 0.25cqw 0.8cqw; }
+.power { display: flex; align-items: baseline; justify-content: space-between; padding: 0.35cqw 0.8cqw; border-radius: 0.5cqw; background: linear-gradient(180deg, #5a3418, #3d2210); color: #f3dcae; font-weight: 700; font-size: 1cqw; border: 0.12cqw solid var(--gold-3); }
+.power b { color: var(--gold-1); font-size: 1.7cqw; font-weight: 800; font-variant-numeric: tabular-nums; }
+.statlist { display: grid; grid-template-columns: 1fr auto; gap: 0.1cqw 0.8cqw; font-size: 1cqw; margin: 0; }
+.statlist dt { color: var(--ink-soft); font-weight: 600; } .statlist dd { margin: 0; font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; }
+.statlist dd small { color: #2e7d32; font-weight: 700; margin-left: 0.3cqw; }
+.setline { font-size: 0.92cqw; color: var(--ink-soft); font-weight: 600; line-height: 1.4; }
+.setline b { color: var(--ink-brown); } .setline .on { color: #2e7d32; font-weight: 800; }
+.idt-head { display: flex; gap: 0.7cqw; align-items: center; }
+.idt-head .cell { width: 5cqw; height: 5cqw; --box: 3.8cqw; cursor: default; flex: none; }
+.idt-head b { display: block; font-size: 1.25cqw; font-weight: 800; line-height: 1.25; }
+.idt-head small { color: var(--ink-soft); font-weight: 700; font-size: 0.92cqw; }
+.idt-lines { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.15cqw; font-size: 1.02cqw; font-weight: 700; }
+.idt-lines .aff { color: #2e7d32; } .idt-lines .bad { color: #c0392b; } .idt-lines .dim { color: var(--ink-soft); font-weight: 600; }
+.idt-box { font-size: 0.92cqw; color: var(--ink-soft); font-weight: 600; padding: 0.4cqw 0.6cqw; border-radius: 0.4cqw; background: rgba(255, 255, 255, 0.45); line-height: 1.4; }
+.cmp { font-weight: 800; font-size: 1.05cqw; } .cmp.up { color: #2e7d32; } .cmp.down { color: #c0392b; } .cmp.same { color: var(--ink-soft); }
+.idt-act { margin-top: auto; display: flex; flex-wrap: wrap; gap: 0.5cqw; }
+.idt-empty { color: var(--ink-soft); font-weight: 600; font-size: 1.02cqw; margin: auto 0; text-align: center; line-height: 1.5; }
+.shop-h { font-size: 0.92cqw; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-3); }
+.shop-row { display: grid; grid-template-columns: 3.4cqw 1fr; gap: 0.2cqw 0.5cqw; align-items: center; padding: 0.35cqw 0.45cqw; border-radius: 0.45cqw; background: rgba(255, 255, 255, 0.45); border: 0.12cqw solid var(--paper-3); --box: 2.8cqw; }
+.shop-row .icon { grid-row: span 2; justify-self: center; }
+.shop-row b { font-size: 1cqw; } .shop-row small { color: var(--ink-soft); font-weight: 600; font-size: 0.85cqw; }
+.shop-row .buy { display: flex; gap: 0.3cqw; align-items: center; justify-content: space-between; }
+.shop-row .price { color: #9a5a00; font-weight: 800; font-size: 0.95cqw; }
+.shop-row .buy span { display: flex; gap: 0.3cqw; }
+
 /* NPC dialog (ui-ux §5) */
 #dlg { left: 50%; bottom: 3.2cqw; transform: translateX(-50%); width: 66cqw; display: grid; grid-template-columns: 10.5cqw 1fr; gap: 1.1cqw; padding: 1.2cqw; }
 #dlg .face { --box: 10.5cqw; --s: calc(var(--box) / 56); width: var(--box); height: var(--box); border-radius: 0.6cqw; image-rendering: pixelated; align-self: start;
@@ -311,17 +370,17 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
 <div class="wrap">
   <header>
     <h1>Huyền Thư Ký <small>Chương 1 · bản chơi thử</small></h1>
-    <div class="keys"><b>A D</b> / <b>← →</b> đi · <b>W</b> / <b>Space</b> nhảy · <b>S</b> xuống, leo · <b>J</b> đánh · <b>1 2 3</b> chiêu · <b>Tab</b> đổi mục tiêu · <b>G</b> tự đánh · <b>H</b> treo máy · <b>Q E</b> bình · <b>F</b> nói chuyện, hái · <b>L</b> Nhiệm vụ · <b>↑</b> qua cổng · <b>N</b> Lịch Boss</div>
+    <div class="keys"><b>A D</b> / <b>← →</b> đi · <b>W</b> / <b>Space</b> nhảy · <b>S</b> xuống, leo · <b>J</b> đánh · <b>1 2 3</b> chiêu · <b>Tab</b> đổi mục tiêu · <b>G</b> tự đánh · <b>H</b> treo máy · <b>Q E</b> bình · <b>F</b> nói chuyện, hái · <b>B</b> Hành trang · <b>L</b> Nhiệm vụ · <b>↑</b> qua cổng · <b>N</b> Lịch Boss</div>
   </header>
 
   <div id="stage">
     <div id="game"></div>
     <div id="hud-left" class="hud">
     <div id="hud-player" class="box">
-      <div class="who"><span id="pname">Tân thủ</span><span class="lv" id="plv">Lv 1</span></div>
+      <div class="who"><span id="pname">Tân thủ</span><span class="lc" id="plc" title="Lực Chiến">LC 0</span><span class="lv" id="plv">Lv 1</span></div>
       <div class="bar" id="php"><i class="chip"></i><i class="fill"></i><span></span></div>
       <div class="bar mp" id="pmp"><i class="fill"></i><span></span></div>
-      <div class="money"><span id="pquan">0 Quan</span><em id="pbag">Túi: 0 món</em></div>
+      <div class="money"><span id="pquan">0 Quan</span><em id="pbag">Túi 0/30</em></div>
     </div>
     <div id="target" class="box" hidden>
       <div class="tname"><span id="tname"></span><em id="tkind"></em></div>
@@ -332,6 +391,7 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
     <div id="hud-right" class="hud">
       <div id="clock" class="box">--:--</div>
       <div id="mapname">—</div>
+      <button class="btn" id="btn-bag" type="button">Hành trang</button>
       <button class="btn" id="btn-quest" type="button">Nhiệm vụ</button>
       <button class="btn" id="btn-sched" type="button">Lịch Boss</button>
       <button class="btn" id="btn-full" type="button">Toàn màn hình</button>
@@ -348,8 +408,8 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
       <button class="pill-btn" id="b-hunt" data-tap="hunt" type="button">Treo máy <kbd>H</kbd></button>
       <button class="pill-btn" id="b-auto" data-tap="auto" type="button">Tự đánh <kbd>G</kbd></button>
       <button class="pill-btn" id="b-target" data-tap="target" type="button">Đổi mục tiêu <kbd>Tab</kbd></button>
-      <button class="act" data-tap="mp" type="button"><kbd>E</kbd><span>Mana</span><small id="nmp">0</small></button>
-      <button class="act" data-tap="hp" type="button"><kbd>Q</kbd><span>Máu</span><small id="nhp">0</small></button>
+      <button class="act" data-tap="mp" type="button"><kbd>E</kbd><span>Mana</span><small id="nmp">0</small><i class="cd"></i></button>
+      <button class="act" data-tap="hp" type="button"><kbd>Q</kbd><span>Máu</span><small id="nhp">0</small><i class="cd"></i></button>
       <button class="act" data-k="s3" data-skill="slash" type="button"><kbd>3</kbd><span>Trảm Liệt Diễm</span><i class="cd"></i></button>
       <button class="act" data-k="s2" data-skill="fireball" type="button"><kbd>2</kbd><span>Hỏa Cầu</span><i class="cd"></i></button>
       <button class="act" data-k="s1" data-skill="burst" type="button"><kbd>1</kbd><span>Tụ Mana Chấn</span><i class="cd"></i></button>
@@ -381,6 +441,16 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
       </nav>
       <div class="win-body paper" id="quest-body"></div>
     </div>
+    <div id="bag" class="win" role="dialog" aria-label="Hành trang" hidden>
+      <i class="stud tl"></i><i class="stud tr"></i><i class="stud bl"></i><i class="stud br"></i>
+      <div class="win-head"><span class="ribbon" id="bag-title">Hành trang</span></div>
+      <button class="win-x" id="bag-x" type="button" aria-label="Đóng">✕</button>
+      <div class="win-body paper">
+        <section class="bag-left" id="bag-left"></section>
+        <section class="bag-mid"><nav class="bag-tabs" id="bag-tabs"></nav><div class="bag-grid" id="bag-grid"></div><div class="bag-foot" id="bag-foot"></div></section>
+        <section class="bag-detail" id="bag-detail"></section>
+      </div>
+    </div>
     <div id="dlg" class="win" role="dialog" hidden>
       <i class="stud tl"></i><i class="stud tr"></i><i class="stud bl"></i><i class="stud br"></i>
       <div class="face" id="dlg-face"></div>
@@ -406,6 +476,7 @@ h1 small { font-weight: 600; color: var(--muted); font-size: 0.62em; margin-left
         <button id="dev-fire" type="button">Thử hệ Hỏa (lên Lv10)</button>
         <button id="dev-lv" type="button">+1 cấp</button>
         <button id="dev-quest" type="button">Xong mục tiêu nhiệm vụ hiện tại</button>
+        <button id="dev-reset" type="button">Xóa dữ liệu lưu, chơi lại từ đầu</button>
       </div>
       <label><input type="checkbox" id="dev-weak" checked> Boss còn 20% máu (để đánh một mình)</label>
       <label><input type="checkbox" id="dev-rare"> Tinh anh, Thủ lĩnh ra dày ×10</label>
@@ -466,26 +537,139 @@ const F = {
     return { hp: Math.round(hp), mp: Math.round(mp), atk: Math.round(atk), def: Math.round(def), crit: 0.05, critDmg: 1.5, lv: L };
   },
 };
-const RARITY = { common: ["Thường", "#ffffff"], good: ["Tốt", "#4caf50"], rare: ["Hiếm", "#2196f3"], epic: ["Sử Thi", "#9c27b0"] };
-// Loot (§6 + §2.1.1). Items reference the icon order in data.json
+/* =====================================================================
+   Items, bag and equipment (items §2-5, §8, §10; economy §3; combat §3.5)
+   ===================================================================== */
+const RAR = {   // items §2; colour art §2.1; ink = text colour on paper; val = value multiplier (items §4.1)
+  common: { name: "Thường", col: "#ffffff", ink: "#4a2e14", mult: 1.0, aff: 0, val: 1 },
+  good:   { name: "Tốt", col: "#4caf50", ink: "#2e7d32", mult: 1.2, aff: 1, val: 2 },
+  rare:   { name: "Hiếm", col: "#2196f3", ink: "#1565c0", mult: 1.5, aff: 2, val: 5 },
+  epic:   { name: "Sử Thi", col: "#9c27b0", ink: "#7b1fa2", mult: 1.9, aff: 3, val: 15 },
+};
+const RARITY = Object.fromEntries(Object.entries(RAR).map(([k, r]) => [k, [r.name, r.col]]));
+const SLOTS = [["weapon", "Vũ khí"], ["hat", "Mũ"], ["armor", "Áo"], ["boots", "Giày"]];   // step A1: 4 of the 10 slots (items §3)
+const AFFIX = {   // items §2.2 (first six lines)
+  hp: { roll: (L) => 8 * L, fmt: (v) => `+${v} HP` },
+  mp: { roll: (L) => 5 * L, fmt: (v) => `+${v} MP` },
+  atkP: { roll: () => 0.03, fmt: (v) => `+${Math.round(v * 100)}% ATK` },
+  defP: { roll: () => 0.03, fmt: (v) => `+${Math.round(v * 100)}% DEF` },
+  crit: { roll: () => 0.01, fmt: (v) => `+${Math.round(v * 100)}% Chí mạng` },
+  critDmg: { roll: () => 0.05, fmt: (v) => `+${Math.round(v * 100)}% ST chí mạng` },
+};
+const BAG_SIZE = 30;                                         // items §10
+const POTION_CD = 8000;                                      // items §8
+const S1_GEAR = ["s1_weapon", "s1_hat", "s1_armor", "s1_boots"];
+let uidN = 1;
+const itemDef = (it) => DATA.itemDefs[it.id];
+const isGear = (it) => !!itemDef(it)?.slot;
+const keyOf = (it) => (it.uid ? `g:${it.uid}` : `s:${it.id}`);
+const itemName = (it) => itemDef(it).name + ((it.enh || 0) > 0 ? ` +${it.enh}` : "");
+function gearMain(it) {   // items §4: base by slot × rarity × (1 + 0.06 × enhance)
+  const L = it.lv, k = RAR[it.rarity].mult * (1 + 0.06 * (it.enh || 0)), r = (v) => Math.round(v * k);
+  return { weapon: { atk: r(4 * L + 10) }, hat: { def: r(L + 2), mp: r(6 * L) }, armor: { def: r(1.6 * L + 4), hp: r(18 * L + 40) },
+    boots: { def: r(0.8 * L + 2), spd: 0.02 } }[itemDef(it).slot];
+}
+function makeGear(id, lv, rarity) {
+  const keys = Object.keys(AFFIX).sort(() => Math.random() - 0.5).slice(0, RAR[rarity].aff);
+  return { uid: uidN++, id, lv, rarity, enh: 0, aff: keys.map((k) => [k, AFFIX[k].roll(lv)]) };
+}
+const itemValue = (it) => (isGear(it) ? (20 * it.lv + 30) * RAR[it.rarity].val : itemDef(it).value || 0);   // items §4.1
+const sellPrice = (it) => Math.max(1, Math.floor(itemValue(it) * 0.25));                                    // economy §3
+
+function slotsFor(list) {   // free bag slots needed to receive [[id, n], ...]
+  let need = 0;
+  for (const [id, n] of list) { const d = DATA.itemDefs[id]; if (d.slot) need += n; else if (!S.inv.some((x) => x.id === id)) need += 1; }
+  return need;
+}
+function addItem(id, n = 1, gear = null) {
+  if (gear) { if (S.inv.length >= BAG_SIZE) return false; S.inv.push(gear); invChanged(); return true; }
+  const d = DATA.itemDefs[id];
+  if (d.slot) {
+    if (S.inv.length + n > BAG_SIZE) return false;
+    for (let i = 0; i < n; i++) S.inv.push(makeGear(id, d.level, d.rarity));
+    invChanged(); return true;
+  }
+  let st = S.inv.find((x) => x.id === id);
+  if (!st) { if (S.inv.length >= BAG_SIZE) return false; st = { id, n: 0 }; S.inv.push(st); }
+  st.n = Math.min(d.stack, st.n + n); invChanged(); return true;
+}
+const countItem = (id) => S.inv.reduce((a, x) => a + (x.id === id ? x.n || 1 : 0), 0);
+function takeItem(id, n = 1) {
+  const st = S.inv.find((x) => x.id === id); if (!st || st.n < n) return false;
+  st.n -= n; if (st.n <= 0) S.inv.splice(S.inv.indexOf(st), 1);
+  invChanged(); return true;
+}
+function removeInv(it) { const i = S.inv.indexOf(it); if (i >= 0) S.inv.splice(i, 1); invChanged(); }
+const potionIds = (type) => (type === "hp" ? ["potion_hp", "potion_hp_m"] : ["potion_mp", "potion_mp_m"]);
+const potionCount = (type) => potionIds(type).reduce((a, id) => a + countItem(id), 0);
+
+function equipItem(it) {
+  const slot = itemDef(it).slot;
+  if (S.lv < it.lv) { toast(`Cần Lv ${it.lv} để mặc ${itemDef(it).name}.`, true); return false; }
+  const old = S.equip[slot];
+  S.inv[S.inv.indexOf(it)] = old || null;   // swap in place, keep the bag order
+  S.inv = S.inv.filter(Boolean);
+  S.equip[slot] = it;
+  gearChanged(); return true;
+}
+function unequipItem(slot) {
+  const it = S.equip[slot]; if (!it) return;
+  if (S.inv.length >= BAG_SIZE) { toast("Túi đầy, không tháo được.", true); return; }
+  S.equip[slot] = null; S.inv.push(it); gearChanged();
+}
+function gearChanged() {
+  S.gearVer++;
+  const st = stats(); S.hp = Math.min(S.hp, st.hp); S.mp = Math.min(S.mp, st.mp);
+  invChanged();
+}
+function invChanged() { S.dirty = true; if (!$("bag").hidden) renderBag(); }
+
+// combat §3.4: base (origin + potential points) + gear, then % bonuses added together; Lực Chiến combat §3.5
+function calcStats(equip = S.equip) {
+  const b = F.player(S.lv, S.fire);
+  let { hp, mp, atk, def, crit, critDmg } = b, spd = 1, hpP = 0, atkP = 0, defP = 0;
+  const sets = {};
+  for (const [slot] of SLOTS) {
+    const it = equip[slot]; if (!it) continue;
+    const m = gearMain(it);
+    hp += m.hp || 0; mp += m.mp || 0; atk += m.atk || 0; def += m.def || 0; spd += m.spd || 0;
+    for (const [k, v] of it.aff) {
+      if (k === "hp") hp += v; else if (k === "mp") mp += v; else if (k === "atkP") atkP += v;
+      else if (k === "defP") defP += v; else if (k === "crit") crit += v; else if (k === "critDmg") critDmg += v;
+    }
+    const set = itemDef(it).set; if (set) sets[set] = (sets[set] || 0) + 1;
+  }
+  if ((sets.S1 || 0) >= 2) hpP += 0.05;                          // items §5.1
+  if ((sets.S1 || 0) >= 4) { atkP += 0.08; defP += 0.08; }
+  const st = { hp: Math.round(hp * (1 + hpP)), mp: Math.round(mp), atk: Math.round(atk * (1 + atkP)), def: Math.round(def * (1 + defP)),
+    crit: Math.min(0.5, crit), critDmg, spd, lv: S.lv, sets };
+  const skills = (S.lv >= 5 ? 1 : 0) + (S.fire ? 2 : 0);
+  st.power = Math.round(st.hp * 0.1 + st.mp * 0.05 + st.atk * 4 + st.def * 3 + st.crit * 100 * 10 + (st.critDmg * 100 - 150) * 0.5 + skills * 20);
+  return st;
+}
+let statCache = null, statKey = "";
+function stats() {
+  const k = `${S.lv}|${S.fire}|${S.gearVer}`;
+  if (k !== statKey) { statKey = k; statCache = calcStats(); }
+  return statCache;
+}
+
+// Loot (combat §6 + §2.1.1). Gear of set S1 takes the monster level (1-9)
 function rollLoot(L, tier) {
   const out = [];
   const tq = F.TIER[tier].quan;
   if (Math.random() < 0.9 || tier !== "normal") out.push({ kind: "quan", n: Math.max(1, Math.round(4 * L * tq * (0.8 + Math.random() * 0.4))) });
   const rolls = tier === "normal" ? 1 : 2;
   for (let r = 0; r < rolls; r++) {
-    if (Math.random() < 0.25) out.push({ kind: "item", icon: "dong_luyen_1", name: "Đồng Luyện Sơ", rarity: "common" });
-    if (Math.random() < 0.08) out.push(Math.random() < 0.6 ? { kind: "potion", type: "hp", icon: "potion_hp", name: "Bình Máu Nhỏ", rarity: "common" }
-                                                            : { kind: "potion", type: "mp", icon: "potion_mp", name: "Bình Mana Nhỏ", rarity: "common" });
+    if (Math.random() < 0.25) out.push({ kind: "item", id: "dong_luyen_1" });
+    if (Math.random() < 0.08) out.push({ kind: "item", id: Math.random() < 0.6 ? "potion_hp" : "potion_mp" });
   }
-  const gear = { normal: [0.02, 0.003, 0.0003], elite: [0.10, 0.015, 0.0015], leader: [0.25, 0.05, 0.005], boss: [0.25, 0.05, 0.005] }[tier];
+  //            Thường, Tốt, Hiếm, Sử Thi
+  const gear = { normal: [0.06, 0.02, 0.003, 0.0003], elite: [0.06, 0.10, 0.015, 0.0015], leader: [0.06, 0.25, 0.05, 0.005], boss: [0.06, 0.25, 0.05, 0.005] }[tier];
   const g = Math.random();
-  if (g < gear[2]) out.push({ kind: "item", icon: "weapon_fire", name: "Kiếm Tập", rarity: "epic" });
-  else if (g < gear[2] + gear[1]) out.push({ kind: "item", icon: "weapon_fire", name: "Kiếm Tập", rarity: "rare" });
-  else if (g < gear[2] + gear[1] + gear[0]) out.push({ kind: "item", icon: "weapon_fire", name: "Kiếm Tập", rarity: "good" });
-  if ((tier === "leader" || tier === "boss") && !out.some((o) => o.kind !== "quan")) {
-    out.push({ kind: "item", icon: "dong_luyen_2", name: "Đồng Luyện Trung", rarity: "good" });   // guaranteed >= 1 item
-  }
+  const rarity = g < gear[3] ? "epic" : g < gear[3] + gear[2] ? "rare" : g < gear[3] + gear[2] + gear[1] ? "good" : g < gear[3] + gear[2] + gear[1] + gear[0] ? "common" : null;
+  if (rarity) out.push({ kind: "gear", gear: makeGear(S1_GEAR[Math.floor(Math.random() * 4)], Math.min(9, Math.max(1, L)), rarity) });
+  if ((tier === "leader" || tier === "boss") && !out.some((o) => o.kind !== "quan")) out.push({ kind: "item", id: "dong_luyen_2" });   // guaranteed >= 1 item
   return out;
 }
 
@@ -493,14 +677,15 @@ function rollLoot(L, tier) {
    Persistent state across maps
    ===================================================================== */
 const S = {
-  lv: 1, exp: 0, fire: false, hp: 0, mp: 0, quan: 0, bag: 0, potions: { hp: 3, mp: 3 },
+  lv: 1, exp: 0, fire: false, hp: 0, mp: 0, quan: 0,
+  inv: [{ id: "potion_hp", n: 3 }, { id: "potion_mp", n: 3 }], equip: { weapon: null, hat: null, armor: null, boots: null },
+  gearVer: 0, potCd: { hp: 0, mp: 0 }, sold: [], dirty: false,
   t: 0, speed: 60, weekday0: new Date().getDay(), map: "M001", spawnAt: null,
   bosses: {}, cds: { basic: 0, burst: 0, fireball: 0, slash: 0 }, combatAt: -1e9,
   dev: { weak: true, rare: false }, auto: false, hunt: false, huntUnlocked: false,
   q: { i: 0, st: "idle", prog: [] }, goto: null,   // current main quest (quests §2) and auto-path target (ui-ux §6.4)
 };
 { const d = new Date(); S.t = d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60; }
-const stats = () => F.player(S.lv, S.fire);
 S.hp = stats().hp; S.mp = stats().mp;
 
 const $ = (id) => document.getElementById(id);
@@ -595,7 +780,7 @@ const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&l
 const NPC_LINES = {
   NPC001: "Mỗi trang sách đều có chỗ của nó. Đi săn cẩn thận nhé.",
   NPC002: "Ăn no rồi hẵng đi, con.",
-  NPC003: "Mình đang chế thuốc, cậu mang Đồng Luyện về cho mình nhé!",
+  NPC003: "Mình vừa chế xong mẻ thuốc mới. Cần bình máu thì ghé mua nhé!",
   NPC004: "Ra Đồng Hoa đi, Vua Nấm Lùn sắp xuất hiện đấy.",
   NPC040: "Lịch boss dán trên bảng tin làng đây, xem đi con.",
 };
@@ -615,7 +800,7 @@ const PLACE = { DG01: "Hầm ngục DG01", I001: "Lễ đường Khai Thư" };
 const mapName = (m) => DATA.names[m] || PLACE[m] || m;
 const iconVars = (name) => { const i = Math.max(0, DATA.items.indexOf(name)); return `--c:${i % 8};--r:${Math.floor(i / 8)}`; };
 const faceVars = (id) => `--r:${Math.max(0, DATA.npcOrder.indexOf(id))}`;
-const uiModal = () => !$("quest").hidden || !$("dlg").hidden;
+const uiModal = () => !$("quest").hidden || !$("dlg").hidden || !$("bag").hidden;
 function npcMark(id) {
   const q = Q.cur(), st = Q.state();
   if (!q || st === "end" || st === "proto") return null;
@@ -674,15 +859,18 @@ const Q = {
   },
   complete(scene) {
     const q = this.cur(), r = q.rewards;
+    const need = slotsFor(r.items);
+    if (S.inv.length + need > BAG_SIZE) { toast(`Túi cần ${need} ô trống để nhận thưởng. Bán bớt đồ ở Lam Nhi.`, true); return false; }
     if (r.exp) scene.gainExp(r.exp);
     if (r.soft) S.quan += r.soft;
-    for (const [id, n] of r.items) { if (id === "potion_hp") S.potions.hp += n; else S.bag += n; }
-    const parts = [r.exp && `+${r.exp} EXP`, r.soft && `+${r.soft} Quan`, ...r.items.map(([id, n]) => `${DATA.rewardItems[id]} ×${n}`), r.skill && "chiêu Tụ Mana Chấn"].filter(Boolean);
+    for (const [id, n] of r.items) addItem(id, n);
+    const parts = [r.exp && `+${r.exp} EXP`, r.soft && `+${r.soft} Quan`, ...r.items.map(([id, n]) => `${DATA.itemDefs[id].name} ×${n}`), r.skill && "chiêu Tụ Mana Chấn"].filter(Boolean);
     log(`[Nhiệm vụ] Hoàn thành: ${q.title} · ${parts.join(", ")}`, "lvl");
     if (r.skill) log("Đã thuộc Tụ Mana Chấn (phím 1)", "lvl");
     banner("Hoàn thành nhiệm vụ", q.title, true, rewardChips(q));
     S.q = { i: S.q.i + 1, st: "idle", prog: [] };
     questChanged();
+    return true;
   },
   // where "Đi tới" walks to (ui-ux §6.4): NPC or monster zone, possibly on another map
   dest() {
@@ -709,7 +897,7 @@ function rewardChips(q) {
   const r = q.rewards, out = [];
   if (r.exp) out.push(`<span class="rw"><span class="badge">EXP</span>+${r.exp.toLocaleString("vi-VN")}</span>`);
   if (r.soft) out.push(`<span class="rw"><i class="icon" style="${iconVars("quan")}"></i>${r.soft.toLocaleString("vi-VN")} <small>Quan</small></span>`);
-  for (const [id, n] of r.items) out.push(`<span class="rw"><i class="icon" style="${iconVars(id)}"></i>${esc(DATA.rewardItems[id])}${n > 1 ? ` <small>×${n}</small>` : ""}</span>`);
+  for (const [id, n] of r.items) out.push(`<span class="rw"><i class="icon" style="${iconVars(DATA.itemDefs[id].icon)}"></i>${esc(DATA.itemDefs[id].name)}${n > 1 ? ` <small>×${n}</small>` : ""}</span>`);
   if (r.skill) out.push(`<span class="rw"><span class="badge skill">✦</span>Tụ Mana Chấn <small>chiêu</small></span>`);
   if (!out.length) out.push(`<span class="rw">Huyền Thư Sơ Bản, vũ khí hệ</span>`);
   return out.join("");
@@ -725,6 +913,7 @@ function objWhere(o) {
 }
 
 function questChanged() {
+  S.dirty = true;
   renderTracker();
   if (!$("quest").hidden) renderQuest();
   window.__htk?.scene?.refreshHerbs?.();
@@ -750,7 +939,7 @@ const UI = { tab: "main", sel: null };
 function toggleQuest(force) {
   const el = $("quest");
   el.hidden = force === undefined ? !el.hidden : !force;
-  if (!el.hidden) { UI.sel = null; closeDlg(); $("qbanner").hidden = true; renderQuest(); }
+  if (!el.hidden) { UI.sel = null; closeDlg(); $("bag").hidden = true; $("qbanner").hidden = true; renderQuest(); }
 }
 function openQuest(tab) { UI.tab = tab || "main"; toggleQuest(true); }
 
@@ -857,7 +1046,7 @@ function renderDlg(id, html, menu) {
   $("dlg-text").innerHTML = html;
   DLG.menu = menu.slice(0, 5);
   $("dlg-menu").innerHTML = DLG.menu.map((m, i) => `<button type="button" data-i="${i}"><kbd>${i + 1}</kbd>${m.mk ? `<span class="mk ${m.cls || ""}">${m.mk}</span>` : ""}<span>${esc(m.label)}</span></button>`).join("");
-  $("quest").hidden = true;
+  $("quest").hidden = true; $("bag").hidden = true;
   $("dlg").hidden = false;
 }
 $("dlg-menu").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) DLG.menu[Number(b.dataset.i)]?.fn(); });
@@ -880,6 +1069,7 @@ function openDlg(id, scene) {
     text = esc(q.progress);
     menu.push({ label: `Xem nhiệm vụ: ${q.title}`, mk: "?", cls: "dim", fn: () => { closeDlg(); openQuest("main"); } });
   }
+  if (DATA.shops[id]) menu.push({ label: "Mua bán: bình thuốc, bán đồ", fn: () => openShop(id) });
   if (id === "NPC040") menu.push({ label: "Xem Lịch Boss (bảng tin làng)", fn: () => { closeDlg(); toggleSchedule(true); } });
   menu.push({ label: "Đóng", fn: closeDlg });
   renderDlg(id, text, menu);
@@ -887,7 +1077,7 @@ function openDlg(id, scene) {
 
 function finishQuest(id, scene) {
   const q = Q.cur();
-  Q.complete(scene);
+  if (!Q.complete(scene)) { renderDlg(id, "Túi con đầy rồi, bán bớt đồ cho Lam Nhi rồi quay lại nhé.", [{ label: "Đóng", fn: closeDlg }]); return; }
   const next = Q.cur(), more = next && next.ready && next.giver === id;
   renderDlg(id, esc(q.complete), more
     ? [{ label: `Còn việc gì nữa ạ?`, mk: "!", fn: () => openDlg(id, scene) }, { label: "Đóng", fn: closeDlg }]
@@ -916,9 +1106,221 @@ window.addEventListener("keydown", (e) => {
     if (i >= 0 && DLG.menu[i]) { e.preventDefault(); e.stopImmediatePropagation(); DLG.menu[i].fn(); }
     return;
   }
-  if (k === "Escape" && !$("quest").hidden) { e.preventDefault(); toggleQuest(false); }
+  if (k === "Escape" && !$("bag").hidden) { e.preventDefault(); toggleBag(false); }
+  else if (k === "Escape" && !$("quest").hidden) { e.preventDefault(); toggleQuest(false); }
   else if (k === "Escape" && !$("schedule").hidden) toggleSchedule();
 }, true);
+
+
+/* =====================================================================
+   Save on this device (step A1). Real game: server + PostgreSQL (step B3)
+   ===================================================================== */
+const SAVE_KEY = "htk.proto.save.v1";
+function saveGame() {
+  if (!DATA || S.noSave) return;
+  const pl = window.__htk?.scene?.player;
+  const d = { v: 1, at: Date.now(), lv: S.lv, exp: S.exp, quan: S.quan, fire: S.fire, hp: Math.round(S.hp), mp: Math.round(S.mp),
+    inv: S.inv, equip: S.equip, q: S.q, sold: S.sold, welcomed: !!S.welcomed, huntUnlocked: S.huntUnlocked,
+    map: S.map, x: pl?.active ? Math.round(pl.x) : null, y: pl?.body ? Math.round(pl.body.bottom) : null };
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(d)); S.dirty = false; } catch (_) { /* storage blocked: keep playing without saving */ }
+}
+function loadGame() {
+  let d = null;
+  try { d = JSON.parse(localStorage.getItem(SAVE_KEY) || "null"); } catch (_) { d = null; }
+  if (!d || d.v !== 1) return null;
+  const known = (it) => it && DATA.itemDefs[it.id];
+  Object.assign(S, { lv: d.lv | 0 || 1, exp: d.exp || 0, quan: d.quan || 0, fire: !!d.fire, welcomed: d.welcomed, huntUnlocked: !!d.huntUnlocked,
+    inv: (d.inv || []).filter(known).slice(0, BAG_SIZE), sold: (d.sold || []).filter((x) => x && known(x.it)), q: d.q || S.q });
+  for (const [slot] of SLOTS) S.equip[slot] = known(d.equip?.[slot]) ? d.equip[slot] : null;
+  uidN = 1 + Math.max(0, ...[...S.inv, ...Object.values(S.equip), ...S.sold.map((x) => x.it)].map((x) => x?.uid || 0));
+  S.gearVer++;
+  const st = stats(); S.hp = Math.min(st.hp, d.hp || st.hp); S.mp = Math.min(st.mp, d.mp || st.mp);
+  S.loaded = true;
+  return { map: MAPS.includes(d.map) ? d.map : "M001", x: d.x ?? undefined, y: d.y ?? undefined };
+}
+addEventListener("pagehide", saveGame);
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") saveGame(); });
+
+/* =====================================================================
+   Hành trang (ui-ux §6.1-6.2) and Lam Nhi's shop (economy §3)
+   ===================================================================== */
+const BAG = { mode: "char", shop: null, tab: "all", sel: null, confirm: null };
+const BAG_TABS = [["all", "Tất cả"], ["gear", "Trang bị"], ["use", "Tiêu hao"], ["mat", "Nguyên liệu"], ["quest", "Nhiệm vụ"]];
+function toggleBag(force, mode = "char", shop = null) {
+  const el = $("bag");
+  el.hidden = force === undefined ? !el.hidden : !force;
+  if (!el.hidden) {
+    BAG.mode = mode; BAG.shop = shop; BAG.sel = null; BAG.confirm = null;
+    closeDlg(); $("quest").hidden = true; $("qbanner").hidden = true;
+    renderBag();
+  } else saveGame();
+}
+const openShop = (npc) => toggleBag(true, "shop", npc);
+function bagList() {
+  if (BAG.tab === "quest") {
+    const q = Q.cur();
+    if (S.q.st !== "active" && S.q.st !== "ready") return [];
+    return q.objectives.map((o, k) => (o.type === "COLLECT" && Q.got(k) ? { quest: true, id: o.target, n: Q.got(k) } : null)).filter(Boolean);
+  }
+  const t = (it) => itemDef(it).type;
+  return S.inv.filter((it) => BAG.tab === "all" || (BAG.tab === "gear" && isGear(it)) || (BAG.tab === "use" && t(it) === "CONSUMABLE") || (BAG.tab === "mat" && t(it) === "MATERIAL"));
+}
+function selected() {
+  const k = BAG.sel; if (!k) return null;
+  if (k.startsWith("eq:")) { const it = S.equip[k.slice(3)]; return it ? { it, eq: k.slice(3) } : null; }
+  const it = S.inv.find((x) => keyOf(x) === k);
+  return it ? { it } : null;
+}
+const powerDelta = (it) => calcStats({ ...S.equip, [itemDef(it).slot]: it }).power - stats().power;
+function cellHtml(it, extra = "") {
+  if (!it) return `<span class="cell empty"></span>`;
+  if (it.quest) return `<span class="cell" title="${esc(DATA.questItems[it.id].name)}"><i class="icon" style="${iconVars(it.id)}"></i><span class="n">${it.n}</span></span>`;
+  const d = itemDef(it), gear = isGear(it);
+  const cant = gear && S.lv < it.lv, up = gear && !cant && powerDelta(it) > 0;
+  return `<button type="button" class="cell r-${gear ? it.rarity : "common"}${cant ? " cant" : ""}${BAG.sel === keyOf(it) ? " sel" : ""}${extra}" data-key="${keyOf(it)}" title="${esc(itemName(it))}">
+    <i class="icon" style="${iconVars(d.icon)}"></i>${gear ? `<span class="lv">Lv${it.lv}</span>` : ""}${up ? '<span class="up">▲</span>' : ""}${!gear && it.n > 1 ? `<span class="n">${it.n}</span>` : ""}</button>`;
+}
+function renderBag() {
+  if (!DATA) return;
+  const shop = BAG.mode === "shop" ? DATA.shops[BAG.shop] : null;
+  $("bag-title").textContent = shop ? shop.name : "Hành trang";
+  $("bag-left").innerHTML = shop ? shopPanel(shop) : charPanel();
+  $("bag-tabs").innerHTML = BAG_TABS.map(([k, n]) => `<button type="button" data-tab="${k}" aria-pressed="${BAG.tab === k}">${n}</button>`).join("");
+  const list = bagList();
+  const cells = list.map((it) => cellHtml(it));
+  while (cells.length < BAG_SIZE) cells.push(cellHtml(null));
+  $("bag-grid").innerHTML = cells.join("");
+  const commons = S.inv.filter((it) => isGear(it) && it.rarity === "common").length;
+  $("bag-foot").innerHTML = `<span>Ô ${S.inv.length}/${BAG_SIZE} · <span class="q">${S.quan.toLocaleString("vi-VN")} Quan</span></span><span>`
+    + (shop ? `<button type="button" class="wbtn sm ghost" data-act="sellcommon"${commons ? "" : " disabled"}>${BAG.confirm === "sellcommon" ? "Bấm lần nữa để bán" : `Bán nhanh đồ Thường (${commons})`}</button> ` : "")
+    + `<button type="button" class="wbtn sm ghost" data-act="sort">Sắp xếp</button></span>`;
+  $("bag-detail").innerHTML = detailPanel();
+}
+function charPanel() {
+  const st = stats(), base = calcStats({});
+  const slots = SLOTS.map(([slot, label]) => {
+    const it = S.equip[slot];
+    return it ? `<button type="button" class="eq r-${it.rarity}${BAG.sel === "eq:" + slot ? " sel" : ""}" data-slot="${slot}" title="${esc(itemName(it))}"><i class="icon" style="${iconVars(itemDef(it).icon)}"></i></button>`
+      : `<button type="button" class="eq none" data-slot="${slot}"><span class="ph">${label}</span></button>`;
+  }).join("");
+  const row = (label, v, b, fmt = (x) => x.toLocaleString("vi-VN")) => `<dt>${label}</dt><dd>${fmt(v)}${v > b ? `<small>+${fmt(v - b)}</small>` : ""}</dd>`;
+  const pct = (x) => `${Math.round(x * 100)}%`;
+  const n1 = st.sets.S1 || 0, set = DATA.sets.S1;
+  return `<div class="doll">${slots}<div class="hero" role="img" aria-label="Nhân vật"></div></div>
+    <div class="power"><span>Lực Chiến</span><b>${st.power.toLocaleString("vi-VN")}</b></div>
+    <dl class="statlist">${row("HP", st.hp, base.hp)}${row("MP", st.mp, base.mp)}${row("Sức đánh", st.atk, base.atk)}${row("Phòng thủ", st.def, base.def)}
+      ${row("Chí mạng", st.crit, base.crit, pct)}${row("ST chí mạng", st.critDmg, base.critDmg, pct)}${row("Tốc chạy", st.spd, 1, pct)}</dl>
+    <div class="setline"><b>Bộ ${esc(set.name)} ${n1}/4</b>: <span class="${n1 >= 2 ? "on" : ""}">2 món ${esc(set.bonus["2"])}</span> · <span class="${n1 >= 4 ? "on" : ""}">4 món ${esc(set.bonus["4"])}</span></div>`;
+}
+function shopPanel(shop) {
+  const rows = shop.sells.map((id) => {
+    const d = DATA.itemDefs[id], eff = d.heal_hp ? `Hồi ${d.heal_hp} HP` : d.heal_mp ? `Hồi ${d.heal_mp} MP` : "";
+    const can1 = S.quan >= d.value, can10 = S.quan >= d.value * 10;
+    return `<div class="shop-row"><i class="icon" style="${iconVars(d.icon)}"></i><b>${esc(d.name)} <small>${eff} · hồi 8 giây</small></b>
+      <div class="buy"><span class="price">${d.value} Quan</span><span><button type="button" class="wbtn sm" data-buy="${id}" data-n="1"${can1 ? "" : " disabled"}>Mua 1</button><button type="button" class="wbtn sm" data-buy="${id}" data-n="10"${can10 ? "" : " disabled"}>Mua 10</button></span></div></div>`;
+  }).join("");
+  const now = Date.now();
+  S.sold = S.sold.filter((x) => now - x.at < 30 * 60 * 1000);
+  const back = S.sold.slice(-6).reverse().map((x, i) => {
+    const it = x.it, d = itemDef(it);
+    return `<div class="shop-row"><i class="icon" style="${iconVars(d.icon)}"></i><b style="color:${isGear(it) ? RAR[it.rarity].ink : "inherit"}">${esc(itemName(it))}${it.n > 1 ? ` ×${it.n}` : ""}</b>
+      <div class="buy"><span class="price">${x.price} Quan</span><button type="button" class="wbtn sm ghost" data-back="${S.sold.length - 1 - i}"${S.quan >= x.price ? "" : " disabled"}>Mua lại</button></div></div>`;
+  }).join("");
+  return `<div class="shop-h">Bán</div>${rows}${back ? `<div class="shop-h">Mua lại (30 phút)</div>${back}` : ""}`;
+}
+function detailPanel() {
+  const sel = selected();
+  if (!sel) return `<p class="idt-empty">${BAG.mode === "shop" ? "Chọn món trong túi để bán.<br>Bán được 25% giá trị." : "Chọn một món để xem.<br>Bấm 2 lần liền để mặc hoặc dùng."}</p>`;
+  const { it, eq } = sel, d = itemDef(it), gear = isGear(it), shop = BAG.mode === "shop";
+  const typeName = gear ? SLOTS.find(([k]) => k === d.slot)[1] : d.type === "CONSUMABLE" ? "Tiêu hao" : "Nguyên liệu";
+  const ink = gear ? RAR[it.rarity].ink : "var(--ink-brown)";
+  let lines = "", extra = "", acts = "";
+  if (gear) {
+    const m = gearMain(it), names = { atk: "Sức đánh", def: "Phòng thủ", hp: "HP", mp: "MP" };
+    lines = Object.entries(m).map(([k, v]) => `<li>${k === "spd" ? `+${Math.round(v * 100)}% Tốc chạy` : `+${v} ${names[k]}`}</li>`).join("")
+      + it.aff.map(([k, v]) => `<li class="aff">${AFFIX[k].fmt(v)}</li>`).join("")
+      + (S.lv < it.lv ? `<li class="bad">Cần Lv ${it.lv}</li>` : "");
+    if (d.set) extra += `<div class="idt-box">Bộ <b>${esc(DATA.sets[d.set].name)}</b>: 2 món ${esc(DATA.sets[d.set].bonus["2"])}; 4 món ${esc(DATA.sets[d.set].bonus["4"])}</div>`;
+    if (!eq) {
+      const dp = powerDelta(it);
+      extra += `<div class="cmp ${dp > 0 ? "up" : dp < 0 ? "down" : "same"}">Lực Chiến ${dp > 0 ? "+" : ""}${dp.toLocaleString("vi-VN")} ${dp > 0 ? "▲" : dp < 0 ? "▼" : ""} so với đồ đang mặc</div>`;
+    }
+  } else {
+    lines = d.heal_hp ? `<li>Hồi ${d.heal_hp} HP</li><li class="dim">Hồi chiêu 8 giây · phím Q</li>` : d.heal_mp ? `<li>Hồi ${d.heal_mp} MP</li><li class="dim">Hồi chiêu 8 giây · phím E</li>` : `<li class="dim">Dùng để cường hóa trang bị (sẽ có ở Thợ Rèn)</li>`;
+  }
+  const price = sellPrice(it), n = it.n || 1;
+  extra += `<div class="idt-box">Giá bán cho NPC: <b>${price.toLocaleString("vi-VN")} Quan</b>${n > 1 ? ` mỗi cái` : ""}</div>`;
+  if (shop && !eq) {
+    const big = gear && (it.rarity === "rare" || it.rarity === "epic");
+    acts += `<button type="button" class="wbtn" data-act="sell1">${big && BAG.confirm !== keyOf(it) ? "Bán (Hiếm trở lên: bấm 2 lần)" : `Bán +${price.toLocaleString("vi-VN")} Quan`}</button>`;
+    if (n > 1) acts += `<button type="button" class="wbtn ghost" data-act="sellall">Bán hết +${(price * n).toLocaleString("vi-VN")}</button>`;
+  } else if (eq) acts += `<button type="button" class="wbtn ghost" data-act="unequip">Tháo</button>`;
+  else if (gear) acts += `<button type="button" class="wbtn green" data-act="equip"${S.lv < it.lv ? " disabled" : ""}>Mặc</button>`;
+  else if (d.type === "CONSUMABLE") acts += `<button type="button" class="wbtn green" data-act="use">Dùng</button>`;
+  return `<div class="idt-head"><span class="cell r-${gear ? it.rarity : "common"}"><i class="icon" style="${iconVars(d.icon)}"></i></span>
+    <div><b style="color:${ink}">${esc(itemName(it))}</b><small>${gear ? `${RAR[it.rarity].name} · ` : ""}${typeName}${gear ? ` · Lv${it.lv}` : n > 1 ? ` · ×${n}` : ""}${eq ? " · đang mặc" : ""}</small></div></div>
+    <ul class="idt-lines">${lines}</ul>${extra}<div class="idt-act">${acts}</div>`;
+}
+function sellItem(it, all = false) {
+  const n = all ? it.n || 1 : 1, price = sellPrice(it) * n;
+  if (it.n > 1 && !all) { it.n -= 1; S.sold.push({ it: { id: it.id, n: 1 }, price, at: Date.now() }); }
+  else { removeInv(it); S.sold.push({ it: it.uid ? it : { id: it.id, n }, price, at: Date.now() }); BAG.sel = null; }
+  S.quan += price; S.sold = S.sold.slice(-12);
+  log(`Bán ${itemName(it)}${n > 1 ? ` ×${n}` : ""}: +${price} Quan`, "sys");
+  invChanged();
+}
+function buyItem(id, n) {
+  const d = DATA.itemDefs[id], cost = d.value * n;
+  if (S.quan < cost) { toast("Không đủ Quan.", true); return; }
+  if (!addItem(id, n)) { toast("Túi đầy.", true); return; }
+  S.quan -= cost; log(`Mua ${d.name} ×${n}: −${cost} Quan`, "sys"); invChanged();
+}
+function sortBag() {
+  const tO = { WEAPON: 0, ARMOR: 1, CONSUMABLE: 2, MATERIAL: 3 }, rO = { epic: 0, rare: 1, good: 2, common: 3 }, sO = { weapon: 0, hat: 1, armor: 2, boots: 3 };
+  S.inv.sort((a, b) => {
+    const da = itemDef(a), db = itemDef(b);
+    return (tO[da.type] - tO[db.type]) || ((sO[da.slot] ?? 9) - (sO[db.slot] ?? 9)) || ((rO[a.rarity] ?? 9) - (rO[b.rarity] ?? 9)) || ((b.lv || 0) - (a.lv || 0)) || da.name.localeCompare(db.name);
+  });
+  invChanged();
+}
+function bagPrimary(it) {   // double click: equip / use / sell
+  if (!it || it.quest) return;
+  if (BAG.mode === "shop") { if (!isGear(it) || it.rarity === "common" || it.rarity === "good") sellItem(it); else { BAG.sel = keyOf(it); renderBag(); } return; }
+  if (isGear(it)) equipItem(it);
+  else if (itemDef(it).type === "CONSUMABLE") window.__htk?.scene?.drinkPotion(it.id);
+}
+$("bag").addEventListener("click", (e) => {
+  const t = e.target.closest("button"); if (!t) return;
+  if (t.id === "bag-x") { toggleBag(false); return; }
+  if (t.dataset.tab) { BAG.tab = t.dataset.tab; BAG.sel = null; }
+  else if (t.dataset.key || t.dataset.slot) {
+    const k = t.dataset.key || "eq:" + t.dataset.slot, again = BAG.lastKey === k && performance.now() - BAG.lastAt < 450;
+    BAG.lastKey = again ? null : k; BAG.lastAt = performance.now(); BAG.confirm = null;
+    if (t.dataset.slot) { BAG.sel = S.equip[t.dataset.slot] ? k : null; if (again && S.equip[t.dataset.slot]) { unequipItem(t.dataset.slot); BAG.sel = null; } }
+    else { BAG.sel = k; if (again) bagPrimary(S.inv.find((x) => keyOf(x) === k)); }
+  }
+  else if (t.dataset.buy) buyItem(t.dataset.buy, Number(t.dataset.n));
+  else if (t.dataset.back) {
+    const x = S.sold[Number(t.dataset.back)];
+    if (x && S.quan >= x.price && (x.it.uid ? addItem(null, 1, x.it) : addItem(x.it.id, x.it.n))) { S.quan -= x.price; S.sold.splice(S.sold.indexOf(x), 1); log(`Mua lại ${itemName(x.it)}: −${x.price} Quan`, "sys"); }
+    else toast("Không mua lại được (thiếu Quan hoặc túi đầy).", true);
+  } else {
+    const sel = selected(), a = t.dataset.act;
+    if (a === "sort") sortBag();
+    else if (a === "sellcommon") {
+      if (BAG.confirm !== "sellcommon") BAG.confirm = "sellcommon";
+      else { BAG.confirm = null; for (const it of S.inv.filter((x) => isGear(x) && x.rarity === "common")) sellItem(it); }
+    } else if (sel && a === "equip") equipItem(sel.it);
+    else if (sel && a === "unequip") { unequipItem(sel.eq); BAG.sel = null; }
+    else if (sel && a === "use") window.__htk?.scene?.drinkPotion(sel.it.id);
+    else if (sel && (a === "sell1" || a === "sellall")) {
+      const big = isGear(sel.it) && (sel.it.rarity === "rare" || sel.it.rarity === "epic");
+      if (big && BAG.confirm !== keyOf(sel.it)) BAG.confirm = keyOf(sel.it); else { BAG.confirm = null; sellItem(sel.it, a === "sellall"); }
+    }
+  }
+  renderBag();
+});
+$("btn-bag").addEventListener("click", () => toggleBag());
 
 /* =====================================================================
    Input (keyboard + touch buttons)
@@ -963,7 +1365,12 @@ const THEME_TOWN = "M001";
 class Boot extends Phaser.Scene {
   constructor() { super("boot"); }
   preload() { this.load.json("data", "assets/data.json"); }
-  create() { DATA = this.cache.json.get("data"); initBosses(); this.scene.start("world", { map: "M001" }); }
+  create() {
+    DATA = this.cache.json.get("data"); initBosses();
+    $("stage").style.setProperty("--item-h", Math.ceil(DATA.items.length / 8) * 32);
+    const sv = loadGame();
+    this.scene.start("world", sv || { map: "M001" });
+  }
 }
 
 class World extends Phaser.Scene {
@@ -1071,9 +1478,10 @@ class World extends Phaser.Scene {
     this.keys = this.input.keyboard.addKeys({
       left: K.A, right: K.D, aLeft: K.LEFT, aRight: K.RIGHT, up: K.W, aUp: K.UP, jump: K.SPACE, down: K.S, aDown: K.DOWN,
       attack: K.J, s1: K.ONE, s2: K.TWO, s3: K.THREE, hp: K.Q, mp: K.E, interact: K.F, sched: K.N,
-      tab: K.TAB, auto: K.G, hunt: K.H, quest: K.L,
+      tab: K.TAB, auto: K.G, hunt: K.H, quest: K.L, bag: K.B, bag2: K.I, bag3: K.C,
     });
     this.keys.quest.on("down", () => toggleQuest());
+    for (const k of ["bag", "bag2", "bag3"]) this.keys[k].on("down", () => { if ($("dlg").hidden) toggleBag(); });
     this.input.keyboard.addCapture("SPACE,UP,DOWN,LEFT,RIGHT,TAB");
     this.keys.sched.on("down", () => toggleSchedule());
     this.keys.tab.on("down", () => this.cycleTarget());
@@ -1092,6 +1500,8 @@ class World extends Phaser.Scene {
     window.__htk = { S, scene: this, F, Q };
     this.herbs = []; this.refreshHerbs(); this.gotoBest = null;
     renderTracker();
+    if (S.loaded) { S.loaded = false; S.welcomed = true; log(`Đã tải dữ liệu lưu: Lv ${S.lv}, ${S.quan.toLocaleString("vi-VN")} Quan, túi ${S.inv.length}/${BAG_SIZE}`, "sys"); }
+    this.savedAt = this.time.now; this.time.delayedCall(400, saveGame);
     if (this.mapId === THEME_TOWN && !S.welcomed) {
       S.welcomed = true;
       log("Thầy Bạch Vân (dấu ! vàng) đang chờ bạn. Nhấn L để mở bảng Nhiệm vụ.", "sys");
@@ -1177,8 +1587,8 @@ class World extends Phaser.Scene {
   autoControl(now) {
     if (!(S.auto || S.hunt) || this.deadUntil) return null;
     const st = stats(), pl = this.player;
-    if (S.hp < st.hp * 0.4 && S.potions.hp > 0 && now > (this.autoPotAt || 0)) { this.autoPotAt = now + 1500; this.usePotion("hp"); }
-    if (S.hunt && S.hp < st.hp * 0.2 && !S.potions.hp) { S.hunt = false; toast("Dừng Treo máy: máu dưới 20% và hết bình.", true); return null; }
+    if (S.hp < st.hp * 0.4 && potionCount("hp") > 0 && now >= S.potCd.hp && now > (this.autoPotAt || 0)) { this.autoPotAt = now + 1500; this.usePotion("hp"); }
+    if (S.hunt && S.hp < st.hp * 0.2 && !potionCount("hp")) { S.hunt = false; toast("Dừng Treo máy: máu dưới 20% và hết bình.", true); return null; }
     let t = this.target?.alive ? this.target : null;
     if (S.hunt && t?.kind === "boss") t = null;
     if (!t) {
@@ -1314,7 +1724,9 @@ class World extends Phaser.Scene {
   }
 
   dropLoot(o, x, y) {
-    const iconIdx = o.kind === "quan" ? DATA.items.indexOf("quan") : DATA.items.indexOf(o.icon);
+    const icon = o.kind === "quan" ? "quan" : o.kind === "gear" ? DATA.itemDefs[o.gear.id].icon : o.kind === "item" ? DATA.itemDefs[o.id].icon : o.icon;
+    const iconIdx = DATA.items.indexOf(icon);
+    o.rarity = o.kind === "gear" ? o.gear.rarity : o.rarity;
     const spr = this.physics.add.sprite(x, y - 20, "items", iconIdx).setDepth(14).setScale(0.75);
     spr.body.setSize(20, 20).setOffset(6, 6);
     spr.setVelocity((Math.random() - 0.5) * 120, -260);
@@ -1622,12 +2034,24 @@ class World extends Phaser.Scene {
     });
   }
 
-  usePotion(type) {
-    if (!S.potions[type]) { log(`Hết ${type === "hp" ? "Bình Máu" : "Bình Mana"}`, "bad"); return; }
-    const st = stats();
-    if (type === "hp") { if (S.hp >= st.hp) return; S.hp = Math.min(st.hp, S.hp + Math.round(st.hp * 0.4)); this.floatText(this.player.x, this.player.y - 60, `+${Math.round(st.hp * 0.4)}`, "#7dff8a", 16); }
-    else { if (S.mp >= st.mp) return; S.mp = Math.min(st.mp, S.mp + Math.round(st.mp * 0.4)); }
-    S.potions[type]--;
+  usePotion(type) {   // Q / E: medium potion when the loss is large, else small (items §8)
+    if (this.deadUntil) return;
+    const st = stats(), missing = st[type] - (type === "hp" ? S.hp : S.mp);
+    if (missing <= 0) return;
+    const [small, big] = potionIds(type), heal = (id) => DATA.itemDefs[id][type === "hp" ? "heal_hp" : "heal_mp"];
+    const pick = countItem(big) && missing >= heal(big) * 0.75 ? big : countItem(small) ? small : countItem(big) ? big : null;
+    if (!pick) { log(`Hết ${type === "hp" ? "Bình HP" : "Bình MP"}. Mua thêm ở Lam Nhi.`, "bad"); return; }
+    this.drinkPotion(pick);
+  }
+
+  drinkPotion(id) {
+    const d = DATA.itemDefs[id], type = d.heal_hp ? "hp" : "mp", now = this.time.now;
+    if (now < S.potCd[type]) { this.floatText(this.player.x, this.player.y - 60, `Chờ ${Math.ceil((S.potCd[type] - now) / 1000)} giây`, "#9aa2bf", 13); return; }
+    const st = stats(), cur = type === "hp" ? S.hp : S.mp, h = Math.min(d[type === "hp" ? "heal_hp" : "heal_mp"], st[type] - cur);
+    if (h <= 0 || !takeItem(id, 1)) return;
+    if (type === "hp") S.hp += h; else S.mp += h;
+    S.potCd[type] = now + POTION_CD;
+    this.floatText(this.player.x, this.player.y - 60, `+${h}`, type === "hp" ? "#7dff8a" : "#7fd1ff", 16);
   }
 
   interact(npc) {
@@ -1777,8 +2201,9 @@ class World extends Phaser.Scene {
       if (left) vx -= 180; if (right) vx += 180;
       if (!left && !right) vx = go ? go.vx : ac ? ac.vx : 0;
     }
-    if (vx) this.facing = Math.sign(vx);
+    if (vx) { this.facing = Math.sign(vx); vx *= stats().spd; }
     pl.setFlipX(this.facing < 0);
+    if ((S.dirty && now - this.savedAt > 1500) || now - this.savedAt > 10000) { this.savedAt = now; saveGame(); }
     if (now > this.invulnUntil - 200) body.setVelocityX(vx);
     if (this.climbing) {
       body.setVelocityY(upKey ? -120 : downKey ? 120 : 0); body.setVelocityX(vx * 0.4);
@@ -1916,18 +2341,23 @@ class World extends Phaser.Scene {
       if (dr.done) continue;
       if (now - dr.born > 60000) { dr.done = true; dr.spr.destroy(); continue; }
       if (now - dr.born > 500 && Math.abs(dr.spr.x - pl.x) < 26 && Math.abs(dr.spr.y - (pl.body.bottom - 14)) < 40) {
-        dr.done = true; dr.spr.destroy();
         const o = dr.o;
-        if (o.kind === "quan") { S.quan += o.n; this.floatText(pl.x, pl.y - 70, `+${o.n} Quan`, "#f0c24a", 14); }
+        if (o.kind === "quan") { S.quan += o.n; S.dirty = true; this.floatText(pl.x, pl.y - 70, `+${o.n} Quan`, "#f0c24a", 14); }
         else if (o.kind === "quest") { log(`Nhặt: ${o.name} (vật phẩm nhiệm vụ)`, "sys"); Q.event("COLLECT", o.item); }
         else {
-          if (o.kind === "potion") S.potions[o.type]++; else S.bag++;
-          const [rn, col] = RARITY[o.rarity];
-          const label = o.rarity === "common" ? o.name : `${o.name} (${rn})`;
+          const ok = o.kind === "gear" ? addItem(null, 1, o.gear) : addItem(o.id, 1);
+          if (!ok) {
+            if (now > (this.fullWarnAt || 0)) { this.fullWarnAt = now + 5000; toast(`Túi đầy (${BAG_SIZE}/${BAG_SIZE}). Bán bớt đồ ở Lam Nhi.`, true); }
+            continue;
+          }
+          const it = o.kind === "gear" ? o.gear : { id: o.id }, gear = o.kind === "gear";
+          const label = gear ? `${itemName(it)} Lv${it.lv}${it.rarity !== "common" ? ` (${RAR[it.rarity].name})` : ""}` : itemName(it);
+          const col = gear ? RAR[it.rarity].col : "#ffffff";
           this.floatText(pl.x, pl.y - 70, label, col, 14);
-          const el = document.createElement("div"); el.textContent = `Nhặt: ${label}`; el.style.color = col;
+          const el = document.createElement("div"); el.textContent = `Nhặt: ${label}${gear && S.lv >= it.lv && powerDelta(it) > 0 ? " ▲ mạnh hơn đồ đang mặc" : ""}`; el.style.color = col;
           $("log").appendChild(el); while ($("log").children.length > 6) $("log").removeChild($("log").firstChild);
         }
+        dr.done = true; dr.spr.destroy();
       }
     }
     this.drops = this.drops.filter((d) => !d.done);
@@ -1996,8 +2426,10 @@ class World extends Phaser.Scene {
     $("pmp").querySelector(".fill").style.width = mpP + "%";
     $("pmp").querySelector("span").textContent = `${Math.round(S.mp)} / ${st.mp}`;
     $("pquan").textContent = `${S.quan.toLocaleString("vi-VN")} Quan`;
-    $("pbag").textContent = `Túi: ${S.bag} món`;
-    $("nhp").textContent = S.potions.hp; $("nmp").textContent = S.potions.mp;
+    $("pbag").textContent = `Túi ${S.inv.length}/${BAG_SIZE}`;
+    $("plc").textContent = `LC ${st.power.toLocaleString("vi-VN")}`;
+    $("nhp").textContent = potionCount("hp"); $("nmp").textContent = potionCount("mp");
+    for (const t of ["hp", "mp"]) document.querySelector(`.act[data-tap="${t}"]`).style.setProperty("--cd", Math.max(0, (S.potCd[t] - this.time.now) / POTION_CD).toFixed(3));
     const need = F.expToNext(S.lv);
     $("expbar").querySelector("i").style.width = (S.exp / need * 100) + "%";
     $("expbar").querySelector("span").textContent = `EXP ${S.exp.toLocaleString("vi-VN")} / ${need.toLocaleString("vi-VN")} (${(S.exp / need * 100).toFixed(1)}%)`;
@@ -2066,6 +2498,13 @@ $("dev-fire").addEventListener("click", () => {
   log("Lễ Khai Thư (thử): đã chọn hệ Hỏa. Phím 2 Hỏa Cầu, phím 3 Trảm Liệt Diễm", "lvl");
 });
 $("dev-lv").addEventListener("click", () => { const sc = window.__htk?.scene; if (sc) sc.gainExp(F.expToNext(S.lv) - S.exp); });
+$("dev-reset").addEventListener("click", (e) => {
+  const b = e.currentTarget;
+  if (!b.dataset.armed) { b.dataset.armed = "1"; b.textContent = "Bấm lần nữa để xóa hết"; setTimeout(() => { delete b.dataset.armed; b.textContent = "Xóa dữ liệu lưu, chơi lại từ đầu"; }, 3000); return; }
+  S.noSave = true;
+  try { localStorage.removeItem(SAVE_KEY); } catch (_) { /* nothing saved */ }
+  location.reload();
+});
 $("dev-quest").addEventListener("click", () => {
   const q = Q.cur(), st = Q.state();
   if (!q || st === "end" || st === "proto") { toast("Không còn nhiệm vụ làm được trong bản thử.", true); return; }

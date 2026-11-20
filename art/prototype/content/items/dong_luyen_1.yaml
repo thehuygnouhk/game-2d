@@ -1,0 +1,7 @@
+# prototype item (step A1)
+id: dong_luyen_1
+type: MATERIAL
+nameKey: item.dong_luyen_1.name
+icon: items/dong_luyen_1
+value: 40
+stack: 9999

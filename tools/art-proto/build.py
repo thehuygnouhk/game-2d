@@ -389,6 +389,45 @@ QUEST_TEXT = {   # i18n vi: title, objective labels, dialogue (accept / progress
 }
 
 
+# Items for step A1 (docs/game-design/07-items-and-equipment.md §1-5, §8; economy §3).
+# Gear entries are templates: level and rarity are rolled when the item drops.
+ITEM_DEFS = {
+    "potion_hp": dict(type="CONSUMABLE", name="Bình HP Nhỏ", icon="potion_hp", value=20, heal_hp=150, stack=999),
+    "potion_hp_m": dict(type="CONSUMABLE", name="Bình HP Vừa", icon="potion_hp_m", value=80, heal_hp=600, stack=999),
+    "potion_mp": dict(type="CONSUMABLE", name="Bình MP Nhỏ", icon="potion_mp", value=16, heal_mp=80, stack=999),
+    "potion_mp_m": dict(type="CONSUMABLE", name="Bình MP Vừa", icon="potion_mp_m", value=64, heal_mp=300, stack=999),
+    "dong_luyen_1": dict(type="MATERIAL", name="Đồng Luyện Sơ", icon="dong_luyen_1", value=40, stack=9999),
+    "dong_luyen_2": dict(type="MATERIAL", name="Đồng Luyện Trung", icon="dong_luyen_2", value=160, stack=9999),
+    "s1_weapon": dict(type="WEAPON", slot="weapon", set="S1", name="Kiếm Dân Làng", icon="kiem_dan_lang", levelBand=[1, 9]),
+    "s1_hat": dict(type="ARMOR", slot="hat", set="S1", name="Mũ Dân Làng", icon="mu_dan_lang", levelBand=[1, 9]),
+    "s1_armor": dict(type="ARMOR", slot="armor", set="S1", name="Áo Dân Làng", icon="ao_dan_lang", levelBand=[1, 9]),
+    "s1_boots": dict(type="ARMOR", slot="boots", set="S1", name="Giày Dân Làng", icon="giay_dan_lang", levelBand=[1, 9]),
+    "kiem_go_tap": dict(type="WEAPON", slot="weapon", name="Kiếm Gỗ Tập", icon="kiem_go_tap", level=1, rarity="common"),
+    "ao_suoi_mo": dict(type="ARMOR", slot="armor", name="Áo Suối Mơ", icon="ao_suoi_mo", level=9, rarity="good"),
+}
+SETS = {"S1": dict(name="Dân Làng", bonus={"2": "+5% HP", "4": "+8% ATK, +8% DEF"})}
+SHOPS = {"NPC003": dict(name="Tiệm thuốc của Lam Nhi", sells=["potion_hp", "potion_hp_m", "potion_mp", "potion_mp_m"])}
+
+
+def build_item_content():
+    """Item records + shop for step A1 (content-pipeline §3, items §12)."""
+    d = mk("content", "items")
+    for k, v in ITEM_DEFS.items():
+        lines = [f"id: {k}", f"type: {v['type']}", f"nameKey: item.{k}.name", f"icon: items/{v['icon']}"]
+        for f in ("slot", "set", "level", "rarity", "value", "heal_hp", "heal_mp", "stack"):
+            if f in v:
+                key = {"heal_hp": "healHp", "heal_mp": "healMp", "level": "levelReq"}.get(f, f)
+                lines.append(f"{key}: {v[f]}")
+        if "levelBand" in v:
+            lines.append(f"levelBand: [{v['levelBand'][0]}, {v['levelBand'][1]}]   # rolled from the monster level")
+        with open(os.path.join(d, f"{k}.yaml"), "w", encoding="utf-8") as f:
+            f.write("# prototype item (step A1)\n" + "\n".join(lines) + "\n")
+    with open(os.path.join(mk("content", "shops"), "npc003.yaml"), "w", encoding="utf-8") as f:
+        f.write("# Lam Nhi sells potions and buys items back at 25% (economy section 3), prototype step A1\n"
+                "npc: NPC003\nnameKey: shop.npc003.name\ncurrency: SOFT\n"
+                f"sells: [ {', '.join(SHOPS['NPC003']['sells'])} ]\nbuyBack: {{ ratio: 0.25, windowMin: 30 }}\n")
+
+
 def _yaml_obj(o):
     return "{ " + ", ".join(f"{k}: {v}" for k, v in o.items()) + " }"
 
@@ -436,8 +475,12 @@ dialogue:
     lines.append("item:")
     for k, (name, _) in QUEST_ITEMS.items():
         lines.append(f"  {k}: \"{name}\"")
-    for k, name in REWARD_ITEMS.items():
-        lines.append(f"  {k}: \"{name}\"")
+    for k, v in ITEM_DEFS.items():
+        if k not in QUEST_ITEMS:
+            lines.append(f"  {k}: \"{v['name']}\"")
+    lines.append("shop:")
+    for k, v in SHOPS.items():
+        lines.append(f"  {k.lower()}: \"{v['name']}\"")
     with open(os.path.join(i18n, "vi.yaml"), "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
     with open(os.path.join(mk("content", "quests"), "quest_items.yaml"), "w", encoding="utf-8") as f:
@@ -511,6 +554,9 @@ def build_playable():
         "quests": quest_json(),
         "questItems": {k: dict(name=v[0], **v[1]) for k, v in QUEST_ITEMS.items()},
         "rewardItems": REWARD_ITEMS,
+        "itemDefs": ITEM_DEFS,
+        "sets": SETS,
+        "shops": SHOPS,
         "where": where,
     }
     with open(os.path.join(root, "data.json"), "w", encoding="utf-8") as f:
@@ -582,11 +628,12 @@ if __name__ == "__main__":
         build_maps()
         print("maps built into", OUT)
         sys.exit(0)
-    if len(sys.argv) > 2 and sys.argv[2] == "quests":
+    if len(sys.argv) > 2 and sys.argv[2] in ("quests", "content"):
         build_items()
         build_quests()
+        build_item_content()
         build_playable()
-        print("quests, item icons and playable data built")
+        print("quests, items, icons and playable data built")
         sys.exit(0)
     if len(sys.argv) > 2 and sys.argv[2] == "playable":
         build_playable()
@@ -602,6 +649,7 @@ if __name__ == "__main__":
     build_monsters()
     build_content()
     build_quests()
+    build_item_content()
     build_maps()
     build_heroes()
     build_npcs()

@@ -138,8 +138,8 @@ Khung nằm dưới khung nhân vật (dưới khung mục tiêu nếu đang ch�
 | H | Bật/tắt Treo máy (Lv20) |
 | N | Lịch Boss |
 | F | Tương tác (NPC, nhặt, cổng) |
-| B / I | Túi đồ |
-| C | Nhân vật |
+| B / I | Hành trang (túi đồ và trang bị) |
+| C | Nhân vật (cùng cửa sổ Hành trang ở bậc A1) |
 | K | Kỹ năng |
 | L | Nhiệm vụ |
 | M | Bản đồ |
@@ -192,6 +192,20 @@ NPC hiện **hộp thoại + menu dọc tối đa 5 mục**:
 - Lưới 6×5 (30 ô), cuộn cho 90 ô, tab: Tất cả, Trang bị, Tiêu hao, Nguyên liệu, Nhiệm vụ.
 - Kéo thả sử dụng; chạm giữ để xem; nút *Sắp xếp*, *Bán nhanh*.
 - Màu viền theo độ hiếm; biểu tượng khóa/khóa tài khoản/hết hạn.
+
+**Cửa sổ Hành trang (bậc A1):** ba cột trong khung chuẩn ([art §7](12-art-audio-direction.md)).
+
+| Cột | Nội dung |
+|-----|----------|
+| Nhân vật | Hình nhân vật giữa 4 ô trang bị (Mũ, Vũ khí, Áo, Giày); Lực Chiến; bảng chỉ số, phần tăng nhờ đồ ghi xanh; tiến độ bộ (ví dụ "Bộ Dân Làng 2/4") |
+| Túi | Tab, lưới 30 ô. Ô đồ có nền theo độ hiếm, nhãn cấp (đỏ khi chưa đủ cấp), mũi tên xanh **▲** nếu mặc vào Lực Chiến tăng; số lượng ở góc ô chồng |
+| Chi tiết | Tên theo màu độ hiếm, loại, cấp; chỉ số chính, dòng phụ (xanh), bộ; **"Lực Chiến +N ▲ so với đồ đang mặc"**; giá bán; nút Mặc, Tháo, Dùng hoặc Bán |
+
+- Bấm một lần để chọn, bấm hai lần liền để mặc hoặc dùng; bấm hai lần vào ô đang mặc để tháo.
+- **Cửa hàng** dùng cùng cửa sổ: cột trái thay bằng danh sách hàng (Mua 1, Mua 10; nút mờ khi thiếu Quan) và mục **Mua lại** các món vừa bán trong 30 phút. Bán món Hiếm trở lên phải bấm hai lần.
+- Túi đầy: đồ rơi nằm lại dưới đất kèm thông báo; thưởng nhiệm vụ chờ tới khi có đủ ô trống.
+- Khung nhân vật trên HUD hiện **LC** (Lực Chiến) và **Túi n/30**.
+- Phím Q, E dùng Bình Vừa khi máu hoặc mana thiếu từ 75% lượng hồi của nó trở lên, còn lại dùng Bình Nhỏ; vòng tối trên nút là thời gian hồi 8 giây ([items §8](07-items-and-equipment.md)).
 
 ### 6.3 Kỹ năng
 - Danh sách 7 kỹ năng của hệ; chi tiết cấp hiện tại và cấp kế tiếp; nút *Nâng cấp* hiển thị SP/Quan cần.

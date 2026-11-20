@@ -1,0 +1,8 @@
+# prototype item (step A1)
+id: s1_weapon
+type: WEAPON
+nameKey: item.s1_weapon.name
+icon: items/kiem_dan_lang
+slot: weapon
+set: S1
+levelBand: [1, 9]   # rolled from the monster level
