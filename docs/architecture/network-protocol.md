@@ -66,9 +66,9 @@ sequenceDiagram
 
 Mất kết nối < 30s: client mở WSS mới và gửi `C_RESUME {resumeToken, lastServerSeq}`. Server trả `S_ENTER_WORLD` đầy đủ (trạng thái hiện tại) và token mới.
 
-### 3.1.1 Bậc B1: vé khách tạm thời
+### 3.1.1 Vé khách (chỉ cho test của server)
 
-Chưa có API đăng nhập (đến ở bậc B3), nên game server chạy với `DEV_GUEST=1` nhận vé `ticket = "guest:<tên>"`:
+Từ bậc B3, người chơi vào game bằng tài khoản (§3.1.3); web client không còn đường vào kiểu khách. Vé khách chỉ còn để test của server chạy không cần cơ sở dữ liệu. Game server chạy với `DEV_GUEST=1` thì nhận vé `ticket = "guest:<tên>"`, nhân vật khách không được lưu:
 - tên theo luật tên nhân vật ([classes §2.1](../game-design/03-origins-classes-skills.md));
 - `C_HELLO` có thêm trường tùy chọn `appearance {origin, gender}` để người khác thấy đúng ngoại hình;
 - không có `DEV_GUEST=1` thì mọi vé bị từ chối bằng `E_AUTH`. **Không bật biến này ở môi trường thật.**
@@ -109,9 +109,28 @@ Server kiểm tra:
 
 `C_USE_SKILL.seq` theo cùng quy tắc: kỹ năng được tung ở vị trí và hướng sau `C_MOVE_INPUT` có `seq` đó, đúng chỗ người chơi thấy trên màn hình lúc bấm.
 
+### 3.1.3 Bậc B3: đăng nhập bằng tài khoản
+
+1. Client gọi REST (§10): đăng ký hoặc đăng nhập, rồi chọn hoặc tạo nhân vật. `POST /session/ticket` trả `{wsUrl, ticket, protocolVersion}`.
+2. API lưu vé trong Redis: `ticket:{vé}` = `{accountId, characterId, realmId, ipHash}`, sống 30 s ([database §7](database-schema.md)).
+3. Client mở WebSocket tới `wsUrl` và gửi `C_HELLO {ticket}`.
+4. Game server lấy vé ra khỏi Redis bằng `GETDEL`, nên mỗi vé chỉ dùng được một lần. Vé hết hạn, đã dùng, hoặc sai realm thì trả `E_AUTH`.
+5. Nếu tài khoản đang có phiên trong thế giới thì xử lý như §3.2.
+6. Server nạp nhân vật và túi đồ từ PostgreSQL rồi gửi `S_WELCOME`.
+
+`S_ENTER_WORLD` đặt nhân vật ở map và vị trí đã lưu (khi map còn mở và vị trí hợp lệ), nếu không thì ở điểm xuất hiện của M001. `stats` có thêm:
+- `statPoints`: điểm tiềm năng còn trống;
+- `pts {hp, mp, atk, def, crit}`: điểm đã cộng.
+
+`ipHash` của vé được lưu nhưng **chưa so khớp** với kết nối WebSocket, vì người chơi điện thoại hay đổi IP giữa hai bước. Mỗi vé chỉ dùng một lần và sống 30 s.
+
 ### 3.2 Đá phiên
 
-Đăng nhập mới cùng tài khoản: phiên cũ nhận `S_KICK {reason:"DUPLICATE_LOGIN"}` rồi đóng.
+Đăng nhập mới cùng tài khoản:
+1. Phiên cũ nhận `S_KICK {reason: "DUPLICATE_LOGIN", message}` rồi đóng.
+2. Phiên mới **chờ lần lưu cuối của phiên cũ** xong rồi mới nạp nhân vật, nên không đọc trạng thái cũ.
+
+Khi máy chủ tắt, mọi phiên nhận `S_KICK {reason: "SHUTDOWN"}` sau khi đã lưu hết.
 
 ## 4. Quy tắc chung
 
@@ -168,7 +187,7 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 | 0x0102 | `S_WELCOME` | S→C | `serverTime, tickRate, resumeToken, config` |
 | 0x0103 | `C_PING` | C→S | `t` |
 | 0x0104 | `S_PONG` | S→C | `t, serverTime` |
-| 0x0105 | `S_KICK` | S→C | `reason, message` |
+| 0x0105 | `S_KICK` | S→C | `reason (DUPLICATE_LOGIN, SHUTDOWN), message` |
 | 0x0106 | `C_RESUME` | C→S | `resumeToken, lastServerSeq` |
 | 0x01FF | `S_ERROR` | S→C | `code, refSeq, message?` |
 
@@ -178,8 +197,8 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 |----|-----|-------|----------------|
 | 0x0201 | `C_ENTER_WORLD` | C→S | — |
 | 0x0202 | `S_ENTER_WORLD` | S→C | `character, stats, inventory, equipment, skills, quests, buffs, entities, map` |
-| 0x0203 | `C_ALLOCATE_POINTS` | C→S | `{hp,mp,atk,def,crit}` (số điểm cộng) |
-| 0x0204 | `S_STATS_UPDATE` | S→C | chỉ số đầy đủ/thay đổi |
+| 0x0203 | `C_ALLOCATE_POINTS` | C→S | `{hp,mp,atk,def,crit}` (số điểm cộng, tổng ≥ 1). Không đủ điểm: `E_INVALID_PAYLOAD` với `message` `NOT_ENOUGH_POINTS` |
+| 0x0204 | `S_STATS_UPDATE` | S→C | chỉ số đầy đủ/thay đổi, có `statPoints` và `pts` |
 | 0x0205 | `S_LEVEL_UP` | S→C | `level, statPoints, skillPoints` |
 | 0x0206 | `C_UPGRADE_SKILL` | C→S | `skillId` |
 | 0x0207 | `S_SKILLS_UPDATE` | S→C | danh sách kỹ năng, hotbar |
@@ -277,8 +296,8 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 
 | Op | Tên | Hướng | Payload chính |
 |----|-----|-------|----------------|
-| 0x0801 | `C_CHAT_SEND` | C→S | `channel, text, targetName?`. Bậc B2 có kênh `MAP` (cùng map và khu); chữ 1–120 ký tự sau khi gộp khoảng trắng, không ký tự điều khiển |
-| 0x0802 | `S_CHAT_MSG` | S→C | `channel (MAP, SYSTEM), fromId, fromName, text, time` |
+| 0x0801 | `C_CHAT_SEND` | C→S | `channel, text, targetName?`. Kênh `MAP` (cùng map và khu, bậc B2) và `WORLD` (cả realm, bậc B3); chữ 1–120 ký tự sau khi gộp khoảng trắng, không ký tự điều khiển |
+| 0x0802 | `S_CHAT_MSG` | S→C | `channel (MAP, WORLD, SYSTEM), fromId, fromName, text, time` |
 | 0x0803 | `C_FRIEND_OP` | C→S | `op (ADD, ACCEPT, REMOVE, BLOCK), name` |
 | 0x0804 | `S_FRIEND_LIST` | S→C | danh sách bạn, trạng thái |
 | 0x0805 | `C_PARTY_OP` | C→S | `op (INVITE, ACCEPT, LEAVE, KICK, LOOT_MODE), target?` |
@@ -336,7 +355,7 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 |-------------|----------|----------|
 | `C_MOVE_INPUT` | 25 gói/s | Bỏ gói thừa |
 | `C_USE_SKILL` | 10 gói/s | `E_RATE_LIMIT` |
-| `C_CHAT_SEND` | 1/s Map, 1/10s Thế giới | Mute tạm thời |
+| `C_CHAT_SEND` | 1/s Map, 1/10s Thế giới | `E_RATE_LIMIT` (bậc B3 chưa mute) |
 | `C_SHOP_*`, `C_MARKET_*`, `C_TRADE_*` | 5/s | `E_RATE_LIMIT` |
 | `C_ENHANCE`, `C_SPIN` | 2/s | `E_RATE_LIMIT` |
 | Tổng | 120 gói/s | Ngắt kết nối nếu kéo dài 10s |
@@ -398,9 +417,9 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 | POST | `/auth/register` | Đăng ký | Không |
 | POST | `/auth/login` | Đăng nhập | Không |
 | POST | `/auth/refresh` | Làm mới token | Refresh token |
-| POST | `/auth/logout` | Đăng xuất | Bearer |
+| POST | `/auth/logout` | Đăng xuất | Refresh token |
 | POST | `/auth/forgot` / `/auth/reset` | Quên/đặt lại mật khẩu | Không |
-| GET | `/realms` | Danh sách máy chủ, tải, trạng thái | Bearer |
+| GET | `/realms` | Danh sách máy chủ, trạng thái | Không |
 | GET | `/realms/{id}/characters` | Danh sách nhân vật | Bearer |
 | POST | `/realms/{id}/characters` | Tạo nhân vật | Bearer |
 | DELETE | `/characters/{id}` | Xóa nhân vật (chờ 7 ngày) | Bearer |
@@ -413,6 +432,21 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 
 - Mọi phản hồi lỗi: `{ "error": { "code": "…", "message": "…" } }`.
 - Giới hạn: `/auth/login` 5 lần/phút/IP và 10 lần/giờ/tài khoản.
+
+**Bậc B3 (`apps/api`, Fastify):**
+- **Đã có:** `register`, `login`, `refresh`, `logout`, `/me`, `/realms`, danh sách và tạo nhân vật, `/session/ticket`, `/status`. Chưa có: quên mật khẩu (chưa có gửi email), xóa nhân vật, thanh toán.
+- **Đường dẫn:** mọi route nằm dưới tiền tố `API_PREFIX` (mặc định `/api`), nên web client và reverse proxy cùng một tên miền.
+- **Token truy cập:** JWT HS256 sống 15 phút, trả trong body.
+- **Token làm mới:** nằm trong cookie `htk_rt` (`HttpOnly`, `SameSite=Lax`, `Secure` khi chạy HTTPS, `path` = `/api/auth`), sống 30 ngày. Mỗi lần dùng thì xoay vòng. Dùng lại một token đã thu hồi thì mọi phiên của tài khoản bị thu hồi.
+- **Đăng ký:**
+  - tên tài khoản 3–20 ký tự `A–Z a–z 0–9 _` (không phân biệt hoa thường);
+  - email hợp lệ;
+  - mật khẩu 8–128 ký tự, không nằm trong danh sách mật khẩu phổ biến;
+  - tối đa 10 lần mỗi giờ mỗi IP.
+- **Đăng nhập** bằng tên tài khoản hoặc email. Sai 5 lần thì khóa 10 phút ([security §3](security-and-anticheat.md)).
+- **Tạo nhân vật:** tên theo [classes §2.1](../game-design/03-origins-classes-skills.md), duy nhất trong realm, tối đa **3 nhân vật** mỗi tài khoản mỗi realm. Danh sách nhân vật có `mapName`.
+- **Vé vào game:** tối đa 20 lần mỗi phút mỗi tài khoản.
+- **Mã lỗi:** `INVALID` (400), `WEAK_PASSWORD`, `UNAUTHORIZED` (401), `BAD_CREDENTIALS` (401), `ACCOUNT_LOCKED` (403), `NO_REALM`, `NO_CHARACTER` (404), `TAKEN`, `NAME_TAKEN`, `TOO_MANY` (409), `RATE_LIMIT`, `LOCKED` (429), `REALM_CLOSED` (503).
 
 ## 11. Phiên bản & tương thích
 

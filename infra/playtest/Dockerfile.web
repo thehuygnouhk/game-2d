@@ -1,0 +1,10 @@
+# Web client (static build) behind Caddy, for the public playtest (docs/guides/playtest-hosting.md).
+FROM node:20-slim AS build
+WORKDIR /repo
+RUN corepack enable
+COPY . .
+RUN pnpm install --frozen-lockfile --filter @htk/web-client... && pnpm --filter @htk/web-client build
+
+FROM caddy:2
+COPY --from=build /repo/apps/web-client/dist /srv
+COPY infra/playtest/Caddyfile /etc/caddy/Caddyfile

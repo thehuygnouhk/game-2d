@@ -26,16 +26,23 @@ Mục lục đầy đủ: [docs/README.md](docs/README.md).
 
 **Bản thử:** art thử (nhân vật, NPC, quái, boss, bản đồ Chương 1) ở [`art/prototype`](art/prototype/README.md); bản chơi thử Chương 1 trên trình duyệt ở [`prototype/playable`](prototype/playable/README.md).
 
-**Bản online (bậc B2):** khung dự án thật, server quyết định mọi thứ.
+**Bản online (bậc B3):** khung dự án thật, server quyết định mọi thứ.
+- Đăng ký, đăng nhập, tạo tối đa 3 nhân vật.
 - Nhiều người cùng đi lại và đánh quái trên 4 map của Làng Suối Mơ, mỗi map 3 khu.
-- Có cấp, EXP, đồ rơi, bình thuốc, chết và hồi sinh, chat cùng khu.
-- Chưa có tài khoản và chưa lưu nhân vật (bậc B3).
+- Có cấp, EXP, điểm tiềm năng, đồ rơi, bình thuốc, chết và hồi sinh, chat khu và chat thế giới.
+- Nhân vật, túi đồ và Quan lưu ở PostgreSQL.
+
+Cần PostgreSQL 16 và Redis 7:
 
 ```bash
-corepack enable && pnpm install && cp .env.example .env && pnpm dev
+docker compose -f infra/docker-compose.yml up -d postgres redis
 ```
 
-Mở `http://localhost:5173` ở hai cửa sổ. Chi tiết: [developer-setup-guide](docs/guides/developer-setup-guide.md).
+```bash
+corepack enable && pnpm install && cp .env.example .env && pnpm db:migrate && pnpm db:seed && pnpm dev
+```
+
+Mở `http://localhost:5173`. Chi tiết: [developer-setup-guide](docs/guides/developer-setup-guide.md). Mở cho người chơi thử: [playtest-hosting](docs/guides/playtest-hosting.md).
 
 ## Công nghệ
 

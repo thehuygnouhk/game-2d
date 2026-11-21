@@ -1,0 +1,11 @@
+# keep images small: dependencies are installed inside the build stage
+**/node_modules
+**/dist
+**/test-results
+**/playwright-report
+.git
+.env
+art/prototype/piskel
+art/prototype/preview
+art/prototype/sheets
+tools/art-proto/__pycache__

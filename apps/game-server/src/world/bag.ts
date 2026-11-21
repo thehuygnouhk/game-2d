@@ -1,11 +1,16 @@
 import type { Content } from "@htk/content";
-import { type BagItem, type ItemSummary, type Loot, RULES, type SInventoryDelta } from "@htk/shared";
+import type { ItemRow } from "@htk/db";
+import { type BagItem, type GearRarity, type ItemSummary, type Loot, RULES, type SInventoryDelta } from "@htk/shared";
+
+/** item_instances.rarity (database-schema §4.3, items §2): 0 Thường, 1 Tốt, 2 Hiếm, 3 Sử Thi. */
+export const RARITY_CODE: Record<GearRarity, number> = { common: 0, good: 1, rare: 2, epic: 3 };
+const RARITY_OF: GearRarity[] = ["common", "good", "rare", "epic"];
 
 /**
- * Session bag for step B2: what a guest picked up during this connection.
- * It is NOT an asset store: nothing is saved and it is gone on disconnect. Step B3 replaces it with the
- * inventory in PostgreSQL, where every change runs in a transaction with an idemKey and a ledger row
- * (CLAUDE.md rule 5, database-schema §6).
+ * The bag of a player in memory.
+ * - Accounts (step B3): a mirror of item_instances and soft_currency. It only changes after the database
+ *   transaction committed (store.ts), never before.
+ * - Development guests (DEV_GUEST): the bag itself, gone on disconnect.
  */
 export class Bag {
   soft = 0;
@@ -30,7 +35,61 @@ export class Bag {
       : { kind: "item", ...base, qty: l.qty };
   }
 
-  /** Add a picked-up drop. Returns the delta to send, or null when the bag is full. */
+  contentItem(id: string) {
+    return this.content.items.get(id);
+  }
+
+  /** A bag entry from a database row. */
+  fromRow(r: ItemRow): BagItem {
+    const def = this.content.items.get(r.template_id);
+    const gear = def?.type === "WEAPON" || def?.type === "ARMOR" || def?.type === "TOME";
+    const it: BagItem = {
+      instanceId: r.id,
+      kind: gear ? "gear" : "item",
+      item: r.template_id,
+      name: def ? this.content.text(def.nameKey) : r.template_id,
+      icon: def?.icon.replace(/^items\//, ""),
+      qty: r.qty,
+    };
+    if (gear) {
+      it.level = r.item_level;
+      it.rarity = RARITY_OF[r.rarity] ?? "common";
+    }
+    if (def?.healHp) it.healHp = def.healHp;
+    if (def?.healMp) it.healMp = def.healMp;
+    return it;
+  }
+
+  /** Replace the content with database rows (loading a character). */
+  load(soft: number, rows: ItemRow[]): void {
+    this.soft = soft;
+    this.items.length = 0;
+    for (const r of rows) this.items.push(this.fromRow(r));
+  }
+
+  /** Mirror rows written by a committed transaction; returns the delta for the client. */
+  applyRows(rows: ItemRow[], soft: number, picked?: ItemSummary): SInventoryDelta {
+    this.soft = soft;
+    const d: SInventoryDelta = { soft, add: [], update: [], remove: [] };
+    if (picked) d.picked = picked;
+    for (const r of rows) {
+      const i = this.items.findIndex((x) => x.instanceId === r.id);
+      if (r.qty <= 0) {
+        if (i >= 0) this.items.splice(i, 1);
+        d.remove.push(r.id);
+      } else if (i >= 0) {
+        this.items[i]!.qty = r.qty;
+        d.update.push({ instanceId: r.id, qty: r.qty });
+      } else {
+        const it = this.fromRow(r);
+        this.items.push(it);
+        d.add.push(it);
+      }
+    }
+    return d;
+  }
+
+  /** Add a picked-up drop (guests only). Returns the delta to send, or null when the bag is full. */
   add(l: Loot): SInventoryDelta | null {
     const picked = this.summary(l);
     if (l.kind === "soft") {

@@ -1,15 +1,10 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { WebSocket } from "ws";
 import {
-  decodeFrame,
-  encodeFrame,
   ErrorCode,
   expToNext,
-  type Frame,
   Op,
   PROTOCOL_VERSION,
   type SDamage,
-  type SEnterWorld,
   type SEntityDied,
   type SInventoryDelta,
   type SMapChange,
@@ -19,70 +14,12 @@ import {
 import { gainExp } from "../src/world/combat";
 import { Drop, type Player } from "../src/world/entities";
 import { type GameServer, startGameServer } from "../src/server";
-
-class Client {
-  readonly frames: Frame[] = [];
-  private seq = 0;
-  closed = false;
-  constructor(readonly ws: WebSocket) {
-    ws.on("message", (d) => this.frames.push(decodeFrame(d as Buffer)));
-    ws.on("close", () => (this.closed = true));
-  }
-  static async open(port: number): Promise<Client> {
-    const ws = new WebSocket(`ws://127.0.0.1:${port}`);
-    await new Promise((res, rej) => {
-      ws.once("open", res);
-      ws.once("error", rej);
-    });
-    return new Client(ws);
-  }
-  send(op: number, payload: unknown = {}): number {
-    this.ws.send(encodeFrame(op, ++this.seq, payload));
-    return this.seq;
-  }
-  hello(name: string, protocolVersion = PROTOCOL_VERSION, origin = "NOBLE") {
-    return this.send(Op.C_HELLO, {
-      ticket: `guest:${name}`,
-      clientVersion: "test",
-      protocolVersion,
-      appearance: { origin, gender: "FEMALE" },
-    });
-  }
-  async wait<T = never>(op: number, pred: (p: T) => boolean = () => true, ms = 3000): Promise<T> {
-    const until = Date.now() + ms;
-    for (;;) {
-      const f = this.frames.find((x) => x.op === op && pred(x.payload as T));
-      if (f) return f.payload as T;
-      if (Date.now() > until) throw new Error(`timeout waiting for 0x${op.toString(16)}`);
-      await new Promise((r) => setTimeout(r, 10));
-    }
-  }
-  /** wait for a frame that arrives after this call */
-  async next<T = never>(op: number, pred: (p: T) => boolean = () => true, ms = 3000): Promise<T> {
-    const start = this.frames.length;
-    const until = Date.now() + ms;
-    for (;;) {
-      const f = this.frames.slice(start).find((x) => x.op === op && pred(x.payload as T));
-      if (f) return f.payload as T;
-      if (Date.now() > until) throw new Error(`timeout waiting for 0x${op.toString(16)}`);
-      await new Promise((r) => setTimeout(r, 10));
-    }
-  }
-  async join(name: string, origin = "NOBLE"): Promise<SEnterWorld> {
-    this.hello(name, PROTOCOL_VERSION, origin);
-    await this.wait(Op.S_WELCOME);
-    this.send(Op.C_ENTER_WORLD);
-    return await this.wait<SEnterWorld>(Op.S_ENTER_WORLD);
-  }
-  close() {
-    this.ws.close();
-  }
-}
+import { Client } from "./helpers/client";
 
 let server: GameServer;
 const logs: string[] = [];
 const start = (devGuest = true) =>
-  startGameServer({ port: 0, mapId: "M001", devGuest, seed: 42, log: (e) => logs.push(e) });
+  startGameServer({ port: 0, mapId: "M001", devGuest, seed: 42, realmId: 1, log: (e) => logs.push(e) });
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const playerOf = (id: number): Player => {
   for (const s of server.sessions) if (s.entity?.id === id) return s.entity;
@@ -108,7 +45,7 @@ describe("game server, step B1 (movement)", () => {
     expect(wa.map).toEqual({ id: "M001", zone: 1, name: "Nhà Học Suối Mơ" });
     expect(wa.entities).toEqual([]);
     expect(wa.body.st).toBeLessThan(2); // landed on the ground
-    expect(wa.stats).toMatchObject({ lv: 1, exp: 0, expNext: 150, maxHp: 180 + 4 * 30, atk: 24 + 4 * 3 });
+    expect(wa.stats).toMatchObject({ lv: 1, exp: 0, expNext: 150, maxHp: 180, atk: 24, statPoints: 10 }); // combat §3.3
     expect(wa.skills.map((s) => s.name)).toEqual(["Đòn Thường", "Tụ Mana Chấn"]);
     const wb = await b.join("Bình");
     expect(wb.entities.map((e) => e.kind === "player" && e.name)).toEqual(["Anh"]);

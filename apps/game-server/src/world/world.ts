@@ -14,7 +14,11 @@ import {
 } from "@htk/shared";
 import { fail, sendStats } from "./combat";
 import type { Player } from "./entities";
+import { MemoryStore, type Store } from "./store";
 import { Zone } from "./zone";
+
+/** Write-behind period of position, HP, MP and EXP (server-design §8). */
+export const SAVE_EVERY_TICKS = 60 * 20;
 
 export interface WorldOptions {
   content: Content;
@@ -23,6 +27,9 @@ export interface WorldOptions {
   zonesPerMap?: number;
   /** override every zone capacity (tests) */
   zoneCap?: number;
+  /** where accounts are saved (PgStore); unset: no accounts, development guests only */
+  store?: Store;
+  log?: (event: string, data?: Record<string, unknown>) => void;
 }
 
 /** Public maps with their zones (khu 1..n), shared clock and entity ids (server-design §3). */
@@ -36,11 +43,21 @@ export class World {
   now = 0;
   private id = 1;
   private readonly pending = new Map<Player, { portalId: string; seq: number; refSeq: number; at: number }>();
+  /** accounts in the world: one session each (network-protocol §3.2) */
+  readonly accounts = new Map<string, Player>();
+  /** final saves of players who left, by account: a new login waits for it */
+  readonly leaving = new Map<string, Promise<unknown>>();
+  readonly guestStore: Store;
+  readonly store: Store | undefined;
+  private readonly log: (event: string, data?: Record<string, unknown>) => void;
 
   constructor(opts: WorldOptions) {
     this.content = opts.content;
     this.rng = opts.rng;
     this.startMap = opts.startMap;
+    this.store = opts.store;
+    this.log = opts.log ?? (() => {});
+    this.guestStore = new MemoryStore(this.log);
     for (const m of opts.content.maps.values()) {
       if (m.type !== "TOWN" && m.type !== "FIELD") continue; // dungeons and instances come later
       const coll = collisionFromTiled(m.tiled as TiledMap);
@@ -84,6 +101,25 @@ export class World {
         this.pending.delete(p);
         this.portal(p, req.portalId, req.refSeq);
       }
+    if (this.tick % SAVE_EVERY_TICKS === 0) for (const p of this.accounts.values()) this.save(p);
+  }
+
+  /** Queue a write-behind save of an account player; errors are logged, the next save retries. */
+  save(p: Player): Promise<unknown> {
+    return p.enqueue(() => p.store.save(p)).catch((e) => p.store.onError(p, "save", e));
+  }
+
+  /** Save everyone (shutdown). */
+  async saveAll(): Promise<void> {
+    await Promise.all([...this.accounts.values()].map((p) => this.save(p)));
+    await Promise.all(this.leaving.values());
+  }
+
+  /** World chat (network-protocol §6.8): every player of the realm. */
+  chatWorld(from: Player, text: string): void {
+    const msg = { channel: "WORLD", fromId: from.id, fromName: from.name, text, time: Date.now() };
+    for (const list of this.zones.values())
+      for (const z of list) for (const p of z.players.values()) p.out.send(Op.S_CHAT_MSG, msg);
   }
 
   replicate(): void {
@@ -115,10 +151,14 @@ export class World {
     };
   }
 
-  enter(p: Player): SEnterWorld | null {
-    const z = this.pickZone(this.startMap);
+  /** Put a player in the world: at the saved spot when it is still valid, else at the start map spawn. */
+  enter(p: Player, at?: { mapId: string; x: number; y: number }): SEnterWorld | null {
+    const saved = at && this.zones.has(at.mapId) && at.x >= 0 && at.y >= 0 ? at : undefined;
+    const z = this.pickZone(saved?.mapId ?? this.startMap) ?? (saved ? this.pickZone(this.startMap) : null);
     if (!z) return null;
-    const placed = this.place(p, z, z.map.spawn.x, z.map.spawn.y);
+    const pos = saved && z.mapId === saved.mapId ? saved : z.map.spawn;
+    const placed = this.place(p, z, pos.x, pos.y);
+    if (p.accountId) this.accounts.set(p.accountId, p);
     const bag = { soft: p.bag.soft, items: p.bag.items, size: p.bag.size };
     return {
       ...placed,
@@ -130,9 +170,19 @@ export class World {
     };
   }
 
-  leave(p: Player): void {
+  /** Take a player out; accounts get a final save (server-design §8). */
+  leave(p: Player): Promise<unknown> {
     this.pending.delete(p);
+    p.lastZone = p.zone ?? p.lastZone;
     p.zone?.remove(p);
+    if (!p.accountId || this.accounts.get(p.accountId) !== p) return Promise.resolve();
+    this.accounts.delete(p.accountId);
+    const acc = p.accountId;
+    const done = this.save(p).finally(() => {
+      if (this.leaving.get(acc) === done) this.leaving.delete(acc);
+    });
+    this.leaving.set(acc, done);
+    return done;
   }
 
   /** Move to another map or zone and tell the player (S_MAP_CHANGE). */
@@ -181,6 +231,10 @@ export class World {
     if (this.now - p.lastCombat < 5000) return fail(p, ErrorCode.E_IN_COMBAT, refSeq, "IN_COMBAT");
     if (to.players.size >= to.cap) return fail(p, ErrorCode.E_ZONE_FULL, refSeq, "ZONE_FULL");
     this.transfer(p, to, p.body.x, p.body.y);
+  }
+
+  townOf(from: GameMap): GameMap {
+    return this.town(from);
   }
 
   private town(from: GameMap): GameMap {

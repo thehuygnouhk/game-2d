@@ -2,9 +2,17 @@
 
 > **Trạng thái:** Draft v0.1 · **Liên quan:** [system-architecture](../architecture/system-architecture.md) · [development-workflow](../workflows/development-workflow.md) · [infrastructure](../architecture/infrastructure-devops.md)
 
-> **Trạng thái:** khung dự án đã có từ **bậc B1**, đánh quái online từ **bậc B2** ([roadmap §8](../product/roadmap.md)): `apps/game-server`, `apps/web-client`, `packages/shared`, `packages/content`, `packages/config`, `infra/docker-compose.yml`, CI. Lệnh nào ở §5 chưa có thì báo bậc sẽ có. Tài liệu này vẫn là **hợp đồng** cho các phần còn lại.
+> **Trạng thái:** khung dự án đã có từ **bậc B1**, đánh quái online từ **bậc B2**, tài khoản từ **bậc B3** ([roadmap §8](../product/roadmap.md)): `apps/api`, `apps/game-server`, `apps/web-client`, `packages/shared`, `packages/content`, `packages/db`, `packages/config`, `infra/docker-compose.yml`, `infra/playtest`, CI. Lệnh nào ở §5 chưa có thì báo bậc sẽ có. Tài liệu này vẫn là **hợp đồng** cho các phần còn lại.
 
-### Chạy nhanh bậc B2 (chưa cần Docker)
+### Chạy nhanh bậc B3
+
+Bậc B3 cần **PostgreSQL 16** và **Redis 7**. Cách dễ nhất là chạy bằng Docker:
+
+```bash
+docker compose -f infra/docker-compose.yml up -d postgres redis
+```
+
+Không dùng Docker thì cài trên máy rồi tạo người dùng `htk` (mật khẩu `htk`) và cơ sở dữ liệu `htk` cho khớp `DATABASE_URL` trong `.env`.
 
 ```bash
 corepack enable
@@ -13,14 +21,20 @@ cp .env.example .env
 ```
 
 ```bash
+pnpm db:migrate && pnpm db:seed
+```
+
+```bash
 pnpm dev
 ```
 
-Mở `http://localhost:5173` ở **hai** cửa sổ trình duyệt, nhập hai tên khác nhau và vào game. Hai nhân vật thấy nhau ở Nhà Học Suối Mơ (M001).
+`pnpm dev` chạy ba phần: API `http://localhost:3000/api`, game server `ws://localhost:7001` và client `http://localhost:5173`. Client chuyển `/api` sang API.
+
+Mở `http://localhost:5173` ở **hai** cửa sổ trình duyệt (cửa sổ thứ hai ở chế độ ẩn danh, vì cookie đăng nhập dùng chung theo trình duyệt). Đăng ký hai tài khoản, tạo nhân vật và vào game. Hai nhân vật thấy nhau ở Nhà Học Suối Mơ (M001).
 
 Đi sang phải qua cổng (nhấn ↑ ở cổng) ra Đồng Hoa (M002) để đánh quái. Quái, sát thương, EXP và đồ rơi do server tính. Nút tên map ở giữa trên cùng để đổi khu. Enter để chat với người cùng khu.
 
-Game server chạy với vé khách (`DEV_GUEST=1`, [network-protocol §3.1.1](../architecture/network-protocol.md)). Máy khác trong cùng mạng mở `http://<ip-máy-chạy>:5173`.
+Thoát ra rồi vào lại thì nhân vật vẫn ở chỗ cũ, giữ cấp, điểm tiềm năng, túi đồ và Quan. Máy khác trong cùng mạng mở `http://<ip-máy-chạy>:5173`. Mở cho người ngoài chơi thử: [playtest-hosting](playtest-hosting.md).
 
 ## 1. Yêu cầu
 
@@ -98,6 +112,14 @@ File `.env` (không commit). Mẫu `.env.example`:
 | `REALM_ID` | `1` | Realm của game server |
 | `TICK_RATE` | `20` | Hz |
 | `CONTENT_DIR` | `packages/content` | Thư mục nội dung (YAML) |
+| `API_PREFIX` | `/api` | Tiền tố mọi route của API |
+| `COOKIE_SECURE`, `TRUST_PROXY` | (tắt) | `1` khi chạy sau HTTPS và reverse proxy (bản chơi thử) |
+| `PUBLIC_WS_URL` | `ws://localhost:7001` | Địa chỉ game server ghi vào realm khi `db:seed` |
+| `ALLOWED_ORIGINS` | (mọi nơi) | Trang được mở WebSocket tới game server, cách nhau bởi dấu phẩy |
+| `MAX_CHARACTERS` | `3` | Số nhân vật mỗi tài khoản mỗi realm |
+| `RATE_LIMIT_SCALE` | `1` | Nhân mọi giới hạn tốc độ của API (chỉ test e2e tăng lên) |
+| `TEST_DATABASE_URL`, `TEST_REDIS_URL` | `…/htk_test`, `redis://localhost:6379/15` | Cơ sở dữ liệu riêng cho `pnpm test:int` (bị xóa sạch mỗi lần chạy) |
+| `E2E_DATABASE_URL`, `E2E_REDIS_URL` | `…/htk_e2e`, `redis://localhost:6379/14` | Cho `pnpm test:e2e` (bị xóa sạch mỗi lần chạy) |
 | `MAP_DIR` | `art/prototype/maps` | Map Tiled `.tmj` và `.yaml`, chưa chuyển vào `packages/content/maps` |
 | `GAME_SEED` | (trống) | Hạt ngẫu nhiên cố định cho test; để trống ở môi trường thật |
 | `LOG_LEVEL` | `debug` | |
@@ -107,8 +129,8 @@ File `.env` (không commit). Mẫu `.env.example`:
 
 ## 5. Lệnh thường dùng
 
-Trạng thái ở bậc B2:
-- **Đã có:** `dev`, `dev:client`, `dev:server`, `build`, `lint`, `typecheck`, `test`, `test:e2e`, `map:check`, `content:validate` (quy tắc V001–V004), `sim:exp` (gọi `tools/sim/chapter1.py`).
+Trạng thái ở bậc B3:
+- **Đã có:** `dev`, `dev:client`, `dev:server`, `dev:api`, `build`, `lint`, `typecheck`, `test`, `test:int` (PostgreSQL và Redis thật, chạy lần lượt từng gói), `test:e2e` (cần PostgreSQL và Redis), `db:migrate`, `db:seed`, `db:reset`, `map:check`, `content:validate` (quy tắc V001–V004), `sim:exp` (gọi `tools/sim/chapter1.py`).
 - **Thêm ngoài danh sách:** `check:ip` (kiểm tra rò rỉ tên IP), `check:links` (liên kết tài liệu), `format`, `format:check`.
 - **Chưa có:** các lệnh còn lại in ra bậc sẽ có rồi thoát với mã 1.
 
@@ -119,7 +141,7 @@ Trạng thái ở bậc B2:
 | `pnpm build` | Build tất cả |
 | `pnpm lint` / `pnpm typecheck` | Kiểm tra mã |
 | `pnpm test` | Unit test |
-| `pnpm test:int` | Integration test (cần Docker) |
+| `pnpm test:int` | Integration test (cần PostgreSQL và Redis, ví dụ chạy bằng Docker) |
 | `pnpm test:e2e` | E2E Playwright |
 | `pnpm content:validate` | Kiểm chứng nội dung |
 | `pnpm content:build` | Đóng gói nội dung + `contentVersion` |

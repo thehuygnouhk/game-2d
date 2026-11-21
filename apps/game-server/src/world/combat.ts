@@ -1,4 +1,5 @@
 import {
+  type BagItem,
   deathExpLoss,
   ErrorCode,
   type ErrorCodeValue,
@@ -8,12 +9,15 @@ import {
   hpByte,
   Op,
   PASSIVE,
+  type Points,
+  POINTS_PER_LEVEL,
   REGEN,
   rollDamage,
   rollLoot,
   RULES,
   type SDamage,
   type SEntityDied,
+  type SInventoryDelta,
   type SStatsUpdate,
 } from "@htk/shared";
 import { Drop, type Mob, type Player } from "./entities";
@@ -174,12 +178,45 @@ export function gainExp(p: Player, n: number, now: number): void {
   while (p.exp >= expToNext(p.lv) && p.lv < cap) {
     p.exp -= expToNext(p.lv);
     p.lv++;
+    p.statPoints += POINTS_PER_LEVEL; // combat §3.3: +5 potential points per level, spent by the player
+    p.pendingPoints += POINTS_PER_LEVEL;
     p.recompute(true);
     up = true;
-    p.out.send(Op.S_LEVEL_UP, { level: p.lv, statPoints: 5 });
+    p.out.send(Op.S_LEVEL_UP, { level: p.lv, statPoints: p.statPoints });
   }
   if (p.lv >= cap) p.exp = Math.min(p.exp, expToNext(p.lv) - 1); // quests §4: Lv10 waits for Q_MAIN_11
-  if (up) sendStats(p, p.full(now));
+  if (up) {
+    sendStats(p, p.full(now));
+    // server-design §8: points are written at once, with the level they come from
+    void p.enqueue(() => p.store.levelUp(p)).catch((e) => p.store.onError(p, "levelUp", e));
+  }
+}
+
+/** C_ALLOCATE_POINTS (combat §3.3): spend free potential points, written at once. */
+export function allocatePoints(p: Player, pts: Points, refSeq: number, now: number): void {
+  const n = pts.hp + pts.mp + pts.atk + pts.def + pts.crit;
+  if (n > p.statPoints) return fail(p, ErrorCode.E_INVALID_PAYLOAD, refSeq, "NOT_ENOUGH_POINTS");
+  p.statPoints -= n; // reserved now so a second request cannot spend the same points
+  void p
+    .enqueue(() => p.store.spend(p, pts))
+    .then((ok) => {
+      if (!ok) {
+        p.statPoints += n;
+        return fail(p, ErrorCode.E_INVALID_PAYLOAD, refSeq, "NOT_ENOUGH_POINTS");
+      }
+      const before = p.stats;
+      for (const k of ["hp", "mp", "atk", "def", "crit"] as const) p.pts[k] += pts[k];
+      p.recompute();
+      // the new maximum is added to the current HP and MP too
+      p.hp = Math.min(p.stats.hp, p.hp + (p.stats.hp - before.hp));
+      p.mp = Math.min(p.stats.mp, p.mp + (p.stats.mp - before.mp));
+      sendStats(p, p.full(now));
+    })
+    .catch((e) => {
+      p.statPoints += n;
+      p.store.onError(p, "spend", e);
+      fail(p, ErrorCode.E_INTERNAL, refSeq, "SAVE_FAILED");
+    });
 }
 
 /** A monster melee swing or shot reaches a player. */
@@ -216,6 +253,7 @@ function playerDies(zone: Zone, p: Player, killerId: number, now: number): void 
   p.hp = 0;
   p.diedAt = now;
   p.skillQueue.length = 0;
+  p.townMap = zone.world.townOf(zone.map).id;
   const loss = Math.min(p.exp, deathExpLoss(p.lv));
   p.exp -= loss;
   for (const o of zone.observers(p.id))
@@ -279,6 +317,10 @@ export function tickPlayerStatus(zone: Zone, p: Player, now: number): void {
   }
 }
 
+/**
+ * C_PICKUP: the drop leaves the ground at once (nobody else can take it), then the bag changes in a database
+ * transaction keyed by the drop (idemKey, ledger row for Quan). If that fails the drop goes back on the ground.
+ */
 export function pickup(zone: Zone, p: Player, dropId: number, refSeq: number, now: number): void {
   const d = zone.drops.get(dropId);
   if (!d) return fail(p, ErrorCode.E_ITEM_NOT_FOUND, refSeq, "DROP_GONE");
@@ -286,10 +328,24 @@ export function pickup(zone: Zone, p: Player, dropId: number, refSeq: number, no
   if (Math.abs(p.body.x - d.x) > RULES.pickupX || Math.abs(p.body.y - d.y) > RULES.pickupY)
     return fail(p, ErrorCode.E_OUT_OF_RANGE, refSeq, "TOO_FAR");
   if (now < d.lockedUntil && d.ownerId !== p.id) return fail(p, ErrorCode.E_INVALID_TARGET, refSeq, "DROP_LOCKED");
-  const delta = p.bag.add(d.loot);
-  if (!delta) return fail(p, ErrorCode.E_INVENTORY_FULL, refSeq, "BAG_FULL");
   zone.drops.delete(d.id);
-  p.out.send(Op.S_INVENTORY_DELTA, delta);
+  const putBack = () => {
+    if (zone.world.now < d.expiresAt) zone.drops.set(d.id, d);
+  };
+  void p
+    .enqueue(() => p.store.pickup(p, d.loot, d.key))
+    .then((delta) => {
+      if (!delta) {
+        putBack();
+        return fail(p, ErrorCode.E_INVENTORY_FULL, refSeq, "BAG_FULL");
+      }
+      p.out.send(Op.S_INVENTORY_DELTA, delta);
+    })
+    .catch((e) => {
+      putBack();
+      p.store.onError(p, "pickup", e);
+      fail(p, ErrorCode.E_INTERNAL, refSeq, "SAVE_FAILED");
+    });
 }
 
 export function useItem(zone: Zone, p: Player, instanceId: string, refSeq: number, now: number): void {
@@ -299,8 +355,25 @@ export function useItem(zone: Zone, p: Player, instanceId: string, refSeq: numbe
   const kind = it.healHp ? "hp" : it.healMp ? "mp" : null;
   if (!kind) return fail(p, ErrorCode.E_INVALID_TARGET, refSeq, "NOT_USABLE");
   if (now < p.potionCd[kind]) return fail(p, ErrorCode.E_COOLDOWN, refSeq, "POTION_ON_COOLDOWN");
-  const taken = p.bag.takeOne(instanceId)!;
   p.potionCd[kind] = now + RULES.potionCooldownMs;
+  void p
+    .enqueue(() => p.store.consume(p, instanceId))
+    .then((taken) => {
+      if (!taken) {
+        p.potionCd[kind] = 0;
+        return fail(p, ErrorCode.E_ITEM_NOT_FOUND, refSeq, "NO_ITEM");
+      }
+      if (!p.alive) return p.out.send(Op.S_INVENTORY_DELTA, taken.delta);
+      drink(zone, p, it, kind, taken.delta);
+    })
+    .catch((e) => {
+      p.potionCd[kind] = 0;
+      p.store.onError(p, "consume", e);
+      fail(p, ErrorCode.E_INTERNAL, refSeq, "SAVE_FAILED");
+    });
+}
+
+function drink(zone: Zone, p: Player, it: BagItem, kind: "hp" | "mp", delta: SInventoryDelta): void {
   let amount: number;
   if (kind === "hp") {
     // Ấn Cổ Hộ Thân (classes §2): healing received +15%
@@ -311,7 +384,7 @@ export function useItem(zone: Zone, p: Player, instanceId: string, refSeq: numbe
     amount = Math.min(it.healMp!, p.stats.mp - Math.floor(p.mp));
     p.mp = Math.min(p.stats.mp, p.mp + it.healMp!);
   }
-  p.out.send(Op.S_INVENTORY_DELTA, taken.delta);
-  zone.sendAbout(p.id, Op.S_HEAL, { targetId: p.id, sourceId: p.id, amount: Math.max(0, amount), kind });
+  p.out.send(Op.S_INVENTORY_DELTA, delta);
+  (p.zone ?? zone).sendAbout(p.id, Op.S_HEAL, { targetId: p.id, sourceId: p.id, amount: Math.max(0, amount), kind });
   sendStats(p, kind === "hp" ? { hp: Math.ceil(p.hp) } : { mp: Math.floor(p.mp) });
 }

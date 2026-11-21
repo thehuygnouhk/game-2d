@@ -31,9 +31,55 @@ jobs:
       - name: Docs links
         run: pnpm check:links
 
+  integration:
+    runs-on: ubuntu-latest
+    needs: check
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: htk
+          POSTGRES_PASSWORD: htk
+          POSTGRES_DB: htk_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U htk" --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7
+        ports: ["6379:6379"]
+    env:
+      TEST_DATABASE_URL: postgresql://htk:htk@localhost:5432/htk_test
+      TEST_REDIS_URL: redis://localhost:6379/15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Database, API and game server on PostgreSQL 16 and Redis 7 (step B3)
+        run: pnpm test:int
+
   e2e:
     runs-on: ubuntu-latest
     needs: check
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: htk
+          POSTGRES_PASSWORD: htk
+          POSTGRES_DB: htk_e2e
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U htk" --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7
+        ports: ["6379:6379"]
+    env:
+      E2E_DATABASE_URL: postgresql://htk:htk@localhost:5432/htk_e2e
+      E2E_REDIS_URL: redis://localhost:6379/14
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -43,7 +89,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @htk/web-client exec playwright install --with-deps chromium
-      - name: Two browsers walk, fight and chat together (steps B1, B2)
+      - name: Accounts, two browsers walking, fighting and chatting (steps B1-B3)
         run: pnpm test:e2e
       - uses: actions/upload-artifact@v4
         if: always()

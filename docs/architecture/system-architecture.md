@@ -118,7 +118,7 @@ flowchart TB
 | WebSocket | **`ws`** (MVP), cân nhắc **uWebSockets.js** khi cần | Đơn giản, đủ cho MVP | Socket.IO (nặng, không cần) |
 | Serialization | **MessagePack** nhị phân | Nhỏ, nhanh, hỗ trợ tốt | Protobuf, FlatBuffers |
 | REST | **Fastify** + **Zod** | Nhanh, validate schema | Express, NestJS |
-| DB | **PostgreSQL 16** + **Prisma** (migration + truy vấn thường), SQL thuần cho đường nóng | ACID, JSONB, mạnh | MySQL |
+| DB | **PostgreSQL 16** + **`pg`** (node-postgres) với migration SQL đánh số (bậc B3; xem ADR 011) | ACID, JSONB, mạnh | MySQL; Prisma |
 | Cache/pub-sub | **Redis 7** | Khóa, zset, pub/sub | — |
 | Queue | **BullMQ** (Redis) | Job nền, retry | — |
 | Observability | Prometheus, Grafana, Loki, Sentry, OpenTelemetry | Chuẩn mở | Datadog |
@@ -128,7 +128,7 @@ flowchart TB
 
 ## 6. Cấu trúc monorepo (kế hoạch)
 
-Đã có từ bậc B1: `apps/web-client`, `apps/game-server`, `packages/shared`, `packages/config`, `infra/docker-compose.yml`, `.github/workflows/ci.yml`, `tools/checks`, `tools/sim`. Bậc B2 thêm `packages/content` (YAML, schema Zod, bộ nạp và `content:validate`) và `packages/shared/src/formulas`. Còn lại theo [roadmap §8](../product/roadmap.md).
+Đã có từ bậc B1: `apps/web-client`, `apps/game-server`, `packages/shared`, `packages/config`, `infra/docker-compose.yml`, `.github/workflows/ci.yml`, `tools/checks`, `tools/sim`. Bậc B2 thêm `packages/content` (YAML, schema Zod, bộ nạp và `content:validate`) và `packages/shared/src/formulas`. Bậc B3 thêm `apps/api` (Fastify) và `packages/db` (migration SQL, truy vấn), cùng `infra/playtest` (Caddy, HTTPS) để chơi thử công khai. Còn lại theo [roadmap §8](../product/roadmap.md).
 
 ```text
 game-2d/
@@ -226,6 +226,7 @@ sequenceDiagram
 | **008** | **TypeScript shared package** (công thức, protocol) | Một nguồn chân lý | Phụ thuộc chặt client/server |
 | **009** | **Web-first**, mobile qua wrapper | Chi phí thấp, phát hành nhanh | Hiệu năng mobile phải kiểm soát |
 | **010** | Mỗi realm một **cơ sở dữ liệu logic** riêng (schema/realm_id) | Cô lập, dễ mở thêm server | Tài khoản dùng chung phải tách |
+| **011** | **SQL thuần + `pg`** thay Prisma (bậc B3): migration là file SQL chép từ [database-schema](database-schema.md) §3–§4 | Các mẫu giao dịch (`FOR UPDATE`, sổ cái, idemKey) vốn viết bằng SQL; không cần engine tải riêng; test so khớp schema với tài liệu | Tự viết bộ chạy migration và kiểu dữ liệu trả về |
 
 ADR chi tiết lưu ở `docs/architecture/adr/NNN-title.md` khi phát sinh (xem [development-workflow](../workflows/development-workflow.md)).
 

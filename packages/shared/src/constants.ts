@@ -16,3 +16,5 @@ export const MAX_BAD_FRAMES = 3;
 export const MAX_SKILLS_PER_S = 10;
 /** Map chat: one message per second (network-protocol §7). */
 export const CHAT_MAP_INTERVAL_MS = 1000;
+/** World chat: one message per 10 seconds (network-protocol §7). */
+export const CHAT_WORLD_INTERVAL_MS = 10_000;

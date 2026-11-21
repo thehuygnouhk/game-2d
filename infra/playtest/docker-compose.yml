@@ -1,0 +1,63 @@
+# Public playtest on one server (docs/guides/playtest-hosting.md): HTTPS by Caddy, then
+#   /api/* → api, /ws → game-server (WebSocket), everything else → the web client.
+# Run from the repo root:  docker compose -f infra/playtest/docker-compose.yml --env-file infra/playtest/.env up -d --build
+name: htk-playtest
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: htk
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in infra/playtest/.env}
+      POSTGRES_DB: htk
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U htk"]
+      interval: 5s
+      retries: 20
+  redis:
+    image: redis:7
+    restart: unless-stopped
+  migrate:
+    build: { context: ../.., dockerfile: apps/api/Dockerfile }
+    command: ["sh", "-c", "node dist/db.js migrate && node dist/db.js seed"]
+    environment:
+      DATABASE_URL: postgresql://htk:${POSTGRES_PASSWORD}@postgres:5432/htk
+      PUBLIC_WS_URL: wss://${DOMAIN:?set DOMAIN in infra/playtest/.env}/ws
+    depends_on:
+      postgres: { condition: service_healthy }
+  api:
+    build: { context: ../.., dockerfile: apps/api/Dockerfile }
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://htk:${POSTGRES_PASSWORD}@postgres:5432/htk
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in infra/playtest/.env}
+      COOKIE_SECURE: "1"
+      TRUST_PROXY: "1"
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+      redis: { condition: service_started }
+  game-server:
+    build: { context: ../.., dockerfile: apps/game-server/Dockerfile }
+    restart: unless-stopped
+    stop_grace_period: 20s # time to save every character on shutdown
+    environment:
+      DATABASE_URL: postgresql://htk:${POSTGRES_PASSWORD}@postgres:5432/htk
+      REDIS_URL: redis://redis:6379
+      ALLOWED_ORIGINS: https://${DOMAIN}
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+      redis: { condition: service_started }
+  web:
+    build: { context: ../.., dockerfile: infra/playtest/Dockerfile.web }
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN}
+    ports: ["80:80", "443:443"]
+    volumes: [caddy_data:/data, caddy_config:/config]
+    depends_on: [api, game-server]
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

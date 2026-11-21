@@ -217,7 +217,12 @@ validate(player, skillId, target, seq):
 
 ## 7. Domain: Inventory, Shop, Trade, Market
 
-> **Bậc B2:** chưa có cơ sở dữ liệu. Đồ nhặt được và Quan nằm trong một **túi tạm của phiên** (`apps/game-server/src/world/bag.ts`, 30 ô, bình thuốc và nguyên liệu xếp chồng). Túi này mất khi ngắt kết nối, không phải tài sản. Bậc B3 thay nó bằng kho đồ trong PostgreSQL: mọi thay đổi chạy trong transaction, có `idemKey` và dòng sổ cái (§7.2–7.3, [database §6](database-schema.md)).
+> **Bậc B3:** túi đồ và Quan của tài khoản nằm trong PostgreSQL (`apps/game-server/src/world/store.ts`, `PgStore`).
+> - Túi trong bộ nhớ (`bag.ts`) chỉ là bản sao, đổi theo các dòng mà transaction vừa ghi.
+> - **Nhặt đồ:** món đồ rời khỏi mặt đất ngay, để người khác không nhặt được nữa, rồi mới ghi vào DB. `idemKey` là khóa riêng của món đồ rơi, nên một món chỉ có một dòng sổ cái. Ghi lỗi thì món đồ trở lại mặt đất và người chơi nhận `E_INTERNAL`; túi đầy thì nhận `E_INVENTORY_FULL`.
+> - **Dùng bình:** trừ trong DB rồi mới hồi máu.
+> - Mỗi nhân vật có một hàng đợi (`Player.enqueue`), nên các thao tác tài sản chạy lần lượt (§7.1).
+> - Nhân vật khách của test (`DEV_GUEST`) dùng `MemoryStore`: không lưu, không phải tài sản.
 
 ### 7.1 Hàng đợi tuần tự theo nhân vật
 
@@ -254,6 +259,13 @@ Mỗi lệnh thay đổi tài sản có `idemKey` (UUID từ client). Server lư
 
 - Khi ngắt kết nối: giữ người chơi trong thế giới **30 giây** (nhân vật đứng yên, có thể bị tấn công), rồi lưu và gỡ.
 - **Graceful shutdown:** từ chối đăng nhập mới, thông báo, lưu hết trạng thái, đóng kết nối.
+
+**Bậc B3 đã chạy:**
+- **Định kỳ 60 s (write-behind):** cấp, EXP, HP, MP, map và vị trí, thời gian chơi (`saveCharacterState`). Quan **không bao giờ** được ghi theo đường này, chỉ qua sổ cái.
+- **Ghi ngay:** lên cấp (cấp, EXP và điểm tiềm năng được cộng); cộng điểm tiềm năng; mọi thay đổi túi đồ và Quan (§7).
+- **Ngắt kết nối:** gỡ khỏi khu ngay, rồi lưu lần cuối. Chưa giữ lại 30 giây; việc giữ lại để chống thoát khi đang đánh sẽ làm cùng PvP.
+- **Gục ngã rồi thoát:** lưu với map là làng của vùng và đầy HP (vì hồi sinh luôn về làng, [combat §7](../game-design/04-combat-and-progression.md)).
+- **Tắt máy chủ (SIGTERM):** gửi `S_KICK SHUTDOWN` cho mọi phiên, lưu hết, rồi đóng kết nối DB. Compose cho bản chơi thử chờ 20 s.
 - **Sập đột ngột:** tối đa mất 60 s dữ liệu mềm; ledger đảm bảo tiền và vật phẩm không mất.
 
 ## 9. Sự kiện miền (domain events)
@@ -302,7 +314,7 @@ stateDiagram-v2
     Saved --> [*]
 ```
 
-- Mỗi tài khoản **một phiên**; đăng nhập mới → **kick** phiên cũ với `S_KICK(reason=DUPLICATE_LOGIN)`.
+- Mỗi tài khoản **một phiên**; đăng nhập mới → **kick** phiên cũ với `S_KICK(reason=DUPLICATE_LOGIN)`. Bậc B3: phiên mới chờ lần lưu cuối của phiên cũ xong rồi mới nạp nhân vật ([network §3.2](network-protocol.md)).
 - `resume token` đổi mỗi lần kết nối, TTL 30 s.
 
 ## 12. Cấu hình và hot reload

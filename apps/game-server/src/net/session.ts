@@ -14,6 +14,9 @@ import {
   MAX_PACKETS_PER_S,
   MAX_SKILLS_PER_S,
   CHAT_MAP_INTERVAL_MS,
+  CHAT_WORLD_INTERVAL_MS,
+  type CAllocatePoints,
+  type SKick,
   Op,
   opName,
   PROTOCOL_VERSION,
@@ -24,10 +27,24 @@ import {
   type CMoveInput,
   type CUseSkill,
 } from "@htk/shared";
+import type { CharacterRow, ItemRow } from "@htk/db";
 import type { ServerConfig } from "../config";
-import { pickup, useItem } from "../world/combat";
+import { allocatePoints, pickup, useItem } from "../world/combat";
 import { Player } from "../world/entities";
 import type { World } from "../world/world";
+
+/** What the API put in Redis for the game server (apps/api, security §3). */
+export interface Ticket {
+  accountId: string;
+  characterId: string;
+  realmId: number;
+}
+/** Accounts (step B3): one-use tickets from Redis, characters from PostgreSQL. */
+export interface AccountGate {
+  realmId: number;
+  takeTicket(ticket: string): Promise<Ticket | null>;
+  loadCharacter(id: string): Promise<{ char: CharacterRow; bag: ItemRow[] } | null>;
+}
 
 const IDLE_TIMEOUT_MS = 30_000;
 
@@ -35,7 +52,8 @@ const IDLE_TIMEOUT_MS = 30_000;
 export class Session {
   private seq = 0;
   private strikes = 0;
-  private stage: "hello" | "lobby" | "world" | "closed" = "hello";
+  private stage: "hello" | "auth" | "lobby" | "world" | "closed" = "hello";
+  private loaded: { ticket: Ticket; char: CharacterRow; bag: ItemRow[] } | null = null;
   private name = "";
   private appearance: Appearance = { origin: "VILLAGER", gender: "MALE" };
   private player: Player | null = null;
@@ -50,6 +68,7 @@ export class Session {
     private readonly ws: WebSocket,
     private readonly world: World,
     private readonly cfg: ServerConfig,
+    private readonly gate?: AccountGate,
   ) {
     ws.binaryType = "nodebuffer";
     ws.on("message", (data, isBinary) => {
@@ -164,13 +183,23 @@ export class Session {
         return pickup(pl.zone, pl, (p as { dropId: number }).dropId, frame.seq, now);
       case Op.C_USE_ITEM:
         return useItem(pl.zone, pl, (p as { instanceId: string }).instanceId, frame.seq, now);
+      case Op.C_ALLOCATE_POINTS:
+        return allocatePoints(pl, p as CAllocatePoints, frame.seq, now);
       case Op.C_CHAT_SEND: {
-        // map chat: everyone in the same map and zone, one message per second (network-protocol §7)
-        if (now - pl.lastChat < CHAT_MAP_INTERVAL_MS)
-          return this.error(ErrorCode.E_RATE_LIMIT, frame.seq, "CHAT_TOO_FAST");
-        pl.lastChat = now;
-        pl.zone.chatAll("MAP", (p as { text: string }).text, pl);
-        this.cfg.log("chat", { id: pl.id, map: pl.zone.key, len: (p as { text: string }).text.length });
+        // map chat: same map and zone, 1 per second; world chat: whole realm, 1 per 10 s (network-protocol §7)
+        const { channel, text } = p as { channel: "MAP" | "WORLD"; text: string };
+        if (channel === "WORLD") {
+          if (now - pl.lastWorldChat < CHAT_WORLD_INTERVAL_MS)
+            return this.error(ErrorCode.E_RATE_LIMIT, frame.seq, "WORLD_CHAT_TOO_FAST");
+          pl.lastWorldChat = now;
+          w.chatWorld(pl, text);
+        } else {
+          if (now - pl.lastChat < CHAT_MAP_INTERVAL_MS)
+            return this.error(ErrorCode.E_RATE_LIMIT, frame.seq, "CHAT_TOO_FAST");
+          pl.lastChat = now;
+          pl.zone.chatAll("MAP", text, pl);
+        }
+        this.cfg.log("chat", { id: pl.id, channel, map: pl.zone.key, len: text.length });
         return;
       }
     }
@@ -187,18 +216,66 @@ export class Session {
       );
       return this.close(4001, "E_VERSION");
     }
-    const guest =
-      this.cfg.devGuest && h.ticket.startsWith("guest:") ? CharacterName.safeParse(h.ticket.slice(6)) : null;
+    if (!h.ticket.startsWith("guest:")) {
+      if (!this.gate) {
+        this.error(ErrorCode.E_AUTH, seq, "accounts are not enabled on this server");
+        return this.close(4002, "E_AUTH");
+      }
+      this.stage = "auth";
+      void this.redeem(h, seq);
+      return;
+    }
+    const guest = this.cfg.devGuest ? CharacterName.safeParse(h.ticket.slice(6)) : null;
     if (!guest?.success) {
       this.error(
         ErrorCode.E_AUTH,
         seq,
-        this.cfg.devGuest ? "guest name must be 3-12 letters or digits" : "accounts arrive in step B3",
+        this.cfg.devGuest ? "guest name must be 3-12 letters or digits" : "sign in first",
       );
       return this.close(4002, "E_AUTH");
     }
     this.name = guest.data;
     if (h.appearance) this.appearance = h.appearance;
+    this.welcome(h);
+  }
+
+  /** Ticket from the API → character from the database (network-protocol §3, security §3). */
+  private async redeem(h: CHello, seq: number): Promise<void> {
+    const gate = this.gate!;
+    try {
+      const t = await gate.takeTicket(h.ticket); // one use: taken out of Redis
+      if (!t || t.realmId !== gate.realmId) {
+        this.error(ErrorCode.E_AUTH, seq, "ticket expired or already used");
+        return this.close(4002, "E_AUTH");
+      }
+      // one session per account: the old one is kicked and its final save finishes before we load
+      const old = this.world.accounts.get(t.accountId);
+      if (old) (old.out as Session).kick("DUPLICATE_LOGIN", "Tài khoản vừa đăng nhập ở nơi khác.");
+      await this.world.leaving.get(t.accountId);
+      const data = await gate.loadCharacter(t.characterId);
+      if (this.stage !== "auth") return; // closed meanwhile
+      if (!data || data.char.account_id !== t.accountId) {
+        this.error(ErrorCode.E_AUTH, seq, "no such character");
+        return this.close(4002, "E_AUTH");
+      }
+      this.loaded = { ticket: t, ...data };
+      this.name = data.char.name;
+      this.appearance = { origin: data.char.origin, gender: data.char.gender === "F" ? "FEMALE" : "MALE" };
+      this.welcome(h);
+    } catch (e) {
+      this.cfg.log("auth.error", { message: (e as Error).message });
+      this.error(ErrorCode.E_INTERNAL, seq, "sign-in failed");
+      this.close(1011, "E_INTERNAL");
+    }
+  }
+
+  /** S_KICK then close (network-protocol §3.2). */
+  kick(reason: SKick["reason"], message: string): void {
+    this.send(Op.S_KICK, { reason, message } satisfies SKick);
+    this.close(4005, reason);
+  }
+
+  private welcome(h: CHello): void {
     this.stage = "lobby";
     const welcome: SWelcome = {
       serverTime: Date.now(),
@@ -213,8 +290,25 @@ export class Session {
 
   private onEnterWorld(seq: number): void {
     if (this.stage !== "lobby") return this.strike(seq, "C_ENTER_WORLD before C_HELLO");
-    const pl = new Player(this.world.nextId(), this.name, this.appearance, this, this.world.content);
-    const enter = this.world.enter(pl);
+    const l = this.loaded;
+    const store = l && this.world.store ? this.world.store : this.world.guestStore;
+    const pl = new Player(this.world.nextId(), this.name, this.appearance, this, this.world.content, store);
+    let at: { mapId: string; x: number; y: number } | undefined;
+    if (l) {
+      const c = l.char;
+      pl.accountId = l.ticket.accountId;
+      pl.characterId = c.id;
+      pl.lv = c.level;
+      pl.exp = c.exp;
+      pl.statPoints = c.stat_points;
+      pl.pts = { hp: c.pts_hp, mp: c.pts_mp, atk: c.pts_atk, def: c.pts_def, crit: c.pts_crit };
+      pl.recompute(true);
+      pl.hp = c.hp > 0 ? Math.min(c.hp, pl.stats.hp) : pl.stats.hp;
+      pl.mp = Math.min(Math.max(0, c.mp), pl.stats.mp);
+      pl.bag.load(c.soft_currency, l.bag);
+      at = { mapId: c.map_id, x: c.pos_x, y: c.pos_y };
+    }
+    const enter = this.world.enter(pl, at);
     if (!enter) {
       this.error(ErrorCode.E_ZONE_FULL, seq, "ALL_ZONES_FULL");
       return this.close(4003, "full");
@@ -229,7 +323,7 @@ export class Session {
     if (this.stage === "closed") return;
     this.stage = "closed";
     if (this.player) {
-      this.world.leave(this.player);
+      void this.world.leave(this.player);
       this.cfg.log("leave", { id: this.player.id, name: this.name, online: this.world.playerCount });
     }
   }

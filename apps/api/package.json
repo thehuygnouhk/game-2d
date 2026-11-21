@@ -1,0 +1,35 @@
+{
+  "name": "@htk/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "REST API: accounts, sign-in, characters, game tickets (docs/architecture/network-protocol.md §10)",
+  "scripts": {
+    "dev": "tsx watch src/main.ts",
+    "start": "node dist/main.js",
+    "build": "esbuild main=src/main.ts db=../../packages/db/src/cli.ts --bundle --platform=node --target=node20 --format=esm --outdir=dist --external:fastify --external:@fastify/cookie --external:@node-rs/argon2 --external:ioredis --external:jose --external:pg --external:yaml --external:zod",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run --passWithNoTests",
+    "test:int": "vitest run --config vitest.int.config.ts"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^11.1.5",
+    "@htk/content": "workspace:*",
+    "@htk/db": "workspace:*",
+    "@htk/shared": "workspace:*",
+    "@node-rs/argon2": "^2.2.2",
+    "fastify": "^5.12.8",
+    "ioredis": "^5.8.2",
+    "jose": "^6.2.18",
+    "pg": "^8.23.1",
+    "yaml": "^2.8.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "esbuild": "^0.25.12",
+    "tsx": "^4.23.15",
+    "typescript": "~5.9.3",
+    "vitest": "^3.2.7"
+  }
+}

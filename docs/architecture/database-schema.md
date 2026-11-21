@@ -1,7 +1,9 @@
 # Thiết kế cơ sở dữ liệu
 
 > **Trạng thái:** Draft v0.1 · **DB:** PostgreSQL 16 · **Liên quan:** [system-architecture](system-architecture.md) · [server-design](server-design.md) · [economy](../game-design/08-economy-and-monetization.md)
-> Schema chuẩn lưu trong `packages/db` (Prisma + migration SQL). Bản dưới là **đặc tả tham chiếu**.
+> Schema chạy thật lưu trong `packages/db`: các file migration SQL đánh số (`migrations/0001_init.sql` …), truy vấn bằng `pg` (node-postgres). Bản dưới là **đặc tả tham chiếu**; migration chép đúng DDL ở §3–§4, và test tích hợp của `packages/db` so khớp từng cột giữa hai bên.
+>
+> **Bậc B3** đã tạo: mọi ENUM, `accounts`, `auth_sessions`, `realms`, `characters`, `character_skills`, `character_quests`, `item_instances`, `currency_ledger`. Các bảng còn lại thêm vào cùng tính năng dùng chúng.
 
 ## 1. Quy ước
 
@@ -233,7 +235,8 @@ CREATE TABLE item_instances (
   location         item_location NOT NULL,
   holder_id        uuid NOT NULL,                       -- character / account / guild / mail / listing / trade
   slot             integer,
-  rarity           smallint NOT NULL DEFAULT 0 CHECK (rarity BETWEEN 0 AND 5),
+  rarity           smallint NOT NULL DEFAULT 0 CHECK (rarity BETWEEN 0 AND 5),   -- 0 Thường … 5 Thần Thoại (items §2)
+  item_level       smallint NOT NULL DEFAULT 1 CHECK (item_level BETWEEN 1 AND 200), -- trang bị rơi lấy cấp quái (combat §6)
   enhance_level    smallint NOT NULL DEFAULT 0 CHECK (enhance_level BETWEEN 0 AND 16),
   affixes          jsonb NOT NULL DEFAULT '[]'::jsonb,
   gems             jsonb NOT NULL DEFAULT '[]'::jsonb,
@@ -648,18 +651,32 @@ VALUES ('ACCOUNT', $acc, 'PREMIUM', $amount, $balance_after, 'TOPUP', 'PAYMENT_O
 COMMIT;
 ```
 
+### 6.5 Đã chạy ở bậc B3
+
+| Thao tác | Cách làm (`packages/db/src`, `apps/game-server/src/world/store.ts`) |
+|----------|-------------------------------------------------------------------|
+| Nhặt Quan rơi | Khóa nhân vật (`FOR UPDATE`) → `addSoft` cộng `soft_currency` và ghi `currency_ledger` (`reason` `MOB_DROP`, `idem_key` = khóa riêng của món đồ rơi, nên nhặt lặp không cộng hai lần) |
+| Nhặt vật phẩm | Khóa nhân vật → `grantItem`: dồn vào chồng cùng loại trước, rồi ô trống nhỏ nhất của túi 30 ô; túi đầy thì cả transaction hủy |
+| Dùng bình | Khóa nhân vật → `consumeOne` (bớt 1 hoặc xóa dòng) |
+| Tạo nhân vật | Một transaction: dòng `characters` + đồ khởi đầu |
+| Cộng điểm tiềm năng | Một `UPDATE … WHERE stat_points >= n` (không bao giờ âm) |
+| Lên cấp | Ghi ngay cấp, EXP và `stat_points` cộng thêm |
+
+Game server ghi DB **trước**, rồi mới đổi túi trong bộ nhớ và báo client. Các thao tác tài sản của một nhân vật chạy lần lượt qua hàng đợi riêng (server-design §7.1).
+
 ## 7. Redis
 
 | Khóa | Kiểu | TTL | Mục đích |
 |------|------|-----|----------|
-| `ticket:{ticket}` | string | 30 s | Vé vào game (tiêu thụ một lần) |
+| `ticket:{ticket}` | string | 30 s | Vé vào game (tiêu thụ một lần bằng `GETDEL`); JSON `{accountId, characterId, realmId, ipHash}` |
 | `sess:{accountId}` | hash | phiên | Phiên đang hoạt động, node đang giữ |
 | `resume:{token}` | string | 30 s | Kết nối lại |
 | `online:{realm}` | set | — | Nhân vật trực tuyến |
 | `zone:{map}:{n}:count` | string | — | Số người trong khu |
 | `registry:zone:{map}:{n}` | string | — | Node đang chạy khu |
 | `lb:{realm}:power` / `merit` / `level` | zset | — | Bảng xếp hạng |
-| `rl:{ip|acc}:{op}` | string | giây | Giới hạn tốc độ |
+| `rl:{ip|acc}:{op}` | string | giây | Giới hạn tốc độ (bậc B3: `rl:ip:{ipHash}:login`, `:register`, `rl:acc:{id}:login`, `:ticket`) |
+| `lock:login:{accountId}` | string | 10 phút | Đếm lần sai mật khẩu; 5 lần thì khóa đăng nhập |
 | `idem:{owner}:{key}` | string | 10 phút | Idempotency lệnh tài sản |
 | `lock:char:{id}` | string | 5 s | Khóa thao tác nhân vật xuyên node |
 | `job:lock:{name}` | string | tùy | Khóa lịch |
@@ -696,7 +713,7 @@ Chạy hằng đêm (Worker), báo cáo vào dashboard:
 |----------|------------|
 | Sao lưu đầy đủ | Hằng ngày + **WAL archiving liên tục** (PITR), giữ 14 ngày |
 | Diễn tập khôi phục | Hằng tháng trên môi trường riêng |
-| Migration | Prisma migrate; mỗi PR có migration + script rollback hoặc lý do không thể rollback |
+| Migration | File SQL đánh số trong `packages/db/migrations`, chạy bằng `pnpm db:migrate` (bảng `schema_migrations`, mỗi file một transaction). Mỗi PR có migration + script rollback hoặc lý do không thể rollback |
 | Chiến lược migration lớn | **Expand → Migrate → Contract** (thêm cột/bảng mới, chuyển dữ liệu, rồi xóa cũ) |
-| Seed | `packages/db/seed` cho dev; **không** seed dữ liệu sản xuất |
+| Seed | `pnpm db:seed` (realm 1, địa chỉ WebSocket từ `PUBLIC_WS_URL`) cho dev và chơi thử; **không** seed dữ liệu sản xuất khác |
 | Mở rộng nhiều realm | Giai đoạn đầu: một DB, cột `realm_id`. Khi cần: tách DB theo realm, `accounts` tách DB dùng chung |

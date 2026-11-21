@@ -140,6 +140,26 @@ Hiện thực (bậc B2, `apps/web-client/src/scenes/WorldScene.ts`, `src/ui/hud
 - HUD là DOM nằm trên canvas, dùng đơn vị `cqw` như bản chơi thử: khung nhân vật (HP, MP, EXP, Quan, Lực Chiến), nút tên map và khu (mở danh sách khu), ô chat và nhật ký, 4 ô hành động (J, 1, Q, E) có lớp phủ hồi chiêu, bảng "Bạn đã gục ngã" có nút về làng.
 - Chưa có phím ảo cho điện thoại (để ở bậc C, "bản điện thoại").
 
+Hiện thực (bậc B3, `src/main.ts`, `src/net/api.ts`, `src/ui/charwin.ts`):
+
+**Đăng nhập**
+- Màn **Đăng nhập / Đăng ký** (hai thẻ). Tên tài khoản và mật khẩu được kiểm ngay ở client cho nhanh, server vẫn kiểm lại. Lỗi hiện bằng câu tiếng Việt theo mã lỗi của API.
+- Mở trang thì client thử `POST /api/auth/refresh` bằng cookie. Còn phiên thì vào thẳng màn **Chọn nhân vật**.
+
+**Nhân vật và vào game**
+- Màn **Chọn nhân vật**: danh sách (tên, cấp, xuất thân, map), nút "Vào game", form **Tạo nhân vật** (ẩn khi đủ 3), "Đăng xuất".
+- "Vào game" xin vé (`/session/ticket`) rồi mở WebSocket tới `wsUrl` của realm.
+  - `?ws=` hoặc `VITE_GAME_WS_URL` ghi đè địa chỉ này.
+  - Địa chỉ `localhost` được đổi sang host của trang, để điện thoại trong mạng LAN chơi được.
+- Token truy cập chỉ nằm trong bộ nhớ; hết hạn (401) thì client tự làm mới một lần.
+- Vite chuyển `/api` sang API khi phát triển (`VITE_API_PROXY`).
+
+**Trong game**
+- Cửa sổ **Nhân vật** (phím C hoặc nút "Nhân vật" có huy hiệu số điểm trống): chỉ số, điểm còn, +1 và +5 từng dòng, "Cộng gợi ý", "Hủy", "Xác nhận" (gửi `C_ALLOCATE_POINTS`).
+- Ô chat có nút đổi kênh **Khu / Thế giới**.
+- "Đổi nhân vật" tải lại trang.
+- `S_KICK` hiện lý do (đăng nhập nơi khác, bảo trì).
+
 ## 6. Render
 
 ### 6.1 Paper-doll (lớp nhân vật)

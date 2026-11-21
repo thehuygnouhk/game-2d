@@ -1,4 +1,5 @@
 import { type Page, expect, test } from "@playwright/test";
+import { signUpAndEnter } from "./helpers";
 
 interface Debug {
   you: number;
@@ -10,19 +11,7 @@ interface Debug {
 const debug = (p: Page) =>
   p.evaluate(() => (window as unknown as { __htk: { scene: { debug: Debug } } }).__htk.scene.debug);
 
-async function join(page: Page, name: string, gender: string, origin: string) {
-  await page.goto("/");
-  await page.fill("#name", name);
-  await page.selectOption("#gender", gender);
-  await page.selectOption("#origin", origin);
-  await page.click("#join button");
-  await page.waitForFunction(
-    () => !!(window as unknown as { __htk?: { scene?: { debug?: unknown } } }).__htk?.scene?.debug,
-    null,
-    { timeout: 30_000 },
-  );
-  await page.locator("#game canvas").click();
-}
+const join = (page: Page, name: string, gender: string, origin: string) => signUpAndEnter(page, name, gender, origin);
 
 test("two browsers see each other walk and jump on M001", async ({ browser }, info) => {
   const a = await (await browser.newContext({ viewport: { width: 1280, height: 800 } })).newPage();

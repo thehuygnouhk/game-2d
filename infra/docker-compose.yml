@@ -1,5 +1,8 @@
-# Local services (docs/guides/developer-setup-guide.md §2). Databases are used from step B3;
-# the game server runs here with:  docker compose -f infra/docker-compose.yml --profile app up --build
+# Local services (docs/guides/developer-setup-guide.md §2): PostgreSQL and Redis for `pnpm dev`
+#   docker compose -f infra/docker-compose.yml up -d postgres redis
+# The whole backend in containers (migrate, api, game-server):
+#   docker compose -f infra/docker-compose.yml --profile app up --build
+# Public playtest with HTTPS: infra/playtest (docs/guides/playtest-hosting.md).
 name: htk
 services:
   postgres:
@@ -20,6 +23,30 @@ services:
   mailhog:
     image: mailhog/mailhog:v1.0.1
     ports: ["1025:1025", "8025:8025"]
+  migrate:
+    profiles: [app]
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    command: ["sh", "-c", "node dist/db.js migrate && node dist/db.js seed"]
+    environment:
+      DATABASE_URL: postgresql://htk:htk@postgres:5432/htk
+      PUBLIC_WS_URL: ws://localhost:7001
+    depends_on:
+      postgres: { condition: service_healthy }
+  api:
+    profiles: [app]
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://htk:htk@postgres:5432/htk
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: local-compose-secret-0123456789abcdef0123
+    ports: ["3000:3000"]
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+      redis: { condition: service_started }
   game-server:
     profiles: [app]
     build:
@@ -27,7 +54,11 @@ services:
       dockerfile: apps/game-server/Dockerfile
     environment:
       GAME_WS_PORT: "7001"
-      DEV_GUEST: "1"
+      DATABASE_URL: postgresql://htk:htk@postgres:5432/htk
+      REDIS_URL: redis://redis:6379
     ports: ["7001:7001"]
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+      redis: { condition: service_started }
 volumes:
   pgdata:

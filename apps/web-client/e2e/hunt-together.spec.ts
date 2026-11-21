@@ -1,4 +1,5 @@
 import { type Page, expect, test } from "@playwright/test";
+import { signUpAndEnter } from "./helpers";
 
 // Step B2 acceptance (docs/product/roadmap.md §8): two players chat, walk through the portal to Đồng Hoa,
 // one fights monsters while the other watches the same monsters, then the other changes zone.
@@ -29,17 +30,7 @@ const htk = <T>(p: Page, fn: (h: Htk) => T) =>
   p.evaluate((src) => new Function(`return (${src})(window.__htk)`)(), fn.toString()) as Promise<T>;
 const debug = (p: Page) => htk(p, (h) => h.scene.debug);
 
-async function join(page: Page, name: string, gender: string, origin: string) {
-  await page.goto("/");
-  await page.fill("#name", name);
-  await page.selectOption("#gender", gender);
-  await page.selectOption("#origin", origin);
-  await page.click("#join button");
-  await page.waitForFunction(() => !!(window as unknown as { __htk?: Htk }).__htk?.scene?.debug, null, {
-    timeout: 30_000,
-  });
-  await page.locator("#game canvas").click();
-}
+const join = (page: Page, name: string, gender: string, origin: string) => signUpAndEnter(page, name, gender, origin);
 
 /** walk right to the portal of M001, jumping over the steps, and press up */
 async function goThroughPortal(page: Page) {
@@ -66,22 +57,22 @@ test("two players hunt on Đồng Hoa: map chat, portal, monsters, EXP, zones", 
   test.setTimeout(180_000);
   const a = await (await browser.newContext({ viewport: { width: 1280, height: 800 } })).newPage();
   const b = await (await browser.newContext({ viewport: { width: 1280, height: 800 } })).newPage();
-  await join(a, "Lan Hà", "FEMALE", "ANCIENT");
-  await join(b, "Minh", "MALE", "VILLAGER");
+  await join(a, "Thu Hà", "FEMALE", "ANCIENT");
+  await join(b, "Quang", "MALE", "VILLAGER");
 
   // map chat reaches the other player in the same zone
   await a.keyboard.press("Enter");
   await a.keyboard.type("Ra đồng đánh nấm nhé");
   await a.keyboard.press("Enter");
-  await expect.poll(() => htk(b, (h) => h.hud.lines.map((l) => l.text))).toContain("Lan Hà: Ra đồng đánh nấm nhé");
+  await expect.poll(() => htk(b, (h) => h.hud.lines.map((l) => l.text))).toContain("Thu Hà: Ra đồng đánh nấm nhé");
   await a.locator("#game canvas").click();
 
   await Promise.all([goThroughPortal(a), goThroughPortal(b)]);
   expect((await debug(a)).map).toMatchObject({ id: "M002", zone: 1, name: "Đồng Hoa Suối Mơ" });
-  await expect.poll(async () => (await debug(b)).remotes.map((r) => r.name)).toContain("Lan Hà");
+  await expect.poll(async () => (await debug(b)).remotes.map((r) => r.name)).toContain("Thu Hà");
   expect((await debug(a)).mobs.length).toBeGreaterThan(3);
 
-  // Lan Hà fights the monsters on her floor, picking up what drops; Minh watches the same monsters
+  // Thu Hà fights the monsters on her floor, picking up what drops; Quang watches the same monsters
   let sawDrop = false;
   for (let i = 0; i < 1200; i++) {
     const d = await debug(a);
@@ -112,20 +103,20 @@ test("two players hunt on Đồng Hoa: map chat, portal, monsters, EXP, zones", 
   expect(after.exp).toBeGreaterThan(0);
   expect(after.lines.some((l) => /^Hạ Nấm Lùn Lv\d · \+\d+ EXP$/.test(l))).toBe(true);
   if (sawDrop) expect(after.bag.soft + after.bag.items.length).toBeGreaterThan(0);
-  // the monster Lan Hà killed is gone from Minh's view too (died for everyone, not left behind)
+  // the monster Thu Hà killed is gone from Quang's view too (died for everyone, not left behind)
   const killed = (await debug(a)).kills[0];
   expect(killed).toBeGreaterThan(0);
   await expect.poll(async () => (await debug(b)).mobs.some((m) => m.id === killed)).toBe(false);
-  await a.screenshot({ path: info.outputPath("lan-ha-dong-hoa.png") });
-  await b.screenshot({ path: info.outputPath("minh-dong-hoa.png") });
+  await a.screenshot({ path: info.outputPath("thu-ha-dong-hoa.png") });
+  await b.screenshot({ path: info.outputPath("quang-dong-hoa.png") });
 
-  // Minh moves to Khu 2 through the zone list: the two no longer see each other
+  // Quang moves to Khu 2 through the zone list: the two no longer see each other
   await b.click(".hud-zone");
   await b.click(".hud-zones button:nth-child(2)");
   await expect.poll(async () => (await debug(b)).map.zone).toBe(2);
-  await expect.poll(async () => (await debug(a)).remotes.map((r) => r.name)).not.toContain("Minh");
+  await expect.poll(async () => (await debug(a)).remotes.map((r) => r.name)).not.toContain("Quang");
   expect((await debug(b)).mobs.length).toBeGreaterThan(0);
-  await b.screenshot({ path: info.outputPath("minh-khu-2.png") });
+  await b.screenshot({ path: info.outputPath("quang-khu-2.png") });
   await a.context().close();
   await b.context().close();
 });

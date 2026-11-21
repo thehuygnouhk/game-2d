@@ -29,11 +29,16 @@ export class Hud {
   private readonly bar = el("div", "hud-actions");
   private readonly toastBox = el("div", "hud-toast");
   private readonly dead = el("div", "hud-dead");
+  private readonly channelBtn = el("button", "chat-ch", "Khu");
+  private readonly menu = el("div", "hud-menu");
+  readonly charBtn = el("button", "menu-btn");
+  private channel: "MAP" | "WORLD" = "MAP";
   private toastTimer = 0;
   /** lines shown in the chat box, for tests and the scene */
   readonly lines: { channel: string; text: string }[] = [];
   onChatFocus: (focused: boolean) => void = () => {};
   onAction: (id: string) => void = () => {};
+  onCharWindow: () => void = () => {};
 
   constructor(
     stage: HTMLElement,
@@ -44,10 +49,35 @@ export class Hud {
     this.dead.hidden = true;
     const chat = el("div", "hud-chat");
     this.chatInput.maxLength = 120;
-    this.chatInput.placeholder = "Enter: chat cùng khu";
+    this.chatInput.placeholder = "Enter để chat";
     this.chatInput.autocomplete = "off";
-    chat.append(this.log, this.chatInput);
-    this.root.append(this.me, this.zoneBtn, this.zoneList, this.net, chat, this.bar, this.toastBox, this.dead);
+    this.channelBtn.type = "button";
+    this.channelBtn.title = "Đổi kênh: Khu (cùng map và khu) hoặc Thế giới (cả máy chủ, 10 giây một tin)";
+    this.channelBtn.addEventListener("click", () => {
+      this.channel = this.channel === "MAP" ? "WORLD" : "MAP";
+      this.channelBtn.textContent = this.channel === "MAP" ? "Khu" : "Thế giới";
+      this.channelBtn.classList.toggle("world", this.channel === "WORLD");
+    });
+    const line = el("div", "chat-line");
+    line.append(this.channelBtn, this.chatInput);
+    chat.append(this.log, line);
+    this.charBtn.type = "button";
+    this.charBtn.addEventListener("click", () => this.onCharWindow());
+    const swap = el("button", "menu-btn", "Đổi nhân vật");
+    swap.type = "button";
+    swap.addEventListener("click", () => location.reload());
+    this.menu.append(this.charBtn, swap);
+    this.root.append(
+      this.me,
+      this.zoneBtn,
+      this.zoneList,
+      this.net,
+      this.menu,
+      chat,
+      this.bar,
+      this.toastBox,
+      this.dead,
+    );
     stage.append(this.root);
     for (const a of ACTIONS) {
       const b = el("button", "act");
@@ -64,7 +94,14 @@ export class Hud {
     });
     conn.on<SZoneList>(Op.S_ZONE_LIST, (l) => this.showZones(l));
     conn.on<SChatMsg>(Op.S_CHAT_MSG, (m) =>
-      this.chat(m.channel, m.channel === "MAP" ? `${m.fromName}: ${m.text}` : m.text),
+      this.chat(
+        m.channel,
+        m.channel === "MAP"
+          ? `${m.fromName}: ${m.text}`
+          : m.channel === "WORLD"
+            ? `[Thế giới] ${m.fromName}: ${m.text}`
+            : m.text,
+      ),
     );
     this.chatInput.addEventListener("focus", () => this.onChatFocus(true));
     this.chatInput.addEventListener("blur", () => this.onChatFocus(false));
@@ -72,7 +109,7 @@ export class Hud {
       e.stopPropagation();
       if (e.key === "Enter") {
         const text = this.chatInput.value.trim();
-        if (text) conn.send(Op.C_CHAT_SEND, { channel: "MAP", text });
+        if (text) conn.send(Op.C_CHAT_SEND, { channel: this.channel, text });
         this.chatInput.value = "";
         this.chatInput.blur();
       } else if (e.key === "Escape") this.chatInput.blur();
@@ -162,6 +199,8 @@ export class Hud {
     soft.append(el("span", "pw", ` · Lực Chiến ${s.power.toLocaleString("vi-VN")}`));
     this.me.append(soft);
     this.zoneBtn.textContent = `${this.state.map.name} · Khu ${this.state.map.zone} ▾`;
+    this.charBtn.replaceChildren(document.createTextNode("Nhân vật (C)"));
+    if (s.statPoints > 0) this.charBtn.append(el("b", "badge", `+${s.statPoints}`));
     for (const b of this.bar.querySelectorAll<HTMLButtonElement>(".act")) {
       const id = b.dataset.id!;
       const nm = b.querySelector(".nm")!,

@@ -79,6 +79,7 @@
 | [player-guide](guides/player-guide.md) | Người chơi |
 | [admin-gm-guide](guides/admin-gm-guide.md) | GM, Support, Admin |
 | [developer-setup-guide](guides/developer-setup-guide.md) | Developer |
+| [playtest-hosting](guides/playtest-hosting.md) | Người vận hành đợt chơi thử công khai (bậc B3) |
 
 ## 7. Tra cứu
 

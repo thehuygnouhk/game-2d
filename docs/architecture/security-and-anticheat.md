@@ -35,6 +35,21 @@
 | Đặt lại mật khẩu | Link ngẫu nhiên, 30 phút, một lần; thu hồi mọi refresh token |
 | Cookie | `HttpOnly`, `Secure`, `SameSite=Lax` (REST web) |
 
+**Bậc B3 đã có** (`apps/api/src/security.ts`, `app.ts`):
+- **Mật khẩu:** Argon2id 19 MiB, 2 vòng, 1 luồng (mức tối thiểu của OWASP); tối thiểu 8 ký tự; chặn một danh sách ngắn mật khẩu phổ biến.
+- **Token:** JWT HS256 sống 15 phút. Refresh token 256 bit, lưu dạng SHA-256, quay vòng mỗi lần dùng. Dùng lại token đã thu hồi thì thu hồi cả họ.
+- **Vé vào game:** 128 bit, 30 s, dùng một lần.
+- **Giới hạn đăng nhập:** khóa 10 phút sau 5 lần sai (cố định, chưa tăng dần).
+- **Giới hạn tốc độ** trong Redis; IP lưu dạng HMAC.
+- **Cookie:** `Secure` bật bằng `COOKIE_SECURE=1` khi chạy HTTPS.
+- **Kiểm tra `Origin` của WebSocket** bằng `ALLOWED_ORIGINS` (bản chơi thử bật sẵn).
+
+**Chưa có:**
+- cảnh báo email khi đăng nhập thiết bị lạ;
+- 2FA;
+- đặt lại mật khẩu (chưa có dịch vụ gửi email);
+- so khớp IP của vé ([network §3.1.3](network-protocol.md)).
+
 ## 4. Bảo vệ giao thức
 
 | Biện pháp | Mô tả |

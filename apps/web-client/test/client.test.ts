@@ -74,6 +74,8 @@ describe("game state (client-design §3)", () => {
       def: 13,
       crit: 0.05,
       power: 300,
+      statPoints: 0,
+      pts: { hp: 4, mp: 0, atk: 4, def: 2, crit: 0 },
     },
     skills: [{ id: "SKL_BASIC", name: "Đòn Thường", unlockLevel: 1, mp: 0, cooldownMs: 1000 }],
     bag: { soft: 0, items: [], size: 30 },

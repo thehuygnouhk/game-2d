@@ -7,10 +7,11 @@
   "scripts": {
     "dev": "tsx watch src/main.ts",
     "start": "node dist/main.js",
-    "build": "esbuild src/main.ts --bundle --platform=node --target=node20 --format=esm --outfile=dist/main.js --external:ws --external:@msgpack/msgpack --external:zod --external:yaml",
+    "build": "esbuild src/main.ts --bundle --platform=node --target=node20 --format=esm --outfile=dist/main.js --external:ws --external:@msgpack/msgpack --external:zod --external:yaml --external:pg --external:ioredis",
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run",
-    "map:check": "tsx src/map-check.ts"
+    "map:check": "tsx src/map-check.ts",
+    "test:int": "vitest run --config vitest.int.config.ts"
   },
   "dependencies": {
     "@htk/shared": "workspace:*",
@@ -18,7 +19,10 @@
     "ws": "^8.23.0",
     "zod": "^3.25.76",
     "@htk/content": "workspace:*",
-    "yaml": "^2.8.1"
+    "yaml": "^2.8.1",
+    "@htk/db": "workspace:*",
+    "ioredis": "^5.8.2",
+    "pg": "^8.23.1"
   },
   "devDependencies": {
     "@types/node": "^20.19.43",

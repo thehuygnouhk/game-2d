@@ -1,0 +1,20 @@
+# HTTPS certificate from Let's Encrypt for $DOMAIN (ports 80 and 443 must reach this server).
+{$DOMAIN} {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		Referrer-Policy same-origin
+	}
+	handle /api/* {
+		reverse_proxy api:3000
+	}
+	handle /ws* {
+		reverse_proxy game-server:7001
+	}
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}

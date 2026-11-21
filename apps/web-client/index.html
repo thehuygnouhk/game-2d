@@ -11,38 +11,85 @@
       <div id="stage">
         <div id="game"></div>
         <div id="status" class="hud" hidden></div>
-        <form id="join" class="card">
+        <section id="auth" class="card" hidden>
           <h1>Huyền Thư Ký</h1>
-          <p class="sub">Bản online · Làng Suối Mơ (Chương 1)</p>
-          <label
-            >Tên nhân vật
-            <input id="name" maxlength="12" autocomplete="off" spellcheck="false" placeholder="3 đến 12 ký tự" required
-          /></label>
-          <div class="row">
-            <label
-              >Giới tính
-              <select id="gender">
-                <option value="MALE">Nam</option>
-                <option value="FEMALE">Nữ</option>
-              </select>
-            </label>
-            <label
-              >Xuất thân
-              <select id="origin">
-                <option value="VILLAGER">Dân Làng</option>
-                <option value="NOBLE">Thế Gia</option>
-                <option value="ANCIENT">Hậu Duệ Tộc Cổ Thư</option>
-              </select>
-            </label>
+          <p class="sub">Máy chủ Suối Mơ · Chương 1</p>
+          <div class="tabs" role="tablist">
+            <button type="button" data-tab="login" class="on">Đăng nhập</button>
+            <button type="button" data-tab="register">Đăng ký</button>
           </div>
-          <button type="submit">Vào game</button>
-          <p id="err" class="err" role="alert"></p>
-        </form>
+          <form id="login-form">
+            <label>Tên tài khoản hoặc email <input id="login-name" autocomplete="username" required /></label>
+            <label>Mật khẩu <input id="login-pass" type="password" autocomplete="current-password" required /></label>
+            <button type="submit">Đăng nhập</button>
+          </form>
+          <form id="register-form" hidden>
+            <label
+              >Tên tài khoản
+              <input
+                id="reg-name"
+                autocomplete="username"
+                maxlength="20"
+                placeholder="3–20 chữ cái, số hoặc _"
+                required
+            /></label>
+            <label>Email <input id="reg-email" type="email" autocomplete="email" required /></label>
+            <label
+              >Mật khẩu
+              <input id="reg-pass" type="password" autocomplete="new-password" placeholder="Ít nhất 8 ký tự" required
+            /></label>
+            <label
+              >Nhập lại mật khẩu <input id="reg-pass2" type="password" autocomplete="new-password" required
+            /></label>
+            <button type="submit">Tạo tài khoản</button>
+          </form>
+          <p id="auth-err" class="err" role="alert"></p>
+        </section>
+        <section id="chars" class="card" hidden>
+          <h1>Chọn nhân vật</h1>
+          <p class="sub">
+            Tài khoản <b id="who"></b> · <button type="button" id="logout" class="link">Đăng xuất</button>
+          </p>
+          <ul id="char-list" class="char-list"></ul>
+          <form id="create-form">
+            <h2>Tạo nhân vật mới</h2>
+            <label
+              >Tên nhân vật
+              <input
+                id="name"
+                maxlength="12"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder="3 đến 12 ký tự"
+                required
+            /></label>
+            <div class="row">
+              <label
+                >Giới tính
+                <select id="gender">
+                  <option value="MALE">Nam</option>
+                  <option value="FEMALE">Nữ</option>
+                </select>
+              </label>
+              <label
+                >Xuất thân
+                <select id="origin">
+                  <option value="VILLAGER">Dân Làng</option>
+                  <option value="NOBLE">Thế Gia</option>
+                  <option value="ANCIENT">Hậu Duệ Tộc Cổ Thư</option>
+                </select>
+              </label>
+            </div>
+            <button type="submit">Tạo nhân vật</button>
+          </form>
+          <p id="chars-err" class="err" role="alert"></p>
+        </section>
       </div>
       <p class="keys">
         <b>A D</b> hoặc <b>← →</b> đi · <b>Space</b> nhảy · <b>W</b> hoặc <b>↑</b> nhảy, leo thang, qua cổng ·
         <b>S</b> hoặc <b>↓</b> xuống nền mỏng, xuống thang · <b>J</b> Đòn Thường · <b>1</b> Tụ Mana Chấn (Lv5) ·
-        <b>Q</b> <b>E</b> bình HP, MP · <b>Tab</b> hoặc nhấp chuột chọn quái · <b>Enter</b> chat
+        <b>Q</b> <b>E</b> bình HP, MP · <b>Tab</b> hoặc nhấp chuột chọn quái · <b>C</b> nhân vật, cộng điểm ·
+        <b>Enter</b> chat
       </p>
     </main>
     <script type="module" src="/src/main.ts"></script>

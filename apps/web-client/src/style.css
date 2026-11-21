@@ -404,3 +404,224 @@ button:focus-visible {
   font-weight: 800;
   cursor: pointer;
 }
+
+/* ---------- accounts (step B3): sign in, sign up, characters ---------- */
+.card h2 {
+  margin: 6px 0 0;
+  font-size: 16px;
+  color: var(--ink);
+}
+.card .tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.card .tabs button {
+  background: #1a2040;
+  color: var(--muted);
+  border-color: #3d4777;
+}
+.card .tabs button.on {
+  background: linear-gradient(180deg, #ffd36b, #e08e1b);
+  color: #3a1f00;
+  border-color: #5a2a00;
+}
+.card form {
+  display: grid;
+  gap: 10px;
+}
+.card .link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--gold);
+  font-size: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+}
+.char-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.char-list li {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #151a33;
+  border: 1px solid #2c3354;
+  font-size: 14px;
+}
+.char-list li.empty {
+  color: var(--muted);
+}
+.char-list li b {
+  color: #ffe08a;
+}
+.char-list li button {
+  padding: 6px 12px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+/* the account cards scroll inside a short stage (phones held sideways) */
+#auth,
+#chars {
+  max-height: 94%;
+  overflow-y: auto;
+}
+
+/* ---------- HUD menu, chat channel ---------- */
+.hud-menu {
+  position: absolute;
+  right: 1cqw;
+  top: 3.4cqw;
+  display: flex;
+  gap: 0.5cqw;
+}
+.menu-btn {
+  position: relative;
+  padding: 0.35cqw 0.9cqw;
+  border-radius: 0.5cqw;
+  border: 1px solid #5b4a2a;
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 1cqw !important;
+}
+.menu-btn .badge {
+  position: absolute;
+  top: -0.7cqw;
+  right: -0.7cqw;
+  padding: 0 0.4cqw;
+  border-radius: 1cqw;
+  background: #e53935;
+  color: #fff;
+  font-size: 0.85cqw;
+}
+.chat-line {
+  display: flex;
+  gap: 0.3cqw;
+}
+.chat-line .chat-in {
+  flex: 1;
+}
+.chat-ch {
+  padding: 0.3cqw 0.6cqw;
+  border-radius: 0.4cqw;
+  border: 1px solid #3d4777;
+  background: rgba(12, 14, 28, 0.85);
+  color: #9fd8ff;
+  cursor: pointer;
+  font-size: 0.95cqw !important;
+}
+.chat-ch.world {
+  color: #ffd36b;
+  border-color: #8a6a2a;
+}
+.chat-log .world {
+  color: #ffd98a;
+}
+
+/* ---------- character window (ui-ux §6.1) ---------- */
+.char-win {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 40cqw;
+  display: grid;
+  gap: 0.7cqw;
+  padding: 1cqw 1.2cqw;
+  border-radius: 0.8cqw;
+  background: #f3e6c4;
+  color: #3b2a12;
+  border: 0.35cqw solid #7a5a2a;
+  box-shadow:
+    0 0 0 0.15cqw #e8c060 inset,
+    0 1cqw 3cqw rgba(0, 0, 0, 0.5);
+  font-size: 1.15cqw;
+  font-weight: 600;
+}
+.char-win button {
+  font: inherit;
+  padding: 0.25cqw 0.7cqw;
+  border-radius: 0.4cqw;
+  border: 1px solid #7a5a2a;
+  background: #fff6dc;
+  color: #3b2a12;
+  cursor: pointer;
+}
+.char-win button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.char-win button.ok {
+  background: linear-gradient(180deg, #8bd17c, #3f8f3a);
+  color: #fff;
+  border-color: #2a5a25;
+}
+.cw-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.4cqw;
+}
+.cw-x {
+  font-size: 1.4cqw !important;
+  line-height: 1;
+}
+.cw-sum {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.3cqw 1cqw;
+}
+.cw-sum div {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px dashed #c9a86a;
+}
+.cw-free {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4cqw 0.7cqw;
+  border-radius: 0.4cqw;
+  background: #3b2a12;
+  color: #ffe08a;
+}
+.cw-rows {
+  display: grid;
+  gap: 0.35cqw;
+}
+.cw-row {
+  display: grid;
+  grid-template-columns: 1fr 5cqw auto auto auto;
+  gap: 0.4cqw;
+  align-items: center;
+}
+.cw-row small {
+  color: #7a6040;
+  font-weight: 500;
+}
+.cw-row em {
+  color: #2e7d32;
+  font-style: normal;
+}
+.cw-val {
+  color: #2e7d32;
+  text-align: right;
+}
+.cw-foot {
+  display: flex;
+  gap: 0.5cqw;
+  justify-content: flex-end;
+}
+.cw-note {
+  margin: 0;
+  font-size: 0.95cqw;
+  color: #7a6040;
+}

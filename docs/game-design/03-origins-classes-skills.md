@@ -26,7 +26,8 @@ Cả ba bắt đầu ở **Nhà Học Suối Mơ (M001)**. Khác biệt chỉ �
 
 | Mục | Quy tắc |
 |-----|---------|
-| Tên | 3–12 ký tự: chữ (có dấu tiếng Việt), số, một dấu cách giữa các từ; duy nhất trong máy chủ (bản chơi thử chưa kiểm tra trùng) |
+| Tên | 3–12 ký tự: chữ (có dấu tiếng Việt), số, một dấu cách giữa các từ; duy nhất trong máy chủ, không phân biệt hoa thường (bản chơi thử chưa kiểm tra trùng) |
+| Số nhân vật | Tối đa **3** mỗi tài khoản trên một máy chủ (bậc B3, giá trị khởi điểm) |
 | Giới tính | Nam hoặc Nữ; chỉ đổi ngoại hình |
 | Xuất thân | Một trong ba ở §2, **không đổi được** |
 | Ngoại hình | Theo xuất thân và giới tính (bản đầu, chưa tự chọn từng phần): Dân Làng tóc nâu, áo vải nông; Thế Gia tóc đen, áo dài xanh cổ vàng; Hậu Duệ Tộc Cổ Thư tóc bạc, áo xám lam. Nữ: Dân Làng tóc tết, Thế Gia và Hậu Duệ tóc dài có nơ |

@@ -13,7 +13,7 @@ COPY --from=build /repo/apps/game-server/dist ./dist
 # content YAML (monsters, items, skills, drops, i18n) and the Tiled maps with their .yaml metadata
 COPY --from=build /repo/packages/content ./content
 COPY --from=build /repo/art/prototype/maps ./maps
-# runtime deps kept external by the esbuild bundle; @htk/shared and @htk/content are bundled in
-RUN echo '{"type":"module","private":true}' > package.json && npm install --omit=dev --no-package-lock ws@8 @msgpack/msgpack@3 zod@3 yaml@2
+# runtime deps kept external by the esbuild bundle; @htk/shared, @htk/content and @htk/db are bundled in
+RUN echo '{"type":"module","private":true}' > package.json && npm install --omit=dev --no-package-lock ws@8 @msgpack/msgpack@3 zod@3 yaml@2 pg@8 ioredis@5
 EXPOSE 7001
 CMD ["node", "dist/main.js"]

@@ -74,7 +74,12 @@ export const ChatText = z
       .max(120)
       .refine((s) => !/\p{Cc}/u.test(s), "control characters"),
   );
-export const CChatSend = z.object({ channel: z.literal("MAP"), text: ChatText });
+export const CChatSend = z.object({ channel: z.enum(["MAP", "WORLD"]), text: ChatText });
+const Pts = z.number().int().min(0).max(500);
+export const CAllocatePoints = z
+  .object({ hp: Pts, mp: Pts, atk: Pts, def: Pts, crit: Pts })
+  .refine((p) => p.hp + p.mp + p.atk + p.def + p.crit > 0, "spend at least one point");
+export type CAllocatePoints = z.infer<typeof CAllocatePoints>;
 
 export const ClientSchemas: Record<number, z.ZodTypeAny> = {
   [Op.C_HELLO]: CHello,
@@ -89,6 +94,7 @@ export const ClientSchemas: Record<number, z.ZodTypeAny> = {
   [Op.C_USE_ITEM]: CUseItem,
   [Op.C_PICKUP]: CPickup,
   [Op.C_CHAT_SEND]: CChatSend,
+  [Op.C_ALLOCATE_POINTS]: CAllocatePoints,
 };
 
 /** Animation state carried in snapshots (`st`). Ground states are < 2. */
@@ -176,6 +182,9 @@ export interface StatsFull {
   def: number;
   crit: number;
   power: number;
+  /** free potential points and the points spent per stat (combat §3.3) */
+  statPoints: number;
+  pts: { hp: number; mp: number; atk: number; def: number; crit: number };
 }
 export type SStatsUpdate = Partial<StatsFull> & {
   /** Dân Làng passive Không Lùi Bước switched on for this many ms */
@@ -269,11 +278,15 @@ export interface SInventoryDelta {
   picked?: ItemSummary;
 }
 export interface SChatMsg {
-  channel: "MAP" | "SYSTEM";
+  channel: "MAP" | "WORLD" | "SYSTEM";
   fromId: number;
   fromName: string;
   text: string;
   time: number;
+}
+export interface SKick {
+  reason: "DUPLICATE_LOGIN" | "SHUTDOWN";
+  message: string;
 }
 export interface SLevelUp {
   level: number;
