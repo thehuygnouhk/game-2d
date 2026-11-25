@@ -1,4 +1,5 @@
 import { type Rng, TIER, type Tier } from "./combat";
+import { type Affix, rollAffixes } from "./gear";
 
 /** Drop roll: docs/game-design/04-combat-and-progression.md §6 and §2.1.1 (table data: packages/content/drops). */
 export type GearRarity = "common" | "good" | "rare" | "epic";
@@ -14,7 +15,7 @@ export interface DropTableData {
 export type Loot =
   | { kind: "soft"; qty: number }
   | { kind: "item"; item: string; qty: number }
-  | { kind: "gear"; item: string; level: number; rarity: GearRarity };
+  | { kind: "gear"; item: string; level: number; rarity: GearRarity; affixes: Affix[] };
 
 const RARITIES: GearRarity[] = ["epic", "rare", "good", "common"];
 
@@ -45,7 +46,7 @@ export function rollLoot(rng: Rng, t: DropTableData, L: number, tier: Tier): Loo
     if ((g -= chance[rarity]) < 0) {
       const item = t.gear.items[Math.floor(rng() * t.gear.items.length)]!;
       const level = Math.min(t.gear.levelBand[1], Math.max(t.gear.levelBand[0], L));
-      out.push({ kind: "gear", item, level, rarity });
+      out.push({ kind: "gear", item, level, rarity, affixes: rollAffixes(rng, rarity, level) });
       break;
     }
   }

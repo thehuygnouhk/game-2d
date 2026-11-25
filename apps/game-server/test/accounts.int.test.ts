@@ -1,5 +1,28 @@
-import { createAccount, createCharacter, createDb, type Db, migrate, resetSchema, seed } from "@htk/db";
-import { ErrorCode, expToNext, Op, type SChatMsg, type SInventoryDelta, type SStatsUpdate } from "@htk/shared";
+import {
+  createAccount,
+  createCharacter,
+  createDb,
+  type Db,
+  grantItem,
+  ledgerMismatches,
+  migrate,
+  resetSchema,
+  seed,
+  setClass,
+  tx,
+} from "@htk/db";
+import {
+  ErrorCode,
+  expToNext,
+  type Loot,
+  Op,
+  PROTOCOL_VERSION,
+  type SNpcDialog,
+  type SQuestUpdate,
+  type SChatMsg,
+  type SInventoryDelta,
+  type SStatsUpdate,
+} from "@htk/shared";
 import { Redis } from "ioredis";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { gainExp } from "../src/world/combat";
@@ -91,7 +114,7 @@ describe("accounts in the game server (step B3)", () => {
     ]);
     expect(w.bag.items[0]!.instanceId).toMatch(/^[0-9a-f-]{36}$/);
     const again = await Client.open(server.port);
-    again.send(Op.C_HELLO, { ticket: tk, clientVersion: "t", protocolVersion: 2 });
+    again.send(Op.C_HELLO, { ticket: tk, clientVersion: "t", protocolVersion: PROTOCOL_VERSION });
     expect((await again.wait<{ code: number }>(Op.S_ERROR)).code).toBe(ErrorCode.E_AUTH);
     c.close();
   });
@@ -114,8 +137,17 @@ describe("accounts in the game server (step B3)", () => {
     const drops = [
       { kind: "soft", qty: 15 },
       { kind: "item", item: "potion_hp", qty: 2 },
-      { kind: "gear", item: "s1_hat", level: 3, rarity: "rare" },
-    ] as const;
+      {
+        kind: "gear",
+        item: "s1_hat",
+        level: 3,
+        rarity: "rare",
+        affixes: [
+          ["hp", 24],
+          ["crit", 0.01],
+        ],
+      },
+    ] satisfies Loot[];
     const made = drops.map((l) => new Drop(wd.nextId(), l, p.body.x, p.body.y, p.id, wd.now + 15000, wd.now + 60000));
     for (const d of made) z.drops.set(d.id, d);
     for (const d of made) c.send(Op.C_PICKUP, { dropId: d.id });
@@ -208,5 +240,84 @@ describe("accounts in the game server (step B3)", () => {
     await other.close();
     expect((await c.wait<{ reason: string }>(Op.S_KICK)).reason).toBe("SHUTDOWN");
     expect((await row(ids.characterId)).exp).toBe(77);
+  });
+
+  it("keeps quests, worn gear, shop trades and the class across sign-ins (step B4)", async () => {
+    const ids = await newCharacter("Bạch Trà");
+    const c = await Client.open(server.port);
+    const w = await c.enter(await ticket(ids));
+    const p = playerOf(w.you);
+    const talk = async (npc: string, map = "M001") => {
+      const n = server.world.content.maps.get(map)!.npcs.find((x) => x.id === npc)!;
+      if (p.zone?.mapId !== map || Math.abs(p.body.x - n.x) > 60) {
+        server.world.transfer(p, server.world.zone(map, 1)!, n.x + 10, n.y);
+        await c.next(Op.S_MAP_CHANGE);
+      }
+      const d = c.next<SNpcDialog>(Op.S_NPC_DIALOG, (x) => x.npcId === npc);
+      c.send(Op.C_NPC_INTERACT, { npcId: npc });
+      return d;
+    };
+    // Q_MAIN_01 accepted and turned in: 100 Quan with a QUEST_REWARD ledger row
+    await talk("NPC001");
+    c.send(Op.C_NPC_CHOICE, { npcId: "NPC001", optionId: "ACCEPT" });
+    await c.wait<SQuestUpdate>(Op.S_QUEST_UPDATE, (u) => u.event?.kind === "accepted");
+    await talk("NPC002");
+    await c.wait<SQuestUpdate>(Op.S_QUEST_UPDATE, (u) => u.main?.status === "READY");
+    await talk("NPC001");
+    const done = c.next<SQuestUpdate>(Op.S_QUEST_UPDATE, (u) => u.event?.kind === "completed");
+    c.send(Op.C_NPC_CHOICE, { npcId: "NPC001", optionId: "TURNIN" });
+    await done;
+    // a second turn-in changes nothing (the quest row is COMPLETED, the ledger key is used)
+    c.send(Op.C_NPC_CHOICE, { npcId: "NPC001", optionId: "TURNIN" });
+    await c.next<{ code: number }>(Op.S_ERROR);
+    expect((await row(ids.characterId)).soft_currency).toBe(100);
+    // Q_MAIN_02 accepted, one kill counted (saved with the write-behind)
+    await talk("NPC001");
+    c.send(Op.C_NPC_CHOICE, { npcId: "NPC001", optionId: "ACCEPT" });
+    await c.wait<SQuestUpdate>(Op.S_QUEST_UPDATE, (u) => u.main?.id === "Q_MAIN_02" && u.main.status === "ACTIVE");
+    server.world.quests.event(p, "KILL", "MOB001");
+    // buy at Lam Nhi, wear a hat
+    await talk("NPC003");
+    c.send(Op.C_SHOP_BUY, { shopId: "NPC003", itemId: "potion_mp", qty: 2, idemKey: crypto.randomUUID() });
+    await c.wait<SInventoryDelta>(Op.S_INVENTORY_DELTA, (d) => d.soft === 68);
+    await tx(db, (t) =>
+      grantItem(t, ids.characterId, {
+        templateId: "s1_hat",
+        qty: 1,
+        rarity: 1,
+        itemLevel: 1,
+        affixes: [["mp", 5]],
+        bagSize: 30,
+      }),
+    );
+    c.close();
+    await sleep(300);
+    const again = await Client.open(server.port);
+    const w2 = await again.enter(await ticket(ids));
+    const hat = w2.bag.items.find((i) => i.item === "s1_hat")!;
+    expect(hat).toMatchObject({ slot: "hat", rarity: "good", affixes: [["mp", 5]], sell: 25 });
+    again.send(Op.C_EQUIP, { instanceId: hat.instanceId });
+    await again.wait<SInventoryDelta>(Op.S_INVENTORY_DELTA, (d) => !!d.equip?.hat);
+    const p2 = playerOf(w2.you);
+    await setClass(db, ids.characterId, "WATER");
+    again.close();
+    await sleep(300);
+    const third = await Client.open(server.port);
+    const w3 = await third.enter(await ticket(ids));
+    expect(w3.quests.main).toMatchObject({ id: "Q_MAIN_02", status: "ACTIVE", objectives: [{ got: 1 }] });
+    expect(w3.quests.done).toBe(1);
+    expect(w3.equipment.hat?.instanceId).toBe(hat.instanceId);
+    expect(w3.character.cls).toBe("WATER");
+    expect(w3.skills.map((s) => s.id)).toContain("SKL_WATER_1");
+    expect(w3.stats.maxMp).toBeGreaterThan(p2.stats.mp);
+    const ledger = await db.query("SELECT reason, delta FROM currency_ledger WHERE owner_id = $1 ORDER BY id", [
+      ids.characterId,
+    ]);
+    expect(ledger.rows).toEqual([
+      { reason: "QUEST_REWARD", delta: 100 },
+      { reason: "SHOP_BUY", delta: -32 },
+    ]);
+    expect(await ledgerMismatches(db)).toEqual([]);
+    third.close();
   });
 });

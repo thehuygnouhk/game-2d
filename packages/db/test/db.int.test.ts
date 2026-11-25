@@ -11,7 +11,13 @@ import {
   createCharacter,
   createDb,
   type Db,
+  equipItem,
   findAccountByLogin,
+  grantEquipped,
+  saveQuest,
+  setClass,
+  takeItem,
+  unequipItem,
   grantItem,
   ledgerMismatches,
   loadCharacter,
@@ -203,5 +209,55 @@ describe("items and the ledger (CLAUDE.md rule 5)", () => {
     const rows = await db.query("SELECT count(*)::int AS n FROM currency_ledger WHERE owner_id = $1", [c.id]);
     expect(rows.rows[0].n).toBe(21);
     expect(await ledgerMismatches(db)).toEqual([]);
+  });
+
+  it("wears, swaps and takes off equipment (step B4, items §3)", async () => {
+    const c = await newChar("Mặc Đồ");
+    const [a] = await tx(db, (t) =>
+      grantItem(t, c.id, { templateId: "s1_hat", qty: 1, rarity: 1, itemLevel: 4, affixes: [["hp", 32]], bagSize: 30 }),
+    );
+    const [b] = await tx(db, (t) => grantItem(t, c.id, { templateId: "s1_hat", qty: 1, itemLevel: 5, bagSize: 30 }));
+    expect(a!.affixes).toEqual([["hp", 32]]);
+    const worn = await tx(db, (t) => equipItem(t, c.id, a!.id, 1));
+    expect(worn).toMatchObject([{ id: a!.id, location: "EQUIP", slot: 1 }]);
+    const swap = await tx(db, (t) => equipItem(t, c.id, b!.id, 1));
+    expect(swap).toMatchObject([
+      { id: b!.id, location: "EQUIP", slot: 1 },
+      { id: a!.id, location: "BAG", slot: b!.slot },
+    ]);
+    const off = await tx(db, (t) => unequipItem(t, c.id, 1, 30));
+    expect(off).toMatchObject({ id: b!.id, location: "BAG" });
+    const full = await tx(db, (t) => equipItem(t, c.id, a!.id, 1));
+    expect(full).toHaveLength(1);
+    await expect(tx(db, (t) => unequipItem(t, c.id, 1, 3))).rejects.toBeInstanceOf(BagFullError);
+    const tome = await tx(db, (t) =>
+      grantEquipped(t, c.id, { templateId: "huyen_thu_so_ban", slot: 4, rarity: 0, itemLevel: 10, bound: true }),
+    );
+    const loaded = (await loadCharacter(db, c.id))!;
+    expect(
+      loaded.bag
+        .filter((r) => r.location === "EQUIP")
+        .map((r) => r.id)
+        .sort(),
+    ).toEqual([a!.id, tome.id].sort());
+    const potion = loaded.bag.find((r) => r.template_id === "potion_hp")!;
+    expect(await tx(db, (t) => takeItem(t, c.id, potion.id, 5))).toBeNull();
+    expect(await tx(db, (t) => takeItem(t, c.id, potion.id, 2))).toMatchObject({ qty: 1 });
+  });
+
+  it("keeps quest rows and never reopens a completed quest (step B4, quests §2)", async () => {
+    const c = await newChar("Nhiệm Vụ");
+    expect(await saveQuest(db, c.id, { quest_id: "Q_MAIN_01", status: "ACCEPTED", progress: [0] })).toBe(true);
+    expect(await saveQuest(db, c.id, { quest_id: "Q_MAIN_01", status: "COMPLETED", progress: [1] })).toBe(true);
+    expect(await saveQuest(db, c.id, { quest_id: "Q_MAIN_01", status: "READY", progress: [1] })).toBe(false);
+    expect((await loadCharacter(db, c.id))!.quests).toEqual([
+      { quest_id: "Q_MAIN_01", status: "COMPLETED", progress: [1] },
+    ]);
+    await setClass(db, c.id, "FIRE");
+    const first = (await loadCharacter(db, c.id))!.char;
+    await setClass(db, c.id, "WATER");
+    const again = (await loadCharacter(db, c.id))!.char;
+    expect([first.class, again.class]).toEqual(["FIRE", "WATER"]);
+    expect(again.class_changed_at).toEqual(first.class_changed_at);
   });
 });

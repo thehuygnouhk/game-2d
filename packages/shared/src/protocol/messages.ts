@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { Tier } from "../formulas/combat";
+import type { Affix, ClassId, GearMain, GearSlot } from "../formulas/gear";
 import { Op } from "./opcodes";
 
 /**
@@ -81,6 +82,28 @@ export const CAllocatePoints = z
   .refine((p) => p.hp + p.mp + p.atk + p.def + p.crit > 0, "spend at least one point");
 export type CAllocatePoints = z.infer<typeof CAllocatePoints>;
 
+const Id = z.string().min(1).max(40);
+const IdemKey = z.string().uuid();
+export const CEquip = z.object({ instanceId: z.string().max(40) });
+export const CUnequip = z.object({ slot: z.enum(["weapon", "hat", "armor", "boots", "tome"]) });
+export const CNpcInteract = z.object({ npcId: Id });
+export const CNpcChoice = z.object({ npcId: Id, optionId: z.string().min(1).max(40) });
+/** a map object: "HERB:<n>" (quest herbs), "CHEST" (dungeon chest), "ALTAR" (Đài Khai Thư) */
+export const CUseObject = z.object({ objectId: z.string().min(1).max(24) });
+export const CChooseClass = z.object({ classId: z.enum(["FIRE", "WATER"]) });
+export const CShopBuy = z.object({
+  shopId: Id,
+  itemId: Id,
+  qty: z.number().int().min(1).max(99),
+  idemKey: IdemKey,
+});
+export const CShopSell = z.object({
+  instanceId: z.string().max(40),
+  qty: z.number().int().min(1).max(9999),
+  idemKey: IdemKey,
+});
+export const CLeaveInstance = z.object({}).passthrough();
+
 export const ClientSchemas: Record<number, z.ZodTypeAny> = {
   [Op.C_HELLO]: CHello,
   [Op.C_PING]: CPing,
@@ -95,6 +118,15 @@ export const ClientSchemas: Record<number, z.ZodTypeAny> = {
   [Op.C_PICKUP]: CPickup,
   [Op.C_CHAT_SEND]: CChatSend,
   [Op.C_ALLOCATE_POINTS]: CAllocatePoints,
+  [Op.C_EQUIP]: CEquip,
+  [Op.C_UNEQUIP]: CUnequip,
+  [Op.C_NPC_INTERACT]: CNpcInteract,
+  [Op.C_NPC_CHOICE]: CNpcChoice,
+  [Op.C_USE_OBJECT]: CUseObject,
+  [Op.C_CHOOSE_CLASS]: CChooseClass,
+  [Op.C_SHOP_BUY]: CShopBuy,
+  [Op.C_SHOP_SELL]: CShopSell,
+  [Op.C_LEAVE_INSTANCE]: CLeaveInstance,
 };
 
 /** Animation state carried in snapshots (`st`). Ground states are < 2. */
@@ -115,6 +147,8 @@ export interface PlayerSpawn {
   kind: "player";
   name: string;
   appearance: Appearance;
+  /** class chosen at the Lễ Khai Thư (step B4): the look follows it */
+  cls?: ClassId;
   lv: number;
   x: number;
   y: number;
@@ -129,6 +163,8 @@ export interface MobSpawn {
   name: string;
   lv: number;
   tier: Tier;
+  /** world boss, dungeon boss or one of its pieces (step B4): sprite and name plate of a boss */
+  boss?: boolean;
   flying: boolean;
   x: number;
   y: number;
@@ -169,7 +205,20 @@ export interface BagItem extends ItemSummary {
   instanceId: string;
   healHp?: number;
   healMp?: number;
+  /** item kind for the bag tabs */
+  type?: "WEAPON" | "ARMOR" | "TOME" | "CONSUMABLE" | "MATERIAL" | "MISC" | "QUEST";
+  /** gear: the slot it goes in, its main stats, affix lines, set, class lock (step B4) */
+  slot?: GearSlot;
+  main?: GearMain;
+  affixes?: Affix[];
+  set?: string;
+  cls?: ClassId;
+  /** cannot be taken off or sold (Huyền Thư) */
+  bound?: boolean;
+  /** what an NPC pays for one (25% of the value); absent: cannot be sold */
+  sell?: number;
 }
+export type Equipment = Partial<Record<GearSlot, BagItem>>;
 export interface StatsFull {
   lv: number;
   exp: number;
@@ -182,6 +231,8 @@ export interface StatsFull {
   def: number;
   crit: number;
   power: number;
+  /** run speed bonus from boots (shown only) */
+  spd?: number;
   /** free potential points and the points spent per stat (combat §3.3) */
   statPoints: number;
   pts: { hp: number; mp: number; atk: number; def: number; crit: number };
@@ -196,14 +247,26 @@ export interface SkillInfo {
   unlockLevel: number;
   mp: number;
   cooldownMs: number;
+  /** hotbar key: J, 1, 2, 3, 4 */
+  key?: string;
+  /** area shape for the client effect: melee, burst, bolt, slash, lance, wave, beam */
+  shape?: string;
 }
 export interface MapInfo {
   id: string;
   zone: number;
   name: string;
 }
+export interface NpcInfo {
+  id: string;
+  name: string;
+  x: number;
+  y: number;
+}
 export interface SMapChange {
   map: MapInfo;
+  /** NPCs standing on this map (step B4) */
+  npcs: NpcInfo[];
   tick: number;
   /** last C_MOVE_INPUT seq applied before the move */
   ack: number;
@@ -213,10 +276,12 @@ export interface SMapChange {
 }
 export interface SEnterWorld extends SMapChange {
   you: number;
-  character: { name: string; appearance: Appearance };
+  character: { name: string; appearance: Appearance; cls: ClassId | null };
   stats: StatsFull;
   skills: SkillInfo[];
   bag: { soft: number; items: BagItem[]; size: number };
+  equipment: Equipment;
+  quests: SQuestUpdate;
 }
 export interface SSnapshot {
   tick: number;
@@ -276,6 +341,10 @@ export interface SInventoryDelta {
   remove: string[];
   /** what was just picked up, for the pickup text */
   picked?: ItemSummary;
+  /** equipment slots that changed: the item now worn, or null when emptied (step B4) */
+  equip?: Partial<Record<GearSlot, BagItem | null>>;
+  /** gained without a drop (quest reward, shop, chest), for the log */
+  gained?: ItemSummary[];
 }
 export interface SChatMsg {
   channel: "MAP" | "WORLD" | "SYSTEM";
@@ -291,4 +360,138 @@ export interface SKick {
 export interface SLevelUp {
   level: number;
   statPoints: number;
+}
+
+/* ---------------- step B4: NPCs, quests, shop, classes, bosses, instances ---------------- */
+export interface QuestObjectiveView {
+  type: "TALK" | "KILL" | "COLLECT" | "USE_SKILL" | "BOSS" | "SCENE" | "REACH";
+  target: string;
+  label: string;
+  count: number;
+  got: number;
+  map: string;
+  mapName: string;
+  /** where to find it, for the quest window */
+  where: string;
+  /** x of the target on that map when known (auto-walk hint) */
+  x?: number;
+}
+export interface QuestView {
+  id: string;
+  title: string;
+  /** LOCKED: level too low; AVAILABLE: talk to the giver; ACTIVE; READY: back to turnIn */
+  status: "LOCKED" | "AVAILABLE" | "ACTIVE" | "READY";
+  levelMin: number;
+  giver: { id: string; name: string };
+  turnIn: { id: string; name: string };
+  objectives: QuestObjectiveView[];
+  rewards: { exp: number; soft: number; items: ItemSummary[]; skill?: string; note?: string };
+  text: { accept: string; progress: string };
+  /** quest herb spots on a map, while the quest still needs them */
+  nodes?: { mapId: string; points: { id: string; x: number; y: number }[] };
+}
+export interface SQuestUpdate {
+  main: QuestView | null;
+  /** main quests completed and in the chapter */
+  done: number;
+  total: number;
+  chapterDone: boolean;
+  /** objective progress text to float over the player ("Hạ Nấm Lùn 3/5") */
+  progress?: string;
+  /** "accepted" | "ready" | "completed": banner on the client */
+  event?: { kind: "accepted" | "ready" | "completed"; title: string; rewards?: QuestView["rewards"] };
+}
+export interface NpcOption {
+  id: string;
+  label: string;
+  mark?: "!" | "?";
+  style?: "ok" | "dim";
+}
+export interface ShopInfo {
+  id: string;
+  name: string;
+  items: { item: string; name: string; icon?: string; price: number; healHp?: number; healMp?: number }[];
+}
+export interface ClassInfo {
+  id: ClassId;
+  name: string;
+  role: string;
+  weapon: string;
+  mods: string;
+  passive: string;
+  passiveText: string;
+  skills: { id: string; name: string; lv: number; mp: number; cd: number; text: string }[];
+}
+export interface RiteInfo {
+  classes: ClassInfo[];
+  locked: { id: string; name: string }[];
+  current: ClassId | null;
+  /** hours left of the free change, when a class is already chosen */
+  freeHoursLeft?: number;
+}
+export interface SNpcDialog {
+  npcId: string;
+  name: string;
+  text: string;
+  options: NpcOption[];
+  shop?: ShopInfo;
+  rite?: RiteInfo;
+}
+export interface SceneLine {
+  who: string;
+  name: string;
+  text: string;
+}
+export interface SScene {
+  key: string;
+  lines: SceneLine[];
+  /** the "Hết Chương 1" card shown after the lines */
+  chapterEnd?: { letter: string; minutes: number; lv: number; power: number; className: string };
+}
+export interface SSkillsUpdate {
+  skills: SkillInfo[];
+  cls: ClassId | null;
+}
+export interface Telegraph {
+  shape: "circle" | "rect";
+  x: number;
+  y: number;
+  r?: number;
+  w?: number;
+  h?: number;
+  /** ms until it lands */
+  ms: number;
+}
+export interface SBossState {
+  id: number;
+  name: string;
+  lv: number;
+  /** 0-1 of the boss HP (Trang Lạc after the split: of the pages left) */
+  hpPct: number;
+  phase: number;
+  enraged: boolean;
+  /** pages still standing (Trang Lạc) */
+  pieces?: number;
+  telegraphs?: Telegraph[];
+  /** the boss is gone (killed or left) */
+  over?: boolean;
+}
+export interface SBossAnnounce {
+  kind: "SOON" | "SPAWN" | "KILLED" | "GONE" | "ENRAGE";
+  bossId: string;
+  name: string;
+  mapId: string;
+  mapName: string;
+  zoneNo?: number;
+  killer?: string;
+  text: string;
+}
+export interface SInstanceState {
+  mapId: string;
+  kind: "DUNGEON" | "CEREMONY";
+  /** ms left on the dungeon clock */
+  leftMs?: number;
+  bossDown?: boolean;
+  chest?: { x: number; y: number; opened: boolean };
+  altar?: { x: number; y: number };
 }

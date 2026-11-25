@@ -1,7 +1,13 @@
-# FIRE class, skills 1-3 (classes section 3-4), prototype step A2
+# FIRE class, skills 1-3 (classes section 3-4)
 id: FIRE
 nameKey: class.fire.name
+roleKey: class.fire.role
+weaponKey: class.fire.weapon
+modsKey: class.fire.mods
+passiveKey: class.fire.passive
+passiveTextKey: class.fire.passiveText
+weapon: kiem_lua_tap_su
 skills:
-  - { id: SKL_FIRE_1, nameKey: skill.skl_fire_1.name, unlockLevel: 10, mp: 10, cooldownSec: 3, atkMult: 1.2, shape: bolt }
-  - { id: SKL_FIRE_2, nameKey: skill.skl_fire_2.name, unlockLevel: 20, mp: 18, cooldownSec: 5, atkMult: 1.6, shape: slash }
-  - { id: SKL_FIRE_3, nameKey: skill.skl_fire_3.name, unlockLevel: 30, mp: 28, cooldownSec: 8, atkMult: 1.9, shape: lance }
+  - { id: SKL_FIRE_1, nameKey: skill.skl_fire_1.name, textKey: skill.skl_fire_1.text, unlockLevel: 10, mp: 10, cooldownSec: 3, atkMult: 1.2, shape: bolt, burn: true }
+  - { id: SKL_FIRE_2, nameKey: skill.skl_fire_2.name, textKey: skill.skl_fire_2.text, unlockLevel: 20, mp: 18, cooldownSec: 5, atkMult: 1.6, shape: slash }
+  - { id: SKL_FIRE_3, nameKey: skill.skl_fire_3.name, textKey: skill.skl_fire_3.text, unlockLevel: 30, mp: 28, cooldownSec: 8, atkMult: 1.9, shape: lance }

@@ -23,6 +23,28 @@ describe("content package", () => {
     expect(c.text("map.m004.name")).toBe("Hang Giếng Cạn");
   });
 
+  it("loads the Chapter 1 story records of step B4", () => {
+    const c = loadContent();
+    expect(c.mainQuests.map((q) => q.id)).toEqual(
+      Array.from({ length: 12 }, (_, i) => `Q_MAIN_${String(i + 1).padStart(2, "0")}`),
+    );
+    expect(c.quests.get("Q_MAIN_03")?.objectives[1]).toEqual({
+      type: "COLLECT",
+      target: "cu_cai_non",
+      count: 4,
+      map: "M002",
+    });
+    expect(c.questItems.thao_duoc).toMatchObject({ node: "M002", respawnSec: 20 });
+    expect(c.text(c.npcs.get("NPC003")!.nameKey)).toBe("Lam Nhi");
+    expect(c.shops.get("NPC003")?.sells).toContain("potion_hp");
+    expect(c.bosses.get("BOSS001")?.skillDefs.BSKL_TEAR_APART).toMatchObject({ atHp: 0.5, count: 4, pieceHp: 0.125 });
+    expect(c.events.find((e) => e.id === "EVT_BOSS_034")?.maps).toEqual(["M002"]);
+    expect(c.dungeons.get("DG01")).toMatchObject({ minLevel: 9, timeLimitMin: 30, boss: "BOSS001" });
+    expect(c.scenes.get("Q_MAIN_11")?.lines).toHaveLength(6);
+    expect(c.classes.get("FIRE")?.weapon).toBe("kiem_lua_tap_su");
+    expect(c.text("dialog.level", { lv: 5, title: "X" })).toBe("Đạt Lv 5 rồi quay lại nhận “X”.");
+  });
+
   it("flattens nested i18n keys", () => {
     expect(flattenI18n({ item: { "potion_hp.name": "Bình" }, q: { o: ["a"] } })).toEqual(
       new Map([

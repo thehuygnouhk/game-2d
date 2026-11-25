@@ -40,6 +40,15 @@ export async function addSoft(
   return { balance, duplicate: false };
 }
 
+/** True when this idemKey already moved money for this character (a repeated request). */
+export async function ledgerHas(t: Tx, characterId: string, idemKey: string): Promise<boolean> {
+  const r = await t.query("SELECT 1 FROM currency_ledger WHERE owner_id = $1 AND idem_key = $2", [
+    characterId,
+    idemKey,
+  ]);
+  return !!r.rowCount;
+}
+
 /** Integrity check (database-schema §9): the ledger sum equals the balance for every character. */
 export async function ledgerMismatches(
   t: Pick<Tx, "query">,

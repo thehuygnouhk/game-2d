@@ -1,4 +1,4 @@
-import type { GameMap, MobSpawn as SpawnDef } from "@htk/content";
+import type { Dungeon, GameMap, MobSpawn as SpawnDef } from "@htk/content";
 import {
   AOI_CELL,
   type Body,
@@ -10,13 +10,17 @@ import {
   Op,
   rollTier,
   RULES,
+  type SBossState,
   type SDropSpawn,
+  type SInstanceState,
+  type Telegraph,
   step,
   TILE,
   Tile,
   tileAt,
 } from "@htk/shared";
-import { mobAttackLands, runSkills, tickPlayerStatus } from "./combat";
+import { spawnBoss, tickBoss } from "./boss";
+import { hitMob, mobAttackLands, mobHitBox, type PlayerShot, runSkills, shotLands, tickPlayerStatus } from "./combat";
 import { type Drop, Mob, type Player, type Replicated } from "./entities";
 import { tickMob } from "./mob-ai";
 import type { World } from "./world";
@@ -44,12 +48,32 @@ export interface Shot {
   left: number;
 }
 
+/** A private copy of a map (step B4): a dungeon run (maps §6) or the ceremony hall (quests §4). */
+export interface Instance {
+  kind: "DUNGEON" | "CEREMONY";
+  ownerId: number;
+  /** where players go when they leave, time out or fall */
+  entry: { mapId: string; x: number; y: number };
+  /** world.now when the dungeon clock runs out */
+  endsAt: number;
+  scale: { hp: number; atk: number; reward: number };
+  dungeon?: Dungeon;
+  boss: Mob | null;
+  bossDown: boolean;
+  chest: { x: number; y: number } | null;
+  /** players who opened the chest */
+  opened: Set<number>;
+  /** unique id of this run (ledger key of the chest) */
+  runId?: string;
+}
+
 /** One public copy of a map: players, monsters, drops (docs/architecture/server-design.md §2-3). */
 export class Zone {
   readonly players = new Map<number, Player>();
   readonly mobs = new Map<number, Mob>();
   readonly drops = new Map<number, Drop>();
   readonly shots: Shot[] = [];
+  readonly pshots: PlayerShot[] = [];
   private readonly slots: SpawnSlot[];
 
   constructor(
@@ -58,6 +82,7 @@ export class Zone {
     readonly zoneNo: number,
     readonly collision: CollisionMap,
     readonly cap: number,
+    readonly inst: Instance | null = null,
   ) {
     this.slots = map.mobSpawns.map((def) => ({ def, alive: 0, respawnAt: [] }));
     for (const s of this.slots) for (let i = 0; i < s.def.count; i++) this.spawnMob(s, 0);
@@ -98,7 +123,17 @@ export class Zone {
         y = this.surfaceBelow(x, s.def.y - 40) ?? s.def.y;
       }
     }
-    const mob = new Mob(w.nextId(), def, s.def, w.content.text(def.nameKey), lv, tier, mobStats(lv, tier), x, y, now);
+    const st = mobStats(lv, tier);
+    const k = this.inst?.scale; // dungeon party scaling (maps §6.1)
+    const max = k
+      ? {
+          hp: Math.round(st.hp * k.hp),
+          atk: Math.round(st.atk * k.atk),
+          def: st.def,
+          exp: Math.round(st.exp * k.reward),
+        }
+      : st;
+    const mob = new Mob(w.nextId(), def, s.def, w.content.text(def.nameKey), lv, tier, max, x, y, now);
     this.mobs.set(mob.id, mob);
     s.alive++;
     if (tier === "leader" && now > 0)
@@ -111,7 +146,7 @@ export class Zone {
     const s = this.slots.find((x) => x.def === m.spawn);
     if (!s) return;
     s.alive--;
-    s.respawnAt.push(now + s.def.respawnSec * 1000);
+    if (!this.inst && s.def.respawnSec > 0) s.respawnAt.push(now + s.def.respawnSec * 1000); // dungeons: no respawn
   }
 
   chatAll(channel: "MAP" | "SYSTEM", text: string, from?: Player): void {
@@ -198,8 +233,14 @@ export class Zone {
     for (const p of this.players.values()) this.move(p);
     for (const p of this.players.values()) runSkills(this, p, now);
     if (this.players.size) {
-      for (const m of [...this.mobs.values()]) tickMob(this, m, now);
+      for (const m of [...this.mobs.values()]) {
+        if (m.boss) tickBoss(this, m, now);
+        else tickMob(this, m, now);
+        this.tickBurn(m, now);
+      }
       this.tickShots(now);
+      this.tickPlayerShots(now);
+      if (this.inst) this.tickInstance(now);
     }
     for (const p of [...this.players.values()]) tickPlayerStatus(this, p, now);
     for (const s of this.slots)
@@ -251,6 +292,109 @@ export class Zone {
       if (hit) mobAttackLands(this, s.mob, hit, now);
       if (hit || wall || s.left <= 0) this.shots.splice(i, 1);
     }
+  }
+
+  private tickBurn(m: Mob, now: number): void {
+    const b = m.burn;
+    if (!b || !m.alive || now < b.next) return;
+    b.next += 1000;
+    const p = this.players.get(b.by);
+    if (now > b.until || !p) m.burn = null;
+    else hitMob(this, p, m, 1, now, { dot: b.dmg });
+  }
+
+  private tickPlayerShots(now: number): void {
+    const dt = 0.05;
+    for (let i = this.pshots.length - 1; i >= 0; i--) {
+      const s = this.pshots[i]!;
+      const stepX = s.vx * dt;
+      s.x += stepX;
+      s.left -= Math.abs(stepX);
+      let hit: Mob | undefined,
+        best = Infinity;
+      for (const m of this.mobs.values()) {
+        if (!m.alive || m.boss?.torn) continue;
+        const [x0, y0, x1, y1] = mobHitBox(m);
+        const d = Math.abs(m.x - (s.x - stepX)); // the first monster on the way
+        if (s.x >= x0 - 10 && s.x <= x1 + 10 && s.y >= y0 - 30 && s.y <= y1 + 30 && d < best) [hit, best] = [m, d];
+      }
+      const wall = tileAt(this.collision, Math.floor(s.x / TILE), Math.floor(s.y / TILE)) === Tile.SOLID;
+      if (hit) shotLands(this, s, hit, now);
+      if (hit || wall || s.left <= 0) this.pshots.splice(i, 1);
+    }
+  }
+
+  /** Dungeon: the boss wakes when someone comes close; the clock throws everyone out (maps §6.2). */
+  private tickInstance(now: number): void {
+    const inst = this.inst!,
+      dg = inst.dungeon;
+    if (!dg) return;
+    if (!inst.boss && !inst.bossDown) {
+      const at = this.map.bossSpawns.find((b) => b.boss === dg.boss);
+      if (at && [...this.players.values()].some((p) => p.alive && Math.abs(p.body.x - at.x) < dg.wakeRange)) {
+        inst.boss = spawnBoss(this, this.world.content.bosses.get(dg.boss)!, at, "DUNGEON", inst.scale);
+        this.chatAll("SYSTEM", this.world.content.text("boss_msg.wake"));
+      }
+    }
+    if (now >= inst.endsAt)
+      for (const p of [...this.players.values()]) {
+        p.out.send(Op.S_CHAT_MSG, {
+          channel: "SYSTEM",
+          fromId: 0,
+          fromName: "",
+          text: this.world.content.text("boss_msg.dg_timeout"),
+          time: Date.now(),
+        });
+        this.world.leaveInstance(p);
+      }
+  }
+
+  /** S_BOSS_STATE to everyone in the zone (the boss bar and its telegraphs). */
+  bossState(m: Mob, over = false, telegraphs?: Telegraph[]): void {
+    const run = m.boss;
+    if (!run) return;
+    const pieces = run.torn ? run.pieces.filter((x) => x.alive) : null;
+    const hp = pieces ? pieces.reduce((a, x) => a + Math.max(0, x.hp), 0) : m.hp;
+    const max = pieces ? run.piecesMax || 1 : m.max.hp;
+    const st: SBossState = {
+      id: m.id,
+      name: m.name,
+      lv: m.lv,
+      hpPct: Math.max(0, Math.min(1, hp / max)),
+      phase: run.phasesDone.size,
+      enraged: run.enraged,
+      ...(pieces ? { pieces: pieces.length } : {}),
+      ...(telegraphs ? { telegraphs } : {}),
+      ...(over ? { over: true } : {}),
+    };
+    for (const p of this.players.values()) p.out.send(Op.S_BOSS_STATE, st);
+  }
+
+  /** The class look changed: everyone who sees the player gets the new spawn info. */
+  respawnLook(p: Player): void {
+    const info = p.spawnInfo();
+    for (const o of this.players.values()) if (o !== p && o.visible.has(p.id)) o.out.send(Op.S_ENTITY_SPAWN, info);
+  }
+
+  /** Trang Lạc is down (maps §6.2): the Rương Tân Thủ appears where it fell. */
+  dungeonBossDown(boss: Mob): void {
+    const inst = this.inst;
+    if (!inst) return;
+    inst.bossDown = true;
+    inst.chest = { x: Math.round(boss.x), y: this.surfaceBelow(boss.x, boss.y - 40) ?? boss.y };
+    this.chatAll("SYSTEM", this.world.content.text("boss_msg.dg_down"));
+    for (const p of this.players.values()) p.out.send(Op.S_INSTANCE_STATE, this.instanceState(p));
+  }
+
+  instanceState(p: Player): SInstanceState {
+    const inst = this.inst!;
+    const st: SInstanceState = { mapId: this.mapId, kind: inst.kind };
+    if (inst.kind === "DUNGEON") {
+      st.leftMs = Math.max(0, inst.endsAt - this.world.now);
+      st.bossDown = inst.bossDown;
+      if (inst.chest) st.chest = { ...inst.chest, opened: inst.opened.has(p.id) };
+    } else st.altar = { x: 496, y: 352 };
+    return st;
   }
 
   /** 9. replication: AOI spawn/despawn and delta snapshots (server-design §5). */

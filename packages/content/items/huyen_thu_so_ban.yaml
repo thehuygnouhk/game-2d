@@ -6,3 +6,4 @@ icon: items/huyen_thu_so_ban
 slot: tome
 levelReq: 10
 rarity: common
+bind: BOP   # worn from the Le Khai Thu on, cannot be taken off or sold (items section 3)

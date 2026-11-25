@@ -1,4 +1,4 @@
-import { grantItem, type ItemRow } from "./items";
+import { grantItem, ITEM_COLS, type ItemRow } from "./items";
 import type { Db, Queryable, Tx } from "./index";
 import { tx } from "./index";
 
@@ -26,11 +26,12 @@ export interface CharacterRow {
   pos_x: number;
   pos_y: number;
   play_seconds: number;
+  class_changed_at: Date | null;
 }
 export type CharacterSummary = Pick<CharacterRow, "id" | "name" | "gender" | "origin" | "class" | "level" | "map_id">;
 
 const COLS = `id, account_id, realm_id, name, gender, origin, class, level, exp, soft_currency, stat_points,
-  pts_hp, pts_mp, pts_atk, pts_def, pts_crit, hp, mp, map_id, pos_x, pos_y, play_seconds`;
+  pts_hp, pts_mp, pts_atk, pts_def, pts_crit, hp, mp, map_id, pos_x, pos_y, play_seconds, class_changed_at`;
 
 export async function listCharacters(q: Queryable, accountId: string, realmId: number): Promise<CharacterSummary[]> {
   const r = await q.query<CharacterSummary>(
@@ -74,16 +75,55 @@ export async function findCharacter(q: Queryable, id: string): Promise<Character
 }
 
 /** Everything the game server needs to put the character in the world (database-schema §5: one load). */
-export async function loadCharacter(q: Queryable, id: string): Promise<{ char: CharacterRow; bag: ItemRow[] } | null> {
-  const [c, items] = await Promise.all([
+export async function loadCharacter(
+  q: Queryable,
+  id: string,
+): Promise<{ char: CharacterRow; bag: ItemRow[]; quests: QuestRow[] } | null> {
+  const [c, items, quests] = await Promise.all([
     findCharacter(q, id),
     q.query<ItemRow>(
-      `SELECT id, template_id, qty, slot, rarity, item_level FROM item_instances
-       WHERE holder_id = $1 AND location = 'BAG' ORDER BY slot`,
+      `SELECT ${ITEM_COLS} FROM item_instances
+       WHERE holder_id = $1 AND location IN ('BAG', 'EQUIP') ORDER BY location, slot`,
       [id],
     ),
+    loadQuests(q, id),
   ]);
-  return c ? { char: c, bag: items.rows } : null;
+  return c ? { char: c, bag: items.rows, quests } : null;
+}
+
+/** character_quests (database-schema §4.2, quests §2). Step B4 keeps one row per quest (reset_key ''). */
+export interface QuestRow {
+  quest_id: string;
+  status: "ACCEPTED" | "IN_PROGRESS" | "READY" | "COMPLETED" | "ABANDONED" | "FAILED";
+  progress: number[];
+}
+export async function loadQuests(q: Queryable, id: string): Promise<QuestRow[]> {
+  const r = await q.query<QuestRow>(
+    "SELECT quest_id, status, progress FROM character_quests WHERE character_id = $1 AND reset_key = ''",
+    [id],
+  );
+  return r.rows;
+}
+/** Insert or update a quest row; a COMPLETED row never goes back (it returns false then). */
+export async function saveQuest(q: Queryable, id: string, row: QuestRow): Promise<boolean> {
+  const r = await q.query(
+    `INSERT INTO character_quests (character_id, quest_id, status, progress, reset_key, completed_at)
+     VALUES ($1, $2, $3::quest_status, $4, '', CASE WHEN $3::quest_status = 'COMPLETED' THEN now() END)
+     ON CONFLICT (character_id, quest_id, reset_key) DO UPDATE
+       SET status = EXCLUDED.status, progress = EXCLUDED.progress, completed_at = EXCLUDED.completed_at
+       WHERE character_quests.status <> 'COMPLETED'`,
+    [id, row.quest_id, row.status, JSON.stringify(row.progress)],
+  );
+  return !!r.rowCount;
+}
+
+/** Class chosen at the ceremony (classes §3, §5): the free change window starts at the first choice. */
+export async function setClass(q: Queryable, id: string, cls: string): Promise<void> {
+  await q.query(
+    `UPDATE characters SET class = $2, class_changed_at = COALESCE(class_changed_at, now()),
+       updated_at = now(), version = version + 1 WHERE id = $1`,
+    [id, cls],
+  );
 }
 
 /** Lock the character row for the rest of the transaction (server-design §7.2). */

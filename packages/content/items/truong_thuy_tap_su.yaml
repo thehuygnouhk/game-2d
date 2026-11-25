@@ -6,3 +6,4 @@ icon: items/weapon_water
 slot: weapon
 levelReq: 10
 rarity: common
+class: WATER

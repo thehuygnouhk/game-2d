@@ -1,5 +1,8 @@
 import {
+  BOSS_REWARD_MAX_GAP,
   type BagItem,
+  CLASS_PASSIVE,
+  MAX_LEVEL,
   deathExpLoss,
   ErrorCode,
   type ErrorCodeValue,
@@ -20,6 +23,7 @@ import {
   type SInventoryDelta,
   type SStatsUpdate,
 } from "@htk/shared";
+import { bossHit } from "./boss";
 import { Drop, type Mob, type Player } from "./entities";
 import type { Zone } from "./zone";
 
@@ -43,9 +47,20 @@ const overlaps = (a: [number, number, number, number], b: [number, number, numbe
   a[0] < b[2] && b[0] < a[2] && a[1] < b[3] && b[1] < a[3];
 const mobBox = (m: Mob): [number, number, number, number] => [m.x - m.w / 2, m.y - m.h, m.x + m.w / 2, m.y];
 
+/** Areas of the class skills (classes §4), px: [ahead, width, height, all targets]. */
+const AREA: Record<string, [number, number, number, boolean]> = {
+  slash: [0, 90, 70, true],
+  lance: [0, 150, 60, true],
+  wave: [0, 150, 80, true],
+  beam: [0, 380, 50, true],
+};
+/** Hỏa Cầu / Thủy Đạn: a shot flying 520 px/s for 400 px, hitting the first monster (prototype). */
+export const BOLT = { speed: 520, range: 400 } as const;
+
 function cast(zone: Zone, p: Player, skillId: string, targetId: number | undefined, refSeq: number, now: number): void {
   const sk = zone.world.content.skills.get(skillId);
-  if (!sk || sk.set !== "NOVICE") return fail(p, ErrorCode.E_INVALID_TARGET, refSeq, "UNKNOWN_SKILL");
+  if (!sk || (sk.set !== "NOVICE" && sk.set !== p.cls))
+    return fail(p, ErrorCode.E_INVALID_TARGET, refSeq, "UNKNOWN_SKILL");
   if (!p.alive) return fail(p, ErrorCode.E_DEAD, refSeq, "DEAD");
   if (p.lv < sk.unlockLevel) return fail(p, ErrorCode.E_LEVEL_REQUIRED, refSeq, `LEVEL_${sk.unlockLevel}`);
   const tol = RULES.cooldownToleranceMs;
@@ -64,10 +79,12 @@ function cast(zone: Zone, p: Player, skillId: string, targetId: number | undefin
     py = p.body.y,
     tolPx = RULES.rangeTolerance;
   let hits: Mob[] = [];
+  const alive = (m: Mob) => m.alive && !m.boss?.torn;
   if (sk.shape === "melee") {
     const reach = RULES.meleeReach;
     if (
-      locked?.alive &&
+      locked &&
+      alive(locked) &&
       Math.abs(locked.x - px) - locked.w / 2 <= reach + tolPx &&
       overlaps(mobBox(locked), [px - 1e4, py - 60 - tolPx, px + 1e4, py + tolPx])
     )
@@ -76,7 +93,7 @@ function cast(zone: Zone, p: Player, skillId: string, targetId: number | undefin
       const box: [number, number, number, number] =
         f > 0 ? [px, py - 60, px + reach + tolPx, py] : [px - reach - tolPx, py - 60, px, py];
       const near = [...zone.mobs.values()]
-        .filter((m) => m.alive && overlaps(mobBox(m), box))
+        .filter((m) => alive(m) && overlaps(mobBox(m), box))
         .sort((a, c) => Math.abs(a.x - px) - Math.abs(c.x - px));
       hits = near.slice(0, 1);
     }
@@ -85,28 +102,92 @@ function cast(zone: Zone, p: Player, skillId: string, targetId: number | undefin
       cx = px + f * ahead,
       pad = tolPx / 2;
     const box: [number, number, number, number] = [cx - w / 2 - pad, py - h - pad, cx + w / 2 + pad, py + pad];
-    hits = [...zone.mobs.values()].filter((m) => m.alive && overlaps(mobBox(m), box));
+    hits = [...zone.mobs.values()].filter((m) => alive(m) && overlaps(mobBox(m), box));
+  } else if (AREA[sk.shape]) {
+    const [, w, h] = AREA[sk.shape]!,
+      pad = tolPx / 2;
+    const box: [number, number, number, number] =
+      f > 0 ? [px - pad, py - h - pad, px + w + pad, py + pad] : [px - w - pad, py - h - pad, px + pad, py + pad];
+    hits = [...zone.mobs.values()].filter((m) => alive(m) && overlaps(mobBox(m), box));
   }
   const cast = { casterId: p.id, skillId: sk.id, f, ...(locked ? { targetId: locked.id } : {}) };
   for (const o of zone.observers(p.id)) if (o !== p) o.out.send(Op.S_SKILL_CAST, cast);
   const isSkill = sk.id !== "SKL_BASIC";
-  const mult = sk.atkMult * (isSkill && p.appearance.origin === "NOBLE" ? PASSIVE.nobleSkillMult : 1);
+  let mult = sk.atkMult * (isSkill && p.appearance.origin === "NOBLE" ? PASSIVE.nobleSkillMult : 1);
+  if (isSkill && p.cls === "WATER" && p.tideReady) {
+    p.tideReady = false; // Triều Dâng
+    mult *= 1 + CLASS_PASSIVE.water.bonus;
+  }
   p.lastCombat = now;
   p.invulnUntil = 0; // attacking ends the revive protection (combat §4.1)
-  for (const m of hits) hitMob(zone, p, m, mult, now);
+  const opts = { burn: !!(sk as { burn?: boolean }).burn };
+  if (sk.shape === "bolt") {
+    zone.pshots.push({ p, skill: sk.id, x: px + f * 20, y: py - 40, vx: f * BOLT.speed, left: BOLT.range, mult, opts });
+    return;
+  }
+  for (const m of hits) hitMob(zone, p, m, mult, now, opts);
+  if (hits.length) zone.world.quests.event(p, "USE_SKILL", sk.id);
 }
 
-export function hitMob(zone: Zone, p: Player, m: Mob, mult: number, now: number): void {
-  if (!m.alive) return;
+/** A player shot reaches a monster (tick of the zone). */
+export function shotLands(zone: Zone, s: PlayerShot, m: Mob, now: number): void {
+  if (!zone.players.has(s.p.id)) return;
+  hitMob(zone, s.p, m, s.mult, now, s.opts);
+  zone.world.quests.event(s.p, "USE_SKILL", s.skill);
+}
+export interface PlayerShot {
+  p: Player;
+  skill: string;
+  x: number;
+  y: number;
+  vx: number;
+  left: number;
+  mult: number;
+  opts: { burn: boolean };
+}
+export const mobHitBox = mobBox;
+
+export function hitMob(
+  zone: Zone,
+  p: Player,
+  m: Mob,
+  mult: number,
+  now: number,
+  opts: { burn?: boolean; dot?: number } = {},
+): void {
+  if (!m.alive || m.boss?.torn) return;
   const s = p.combatStats(now);
-  const r = rollDamage(
-    zone.world.rng,
-    { atk: s.atk, lv: p.lv, crit: s.crit, critDmg: s.critDmg },
-    { def: m.max.def, lv: m.lv },
-    mult,
-  );
+  const burning = !!m.burn && now <= m.burn.until;
+  if (p.cls === "FIRE" && burning && opts.dot === undefined) mult *= 1 + CLASS_PASSIVE.fire.burningBonus; // Lửa Bén
+  const r =
+    opts.dot !== undefined
+      ? { miss: false, crit: false, amount: opts.dot }
+      : rollDamage(
+          zone.world.rng,
+          { atk: s.atk, lv: p.lv, crit: s.crit, critDmg: s.critDmg },
+          { def: m.max.def, lv: m.lv },
+          mult,
+        );
   p.lastCombat = now;
   m.threat.set(p.id, (m.threat.get(p.id) ?? 0) + r.amount);
+  const fight = m.boss ?? m.pieceOf?.boss;
+  if (fight) fight.damage.set(p.id, (fight.damage.get(p.id) ?? 0) + r.amount);
+  if (!r.miss && opts.dot === undefined) {
+    if (opts.burn) {
+      const fb = CLASS_PASSIVE.fire;
+      m.burn = {
+        until: now + fb.burnMs,
+        next: now + 1000,
+        dmg: Math.max(1, Math.round((s.atk * fb.burnPct) / fb.burnTicks)),
+        by: p.id,
+      };
+    }
+    if (p.cls === "WATER" && ++p.tideN >= CLASS_PASSIVE.water.hits) {
+      p.tideN = 0;
+      p.tideReady = true;
+      p.mp = Math.min(p.stats.mp, p.mp + Math.round(p.stats.mp * CLASS_PASSIVE.water.mpPct));
+    }
+  }
   if (m.mode !== "return") {
     let top = 0,
       best = -1;
@@ -128,15 +209,40 @@ export function hitMob(zone: Zone, p: Player, m: Mob, mult: number, now: number)
     hp: hpByte(m.hp, m.max.hp),
   };
   zone.sendAbout(m.id, Op.S_DAMAGE, dmg, p);
+  if (m.boss) {
+    if (bossHit(zone, m, now)) return; // torn apart: the pages fight on
+  } else if (m.pieceOf) zone.bossState(m.pieceOf);
   if (m.hp <= 0) killMob(zone, m, p, now);
 }
+
+/** Shares of a kill (combat §2.3): everyone with at least 10% of the damage, by damage dealt. */
+function shares(zone: Zone, damage: Map<number, number>, exp: number, lv: number): Map<number, number> {
+  const total = [...damage.values()].reduce((a, b) => a + b, 0) || 1;
+  const gained = new Map<number, number>();
+  for (const [id, dmg] of damage) {
+    const pl = zone.players.get(id);
+    const share = dmg / total;
+    if (!pl?.alive || share < RULES.expShareMin) continue;
+    gained.set(id, Math.max(1, Math.round(exp * expMod(pl.lv - lv) * share)));
+  }
+  return gained;
+}
+const topDealer = (zone: Zone, damage: Map<number, number>, fallback: number) => {
+  let owner = fallback,
+    best = -1;
+  for (const [id, d] of damage) if (d > best && zone.players.has(id)) [owner, best] = [id, d];
+  return owner;
+};
 
 function killMob(zone: Zone, m: Mob, killer: Player, now: number): void {
   const w = zone.world;
   m.alive = false;
   m.hp = 0;
   m.windup = null;
+  m.burn = null;
   zone.mobGone(m, now);
+  if (m.pieceOf) return pieceDown(zone, m, killer, now);
+  if (m.boss) return worldBossDown(zone, m, killer, now);
   // combat §2.3: everyone with at least 10% of the damage shares the EXP by damage dealt
   const total = [...m.threat.values()].reduce((a, b) => a + b, 0) || 1;
   const gained = new Map<number, number>();
@@ -158,7 +264,11 @@ function killMob(zone: Zone, m: Mob, killer: Player, now: number): void {
   }
   if (!killer.visible.has(m.id) && gained.has(killer.id))
     killer.out.send(Op.S_ENTITY_DIED, { id: m.id, killerId: killer.id, exp: gained.get(killer.id) });
-  for (const [id, exp] of gained) gainExp(zone.players.get(id)!, exp, now);
+  for (const [id, exp] of gained) {
+    const pl = zone.players.get(id)!;
+    gainExp(pl, exp, now);
+    w.quests.onKill(pl, m.def.id);
+  }
   // combat §6: drops near the body, locked to the top damage dealer for 15 s, gone after 60 s
   const table = w.content.drops.get(m.def.drops);
   if (!table) return;
@@ -173,7 +283,7 @@ function killMob(zone: Zone, m: Mob, killer: Player, now: number): void {
 
 export function gainExp(p: Player, n: number, now: number): void {
   p.exp += n;
-  const cap = RULES.levelCapChapter1;
+  const cap = p.questDone("Q_MAIN_11") ? MAX_LEVEL : RULES.levelCapChapter1;
   let up = false;
   while (p.exp >= expToNext(p.lv) && p.lv < cap) {
     p.exp -= expToNext(p.lv);
@@ -253,7 +363,7 @@ function playerDies(zone: Zone, p: Player, killerId: number, now: number): void 
   p.hp = 0;
   p.diedAt = now;
   p.skillQueue.length = 0;
-  p.townMap = zone.world.townOf(zone.map).id;
+  p.townMap = zone.inst ? zone.inst.entry.mapId : zone.world.townOf(zone.map).id;
   const loss = Math.min(p.exp, deathExpLoss(p.lv));
   p.exp -= loss;
   for (const o of zone.observers(p.id))
@@ -387,4 +497,68 @@ function drink(zone: Zone, p: Player, it: BagItem, kind: "hp" | "mp", delta: SIn
   p.out.send(Op.S_INVENTORY_DELTA, delta);
   (p.zone ?? zone).sendAbout(p.id, Op.S_HEAL, { targetId: p.id, sourceId: p.id, amount: Math.max(0, amount), kind });
   sendStats(p, kind === "hp" ? { hp: Math.ceil(p.hp) } : { mp: Math.floor(p.mp) });
+}
+
+/* ---------------- bosses (maps §5) ---------------- */
+
+function dropAll(zone: Zone, loot: ReturnType<typeof rollLoot>, x: number, y: number, owner: number, now: number) {
+  loot.forEach((l, i) => {
+    const dx = Math.round(x + (i - (loot.length - 1) / 2) * 22);
+    const dy = zone.surfaceBelow(dx, y - 8) ?? y;
+    const d = new Drop(zone.world.nextId(), l, dx, dy, owner, now + RULES.dropLockMs, now + RULES.dropTtlMs);
+    zone.drops.set(d.id, d);
+  });
+}
+
+function announceKill(zone: Zone, m: Mob, gained: Map<number, number>, killer: Player) {
+  for (const o of zone.players.values()) {
+    const died: SEntityDied = { id: m.id, killerId: killer.id };
+    const exp = gained.get(o.id);
+    if (exp) died.exp = exp;
+    o.out.send(Op.S_ENTITY_DIED, died);
+  }
+}
+
+/** A scheduled boss falls: EXP by damage, loot for the top dealer (none above the level gap), announce. */
+function worldBossDown(zone: Zone, m: Mob, killer: Player, now: number): void {
+  const w = zone.world,
+    run = m.boss!;
+  const gained = shares(zone, run.damage, m.max.exp, m.lv);
+  announceKill(zone, m, gained, killer);
+  for (const [id, exp] of gained) {
+    const pl = zone.players.get(id)!;
+    gainExp(pl, exp, now);
+    w.quests.event(pl, "BOSS", m.def.id);
+  }
+  const owner = topDealer(zone, run.damage, killer.id);
+  const table = run.def.drops ? w.content.drops.get(run.def.drops) : undefined;
+  if (table) {
+    const ownerLv = zone.players.get(owner)?.lv ?? killer.lv;
+    let loot = rollLoot(w.rng, table, m.lv, "leader");
+    if (ownerLv > m.lv + BOSS_REWARD_MAX_GAP) loot = loot.filter((l) => l.kind === "soft");
+    dropAll(zone, loot, m.x, m.y, owner, now);
+  }
+  zone.bossState(m, true);
+  w.bosses.killed(m, killer);
+}
+
+/** A page of Trang Lạc falls; the last one brings the boss down (maps §5.3). */
+function pieceDown(zone: Zone, piece: Mob, killer: Player, now: number): void {
+  const boss = piece.pieceOf!,
+    run = boss.boss!;
+  for (const o of zone.observers(piece.id)) o.out.send(Op.S_ENTITY_DIED, { id: piece.id, killerId: killer.id });
+  if (run.pieces.some((x) => x.alive)) return zone.bossState(boss);
+  // the boss pays out once: EXP by damage over the whole fight, its Quan, the BOSS objective, the chest
+  const gained = shares(zone, run.damage, boss.max.exp, boss.lv);
+  for (const [id, exp] of gained) {
+    const pl = zone.players.get(id)!;
+    pl.out.send(Op.S_ENTITY_DIED, { id: boss.id, killerId: killer.id, exp });
+    gainExp(pl, exp, now);
+  }
+  for (const pl of zone.players.values()) zone.world.quests.event(pl, "BOSS", boss.def.id);
+  const owner = topDealer(zone, run.damage, killer.id);
+  const soft = Math.round(boss.max.soft ?? 0);
+  if (soft > 0) dropAll(zone, [{ kind: "soft", qty: soft }], boss.x, boss.y, owner, now);
+  zone.bossState(boss, true);
+  zone.dungeonBossDown(boss);
 }

@@ -7,5 +7,10 @@ kind: BOSS                  # HP/EXP multiplier per combat section 2.1 (Boss x40
 sprite: bosses/boss036
 size: { w: 120, h: 90 }
 skills: [ BSKL_DIVE_CIRCLE, BSKL_CRYSTAL_WING ]
-drops: DROP_BOSS036
+drops: DROP_R01_BOSS
 enrageAfterMin: 10
+flying: true
+moveSpeed: 70
+skillDefs:
+  BSKL_DIVE_CIRCLE: { mult: 2.0, telegraphMs: 1200, shape: circle, r: 70, cooldownMs: 5000 }
+  BSKL_CRYSTAL_WING: { mult: 1.2, telegraphMs: 1000, shape: circles, r: 34, count: 5, every: 3, cooldownMs: 5000 }

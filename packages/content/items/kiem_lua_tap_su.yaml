@@ -6,3 +6,4 @@ icon: items/weapon_fire
 slot: weapon
 levelReq: 10
 rarity: common
+class: FIRE

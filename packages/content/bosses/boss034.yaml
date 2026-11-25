@@ -10,5 +10,9 @@ skills: [ BSKL_STOMP_WAVE, BSKL_SUMMON_MUSHROOMS ]
 phases:
   - { atHp: 0.6, action: SUMMON, mob: MOB001, count: 3 }
   - { atHp: 0.3, action: SUMMON, mob: MOB001, count: 3 }
-drops: DROP_BOSS034
+drops: DROP_R01_BOSS
 enrageAfterMin: 10
+flying: false
+moveSpeed: 55
+skillDefs:
+  BSKL_STOMP_WAVE: { mult: 1.8, telegraphMs: 1300, shape: circle, r: 150, cooldownMs: 5200 }

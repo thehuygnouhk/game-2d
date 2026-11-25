@@ -1,0 +1,12 @@
+# Manh Trang: one of the four pages Trang Lac tears into at 50% HP (maps section 5.3)
+id: BOSS001_SHARD
+nameKey: boss.boss001_shard.name
+level: [9, 9]
+element: NONE
+kind: MINION
+sprite: bosses/boss001_shard
+size: { w: 40, h: 40 }
+flying: true
+moveSpeed: 110
+aggroRange: 600
+skills: [ MOBSKL_PAGE_CUT ]

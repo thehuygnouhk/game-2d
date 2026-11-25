@@ -1,0 +1,7 @@
+# NPCs of region R01 (characters section 3). face = row of sprites/npc_idle.png
+npcs:
+  - { id: NPC001, nameKey: npc.npc001.name, lineKey: npc.npc001.line, face: 0 }
+  - { id: NPC002, nameKey: npc.npc002.name, lineKey: npc.npc002.line, face: 1 }
+  - { id: NPC003, nameKey: npc.npc003.name, lineKey: npc.npc003.line, face: 2 }
+  - { id: NPC004, nameKey: npc.npc004.name, lineKey: npc.npc004.line, face: 3 }
+  - { id: NPC040, nameKey: npc.npc040.name, lineKey: npc.npc040.line, face: 5 }

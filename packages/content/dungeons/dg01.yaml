@@ -1,0 +1,12 @@
+# DG01 Hang Gieng Can, tutorial dungeon (maps section 6.2)
+id: DG01
+nameKey: map.dg01.name
+minLevel: 9
+timeLimitMin: 30
+boss: BOSS001
+wakeRange: 420          # Trang Lac wakes when a player comes this close to its spot (px)
+entry: { map: M004, x: 2224, y: 640 }   # back at the dungeon gate
+chest:
+  soft: 300             # times the party reward factor (alone x0.8 = 240)
+  items: [ { id: potion_hp_m, count: 3 } ]
+  gear: { items: [ s1_weapon, s1_hat, s1_armor, s1_boots ], level: 9, rarity: good }

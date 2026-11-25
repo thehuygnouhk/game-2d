@@ -10,5 +10,9 @@ skills: [ BSKL_HOWL_SUMMON, BSKL_LUNGE ]
 phases:
   - { atHp: 0.7, action: SUMMON, mob: MOB003, count: 2 }
   - { atHp: 0.35, action: SUMMON, mob: MOB003, count: 2 }
-drops: DROP_BOSS035
+drops: DROP_R01_BOSS
 enrageAfterMin: 10
+flying: false
+moveSpeed: 120
+skillDefs:
+  BSKL_LUNGE: { mult: 1.6, telegraphMs: 1000, shape: rect, w: 320, h: 46, cooldownMs: 4800 }

@@ -14,7 +14,7 @@ function solidAt(zone: Zone, x: number, y: number): boolean {
 }
 
 /** Walk a ground monster by dx px; stops at walls and platform edges. Returns true when it moved. */
-function walk(zone: Zone, m: Mob, dx: number, turn = true): boolean {
+export function walk(zone: Zone, m: Mob, dx: number, turn = true): boolean {
   if (dx === 0) return false;
   const dir = dx > 0 ? 1 : -1;
   if (turn) m.facing = dir;
@@ -31,7 +31,7 @@ function walk(zone: Zone, m: Mob, dx: number, turn = true): boolean {
   return true;
 }
 
-function fly(zone: Zone, m: Mob, tx: number, ty: number, speed: number): void {
+export function fly(zone: Zone, m: Mob, tx: number, ty: number, speed: number): void {
   const dx = Math.max(-1, Math.min(1, (tx - m.x) / 8)) * speed * DT;
   const dy = Math.max(-1, Math.min(1, (ty - m.y) / 8)) * speed * 0.6 * DT;
   if (!solidAt(zone, m.x + dx, m.y - m.h / 2)) m.x += dx;
@@ -73,7 +73,7 @@ export function tickMob(zone: Zone, m: Mob, now: number): void {
     return;
   }
   // leash: too far from home → run back and heal up
-  if (m.mode !== "return" && Math.abs(m.x - m.homeX) > ai.leash) {
+  if (!m.forceAggro && m.mode !== "return" && Math.abs(m.x - m.homeX) > ai.leash) {
     m.mode = "return";
     m.targetId = 0;
     m.threat.clear();
@@ -96,15 +96,15 @@ export function tickMob(zone: Zone, m: Mob, now: number): void {
     t = undefined;
     m.targetId = 0;
   }
-  if (!t && ai.type === "AGGRESSIVE") {
+  if (!t && (ai.type === "AGGRESSIVE" || m.forceAggro)) {
     let best = Infinity;
     for (const p of zone.players.values()) {
       const dx = Math.abs(p.body.x - m.x);
       if (
         p.alive &&
         now >= p.invulnUntil &&
-        dx < ai.aggroRange &&
-        Math.abs(p.body.y - m.y) < RULES.aggroDy &&
+        dx < (m.forceAggro ? Math.max(ai.aggroRange, 600) : ai.aggroRange) &&
+        Math.abs(p.body.y - m.y) < (m.forceAggro ? 300 : RULES.aggroDy) &&
         dx < best
       ) {
         best = dx;

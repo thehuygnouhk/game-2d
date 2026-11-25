@@ -13,6 +13,7 @@ import {
   MAX_MOVE_INPUTS_PER_S,
   MAX_PACKETS_PER_S,
   MAX_SKILLS_PER_S,
+  MAX_SHOP_PER_S,
   CHAT_MAP_INTERVAL_MS,
   CHAT_WORLD_INTERVAL_MS,
   type CAllocatePoints,
@@ -27,9 +28,10 @@ import {
   type CMoveInput,
   type CUseSkill,
 } from "@htk/shared";
-import type { CharacterRow, ItemRow } from "@htk/db";
+import type { CharacterRow, ItemRow, QuestRow } from "@htk/db";
 import type { ServerConfig } from "../config";
-import { allocatePoints, pickup, useItem } from "../world/combat";
+import { allocatePoints, fail, pickup, useItem } from "../world/combat";
+import { buy, equip, openChest, sell, unequip } from "../world/items";
 import { Player } from "../world/entities";
 import type { World } from "../world/world";
 
@@ -43,7 +45,7 @@ export interface Ticket {
 export interface AccountGate {
   realmId: number;
   takeTicket(ticket: string): Promise<Ticket | null>;
-  loadCharacter(id: string): Promise<{ char: CharacterRow; bag: ItemRow[] } | null>;
+  loadCharacter(id: string): Promise<{ char: CharacterRow; bag: ItemRow[]; quests: QuestRow[] } | null>;
 }
 
 const IDLE_TIMEOUT_MS = 30_000;
@@ -53,7 +55,7 @@ export class Session {
   private seq = 0;
   private strikes = 0;
   private stage: "hello" | "auth" | "lobby" | "world" | "closed" = "hello";
-  private loaded: { ticket: Ticket; char: CharacterRow; bag: ItemRow[] } | null = null;
+  private loaded: { ticket: Ticket; char: CharacterRow; bag: ItemRow[]; quests: QuestRow[] } | null = null;
   private name = "";
   private appearance: Appearance = { origin: "VILLAGER", gender: "MALE" };
   private player: Player | null = null;
@@ -61,6 +63,7 @@ export class Session {
   private packets = 0;
   private moves = 0;
   private skills = 0;
+  private shop = 0;
   private floodSeconds = 0;
   private lastSeen = Date.now();
 
@@ -117,6 +120,7 @@ export class Session {
       this.packets = 0;
       this.moves = 0;
       this.skills = 0;
+      this.shop = 0;
       if (this.floodSeconds >= 10) {
         this.close(1008, "flood");
         return false;
@@ -126,6 +130,10 @@ export class Session {
     if (op === Op.C_MOVE_INPUT && ++this.moves > MAX_MOVE_INPUTS_PER_S) return false; // dropped, not an error
     if (op === Op.C_USE_SKILL && ++this.skills > MAX_SKILLS_PER_S) {
       this.error(ErrorCode.E_RATE_LIMIT, 0, "C_USE_SKILL over 10/s");
+      return false;
+    }
+    if ((op === Op.C_SHOP_BUY || op === Op.C_SHOP_SELL) && ++this.shop > MAX_SHOP_PER_S) {
+      this.error(ErrorCode.E_RATE_LIMIT, 0, "C_SHOP_* over 5/s");
       return false;
     }
     return true;
@@ -185,6 +193,36 @@ export class Session {
         return useItem(pl.zone, pl, (p as { instanceId: string }).instanceId, frame.seq, now);
       case Op.C_ALLOCATE_POINTS:
         return allocatePoints(pl, p as CAllocatePoints, frame.seq, now);
+      case Op.C_EQUIP:
+        return equip(w, pl, (p as { instanceId: string }).instanceId, frame.seq);
+      case Op.C_UNEQUIP:
+        return unequip(w, pl, (p as { slot: "weapon" }).slot, frame.seq);
+      case Op.C_NPC_INTERACT:
+        return w.quests.interact(pl, (p as { npcId: string }).npcId, frame.seq);
+      case Op.C_NPC_CHOICE: {
+        const c = p as { npcId: string; optionId: string };
+        return w.quests.choice(pl, c.npcId, c.optionId, frame.seq);
+      }
+      case Op.C_CHOOSE_CLASS:
+        return void w.quests.chooseClass(pl, (p as { classId: "FIRE" | "WATER" }).classId, frame.seq);
+      case Op.C_USE_OBJECT: {
+        const id = (p as { objectId: string }).objectId;
+        if (!pl.alive) return fail(pl, ErrorCode.E_DEAD, frame.seq, "DEAD");
+        if (id === "CHEST") return openChest(w, pl, frame.seq);
+        if (id === "ALTAR") return w.quests.useAltar(pl, frame.seq);
+        if (id.startsWith("HERB:")) return w.quests.gather(pl, id, frame.seq);
+        return fail(pl, ErrorCode.E_INVALID_TARGET, frame.seq, "NO_OBJECT");
+      }
+      case Op.C_SHOP_BUY: {
+        const b = p as { shopId: string; itemId: string; qty: number; idemKey: string };
+        return buy(w, pl, b.shopId, b.itemId, b.qty, b.idemKey, frame.seq);
+      }
+      case Op.C_SHOP_SELL: {
+        const b = p as { instanceId: string; qty: number; idemKey: string };
+        return sell(w, pl, b.instanceId, b.qty, b.idemKey, frame.seq);
+      }
+      case Op.C_LEAVE_INSTANCE:
+        return w.leaveInstance(pl);
       case Op.C_CHAT_SEND: {
         // map chat: same map and zone, 1 per second; world chat: whole realm, 1 per 10 s (network-protocol §7)
         const { channel, text } = p as { channel: "MAP" | "WORLD"; text: string };
@@ -306,6 +344,13 @@ export class Session {
       pl.hp = c.hp > 0 ? Math.min(c.hp, pl.stats.hp) : pl.stats.hp;
       pl.mp = Math.min(Math.max(0, c.mp), pl.stats.mp);
       pl.bag.load(c.soft_currency, l.bag);
+      pl.cls = c.class === "FIRE" || c.class === "WATER" ? c.class : null;
+      pl.clsChangedAt = c.class_changed_at ? new Date(c.class_changed_at).getTime() : 0;
+      for (const q of l.quests) pl.quests.set(q.quest_id, { ...q, progress: [...q.progress] });
+      pl.playedBefore = c.play_seconds;
+      pl.recompute();
+      pl.hp = c.hp > 0 ? Math.min(c.hp, pl.stats.hp) : pl.stats.hp;
+      pl.mp = Math.min(Math.max(0, c.mp), pl.stats.mp);
       at = { mapId: c.map_id, x: c.pos_x, y: c.pos_y };
     }
     const enter = this.world.enter(pl, at);

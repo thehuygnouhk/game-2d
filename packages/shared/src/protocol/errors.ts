@@ -6,6 +6,7 @@ export const ErrorCode = {
   E_MAINTENANCE: 1005,
   E_RATE_LIMIT: 1100,
   E_INVALID_PAYLOAD: 1101,
+  E_DUPLICATE_REQUEST: 1102,
   E_NOT_ENOUGH_MP: 2001,
   E_COOLDOWN: 2002,
   E_OUT_OF_RANGE: 2003,
@@ -15,8 +16,12 @@ export const ErrorCode = {
   E_IN_COMBAT: 2008,
   E_MAP_LOCKED: 2009,
   E_INVENTORY_FULL: 3001,
+  E_NOT_ENOUGH_SOFT: 3002,
+  E_ITEM_BOUND: 3004,
   E_ITEM_NOT_FOUND: 3005,
   E_LEVEL_REQUIRED: 3006,
+  E_QUEST_NOT_AVAILABLE: 4001,
+  E_QUEST_INCOMPLETE: 4002,
   E_INTERNAL: 9000,
 } as const;
 export type ErrorCodeValue = (typeof ErrorCode)[keyof typeof ErrorCode];

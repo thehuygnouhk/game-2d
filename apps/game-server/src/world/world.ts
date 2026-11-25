@@ -1,6 +1,9 @@
+import { randomUUID } from "node:crypto";
 import type { Content, GameMap } from "@htk/content";
 import {
+  type CollisionMap,
   collisionFromTiled,
+  dungeonScale,
   ErrorCode,
   Op,
   type Rng,
@@ -12,10 +15,12 @@ import {
   TICK_MS,
   type TiledMap,
 } from "@htk/shared";
+import { BossSchedule } from "./boss";
 import { fail, sendStats } from "./combat";
 import type { Player } from "./entities";
+import { Quests } from "./quests";
 import { MemoryStore, type Store } from "./store";
-import { Zone } from "./zone";
+import { type Instance, Zone } from "./zone";
 
 /** Write-behind period of position, HP, MP and EXP (server-design §8). */
 export const SAVE_EVERY_TICKS = 60 * 20;
@@ -30,6 +35,8 @@ export interface WorldOptions {
   /** where accounts are saved (PgStore); unset: no accounts, development guests only */
   store?: Store;
   log?: (event: string, data?: Record<string, unknown>) => void;
+  /** wall clock (epoch ms) for boss schedules and the class change window; tests may fake it */
+  clock?: () => number;
 }
 
 /** Public maps with their zones (khu 1..n), shared clock and entity ids (server-design §3). */
@@ -49,7 +56,13 @@ export class World {
   readonly leaving = new Map<string, Promise<unknown>>();
   readonly guestStore: Store;
   readonly store: Store | undefined;
-  private readonly log: (event: string, data?: Record<string, unknown>) => void;
+  readonly log: (event: string, data?: Record<string, unknown>) => void;
+  /** dungeon runs and ceremony halls (step B4) */
+  readonly instances = new Set<Zone>();
+  private readonly privateMaps = new Map<string, { map: GameMap; coll: CollisionMap }>();
+  clock: () => number;
+  readonly quests: Quests;
+  readonly bosses: BossSchedule;
 
   constructor(opts: WorldOptions) {
     this.content = opts.content;
@@ -57,9 +70,14 @@ export class World {
     this.startMap = opts.startMap;
     this.store = opts.store;
     this.log = opts.log ?? (() => {});
+    this.clock = opts.clock ?? Date.now;
     this.guestStore = new MemoryStore(this.log);
     for (const m of opts.content.maps.values()) {
-      if (m.type !== "TOWN" && m.type !== "FIELD") continue; // dungeons and instances come later
+      if (m.type === "DUNGEON" || m.type === "INSTANCE") {
+        this.privateMaps.set(m.id, { map: m, coll: collisionFromTiled(m.tiled as TiledMap) });
+        continue;
+      }
+      if (m.type !== "TOWN" && m.type !== "FIELD") continue;
       const coll = collisionFromTiled(m.tiled as TiledMap);
       const cap = opts.zoneCap ?? m.zoneCap ?? 30;
       const list: Zone[] = [];
@@ -67,6 +85,19 @@ export class World {
       for (let z = 1; z <= (opts.zonesPerMap ?? RULES.zonesPerMap); z++) list.push(new Zone(this, m, z, coll, cap));
     }
     if (!this.zones.has(opts.startMap)) throw new Error(`start map ${opts.startMap} is not a hosted map`);
+    this.quests = new Quests(this);
+    this.bosses = new BossSchedule(this);
+  }
+
+  /** every zone that ticks: public zones and private instances */
+  *allZones(): Iterable<Zone> {
+    for (const list of this.zones.values()) yield* list;
+    yield* this.instances;
+  }
+
+  /** Send to every player of the realm. */
+  broadcast(op: number, payload: unknown): void {
+    for (const z of this.allZones()) for (const p of z.players.values()) p.out.send(op, payload);
   }
 
   nextId(): number {
@@ -75,7 +106,7 @@ export class World {
 
   get playerCount(): number {
     let n = 0;
-    for (const list of this.zones.values()) for (const z of list) n += z.players.size;
+    for (const z of this.allZones()) n += z.players.size;
     return n;
   }
 
@@ -95,7 +126,8 @@ export class World {
   update(): void {
     this.tick++;
     this.now += TICK_MS;
-    for (const list of this.zones.values()) for (const z of list) z.update(this.now);
+    for (const z of [...this.allZones()]) z.update(this.now);
+    if (this.tick % 20 === 0) this.bosses.tick();
     for (const [p, req] of this.pending)
       if (p.ack >= req.seq || this.now - req.at >= 500) {
         this.pending.delete(p);
@@ -117,32 +149,40 @@ export class World {
 
   /** World chat (network-protocol §6.8): every player of the realm. */
   chatWorld(from: Player, text: string): void {
-    const msg = { channel: "WORLD", fromId: from.id, fromName: from.name, text, time: Date.now() };
-    for (const list of this.zones.values())
-      for (const z of list) for (const p of z.players.values()) p.out.send(Op.S_CHAT_MSG, msg);
+    this.broadcast(Op.S_CHAT_MSG, { channel: "WORLD", fromId: from.id, fromName: from.name, text, time: Date.now() });
   }
 
   replicate(): void {
-    for (const list of this.zones.values()) for (const z of list) if (z.players.size) z.replicate();
+    for (const z of this.allZones()) if (z.players.size) z.replicate();
   }
 
-  private skills(): SkillInfo[] {
+  /** Novice skills, then the class skills (keys J, 1, 2, 3, 4; classes §3-4). */
+  skillsOf(p: Player): SkillInfo[] {
+    const keys = ["J", "1", "2", "3", "4"];
     return [...this.content.skills.values()]
-      .filter((s) => s.set === "NOVICE")
-      .map((s) => ({
+      .filter((s) => s.set === "NOVICE" || s.set === p.cls)
+      .sort((a, b) => Number(a.set !== "NOVICE") - Number(b.set !== "NOVICE") || a.unlockLevel - b.unlockLevel)
+      .map((s, i) => ({
         id: s.id,
         name: this.content.text(s.nameKey),
         unlockLevel: s.unlockLevel,
         mp: s.mp,
         cooldownMs: Math.round(s.cooldownSec * 1000),
+        key: keys[i],
+        shape: s.shape,
       }));
   }
 
   private place(p: Player, z: Zone, x: number, y: number): SMapChange {
     const view = z.add(p, x, y);
     const s = p.state();
+    const npcs = this.quests.npcsOn(p, z.mapId).map((n) => {
+      const d = this.content.npcs.get(n.id);
+      return { id: n.id, name: d ? this.content.text(d.nameKey) : n.id, x: n.x, y: n.y };
+    });
     return {
       map: { id: z.mapId, zone: z.zoneNo, name: this.content.text(z.map.nameKey) },
+      npcs,
       tick: this.tick,
       ack: p.ack,
       body: { x: s.x, y: s.y, vy: s.vy, st: s.st },
@@ -163,10 +203,12 @@ export class World {
     return {
       ...placed,
       you: p.id,
-      character: { name: p.name, appearance: p.appearance },
+      character: { name: p.name, appearance: p.appearance, cls: p.cls },
       stats: p.full(this.now),
-      skills: this.skills(),
+      skills: this.skillsOf(p),
       bag,
+      equipment: { ...p.bag.equip },
+      quests: this.quests.update(p),
     };
   }
 
@@ -174,7 +216,9 @@ export class World {
   leave(p: Player): Promise<unknown> {
     this.pending.delete(p);
     p.lastZone = p.zone ?? p.lastZone;
-    p.zone?.remove(p);
+    const z = p.zone;
+    z?.remove(p);
+    if (z) this.closeIfEmpty(z);
     if (!p.accountId || this.accounts.get(p.accountId) !== p) return Promise.resolve();
     this.accounts.delete(p.accountId);
     const acc = p.accountId;
@@ -187,8 +231,81 @@ export class World {
 
   /** Move to another map or zone and tell the player (S_MAP_CHANGE). */
   transfer(p: Player, z: Zone, x: number, y: number): void {
-    p.zone?.remove(p);
+    const from = p.zone;
+    from?.remove(p);
+    if (from && from !== z) this.closeIfEmpty(from);
+    p.shopNpc = null;
     p.out.send(Op.S_MAP_CHANGE, this.place(p, z, x, y));
+    if (z.inst) p.out.send(Op.S_INSTANCE_STATE, z.instanceState(p));
+  }
+
+  private closeIfEmpty(z: Zone): void {
+    if (z.inst && z.players.size === 0 && this.instances.delete(z)) this.log("instance.close", { map: z.mapId });
+  }
+
+  private openInstance(p: Player, mapId: string, inst: Instance): Zone | null {
+    const pm = this.privateMaps.get(mapId);
+    if (!pm) return null;
+    inst.runId = randomUUID();
+    const z = new Zone(this, pm.map, 1, pm.coll, pm.map.zoneCap ?? 5, inst);
+    this.instances.add(z);
+    this.log("instance.open", { map: mapId, player: p.id });
+    return z;
+  }
+
+  /** A new run of a dungeon (maps §6.1-6.2): alone, scaled for one player. */
+  openDungeon(p: Player, dungeonId: string, refSeq: number): void {
+    const dg = this.content.dungeons.get(dungeonId);
+    if (!dg) return fail(p, ErrorCode.E_MAP_LOCKED, refSeq, `MAP_NOT_OPEN:${dungeonId}`);
+    if (p.lv < dg.minLevel) return fail(p, ErrorCode.E_LEVEL_REQUIRED, refSeq, `LEVEL_${dg.minLevel}`);
+    const z = this.openInstance(p, dungeonId, {
+      kind: "DUNGEON",
+      ownerId: p.id,
+      entry: { mapId: dg.entry.map, x: dg.entry.x, y: dg.entry.y },
+      endsAt: this.now + dg.timeLimitMin * 60_000,
+      scale: dungeonScale(1),
+      dungeon: dg,
+      boss: null,
+      bossDown: false,
+      chest: null,
+      opened: new Set(),
+    });
+    if (!z) return fail(p, ErrorCode.E_MAP_LOCKED, refSeq, `MAP_NOT_OPEN:${dungeonId}`);
+    this.transfer(p, z, z.map.spawn.x, z.map.spawn.y);
+  }
+
+  /** Q_MAIN_12: Thầy takes the player into the ceremony hall I001 (quests §4). */
+  openCeremony(p: Player): void {
+    if (p.zone?.inst?.kind === "CEREMONY") return;
+    const back = this.content.maps.get("I001")?.portals[0];
+    const z = this.openInstance(p, "I001", {
+      kind: "CEREMONY",
+      ownerId: p.id,
+      entry: { mapId: back?.to ?? "M001", x: back?.toX ?? 368, y: back?.toY ?? 480 },
+      endsAt: Infinity,
+      scale: { hp: 1, atk: 1, reward: 1 },
+      boss: null,
+      bossDown: false,
+      chest: null,
+      opened: new Set(),
+    });
+    if (z) this.transfer(p, z, z.map.spawn.x, z.map.spawn.y);
+  }
+
+  /** C_LEAVE_INSTANCE, a timed-out dungeon: back to the way in. */
+  leaveInstance(p: Player): void {
+    const z = p.zone;
+    if (!z?.inst) return;
+    if (!p.alive) {
+      p.alive = true;
+      p.hp = p.stats.hp;
+      p.mp = p.stats.mp;
+      p.out.send(Op.S_REVIVED, { x: 0, y: 0, hp: p.hp, mp: Math.floor(p.mp) });
+    }
+    const e = z.inst.entry;
+    const to = this.pickZone(e.mapId);
+    if (to) this.transfer(p, to, e.x, e.y);
+    sendStats(p, { hp: Math.ceil(p.hp), mp: Math.floor(p.mp) });
   }
 
   /** C_USE_PORTAL waits until the movement before it has been simulated (C_USE_PORTAL.seq). */
@@ -206,8 +323,9 @@ export class World {
       pad = 16;
     if (x < g.x - pad || x > g.x + g.w + pad || y < g.y - pad || y > g.y + g.h + pad)
       return fail(p, ErrorCode.E_OUT_OF_RANGE, refSeq, "NOT_AT_PORTAL");
+    if (this.content.dungeons.has(g.to)) return this.openDungeon(p, g.to, refSeq);
     if (!this.zones.has(g.to)) return fail(p, ErrorCode.E_MAP_LOCKED, refSeq, `MAP_NOT_OPEN:${g.to}`);
-    const to = this.pickZone(g.to, z.zoneNo);
+    const to = this.pickZone(g.to, z.inst ? 1 : z.zoneNo);
     if (!to) return fail(p, ErrorCode.E_ZONE_FULL, refSeq, "ALL_ZONES_FULL");
     this.transfer(p, to, g.toX, g.toY);
   }
@@ -247,6 +365,13 @@ export class World {
     const z = p.zone;
     if (!z) return;
     if (p.alive) return fail(p, ErrorCode.E_INVALID_TARGET, refSeq, "NOT_DEAD");
+    if (z.inst) {
+      // falling in a dungeon ends the run: back at its gate (maps §6.2)
+      p.invulnUntil = this.now + RULES.reviveInvulnMs;
+      p.lastCombat = -1e9;
+      this.leaveInstance(p);
+      return;
+    }
     const town = this.town(z.map);
     const to = this.pickZone(town.id, z.zoneNo);
     if (!to) return fail(p, ErrorCode.E_ZONE_FULL, refSeq, "ALL_ZONES_FULL");

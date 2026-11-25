@@ -1,6 +1,12 @@
-import type { Content, MobSpawn as SpawnDef, Monster } from "@htk/content";
+import type { Boss, Content, MobSpawn as SpawnDef, Monster } from "@htk/content";
+import type { QuestRow } from "@htk/db";
 import {
   type Appearance,
+  type ClassId,
+  GEAR_SLOTS,
+  type GearPiece,
+  type Telegraph,
+  withGear,
   type Body,
   type CMoveInput,
   type CUseSkill,
@@ -91,6 +97,25 @@ export class Player implements Replicated {
   lastZone: Zone | null = null;
   townMap?: string;
   playMark = Date.now();
+  readonly sessionStart = Date.now();
+  /** play time saved before this session (chapter end card) */
+  playedBefore = 0;
+  /** class chosen at the Lễ Khai Thư (step B4) and when (free change for 24 h) */
+  cls: ClassId | null = null;
+  clsChangedAt = 0;
+  /** quest rows by quest id (character_quests) */
+  readonly quests = new Map<string, QuestRow>();
+  /** progress of the active quest changed since the last save */
+  questDirty = false;
+  /** quest herbs picked: node id → wall time it grows back */
+  readonly herbs = new Map<string, number>();
+  /** NPC whose shop is open */
+  shopNpc: string | null = null;
+  /** Thủy, Triều Dâng: hits counted, next skill boosted */
+  tideN = 0;
+  tideReady = false;
+  /** speed bonus of the boots (shown only) */
+  spd = 1;
   /** per-character queue: asset changes run one at a time, in order (server-design §7.1) */
   private chain: Promise<unknown> = Promise.resolve();
 
@@ -118,10 +143,32 @@ export class Player implements Replicated {
     return this.chain;
   }
 
-  /** Stats from origin, level and the potential points spent (combat §3.3-3.4). */
+  /** the main quest row being worked on (accepted, not completed) */
+  activeQuestRow(): QuestRow | undefined {
+    for (const r of this.quests.values()) if (r.status !== "COMPLETED") return r;
+    return undefined;
+  }
+  questDone(id: string): boolean {
+    return this.quests.get(id)?.status === "COMPLETED";
+  }
+
+  /** Stats from origin, level, potential points, class and gear (combat §3.3-3.4, items §4-5). */
   recompute(refill = false): void {
     const o = this.content.origins[this.appearance.origin];
-    const base = playerStats(this.lv, o, this.pts);
+    const gear: GearPiece[] = [];
+    for (const s of GEAR_SLOTS) {
+      const it = this.bag?.equip[s];
+      if (it?.slot && it.level)
+        gear.push({
+          slot: it.slot,
+          level: it.level,
+          rarity: it.rarity ?? "common",
+          affixes: it.affixes ?? [],
+          set: it.set,
+        });
+    }
+    const { spd, ...base } = withGear(playerStats(this.lv, o, this.pts), this.cls, gear);
+    this.spd = spd;
     this.stats = base;
     if (refill) {
       this.hp = base.hp;
@@ -151,10 +198,19 @@ export class Player implements Replicated {
       atk: s.atk,
       def: s.def,
       crit: s.crit,
-      power: combatPower(s, this.lv >= 5 ? 2 : 1),
+      power: combatPower(s, this.skillCount()),
+      spd: this.spd,
       statPoints: this.statPoints,
       pts: { ...this.pts },
     };
+  }
+
+  /** skills learnt, for Lực Chiến (combat §3.5) */
+  skillCount(): number {
+    let n = this.lv >= 5 ? 2 : 1;
+    if (this.cls)
+      for (const sk of this.content.skills.values()) if (sk.set === this.cls && this.lv >= sk.unlockLevel) n++;
+    return n;
   }
 
   state(): Shown {
@@ -175,6 +231,7 @@ export class Player implements Replicated {
       kind: "player",
       name: this.name,
       appearance: this.appearance,
+      ...(this.cls ? { cls: this.cls } : {}),
       lv: this.lv,
       x: s.x,
       y: s.y,
@@ -208,6 +265,14 @@ export class Mob implements Replicated {
   hurtUntil = 0;
   knockDir: 1 | -1 = 1;
   hoverY: number;
+  /** Hỏa Cầu burn (classes §4) */
+  burn: { until: number; next: number; dmg: number; by: number } | null = null;
+  /** summoned or boss piece: hunts players, never respawns */
+  forceAggro = false;
+  /** a boss (step B4): its fight state */
+  boss: BossRun | null = null;
+  /** one of the pages of Trang Lạc: the boss it belongs to */
+  pieceOf: Mob | null = null;
 
   constructor(
     readonly id: number,
@@ -216,7 +281,7 @@ export class Mob implements Replicated {
     readonly name: string,
     readonly lv: number,
     readonly tier: Tier,
-    readonly max: { hp: number; atk: number; def: number; exp: number },
+    readonly max: { hp: number; atk: number; def: number; exp: number; soft?: number },
     readonly homeX: number,
     readonly homeY: number,
     now: number,
@@ -258,6 +323,7 @@ export class Mob implements Replicated {
       name: this.name,
       lv: this.lv,
       tier: this.tier,
+      ...(this.boss || this.pieceOf ? { boss: true } : {}),
       flying: this.flying,
       x: s.x,
       y: s.y,
@@ -292,4 +358,25 @@ export class Drop {
       lockedMs: Math.max(0, this.lockedUntil - now),
     };
   }
+}
+
+/** A boss fight in progress (maps §5): attack cycle, telegraphs waiting to land, phases done. */
+export interface BossRun {
+  def: Boss;
+  kind: "WORLD" | "DUNGEON";
+  cycle: number;
+  nextAt: number;
+  busyUntil: number;
+  meleeAt: number;
+  enraged: boolean;
+  phasesDone: Set<number>;
+  pending: { at: number; t: Telegraph; mult: number; dash?: number; dive?: boolean }[];
+  /** Trang Lạc after Rách Trang: the pages left and their total max HP */
+  torn: boolean;
+  pieces: Mob[];
+  piecesMax: number;
+  /** world boss: event key and wall clock times */
+  eventKey?: string;
+  /** damage by player over the whole fight (pages included) */
+  readonly damage: Map<number, number>;
 }

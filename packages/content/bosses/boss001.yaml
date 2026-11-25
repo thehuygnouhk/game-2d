@@ -10,5 +10,11 @@ skills: [ BSKL_PAGE_SWIPE, BSKL_PAGE_STORM, BSKL_TEAR_APART ]
 phases:
   - { atHp: 0.5, action: SPLIT, into: BOSS001_SHARD, count: 4 }
 instanceOnly: DG01
-drops: DROP_BOSS001
+drops: DROP_R01_BOSS
 enrageAfterMin: 10
+flying: false
+moveSpeed: 60
+skillDefs:
+  BSKL_PAGE_SWIPE: { mult: 1.5, telegraphMs: 900, shape: rect, w: 150, h: 60, cooldownMs: 3000 }
+  BSKL_PAGE_STORM: { mult: 1.2, telegraphMs: 1200, shape: circles, r: 34, count: 4, every: 3, cooldownMs: 4200 }
+  BSKL_TEAR_APART: { atHp: 0.5, count: 4, pieceHp: 0.125, mult: 1.0 }

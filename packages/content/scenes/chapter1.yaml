@@ -1,0 +1,15 @@
+# Cutscenes of Chapter 1 (quests section 4). who: an NPC id or PLAYER
+scenes:
+  - id: Q_MAIN_11
+    lines:
+      - { who: NPC001, textKey: scene.q_main_11.1 }
+      - { who: NPC003, textKey: scene.q_main_11.2 }
+      - { who: NPC004, textKey: scene.q_main_11.3 }
+      - { who: NPC001, textKey: scene.q_main_11.4 }
+      - { who: PLAYER, textKey: scene.q_main_11.5 }
+      - { who: NPC001, textKey: scene.q_main_11.6 }
+  - id: Q_MAIN_12
+    lines:
+      - { who: NPC001, textKey: scene.q_main_12.1 }
+      - { who: NPC001, textKey: scene.q_main_12.2 }
+    letterKey: scene.letter

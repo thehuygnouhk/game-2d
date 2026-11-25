@@ -2,7 +2,7 @@
 export const TICK_MS = 50;
 export const TICK_RATE = 1000 / TICK_MS; // 20 Hz
 export const SNAPSHOT_EVERY_TICKS = 2; // 10 Hz
-export const PROTOCOL_VERSION = 2; // 2: step B2 (monsters, combat, drops, zones, chat)
+export const PROTOCOL_VERSION = 3; // 2: step B2 (monsters, combat, drops, zones, chat); 3: step B4 (Chapter 1)
 export const FRAME_VERSION = 1;
 export const MAX_FRAME_BYTES = 16 * 1024;
 export const DEFAULT_GAME_WS_PORT = 7001;
@@ -18,3 +18,8 @@ export const MAX_SKILLS_PER_S = 10;
 export const CHAT_MAP_INTERVAL_MS = 1000;
 /** World chat: one message per 10 seconds (network-protocol §7). */
 export const CHAT_WORLD_INTERVAL_MS = 10_000;
+/** Shop commands: 5 per second (network-protocol §7). */
+export const MAX_SHOP_PER_S = 5;
+/** How close a player must stand to talk to an NPC or use a map object, px (lag included). */
+export const NPC_RANGE = 120;
+export const OBJECT_RANGE = 80;
