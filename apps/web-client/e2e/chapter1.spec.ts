@@ -51,7 +51,8 @@ async function choose(page: Page, text: string) {
 
 test("Chapter 1 online: NPC dialog, quests, Lam Nhi's shop, wearing the quest sword", async ({ browser }, info) => {
   test.setTimeout(240_000);
-  const page = await (await browser.newContext({ viewport: { width: 1280, height: 800 } })).newPage();
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+  const page = await ctx.newPage();
   await signUpAndEnter(page, "Hạ Vy", "FEMALE", "VILLAGER");
   await expect(page.locator(".qtrack")).toContainText("Gặp Thầy Bạch Vân để nhận");
   expect((await debug(page)).npcs.find((n) => n.id === "NPC001")?.mark).toBe("!");
@@ -136,4 +137,5 @@ test("Chapter 1 online: NPC dialog, quests, Lam Nhi's shop, wearing the quest sw
   await page.screenshot({ path: info.outputPath("hanh-trang.png") });
   await page.keyboard.press("Escape");
   expect(await htk(page, (h) => h.state.quests.main?.id)).toBe("Q_MAIN_03");
+  await ctx.close();
 });

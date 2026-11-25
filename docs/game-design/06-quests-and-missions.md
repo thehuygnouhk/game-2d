@@ -94,7 +94,7 @@ stateDiagram-v2
 
 ### 4.1 Vật phẩm nhiệm vụ
 
-Vật phẩm nhiệm vụ **chỉ rơi khi người chơi đang nhận nhiệm vụ và còn thiếu**. Chúng nằm ở tab *Nhiệm vụ* của túi, không bán, không giao dịch, mất khi trả nhiệm vụ.
+Vật phẩm nhiệm vụ **chỉ rơi khi người chơi đang nhận nhiệm vụ và còn thiếu**. Chúng nằm ở tab *Nhiệm vụ* của túi, không bán, không giao dịch, mất khi trả nhiệm vụ. Bản online bậc B4 đếm thẳng vào tiến độ nhiệm vụ thay vì đặt vào túi ([roadmap §8.3](../product/roadmap.md)).
 
 | Vật phẩm | Nhiệm vụ | Nguồn |
 |----------|----------|-------|

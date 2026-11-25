@@ -124,6 +124,35 @@ Server kiểm tra:
 
 `ipHash` của vé được lưu nhưng **chưa so khớp** với kết nối WebSocket, vì người chơi điện thoại hay đổi IP giữa hai bước. Mỗi vé chỉ dùng một lần và sống 30 s.
 
+### 3.1.4 Bậc B4: Chương 1 (giao thức **3**)
+
+`S_ENTER_WORLD` thêm:
+- `character.cls`: hệ phép (`FIRE`, `WATER`) hoặc `null`;
+- `equipment {weapon, hat, armor, boots, tome}`: món đang mặc (cùng kiểu với món trong túi);
+- `quests`: như `S_QUEST_UPDATE` (dưới đây);
+- `npcs[] {id, name, face, x, y}`: NPC của map (cũng có trong `S_MAP_CHANGE`). `face` là hàng chân dung trong `sprites/npc_idle.png`.
+
+Món trong túi (`BagItem`) có thêm `type`, và với trang bị: `slot`, `main {atk?, def?, hp?, mp?, spd?}`, `affixes [[dòng, giá trị]]`, `set`, `cls` (chỉ hệ đó mặc được), `bound` (Huyền Thư: không tháo, không bán), `sell` (giá NPC trả cho 1 món). `S_INVENTORY_DELTA` thêm `equip {ô: món | null}` và `gained[]` (nhận không qua nhặt: thưởng, mua, rương).
+
+**NPC và nhiệm vụ.** Client chỉ hỏi; server tự kiểm tra NPC có ở map đó và người chơi đứng gần (120 px, cộng dung sai 50 px):
+1. `C_NPC_INTERACT {npcId}` → `S_NPC_DIALOG {npcId, name, face, text, options[{id, label, mark?, style?}]}`. Nói chuyện có thể hoàn thành mục tiêu `TALK`.
+2. `C_NPC_CHOICE {npcId, optionId}`. Lựa chọn: `ACCEPT`, `TURNIN`, `SHOP` (trả `S_NPC_DIALOG` có `shop`), `SCHEDULE` (lịch boss trong `text`), `CEREMONY`, `ALTAR` và `RITE` (trả `S_NPC_DIALOG` có `rite`), `SCENE_DONE` (client đã xem xong cảnh Q_MAIN_11). `CLOSE` và `QUESTS` chỉ xử lý ở client.
+3. `S_QUEST_UPDATE {main, done, total, chapterDone, progress?, event?}`: `main` là nhiệm vụ chính tuyến hiện tại (`LOCKED`, `AVAILABLE`, `ACTIVE`, `READY`) với mục tiêu, nơi tìm, phần thưởng, lời thoại, và điểm hái thảo dược (`nodes`) khi còn cần.
+
+Bậc B4 không dùng `C_QUEST_ACCEPT` và `C_QUEST_TURNIN`: nhận và trả đi qua `C_NPC_CHOICE`. Trả nhiệm vụ không cần `idemKey` từ client: dòng `character_quests` chỉ chuyển sang `COMPLETED` một lần, và khóa sổ cái của phần thưởng suy ra từ nhân vật và nhiệm vụ ([database §6.6](database-schema.md)).
+
+**Vật thể trên map.** `C_USE_OBJECT {objectId}` với `HERB:<n>` (thảo dược Q_MAIN_04), `CHEST` (Rương Tân Thủ của DG01), `ALTAR` (Đài Khai Thư ở I001).
+
+**Cảnh.** `S_SCENE {key, lines[{who, name, face?, text}], chapterEnd?}`. Cảnh `Q_MAIN_12` kèm thẻ "Hết Chương 1" (`letter, minutes, lv, power, className`).
+
+**Hệ phép.** `C_CHOOSE_CLASS {classId}`: lần đầu chỉ ở Đài Khai Thư khi đang làm Q_MAIN_12; sau đó đổi miễn phí trong 24 giờ ở Thầy (sau Chương 1 là Bà Mơ). Server trả `S_INVENTORY_DELTA` (Huyền Thư Sơ Bản mặc sẵn, vũ khí hệ vào túi), `S_SKILLS_UPDATE {skills, cls}` (kỹ năng có `key` J, 1–4 và `shape`), `S_STATS_UPDATE`; người khác nhận lại `S_ENTITY_SPAWN` có `cls` để đổi ngoại hình.
+
+**Trang bị, cửa hàng.** `C_EQUIP {instanceId}`, `C_UNEQUIP {slot}`; `C_SHOP_BUY {shopId, itemId, qty 1–99, idemKey}` (`shopId` là NPC có tiệm, phải đứng gần), `C_SHOP_SELL {instanceId, qty, idemKey}` (đứng gần một NPC có tiệm). `idemKey` là UUID.
+
+**Hầm ngục, lễ đường.** Qua cổng tới map hầm ngục (P03 của M004) là mở instance riêng; thiếu cấp trả `E_LEVEL_REQUIRED`. `S_INSTANCE_STATE {mapId, kind, leftMs?, bossDown?, chest?, altar?}` gửi khi vào và khi boss gục. `C_LEAVE_INSTANCE` về lối vào (DG01: cổng ở M004; I001: M001). Gục ngã trong hầm ngục: `C_REVIVE` đưa về cổng.
+
+**Boss.** `S_BOSS_STATE {id, name, lv, hpPct, phase, enraged, pieces?, telegraphs?[{shape, x, y, r?, w?, h?, ms}], over?}` gửi cho mọi người trong khu; vùng báo hiệu rơi xuống sau `ms`. `S_BOSS_ANNOUNCE {kind: SOON|SPAWN|KILLED|GONE|ENRAGE, bossId, name, mapId, mapName, zoneNo?, killer?, text}` gửi cả realm, kèm một dòng chat hệ thống.
+
 ### 3.2 Đá phiên
 
 Đăng nhập mới cùng tài khoản:
@@ -201,8 +230,8 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 | 0x0204 | `S_STATS_UPDATE` | S→C | chỉ số đầy đủ/thay đổi, có `statPoints` và `pts` |
 | 0x0205 | `S_LEVEL_UP` | S→C | `level, statPoints, skillPoints` |
 | 0x0206 | `C_UPGRADE_SKILL` | C→S | `skillId` |
-| 0x0207 | `S_SKILLS_UPDATE` | S→C | danh sách kỹ năng, hotbar |
-| 0x0208 | `C_CHOOSE_CLASS` | C→S | `classId` (chỉ trong instance lễ) |
+| 0x0207 | `S_SKILLS_UPDATE` | S→C | danh sách kỹ năng, hotbar; bậc B4: `skills, cls` |
+| 0x0208 | `C_CHOOSE_CLASS` | C→S | `classId` (lần đầu chỉ ở Đài Khai Thư; đổi trong 24 giờ ở NPC, §3.1.4) |
 | 0x0209 | `C_SET_HOTBAR` | C→S | `slots[]` |
 | 0x020A | `C_RESET_POINTS` | C→S | `itemId` (Bình Rửa Tiềm Năng) |
 
@@ -221,6 +250,8 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 | 0x0309 | `C_REQUEST_ZONES` | C→S | — |
 | 0x030A | `S_CORRECTION` | S→C | xem §5.2 |
 | 0x030B | `C_TELEPORT` | C→S | `destId` (Bác Tô) + `idemKey` |
+| 0x030C | `C_LEAVE_INSTANCE` | C→S | — (rời hầm ngục hoặc lễ đường, bậc B4) |
+| 0x030D | `S_INSTANCE_STATE` | S→C | `mapId, kind, leftMs?, bossDown?, chest?, altar?` (bậc B4) |
 
 ### 6.4 Chiến đấu (0x04xx)
 
@@ -238,7 +269,7 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 | 0x040A | `S_REVIVED` | S→C | `x, y, hp, mp` |
 | 0x040B | `C_AUTO_HUNT` | C→S | `on, config` |
 | 0x040C | `S_LINK_GAUGE` | S→C | `value` |
-| 0x040D | `S_BOSS_STATE` | S→C | `id, phase, hpPct, telegraphs[]` |
+| 0x040D | `S_BOSS_STATE` | S→C | `id, name, lv, phase, hpPct, enraged, pieces?, telegraphs[], over?` (§3.1.4) |
 
 ### 6.5 Vật phẩm (0x05xx)
 
@@ -264,13 +295,15 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 | Op | Tên | Hướng | Payload chính |
 |----|-----|-------|----------------|
 | 0x0601 | `C_NPC_INTERACT` | C→S | `npcId` |
-| 0x0602 | `S_NPC_DIALOG` | S→C | `npcId, textKey, options[]` |
+| 0x0602 | `S_NPC_DIALOG` | S→C | `npcId, name, face, text, options[], shop?, rite?` (bậc B4 gửi chữ đã dịch) |
 | 0x0603 | `C_NPC_CHOICE` | C→S | `npcId, optionId` |
 | 0x0604 | `C_QUEST_ACCEPT` | C→S | `questId` |
 | 0x0605 | `C_QUEST_TURNIN` | C→S | `questId, choice?` + `idemKey` |
 | 0x0606 | `C_QUEST_ABANDON` | C→S | `questId` |
 | 0x0607 | `S_QUEST_UPDATE` | S→C | `questId, status, progress[]` |
 | 0x0608 | `S_QUEST_LIST` | S→C | toàn bộ nhiệm vụ đang có |
+| 0x0609 | `C_USE_OBJECT` | C→S | `objectId` (`HERB:<n>`, `CHEST`, `ALTAR`; bậc B4) |
+| 0x060A | `S_SCENE` | S→C | `key, lines[], chapterEnd?` (bậc B4) |
 
 ### 6.7 Cửa hàng, giao dịch, chợ (0x07xx)
 
@@ -328,7 +361,7 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 | 0x0A04 | `S_MATCH_FOUND` | S→C | `matchId, mode, acceptBy` |
 | 0x0A05 | `C_PK_TOGGLE` | C→S | `on` |
 | 0x0A06 | `S_PK_STATE` | S→C | `state, sinPoints` |
-| 0x0A07 | `S_BOSS_ANNOUNCE` | S→C | `bossId, mapId, zoneNo, at` |
+| 0x0A07 | `S_BOSS_ANNOUNCE` | S→C | `kind, bossId, name, mapId, mapName, zoneNo?, killer?, text` (bậc B4, §3.1.4) |
 | 0x0A08 | `S_EVENT_STATE` | S→C | `eventId, phase, endsAt` |
 | 0x0A09 | `S_BATTLE_STATE` | S→C | điểm, mục tiêu chiến trường |
 
@@ -452,7 +485,7 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 
 | Khái niệm | Ý nghĩa | Khi đổi |
 |-----------|---------|---------|
-| `protocolVersion` | Thay đổi phá vỡ khung hoặc payload | Tăng số nguyên; server hỗ trợ **N** và **N−1** trong 2 tuần. Trước khi có người chơi thật (trước bậc B3), server chỉ nhận đúng **N**. Bậc B2 là phiên bản **2** |
+| `protocolVersion` | Thay đổi phá vỡ khung hoặc payload | Tăng số nguyên; server hỗ trợ **N** và **N−1** trong 2 tuần. Trước khi có người chơi thật (trước bậc B3), server chỉ nhận đúng **N**. Bậc B2 là phiên bản **2**, bậc B4 là **3** (vẫn chỉ nhận đúng **N**: đợt chơi thử tải lại trang là có client mới) |
 | `clientVersion` | SemVer của bản build | `minClient` do server yêu cầu |
 | `contentVersion` | Hash nội dung (`packages/content`) | Khác → client tải lại dữ liệu hoặc từ chối |
 

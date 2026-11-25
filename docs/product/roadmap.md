@@ -163,9 +163,23 @@ So với Ninja School, thiếu lớn nhất là hai thứ: **vòng lặp đồ**
 | **B1 Lên mạng** ✔ xong | 2 trình duyệt thấy nhau đi lại trên M001 | Monorepo pnpm; client Phaser + Vite + TS dùng lại asset; server Node + `ws`, tick 20 Hz; Docker Compose; CI | Phase 0 (§3), [architecture](../architecture/system-architecture.md), [developer-setup §5](../guides/developer-setup-guide.md) |
 | **B2 Đánh quái online** ✔ xong | Nhiều người cùng đánh quái trong 1 khu của 4 map R01 (M001–M004), qua cổng, leo thang, tránh bẫy gai. Quái, sát thương, EXP, cấp, chết và hồi sinh, đồ rơi, nhặt đồ, bình thuốc do server tính. Chọn khu 1–3, chat map | Công thức vào `packages/shared` có test; `packages/content` (YAML, schema, `pnpm content:validate`); AI quái trên server; AOI; khu 1–3. Túi đồ chỉ sống trong phiên, chưa lưu (lưu ở B3) | [combat](../game-design/04-combat-and-progression.md), [network](../architecture/network-protocol.md), [server](../architecture/server-design.md) |
 | **B3 Tài khoản** ✔ xong | Đăng ký, đăng nhập, tối đa 3 nhân vật. Nhân vật, điểm tiềm năng (cửa sổ Nhân vật), vị trí, túi đồ và Quan lưu ở PostgreSQL; nhặt Quan có sổ cái. Chat thế giới. Có bộ chạy thử công khai có HTTPS để **mời 10–20 người chơi thử** ([hướng dẫn](../guides/playtest-hosting.md)) | `apps/api` (Fastify, Argon2id, JWT 15 phút, refresh token xoay vòng, vé 30 s qua Redis); `packages/db` (migration SQL từ tài liệu, sổ cái, idemKey); lưu định kỳ và khi thoát; đá phiên trùng. Nhiệm vụ chưa online nên chưa có gì để lưu: chuyển sang B4 | [database](../architecture/database-schema.md), [security](../architecture/security-and-anticheat.md) |
-| **B4 Chương 1 online** | Chơi trọn Chương 1 trên bản online như bản chơi thử: NPC và hộp thoại, chuỗi Q_MAIN_01–12 lưu tiến độ, mặc trang bị, tiệm của Lam Nhi, hầm ngục DG01 và Trang Lạc, Lễ Khai Thư chọn Hỏa hoặc Thủy với 3 kỹ năng hệ | Nhiệm vụ và hộp thoại ở server (`character_quests`); kho đồ có ô trang bị; mua bán qua sổ cái; instance hầm ngục; boss theo giờ | [quests](../game-design/06-quests-and-missions.md), [items](../game-design/07-items-and-equipment.md), [maps §5–6](../game-design/05-world-maps-monsters.md) |
+| **B4 Chương 1 online** ✔ xong | Chơi trọn Chương 1 trên bản online như bản chơi thử: NPC và hộp thoại, chuỗi Q_MAIN_01–12 lưu tiến độ, mặc trang bị, tiệm của Lam Nhi, hầm ngục DG01 và Trang Lạc, Lễ Khai Thư chọn Hỏa hoặc Thủy với 3 kỹ năng hệ, 3 boss theo giờ | Nhiệm vụ và hộp thoại ở server (`character_quests`); kho đồ có 5 ô trang bị (`item_instances` vị trí `EQUIP`); mua bán qua sổ cái; instance DG01 và lễ đường I001; boss theo giờ Việt Nam có báo trước, vùng báo hiệu, cuồng nộ. Phần làm gọn ở §8.3 | [quests](../game-design/06-quests-and-missions.md), [items](../game-design/07-items-and-equipment.md), [maps §5–6](../game-design/05-world-maps-monsters.md) |
 | **B5 Chương 2: Thượng Đô** | Nội dung Chương 2 (Lv10–24): Thượng Đô và các map mới, Mùa Tuyển Thư, Q_MAIN_13–24, boss Chương 2, hầm ngục DG02 | Map, quái, nhiệm vụ mới trong `packages/content`; Đội (Lv20) làm cùng bậc này hoặc ngay sau | [lore ch.2](../game-design/01-lore-and-story.md), [quests §5](../game-design/06-quests-and-missions.md) |
 | **C Mở rộng kiểu NSO** | Mỗi mục là một bản phát hành nhỏ: nhóm và chia EXP; giao dịch; cường hóa +1…+16 và khảm; Thượng Đô và chợ; Đội; Cờ PK; nhiệm vụ ngày; boss thế giới; Chổi Bay; bản điện thoại | Theo Phase 2–4 (§3) | |
+
+### 8.3 Bậc B4: phần làm gọn so với tài liệu thiết kế
+
+Những chỗ dưới đây chạy được và an toàn (server quyết định, tiền và đồ qua sổ cái), nhưng gọn hơn thiết kế đầy đủ; mỗi chỗ ghi bậc sẽ làm tiếp.
+
+| Thiết kế | Bậc B4 | Làm tiếp |
+|----------|--------|----------|
+| Vật phẩm nhiệm vụ nằm ở tab *Nhiệm vụ* của túi ([quests §4.1](../game-design/06-quests-and-missions.md)) | Đếm thẳng vào tiến độ nhiệm vụ, không chiếm ô túi, nên không bao giờ kẹt vì túi đầy | Khi có nhiệm vụ giao đồ (`DELIVER`) |
+| Thưởng boss theo giờ gửi qua thư theo hạng sát thương ([maps §5.2](../game-design/05-world-maps-monsters.md)) | EXP chia theo sát thương; đồ rơi xuống đất, khóa cho người gây nhiều sát thương nhất; quá 10 cấp chỉ nhận Quan | Bậc C (thư) |
+| Hầm ngục co giãn theo nhóm 1–5 người ([maps §6.1](../game-design/05-world-maps-monsters.md)) | Mỗi lần vào là instance của một người, hệ số *n* = 1 | Bậc C (nhóm) |
+| Mua lại đồ đã bán trong 30 phút ([economy §3](../game-design/08-economy-and-monetization.md)) | Chưa có | Cùng chợ (bậc C) |
+| Đổi hệ sau 24 giờ tốn 100 Nén Bạc ([classes §5](../game-design/03-origins-classes-skills.md)) | Chỉ đổi miễn phí trong 24 giờ đầu | Khi có Nén Bạc |
+| Giày +2% tốc chạy | Chỉ hiển thị; tốc chạy vẫn theo vật lý chung của client và server | Khi vật lý nhận hệ số tốc độ |
+| Điểm Kỹ Năng của Q_MAIN_12 | Chưa cộng | Hệ nâng kỹ năng |
 
 **Quy tắc chung mỗi bậc:**
 - Không dùng nút "thử" thay cho tính năng chính.

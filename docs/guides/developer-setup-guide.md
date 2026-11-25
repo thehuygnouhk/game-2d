@@ -129,7 +129,7 @@ File `.env` (không commit). Mẫu `.env.example`:
 
 ## 5. Lệnh thường dùng
 
-Trạng thái ở bậc B3:
+Trạng thái ở bậc B4 (danh sách lệnh không đổi so với bậc B3):
 - **Đã có:** `dev`, `dev:client`, `dev:server`, `dev:api`, `build`, `lint`, `typecheck`, `test`, `test:int` (PostgreSQL và Redis thật, chạy lần lượt từng gói), `test:e2e` (cần PostgreSQL và Redis), `db:migrate`, `db:seed`, `db:reset`, `map:check`, `content:validate` (quy tắc V001–V004), `sim:exp` (gọi `tools/sim/chapter1.py`).
 - **Thêm ngoài danh sách:** `check:ip` (kiểm tra rò rỉ tên IP), `check:links` (liên kết tài liệu), `format`, `format:check`.
 - **Chưa có:** các lệnh còn lại in ra bậc sẽ có rồi thoát với mã 1.

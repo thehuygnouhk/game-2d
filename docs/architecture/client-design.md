@@ -158,6 +158,16 @@ Hiện thực (bậc B3, `src/main.ts`, `src/net/api.ts`, `src/ui/charwin.ts`):
 - Cửa sổ **Nhân vật** (phím C hoặc nút "Nhân vật" có huy hiệu số điểm trống): chỉ số, điểm còn, +1 và +5 từng dòng, "Cộng gợi ý", "Hủy", "Xác nhận" (gửi `C_ALLOCATE_POINTS`).
 - Ô chat có nút đổi kênh **Khu / Thế giới**.
 - "Đổi nhân vật" tải lại trang.
+
+Hiện thực bậc B4 (`src/ui/dialog.ts`, `quests.ts`, `bag.ts`, `rite.ts`, `dom.ts`):
+- **NPC:** sprite đứng yên có tên và dấu nhiệm vụ (`!` nhận hoặc nói chuyện, `?` trả; màu xám khi chưa tới lúc). Nhấn **F** gần NPC (hoặc nhấp vào NPC) để nói chuyện; F cũng hái thảo dược, mở rương, chạm Đài Khai Thư.
+- **Hộp thoại:** chân dung, tên, lời thoại, tối đa 6 lựa chọn; phím 1–6, F/Enter/Space chọn mục đầu, Esc đóng. Cảnh phát từng câu trong cùng hộp thoại.
+- **Nhiệm vụ:** bảng theo dõi dưới các nút menu (nhấp hoặc **L** để mở cửa sổ chi tiết: mục tiêu, nơi tìm, phần thưởng); băng rôn khi nhận, đủ mục tiêu, hoàn thành.
+- **Hành trang (B):** 5 ô trang bị, Lực Chiến, túi 30 ô theo thẻ, chi tiết món (chỉ số, dòng phụ, bộ, giá bán). Nhấn đúp để mặc, tháo hoặc dùng. Ở tiệm: danh sách hàng (Mua 1, Mua 5) và bán (món Hiếm trở lên phải bấm hai lần).
+- **Lễ Khai Thư:** 7 hệ, 2 hệ mở; chi tiết vai trò, vũ khí, nội tại, 3 kỹ năng.
+- **HUD:** ô hành động dựng theo danh sách kỹ năng server gửi (J, 1–4) cộng 2 bình; thanh máu boss; đồng hồ hầm ngục và nút rời.
+- **Scene:** vùng báo hiệu của boss tô đỏ dần tới lúc rơi; Hỏa Cầu và Thủy Đạn là đạn bay 400 px; ngoại hình nhân vật đổi theo hệ.
+- Trong lúc mở hộp thoại, hành trang hay cửa sổ chọn hệ, phím di chuyển và kỹ năng tạm tắt.
 - `S_KICK` hiện lý do (đăng nhập nơi khác, bảo trì).
 
 ## 6. Render

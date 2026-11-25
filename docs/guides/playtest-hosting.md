@@ -1,4 +1,4 @@
-# Hướng dẫn: dựng bản chơi thử công khai (bậc B3)
+# Hướng dẫn: dựng bản chơi thử công khai (bậc B3–B4)
 
 > **Trạng thái:** Draft v0.1 · **Dành cho:** người vận hành đợt chơi thử 10–20 người ([roadmap §8](../product/roadmap.md)) · **Liên quan:** [developer-setup-guide](developer-setup-guide.md) · [security](../architecture/security-and-anticheat.md) · [infrastructure](../architecture/infrastructure-devops.md)
 
@@ -61,8 +61,8 @@ Lần đầu mất vài phút. Compose sẽ:
 
 - Gửi đường link `https://<DOMAIN>`. Mỗi người tự đăng ký (tên tài khoản, email, mật khẩu từ 8 ký tự).
 - **Bản online hiện cần bàn phím**: chơi trên máy tính. Phím ảo cho điện thoại có ở bản chơi thử nhưng chưa có ở bản online (bậc C, "bản điện thoại").
-- Nên gửi kèm phím điều khiển: A/D hoặc ← → đi, Space nhảy, W hoặc ↑ leo thang và qua cổng, J đánh, 1 Tụ Mana Chấn (Lv5), Q/E bình HP/MP, C cộng điểm tiềm năng, Enter chat (nút "Khu/Thế giới" để đổi kênh).
-- Nội dung hiện có: 4 map của Làng Suối Mơ, đánh quái lên tới **Lv9**. Chưa có nhiệm vụ, NPC, mặc trang bị (bậc B4).
+- Nên gửi kèm phím điều khiển: A/D hoặc ← → đi, Space nhảy, W hoặc ↑ leo thang và qua cổng, J đánh, 1 Tụ Mana Chấn (Lv5), 2 kỹ năng hệ (sau Lễ Khai Thư), Q/E bình HP/MP, F nói chuyện với NPC (hái thảo dược, mở rương), B hành trang, L nhiệm vụ, C cộng điểm tiềm năng, Enter chat (nút "Khu/Thế giới" để đổi kênh).
+- Nội dung hiện có (bậc B4): trọn **Chương 1** (khoảng 50 phút): 4 map của Làng Suối Mơ, NPC và 12 nhiệm vụ chính tuyến, mặc trang bị, tiệm của Lam Nhi, hầm ngục DG01 với Trang Lạc, Lễ Khai Thư chọn Hỏa hoặc Thủy. Ba boss theo giờ Việt Nam (Vua Nấm Lùn mỗi 2 giờ chẵn 08:00–22:00, Chó Rừng Đầu Đàn 11:00/17:00/21:00, Dơi Chúa Giếng 12:30/19:30); xem lịch ở Cụ Trương. Nên hẹn người chơi thử vào gần giờ boss để đánh cùng nhau.
 - Nói rõ với người chơi thử:
   - game lưu tên tài khoản, email, mật khẩu đã băm (Argon2id) và tiến độ nhân vật;
   - dữ liệu có thể bị xóa khi kết thúc đợt thử.
@@ -87,9 +87,9 @@ Lần đầu mất vài phút. Compose sẽ:
 - Đổi `JWT_SECRET` thì mọi người phải đăng nhập lại; không ảnh hưởng dữ liệu.
 - Chưa có "quên mật khẩu" (cần dịch vụ gửi email). Người chơi quên mật khẩu thì tạo tài khoản mới.
 
-## 6. Giới hạn đã biết của bậc B3
+## 6. Giới hạn đã biết (bậc B3–B4)
 
 - Một tiến trình game server cho cả realm.
 - Thoát game khi đang đánh thì nhân vật biến mất ngay (chưa giữ lại 30 giây).
-- Chưa có bảng xếp hạng, nhóm, giao dịch hay chợ.
+- Chưa có bảng xếp hạng, nhóm, giao dịch hay chợ. Hầm ngục DG01 vào một mình; phần làm gọn khác ở [roadmap §8.3](../product/roadmap.md).
 - Docker Compose của bộ này chưa được dựng thử trên máy thật trong quá trình phát triển (môi trường làm việc không có Docker). Các thành phần đã được chạy riêng lẻ: bản build của `api`, `game-server`, web client, migration trên PostgreSQL 16, Redis 7. Lần dựng đầu nên làm theo §2 và kiểm tra kỹ.

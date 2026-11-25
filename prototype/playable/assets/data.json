@@ -1099,7 +1099,17 @@
   "thao_duoc": {
    "name": "Thảo Dược Suối Mơ",
    "node": "M002",
-   "respawnSec": 20
+   "respawnSec": 20,
+   "cols": [
+    7,
+    13,
+    24,
+    33,
+    44,
+    51,
+    70,
+    79
+   ]
   },
   "bao_tai": {
    "name": "Bao Tải Bị Lấy",

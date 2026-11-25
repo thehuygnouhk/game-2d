@@ -1,6 +1,6 @@
 # Game server
 
-Server quyết định mọi kết quả ([server-design](../../docs/architecture/server-design.md)). 4 map R01 (M001–M004), mỗi map 3 khu, tick 20 Hz, snapshot 10 Hz theo vùng nhìn 3×3 ô 512 px. Quái, đánh, EXP, cấp, chết, hồi sinh, đồ rơi, bình thuốc, cổng, đổi khu, chat khu và chat thế giới đều chạy ở đây. Từ bậc B3: vào game bằng vé của API, nhân vật và túi đồ lưu ở PostgreSQL.
+Server quyết định mọi kết quả ([server-design](../../docs/architecture/server-design.md)). 4 map R01 (M001–M004), mỗi map 3 khu, tick 20 Hz, snapshot 10 Hz theo vùng nhìn 3×3 ô 512 px. Quái, đánh, EXP, cấp, chết, hồi sinh, đồ rơi, bình thuốc, cổng, đổi khu, chat khu và chat thế giới đều chạy ở đây. Từ bậc B3: vào game bằng vé của API, nhân vật và túi đồ lưu ở PostgreSQL. Từ bậc B4: trọn Chương 1 (NPC, nhiệm vụ, trang bị, cửa hàng, kỹ năng hệ, hầm ngục DG01, lễ đường I001, boss theo giờ).
 
 | Thư mục | Nội dung |
 |---------|----------|
@@ -9,10 +9,13 @@ Server quyết định mọi kết quả ([server-design](../../docs/architectur
 | `src/world/zone.ts` | Một khu: hàng đợi input (1 bước/tick, để dành 3), sinh và hồi sinh quái, đạn, đồ rơi hết hạn, spawn/despawn theo vùng nhìn, snapshot delta |
 | `src/world/combat.ts` | Kỹ năng tân thủ, sát thương, chia EXP theo sát thương, lên cấp (giới hạn Lv9 của Chương 1), gục ngã, bẫy gai, hồi máu và mana, nội tại xuất thân, nhặt đồ, bình thuốc |
 | `src/world/mob-ai.ts` | AI quái: lang thang, đuổi, đánh cận chiến hoặc bắn, chạy trốn, quay về |
+| `src/world/quests.ts` | Chuỗi Q_MAIN_01–12: trạng thái, sự kiện (hạ quái, nói chuyện, hái, dùng chiêu, boss, cảnh, tới nơi), hộp thoại NPC, trả thưởng trong một transaction, cảnh, Lễ Khai Thư và đổi hệ |
+| `src/world/items.ts` | Mặc và tháo trang bị, mua bán ở tiệm (sổ cái, `idemKey`), Rương Tân Thủ |
+| `src/world/boss.ts` | Boss: chỉ số, vùng báo hiệu, gọi đồng bọn, Rách Trang của Trang Lạc; lịch boss theo giờ Việt Nam (báo trước 5 phút, 30 phút bỏ đi, cuồng nộ sau 10 phút) |
 | `src/world/entities.ts`, `bag.ts` | Người chơi (hàng đợi thao tác tài sản), quái, đồ rơi; bản sao túi đồ trong bộ nhớ |
-| `src/world/store.ts` | `PgStore`: nhặt đồ, dùng bình, cộng điểm, lên cấp, lưu định kỳ, đều qua transaction; `MemoryStore` cho nhân vật khách của test |
+| `src/world/store.ts` | `PgStore`: nhặt đồ, dùng bình, cộng điểm, lên cấp, `grant` (thưởng, mua, bán, rương, chọn hệ), mặc/tháo, lưu nhiệm vụ, lưu định kỳ, đều qua transaction; `MemoryStore` cho nhân vật khách của test |
 | `src/server.ts` | Nạp `@htk/content`, nối PostgreSQL và Redis (khi có `DATABASE_URL`, `REDIS_URL`), dựng thế giới, mở WebSocket, bộ lập lịch tick, tắt máy có lưu |
-| `test/server.test.ts` | Test không cần DB (nhân vật khách) |
+| `test/server.test.ts`, `test/chapter1.test.ts` | Test không cần DB (nhân vật khách); `chapter1` chơi trọn 12 nhiệm vụ qua giao thức, DG01, Lễ Khai Thư, boss theo giờ, Hỏa Cầu |
 | `test/accounts.int.test.ts` | Test tích hợp tài khoản (`pnpm test:int`) |
 | `src/map-check.ts` | `pnpm map:check` |
 

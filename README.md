@@ -26,11 +26,12 @@ Mục lục đầy đủ: [docs/README.md](docs/README.md).
 
 **Bản thử:** art thử (nhân vật, NPC, quái, boss, bản đồ Chương 1) ở [`art/prototype`](art/prototype/README.md); bản chơi thử Chương 1 trên trình duyệt ở [`prototype/playable`](prototype/playable/README.md).
 
-**Bản online (bậc B3):** khung dự án thật, server quyết định mọi thứ.
+**Bản online (bậc B4):** khung dự án thật, server quyết định mọi thứ.
 - Đăng ký, đăng nhập, tạo tối đa 3 nhân vật.
 - Nhiều người cùng đi lại và đánh quái trên 4 map của Làng Suối Mơ, mỗi map 3 khu.
 - Có cấp, EXP, điểm tiềm năng, đồ rơi, bình thuốc, chết và hồi sinh, chat khu và chat thế giới.
-- Nhân vật, túi đồ và Quan lưu ở PostgreSQL.
+- Chơi trọn Chương 1: NPC và hộp thoại, 12 nhiệm vụ chính tuyến, mặc trang bị, tiệm của Lam Nhi, hầm ngục DG01 với Trang Lạc, Lễ Khai Thư chọn Hỏa hoặc Thủy, 3 boss theo giờ.
+- Nhân vật, nhiệm vụ, túi đồ, trang bị và Quan lưu ở PostgreSQL.
 
 Cần PostgreSQL 16 và Redis 7:
 

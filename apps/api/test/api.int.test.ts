@@ -1,5 +1,6 @@
 import { loadContent } from "@htk/content";
 import { createDb, type Db, migrate, resetSchema, seed } from "@htk/db";
+import { PROTOCOL_VERSION } from "@htk/shared";
 import type { FastifyInstance } from "fastify";
 import { Redis } from "ioredis";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -154,7 +155,7 @@ describe("characters and game tickets", () => {
     const t = await call("POST", "/session/ticket", { realmId: 1, characterId: c.id }, bearer(a.token));
     expect(t.statusCode).toBe(200);
     const body = t.json();
-    expect(body).toMatchObject({ wsUrl: "ws://game.test:7001", protocolVersion: 2 });
+    expect(body).toMatchObject({ wsUrl: "ws://game.test:7001", protocolVersion: PROTOCOL_VERSION });
     expect(body.ticket).toMatch(/^[A-Za-z0-9_-]{22}$/);
     const stored = JSON.parse((await redis.get(`ticket:${body.ticket}`))!) as Ticket;
     expect(stored).toMatchObject({ characterId: c.id, realmId: 1 });

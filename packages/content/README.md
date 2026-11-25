@@ -7,7 +7,8 @@ Nội dung game dạng YAML, schema Zod và bộ kiểm chứng ([content-pipeli
 | `monsters/`, `bosses/`, `events/` | Quái R01, boss theo giờ, lịch sự kiện |
 | `items/`, `drops/`, `shops/` | Vật phẩm thử, bảng rơi R01, tiệm của Lam Nhi |
 | `classes/` | Xuất thân (`origins.yaml`), kỹ năng tân thủ (`novice.yaml`), Hỏa, Thủy |
-| `quests/`, `i18n/vi.yaml` | Chính tuyến Chương 1, chữ hiển thị |
+| `quests/`, `i18n/vi.yaml` | Chính tuyến Chương 1 (vật phẩm nhiệm vụ ở `quest_items.yaml`), chữ hiển thị (cả câu server ghép: hộp thoại, thông báo boss) |
+| `npcs/`, `scenes/`, `dungeons/` | NPC R01 (tên, câu chào, hàng chân dung), cảnh Q_MAIN_11–12, hầm ngục DG01 (bậc B4) |
 | `schema/index.ts` | Schema Zod (quy tắc V001) |
 | `src/index.ts` | `loadContent()`: nạp YAML và map, kiểm V001–V004 |
 | `src/validate.ts` | `pnpm content:validate` |

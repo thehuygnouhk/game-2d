@@ -202,6 +202,47 @@ EVENTS = {
 }
 
 
+# Step B4: what the online server reads about each boss (maps §5.1-5.3): movement and telegraphed attacks
+BOSS_ONLINE = {
+    "BOSS001": """flying: false
+moveSpeed: 60
+skillDefs:
+  BSKL_PAGE_SWIPE: { mult: 1.5, telegraphMs: 900, shape: rect, w: 150, h: 60, cooldownMs: 3000 }
+  BSKL_PAGE_STORM: { mult: 1.2, telegraphMs: 1200, shape: circles, r: 34, count: 4, every: 3, cooldownMs: 4200 }
+  BSKL_TEAR_APART: { atHp: 0.5, count: 4, pieceHp: 0.125, mult: 1.0 }
+""",
+    "BOSS034": """flying: false
+moveSpeed: 55
+skillDefs:
+  BSKL_STOMP_WAVE: { mult: 1.8, telegraphMs: 1300, shape: circle, r: 150, cooldownMs: 5200 }
+""",
+    "BOSS035": """flying: false
+moveSpeed: 120
+skillDefs:
+  BSKL_LUNGE: { mult: 1.6, telegraphMs: 1000, shape: rect, w: 320, h: 46, cooldownMs: 4800 }
+""",
+    "BOSS036": """flying: true
+moveSpeed: 70
+skillDefs:
+  BSKL_DIVE_CIRCLE: { mult: 2.0, telegraphMs: 1200, shape: circle, r: 70, cooldownMs: 5000 }
+  BSKL_CRYSTAL_WING: { mult: 1.2, telegraphMs: 1000, shape: circles, r: 34, count: 5, every: 3, cooldownMs: 5000 }
+""",
+}
+BOSS001_SHARD = """# Manh Trang: one of the four pages Trang Lac tears into at 50% HP (maps section 5.3)
+id: BOSS001_SHARD
+nameKey: boss.boss001_shard.name
+level: [9, 9]
+element: NONE
+kind: MINION
+sprite: bosses/boss001_shard
+size: { w: 40, h: 40 }
+flying: true
+moveSpeed: 110
+aggroRange: 600
+skills: [ MOBSKL_PAGE_CUT ]
+"""
+
+
 def build_content():
     """Prototype content data (to move into packages/content in Phase 0)."""
     d = {k: mkc(k) for k in ("monsters", "bosses", "events")}
@@ -244,9 +285,9 @@ kind: {kind}                  # HP/EXP multiplier per combat section 2.1 (Boss x
 sprite: bosses/{bid.lower()}
 size: {{ w: {w}, h: {h} }}
 skills: [ {", ".join(skills)} ]
-{extra}drops: DROP_{bid}
+{extra}drops: DROP_R01_BOSS
 enrageAfterMin: 10
-""")
+{BOSS_ONLINE[bid]}""")
     for eid, (boss, times, maps, zones) in EVENTS.items():
         with open(os.path.join(d["events"], f"{eid.lower()}.yaml"), "w") as f:
             f.write(f"""# Boss theo gio Chuong 1 (maps section 5.1-5.2), prototype
@@ -260,6 +301,8 @@ zones: {zones}
 despawnAfterMin: 30
 rewardMaxLevelGap: 10
 """)
+    with open(os.path.join(d["bosses"], "boss001_shard.yaml"), "w") as f:
+        f.write(BOSS001_SHARD)
     with open(os.path.join(d["events"], "evt_r01_well_night.yaml"), "w") as f:
         f.write("""# Dem Gieng Sang: moi toi thu Sau, Doi Chua Gieng xuat hien day hon o moi khu M004 (prototype)
 id: EVT_R01_WELL_NIGHT
@@ -318,7 +361,7 @@ VI_NAMES = {
 # Display text lives in the i18n table below, not in the quest records.
 QUEST_ITEMS = {   # quest items: only drop while the quest needs them (quests §4.1)
     "cu_cai_non": ("Củ Cải Non", {"mob": "MOB002", "chance": 0.5}),
-    "thao_duoc": ("Thảo Dược Suối Mơ", {"node": "M002", "respawnSec": 20}),
+    "thao_duoc": ("Thảo Dược Suối Mơ", {"node": "M002", "respawnSec": 20, "cols": [7, 13, 24, 33, 44, 51, 70, 79]}),
     "bao_tai": ("Bao Tải Bị Lấy", {"mob": "MOB004", "chance": 0.25}),
     "manh_trang": ("Mảnh Trang", {"mob": "MOB007", "chance": 0.3}),
 }
@@ -497,6 +540,9 @@ tiers:
 SHOPS = {"NPC003": dict(name="Tiệm thuốc của Lam Nhi", sells=["potion_hp", "potion_hp_m", "potion_mp", "potion_mp_m"])}
 
 
+CLASS_WEAPON = {"FIRE": "kiem_lua_tap_su", "WATER": "truong_thuy_tap_su"}   # given at the Le Khai Thu
+
+
 def build_item_content():
     """Item records + shop for step A1 (content-pipeline §3, items §12)."""
     d = mkc("items")
@@ -508,6 +554,10 @@ def build_item_content():
                 lines.append(f"{key}: {v[f]}")
         if "levelBand" in v:
             lines.append(f"levelBand: [{v['levelBand'][0]}, {v['levelBand'][1]}]   # rolled from the monster level")
+        if "cls" in v:
+            lines.append(f"class: {v['cls']}")
+        if v.get("bound"):
+            lines.append("bind: BOP   # worn from the Le Khai Thu on, cannot be taken off or sold (items section 3)")
         with open(os.path.join(d, f"{k}.yaml"), "w", encoding="utf-8") as f:
             f.write("# prototype item (step A1)\n" + "\n".join(lines) + "\n")
     with open(os.path.join(mkc("classes"), "origins.yaml"), "w", encoding="utf-8") as f:
@@ -517,10 +567,14 @@ def build_item_content():
                     f"  passiveKey: origin.{k.lower()}.passive\n")
     for k, v in CLASS_DATA.items():
         with open(os.path.join(mkc("classes"), f"{k.lower()}.yaml"), "w", encoding="utf-8") as f:
-            f.write(f"# {k} class, skills 1-3 (classes section 3-4), prototype step A2\nid: {k}\nnameKey: class.{k.lower()}.name\nskills:\n")
+            c = k.lower()
+            f.write(f"# {k} class, skills 1-3 (classes section 3-4)\nid: {k}\nnameKey: class.{c}.name\n"
+                    f"roleKey: class.{c}.role\nweaponKey: class.{c}.weapon\nmodsKey: class.{c}.mods\n"
+                    f"passiveKey: class.{c}.passive\npassiveTextKey: class.{c}.passiveText\nweapon: {CLASS_WEAPON[k]}\nskills:\n")
             for sk in v["skills"]:
-                f.write(f"  - {{ id: {sk['id']}, nameKey: skill.{sk['id'].lower()}.name, unlockLevel: {sk['lv']}, "
-                        f"mp: {sk['mp']}, cooldownSec: {sk['cd']}, atkMult: {sk['mult']}, shape: {sk['kind']} }}\n")
+                burn = ", burn: true" if sk["id"] == "SKL_FIRE_1" else ""
+                f.write(f"  - {{ id: {sk['id']}, nameKey: skill.{sk['id'].lower()}.name, textKey: skill.{sk['id'].lower()}.text, "
+                        f"unlockLevel: {sk['lv']}, mp: {sk['mp']}, cooldownSec: {sk['cd']}, atkMult: {sk['mult']}, shape: {sk['kind']}{burn} }}\n")
     with open(os.path.join(mkc("classes"), "novice.yaml"), "w", encoding="utf-8") as f:
         f.write("# Novice skills (classes section 3): every character has them, before and after the class ceremony.\n"
                 "# shape: melee = 72 px in front (or the locked target within 72 px); burst = 120 x 90 area 90 px ahead\n"
@@ -534,10 +588,105 @@ def build_item_content():
         f.write("# Lam Nhi sells potions and buys items back at 25% (economy section 3), prototype step A1\n"
                 "npc: NPC003\nnameKey: shop.npc003.name\ncurrency: SOFT\n"
                 f"sells: [ {', '.join(SHOPS['NPC003']['sells'])} ]\nbuyBack: {{ ratio: 0.25, windowMin: 30 }}\n")
+    build_story_content()
+
+
+# Step B4 records of the online Chapter 1: scheduled boss loot, DG01, NPCs, cutscenes
+DROP_R01_BOSS = """# Scheduled bosses of R01 (maps section 5.2), rolled once per kill with the leader row below.
+# Until mail exists (step C), the loot drops on the ground for the top damage dealer instead of the
+# damage-ranking mail of maps 5.2. Quan: 16 x L x 5 (leader) ~ the boss x20 Quan of a normal monster.
+id: DROP_R01_BOSS
+soft: { chance: 1, perLevel: 16, spread: 0.2 }
+entries:
+  - { chance: 1, item: dong_luyen_2 }
+  - { chance: 0.6, pick: { potion_hp_m: 0.6, potion_mp_m: 0.4 }, qty: [1, 3] }
+gear:
+  items: [ s1_weapon, s1_hat, s1_armor, s1_boots ]
+  levelBand: [1, 9]
+  chance: { common: 0.3, good: 0.5, rare: 0.15, epic: 0.02 }
+tiers:
+  elite: { softChance: 1, rolls: 1, gear: { common: 0.3, good: 0.5, rare: 0.15, epic: 0.02 } }
+  leader: { softChance: 1, rolls: 2, gear: { common: 0.25, good: 0.5, rare: 0.2, epic: 0.04 } }
+"""
+NPC_FACES = {"NPC001": 0, "NPC002": 1, "NPC003": 2, "NPC004": 3, "NPC040": 5}   # rows of sprites/npc_idle.png
+NPC_LINES = {
+    "NPC001": "Mỗi trang sách đều có chỗ của nó. Đi săn cẩn thận nhé.",
+    "NPC002": "Ăn no rồi hẵng đi, con.",
+    "NPC003": "Mình vừa chế xong mẻ thuốc mới. Cần bình máu thì ghé mua nhé!",
+    "NPC004": "Ra Đồng Hoa đi, Vua Nấm Lùn hay xuất hiện ở đó lắm.",
+    "NPC040": "Lịch boss dán trên bảng tin làng đây, xem đi con.",
+}
+
+
+def build_story_content():
+    dg = DUNGEONS["DG01"]
+    with open(os.path.join(mkc("drops"), "drop_r01_boss.yaml"), "w", encoding="utf-8") as f:
+        f.write(DROP_R01_BOSS)
+    with open(os.path.join(mkc("dungeons"), "dg01.yaml"), "w", encoding="utf-8") as f:
+        f.write(f"""# DG01 Hang Gieng Can, tutorial dungeon (maps section 6.2)
+id: DG01
+nameKey: map.dg01.name
+minLevel: {dg['minLevel']}
+timeLimitMin: {dg['timeLimitMin']}
+boss: {dg['boss']}
+wakeRange: 420          # Trang Lac wakes when a player comes this close to its spot (px)
+entry: {{ map: {dg['entry']}, x: 2224, y: 640 }}   # back at the dungeon gate
+chest:
+  soft: {dg['chest']['soft']}             # times the party reward factor (alone x0.8 = 240)
+  items: [ {", ".join(f"{{ id: {i}, count: {n} }}" for i, n in dg['chest']['items'])} ]
+  gear: {{ items: [ s1_weapon, s1_hat, s1_armor, s1_boots ], level: {dg['chest']['gear']['level']}, rarity: {dg['chest']['gear']['rarity']} }}
+""")
+    with open(os.path.join(mkc("npcs"), "r01.yaml"), "w", encoding="utf-8") as f:
+        f.write("# NPCs of region R01 (characters section 3). face = row of sprites/npc_idle.png\nnpcs:\n")
+        for k, row in NPC_FACES.items():
+            n = k.lower()
+            f.write(f"  - {{ id: {k}, nameKey: npc.{n}.name, lineKey: npc.{n}.line, face: {row} }}\n")
+    with open(os.path.join(mkc("scenes"), "chapter1.yaml"), "w", encoding="utf-8") as f:
+        f.write("# Cutscenes of Chapter 1 (quests section 4). who: an NPC id or PLAYER\nscenes:\n")
+        for k in ("Q_MAIN_11", "Q_MAIN_12"):
+            f.write(f"  - id: {k}\n    lines:\n")
+            for i, (who, _) in enumerate(SCENES[k]):
+                f.write(f"      - {{ who: {who}, textKey: scene.{k.lower()}.{i + 1} }}\n")
+            if k == "Q_MAIN_12":
+                f.write("    letterKey: scene.letter\n")
 
 
 def _yaml_obj(o):
     return "{ " + ", ".join(f"{k}: {v}" for k, v in o.items()) + " }"
+
+
+# Lines the online server puts together (step B4): NPC dialog choices, boss announcements
+I18N_SERVER = """# lines the server puts together in NPC dialogs (step B4)
+dialog:
+  ready: "Xong rồi à? Để ta xem nào…"
+  level: "Đạt Lv {lv} rồi quay lại nhận “{title}”."
+  bag_full: "Túi con đầy rồi, bán bớt đồ cho Lam Nhi rồi quay lại nhé."
+  opt_accept: "Nhận nhiệm vụ: {title}"
+  opt_turnin: "Trả nhiệm vụ: {title}"
+  opt_quests: "Xem nhiệm vụ: {title}"
+  opt_shop: "Mua bán: bình thuốc, bán đồ"
+  opt_schedule: "Xem Lịch Boss (bảng tin làng)"
+  opt_ceremony: "Vào lễ đường"
+  opt_altar: "Đặt tay lên Đài Khai Thư"
+  opt_rite: "Đổi hệ phép (miễn phí trong 24 giờ)"
+  opt_close: "Đóng"
+  schedule_head: "Lịch boss hôm nay (giờ Việt Nam):"
+  schedule_live: "{boss} Lv{lv} · {map} · ĐANG XUẤT HIỆN ở khu {zone}"
+  schedule_next: "{boss} Lv{lv} · {map} · lần tới {time}"
+  ceremony_wait: "Huyền Thư đang chờ con. Đài Khai Thư ở giữa lễ đường."
+  altar_silent: "Đài Khai Thư im lặng."
+boss_msg:
+  soon: "{boss} sẽ xuất hiện sau 5 phút tại {map}"
+  spawn: "{boss} vừa xuất hiện tại {map}, khu {zone}!"
+  killed: "{boss} đã bị hạ bởi {killer}!"
+  gone: "{boss} đã bỏ đi."
+  enrage: "{boss} nổi cuồng nộ! Sức đánh ×2"
+  summon: "{boss} gọi đồng bọn!"
+  tear: "Trang Lạc rách thành 4 Mảnh Trang!"
+  wake: "Trang Lạc thức dậy từ những trang giấy bị xóa!"
+  dg_down: "Đã hạ Trang Lạc! Mở Rương Tân Thủ rồi ra cổng bên phải."
+  dg_timeout: "Hết giờ hầm ngục. Bạn được đưa về cổng."
+"""
 
 
 def build_quests():
@@ -598,10 +747,17 @@ dialogue:
     lines.append("class:")
     lines.append(f"  novice.name: \"{NOVICE['name']}\"")
     for k, v in CLASS_DATA.items():
-        lines.append(f"  {k.lower()}.name: \"{v['name']}\"")
+        c = k.lower()
+        lines.append(f"  {c}.name: \"{v['name']}\"")
+        for f in ("role", "weapon", "mods", "passive", "passiveText"):
+            lines.append(f"  {c}.{f}: \"{v[f]}\"")
+    for k, v in LOCKED_CLASSES.items():
+        lines.append(f"  {k.lower()}.name: \"{v}\"")
     lines.append("skill:")
     for sk in NOVICE["skills"] + [sk for v in CLASS_DATA.values() for sk in v["skills"]]:
         lines.append(f"  {sk['id'].lower()}.name: \"{sk['name']}\"")
+        if "text" in sk:
+            lines.append(f"  {sk['id'].lower()}.text: \"{sk['text']}\"")
     lines.append("shop:")
     for k, v in SHOPS.items():
         lines.append(f"  {k.lower()}.name: \"{v['name']}\"")
@@ -610,8 +766,11 @@ dialogue:
         for k, v in VI_NAMES.items():
             if k.startswith(prefix):
                 lines.append(f"  {k.lower()}.name: \"{v}\"")
+    lines.append("npc:")
+    for k, line in NPC_LINES.items():
+        lines += [f"  {k.lower()}.name: \"{VI_NAMES[k]}\"", f"  {k.lower()}.line: \"{line}\""]
     with open(os.path.join(i18n, "vi.yaml"), "w", encoding="utf-8") as f:
-        f.write("\n".join(lines) + "\n")
+        f.write("\n".join(lines) + "\n" + I18N_SERVER)
     with open(os.path.join(mkc("quests"), "quest_items.yaml"), "w", encoding="utf-8") as f:
         f.write("# Quest item sources (quests section 4.1). Drops only while the quest still needs the item.\n")
         for k, (_, src) in QUEST_ITEMS.items():

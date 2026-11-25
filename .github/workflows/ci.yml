@@ -58,7 +58,7 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Database, API and game server on PostgreSQL 16 and Redis 7 (step B3)
+      - name: Database, API and game server on PostgreSQL 16 and Redis 7 (steps B3-B4)
         run: pnpm test:int
 
   e2e:
@@ -89,7 +89,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @htk/web-client exec playwright install --with-deps chromium
-      - name: Accounts, two browsers walking, fighting and chatting (steps B1-B3)
+      - name: Accounts, two browsers walking, fighting and chatting, Chapter 1 quests and shop (steps B1-B4)
         run: pnpm test:e2e
       - uses: actions/upload-artifact@v4
         if: always()

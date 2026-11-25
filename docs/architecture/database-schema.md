@@ -3,7 +3,7 @@
 > **Trạng thái:** Draft v0.1 · **DB:** PostgreSQL 16 · **Liên quan:** [system-architecture](system-architecture.md) · [server-design](server-design.md) · [economy](../game-design/08-economy-and-monetization.md)
 > Schema chạy thật lưu trong `packages/db`: các file migration SQL đánh số (`migrations/0001_init.sql` …), truy vấn bằng `pg` (node-postgres). Bản dưới là **đặc tả tham chiếu**; migration chép đúng DDL ở §3–§4, và test tích hợp của `packages/db` so khớp từng cột giữa hai bên.
 >
-> **Bậc B3** đã tạo: mọi ENUM, `accounts`, `auth_sessions`, `realms`, `characters`, `character_skills`, `character_quests`, `item_instances`, `currency_ledger`. Các bảng còn lại thêm vào cùng tính năng dùng chúng.
+> **Bậc B4** dùng thêm `character_quests`, ô trang bị (`location = 'EQUIP'`) và `characters.class` mà không đổi schema (§6.6). **Bậc B3** đã tạo: mọi ENUM, `accounts`, `auth_sessions`, `realms`, `characters`, `character_skills`, `character_quests`, `item_instances`, `currency_ledger`. Các bảng còn lại thêm vào cùng tính năng dùng chúng.
 
 ## 1. Quy ước
 
@@ -663,6 +663,20 @@ COMMIT;
 | Lên cấp | Ghi ngay cấp, EXP và `stat_points` cộng thêm |
 
 Game server ghi DB **trước**, rồi mới đổi túi trong bộ nhớ và báo client. Các thao tác tài sản của một nhân vật chạy lần lượt qua hàng đợi riêng (server-design §7.1).
+
+### 6.6 Thêm ở bậc B4
+
+Không có bảng mới: `character_quests`, `item_instances.location = 'EQUIP'`, `affixes`, `characters.class` và `class_changed_at` đã có từ migration `0001`.
+
+| Thao tác | Cách làm |
+|----------|----------|
+| Nhận nhiệm vụ, có tiến độ | `saveQuest` ghi dòng `character_quests` (`reset_key` rỗng); tiến độ hạ quái ghi theo lần lưu định kỳ, đủ mục tiêu (`READY`) thì ghi ngay. Một dòng `COMPLETED` không bao giờ bị ghi đè |
+| Trả nhiệm vụ | Một transaction: khóa nhân vật → `COMPLETED` (từ chối nếu đã hoàn thành) → vật phẩm thưởng → Quan với dòng sổ cái `QUEST_REWARD`, `idem_key` = UUID suy ra từ nhân vật và nhiệm vụ. EXP cộng sau khi commit (dữ liệu mềm) |
+| Mặc, tháo | `equipItem`: món trong túi sang `EQUIP` với `slot` = ô (0 vũ khí, 1 mũ, 2 áo, 3 giày, 4 Huyền Thư); món đang mặc ở ô đó về đúng ô túi vừa trống. `unequipItem` cần một ô túi trống |
+| Mua ở tiệm | Khóa nhân vật → thiếu Quan thì từ chối → vật phẩm vào túi → Quan trừ với dòng `SHOP_BUY`, `idem_key` từ client |
+| Bán cho NPC | Khóa nhân vật → `takeItem` bớt hoặc xóa → Quan cộng với dòng `SHOP_SELL` (25% giá trị) |
+| Rương Tân Thủ | Một transaction: Quan (`DUNGEON_CHEST`, khóa theo lượt hầm ngục), 3 Bình HP Vừa, 1 trang bị S1 Lv9 Tốt có dòng phụ |
+| Chọn hệ | Một transaction: `characters.class`, `class_changed_at` (giữ lần đầu cho cửa sổ 24 giờ), Huyền Thư Sơ Bản tạo thẳng vào ô `EQUIP` 4 (`bound`), vũ khí hệ vào túi |
 
 ## 7. Redis
 

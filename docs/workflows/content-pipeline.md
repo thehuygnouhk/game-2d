@@ -51,7 +51,7 @@ packages/content/
 ### 2.1 Trạng thái (bậc B2)
 
 **Đã có:**
-- `packages/content` chứa `monsters/`, `bosses/`, `events/`, `items/`, `classes/` (`origins.yaml`, `novice.yaml`, `fire.yaml`, `water.yaml`), `quests/`, `shops/`, `drops/`, `i18n/vi.yaml`.
+- `packages/content` chứa `monsters/`, `bosses/`, `events/`, `items/`, `classes/` (`origins.yaml`, `novice.yaml`, `fire.yaml`, `water.yaml`), `quests/`, `shops/`, `drops/`, `npcs/`, `scenes/`, `dungeons/` (bậc B4), `i18n/vi.yaml`. Schema của từng loại ở `packages/content/schema/index.ts`; quy tắc V003 kiểm cả tham chiếu giữa nhiệm vụ, NPC, cửa hàng, boss, sự kiện, hầm ngục và cảnh.
 - `schema/index.ts` (Zod) và `src/index.ts`: bộ nạp và kiểm chứng mà game server dùng khi khởi động.
 
 **Những điểm khác cây thư mục ở §2:**

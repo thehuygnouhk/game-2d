@@ -268,6 +268,16 @@ Mỗi lệnh thay đổi tài sản có `idemKey` (UUID từ client). Server lư
 - **Tắt máy chủ (SIGTERM):** gửi `S_KICK SHUTDOWN` cho mọi phiên, lưu hết, rồi đóng kết nối DB. Compose cho bản chơi thử chờ 20 s.
 - **Sập đột ngột:** tối đa mất 60 s dữ liệu mềm; ledger đảm bảo tiền và vật phẩm không mất.
 
+**Bậc B4 thêm:**
+- **Nhiệm vụ:** ghi ngay khi nhận, khi đủ mục tiêu và khi trả (cùng transaction với phần thưởng); số quái đã hạ đi theo lần lưu định kỳ.
+- **Trong hầm ngục hoặc lễ đường:** instance không được lưu; nhân vật được lưu ở lối ra (DG01: cổng ở M004, I001: M001).
+
+### 8.1 Bậc B4: instance, boss, nhiệm vụ
+
+- **Instance** (`World.instances`): một `Zone` riêng của map `DUNGEON` hoặc `INSTANCE`, tick chung với các khu công khai. DG01 mở khi đi qua cổng P03 (cần Lv9), quái nhân hệ số một người ([maps §6.1](../game-design/05-world-maps-monsters.md)), không hồi sinh, đồng hồ 30 phút; Trang Lạc thức khi có người cách điểm boss dưới 420 px. Lễ đường I001 mở khi nhận Q_MAIN_12. Instance đóng khi không còn ai.
+- **Boss theo giờ** (`src/world/boss.ts`): đồng hồ thật theo `Asia/Ho_Chi_Minh`, kiểm tra mỗi giây; báo trước 5 phút, xuất hiện ở 1 khu ngẫu nhiên (sự kiện có thể là mọi khu), cuồng nộ sau 10 phút (ATK ×2), bỏ đi sau 30 phút. Mỗi chiêu là vùng báo hiệu (`S_BOSS_STATE.telegraphs`) rơi xuống sau 0,9–1,3 s; ai đứng trong vùng lúc đó mới trúng. Dưới 50% HP boss ra chiêu nhanh hơn (hồi chiêu ×0,7).
+- **Nhiệm vụ** (`src/world/quests.ts`): sự kiện game (hạ quái, nói chuyện, hái, dùng chiêu, hạ boss, xem cảnh, tới nơi) gọi `Quests.event`. Hạ quái được tính cho mọi người có phần EXP của con quái đó (≥ 10% sát thương). Giới hạn Lv9 mở khi xong Q_MAIN_11.
+
 ## 9. Sự kiện miền (domain events)
 
 Event bus nội bộ (đồng bộ trong tick, hoặc queue nhẹ):
