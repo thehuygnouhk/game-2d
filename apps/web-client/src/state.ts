@@ -1,10 +1,16 @@
 import type {
   Appearance,
   BagItem,
+  ClassId,
+  Equipment,
   MapInfo,
+  NpcInfo,
+  SBossState,
   SEnterWorld,
+  SInstanceState,
   SInventoryDelta,
   SkillInfo,
+  SQuestUpdate,
   SStatsUpdate,
   StatsFull,
 } from "@htk/shared";
@@ -14,10 +20,18 @@ export class GameState {
   readonly you: number;
   readonly name: string;
   readonly appearance: Appearance;
+  cls: ClassId | null;
   stats: StatsFull;
-  readonly skills: SkillInfo[];
+  skills: SkillInfo[];
   bag: { soft: number; items: BagItem[]; size: number };
+  equipment: Equipment;
+  quests: SQuestUpdate;
   map: MapInfo;
+  npcs: NpcInfo[];
+  /** dungeon or ceremony hall the player is in (step B4) */
+  instance: SInstanceState | null = null;
+  /** boss bar */
+  boss: SBossState | null = null;
   /** local ready time (performance.now) of each skill and potion group, for the cooldown display */
   readonly ready = new Map<string, number>();
   dead = false;
@@ -29,10 +43,14 @@ export class GameState {
     this.you = e.you;
     this.name = e.character.name;
     this.appearance = e.character.appearance;
+    this.cls = e.character.cls;
     this.stats = e.stats;
     this.skills = e.skills;
     this.bag = { ...e.bag, items: [...e.bag.items] };
+    this.equipment = { ...e.equipment };
+    this.quests = e.quests;
     this.map = e.map;
+    this.npcs = e.npcs;
   }
 
   subscribe(fn: () => void): () => void {
@@ -52,12 +70,16 @@ export class GameState {
 
   applyInventory(d: SInventoryDelta): void {
     this.bag.soft = d.soft;
+    this.bag.items = this.bag.items.filter((i) => !d.remove.includes(i.instanceId));
     for (const it of d.add) this.bag.items.push(it);
     for (const u of d.update) {
       const it = this.bag.items.find((i) => i.instanceId === u.instanceId);
       if (it) it.qty = u.qty;
     }
-    this.bag.items = this.bag.items.filter((i) => !d.remove.includes(i.instanceId));
+    for (const [slot, it] of Object.entries(d.equip ?? {})) {
+      if (it) this.equipment[slot as keyof Equipment] = it;
+      else delete this.equipment[slot as keyof Equipment];
+    }
     this.changed();
   }
 
@@ -76,5 +98,20 @@ export class GameState {
 
   potionCount(kind: "hp" | "mp"): number {
     return this.bag.items.filter((i) => (kind === "hp" ? i.healHp : i.healMp)).reduce((n, i) => n + i.qty, 0);
+  }
+
+  /** NPC quest mark (ui-ux §3.1): "!" to accept or talk, "?" to turn in; dim when not ready yet */
+  npcMark(id: string): { mark: "!" | "?"; dim: boolean } | null {
+    const q = this.quests.main;
+    if (!q) return null;
+    if (q.status === "AVAILABLE" && q.giver.id === id) return { mark: "!", dim: false };
+    if (q.status === "LOCKED" && q.giver.id === id) return { mark: "!", dim: true };
+    if (q.status === "READY" && q.turnIn.id === id) return { mark: "?", dim: false };
+    if (q.status === "ACTIVE") {
+      if (q.objectives.some((o) => o.type === "TALK" && o.target === id && o.got < o.count && o.map === this.map.id))
+        return { mark: "!", dim: false };
+      if (q.turnIn.id === id) return { mark: "?", dim: true };
+    }
+    return null;
   }
 }

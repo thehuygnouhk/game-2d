@@ -1,11 +1,9 @@
-import { Op, type SChatMsg, type SZoneList } from "@htk/shared";
+import { Op, type SBossState, type SChatMsg, type SInstanceState, type SZoneList } from "@htk/shared";
 import type { Connection } from "../net/connection";
 import type { GameState } from "../state";
 
 /** DOM HUD over the canvas (ui-ux §3.1): character frame, zone, chat, action bar, death panel, toasts. */
-const ACTIONS = [
-  { key: "J", id: "SKL_BASIC" },
-  { key: "1", id: "SKL_MANA_BURST" },
+const POTIONS = [
   { key: "Q", id: "hp" },
   { key: "E", id: "mp" },
 ] as const;
@@ -32,6 +30,12 @@ export class Hud {
   private readonly channelBtn = el("button", "chat-ch", "Khu");
   private readonly menu = el("div", "hud-menu");
   readonly charBtn = el("button", "menu-btn");
+  readonly bagBtn = el("button", "menu-btn", "Hành trang (B)");
+  readonly questBtn = el("button", "menu-btn", "Nhiệm vụ (L)");
+  private readonly bossBar = el("div", "hud-boss");
+  private readonly inst = el("div", "hud-inst");
+  private instEnds = 0;
+  private barKey = "";
   private channel: "MAP" | "WORLD" = "MAP";
   private toastTimer = 0;
   /** lines shown in the chat box, for tests and the scene */
@@ -39,6 +43,8 @@ export class Hud {
   onChatFocus: (focused: boolean) => void = () => {};
   onAction: (id: string) => void = () => {};
   onCharWindow: () => void = () => {};
+  onBag: () => void = () => {};
+  onQuests: () => void = () => {};
 
   constructor(
     stage: HTMLElement,
@@ -47,6 +53,8 @@ export class Hud {
   ) {
     this.zoneList.hidden = true;
     this.dead.hidden = true;
+    this.bossBar.hidden = true;
+    this.inst.hidden = true;
     const chat = el("div", "hud-chat");
     this.chatInput.maxLength = 120;
     this.chatInput.placeholder = "Enter để chat";
@@ -66,7 +74,10 @@ export class Hud {
     const swap = el("button", "menu-btn", "Đổi nhân vật");
     swap.type = "button";
     swap.addEventListener("click", () => location.reload());
-    this.menu.append(this.charBtn, swap);
+    for (const b of [this.bagBtn, this.questBtn]) b.type = "button";
+    this.bagBtn.addEventListener("click", () => this.onBag());
+    this.questBtn.addEventListener("click", () => this.onQuests());
+    this.menu.append(this.charBtn, this.bagBtn, this.questBtn, swap);
     this.root.append(
       this.me,
       this.zoneBtn,
@@ -77,16 +88,10 @@ export class Hud {
       this.bar,
       this.toastBox,
       this.dead,
+      this.bossBar,
+      this.inst,
     );
     stage.append(this.root);
-    for (const a of ACTIONS) {
-      const b = el("button", "act");
-      b.type = "button";
-      b.dataset.id = a.id;
-      b.append(el("kbd", "", a.key), el("span", "nm"), el("i", "cd"), el("b", "n"));
-      b.addEventListener("click", () => this.onAction(a.id));
-      this.bar.append(b);
-    }
     this.zoneBtn.type = "button";
     this.zoneBtn.addEventListener("click", () => {
       if (this.zoneList.hidden) conn.send(Op.C_REQUEST_ZONES);
@@ -161,7 +166,7 @@ export class Hud {
       el("p", "t", "Bạn đã gục ngã"),
       el("p", "s", loss > 0 ? `Mất ${loss.toLocaleString("vi-VN")} EXP (2%)` : "Không mất EXP"),
     );
-    const b = el("button", "revive", "Về làng hồi sinh");
+    const b = el("button", "revive", this.state.instance?.kind === "DUNGEON" ? "Về cổng hầm ngục" : "Về làng hồi sinh");
     b.type = "button";
     b.addEventListener("click", () => {
       b.disabled = true;
@@ -174,7 +179,61 @@ export class Hud {
     this.dead.hidden = true;
   }
 
+  /** hotbar: the skills the server listed (J, 1-4), then the potions */
+  private buildBar(): void {
+    const acts = [...this.state.skills.map((k) => ({ key: k.key ?? "", id: k.id })), ...POTIONS];
+    const key = acts.map((a) => a.id).join();
+    if (key === this.barKey) return;
+    this.barKey = key;
+    this.bar.replaceChildren();
+    for (const a of acts) {
+      const b = el("button", "act");
+      b.type = "button";
+      b.dataset.id = a.id;
+      b.append(el("kbd", "", a.key), el("span", "nm"), el("i", "cd"), el("b", "n"));
+      b.addEventListener("click", () => this.onAction(a.id));
+      this.bar.append(b);
+    }
+  }
+
+  /** S_BOSS_STATE: the boss bar (maps §5) */
+  boss(b: SBossState): void {
+    if (b.over) {
+      this.state.boss = null;
+      this.bossBar.hidden = true;
+      return;
+    }
+    this.state.boss = b;
+    const fill = el("i");
+    fill.style.width = pct(b.hpPct, 1);
+    const bar = el("div", "bar hp");
+    bar.append(fill, el("span", "", `${Math.round(b.hpPct * 100)}%`));
+    const name =
+      b.pieces !== undefined
+        ? `Mảnh Trang · còn ${b.pieces}/4`
+        : `${b.name} · Lv ${b.lv}${b.enraged ? " · CUỒNG NỘ" : ""}`;
+    this.bossBar.replaceChildren(el("b", "", name), bar);
+    this.bossBar.hidden = false;
+  }
+
+  /** S_INSTANCE_STATE: dungeon clock and the way out */
+  instance(s: SInstanceState | null): void {
+    this.state.instance = s;
+    if (!s) {
+      this.inst.hidden = true;
+      return;
+    }
+    this.instEnds = s.leftMs !== undefined ? performance.now() + s.leftMs : 0;
+    const leave = el("button", "leave", s.kind === "DUNGEON" ? "Rời hầm ngục" : "Về làng");
+    leave.type = "button";
+    leave.addEventListener("click", () => this.conn.send(Op.C_LEAVE_INSTANCE));
+    this.inst.replaceChildren(el("span", "clock"), leave);
+    if (s.bossDown) this.inst.append(el("small", "", s.chest?.opened ? "Đã mở rương" : "Mở Rương Tân Thủ (F)"));
+    this.inst.hidden = false;
+  }
+
   render(): void {
+    this.buildBar();
     const s = this.state.stats;
     const rally = performance.now() < this.state.rallyUntil;
     this.me.replaceChildren();
@@ -229,6 +288,11 @@ export class Hud {
       (b.querySelector(".cd") as HTMLElement).style.height = left > 0 ? pct(left, total) : "0%";
     }
     this.net.textContent = `● ${this.conn.rtt} ms`;
+    const clock = this.inst.querySelector(".clock");
+    if (clock && this.instEnds) {
+      const left = Math.max(0, Math.round((this.instEnds - now) / 1000));
+      clock.textContent = `⏳ ${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
+    }
     if (this.state.rallyUntil && now > this.state.rallyUntil) {
       this.state.rallyUntil = 0;
       this.render();

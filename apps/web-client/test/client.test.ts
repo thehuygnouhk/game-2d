@@ -55,7 +55,10 @@ describe("interpolation (client-design §5.2)", () => {
 describe("game state (client-design §3)", () => {
   const enter = {
     you: 7,
-    character: { name: "Anh", appearance: { origin: "VILLAGER" as const, gender: "MALE" as const } },
+    character: { name: "Anh", appearance: { origin: "VILLAGER" as const, gender: "MALE" as const }, cls: null },
+    npcs: [],
+    equipment: {},
+    quests: { main: null, done: 0, total: 12, chapterDone: false },
     map: { id: "M002", zone: 1, name: "Đồng Hoa Suối Mơ" },
     tick: 1,
     ack: 0,
@@ -111,6 +114,42 @@ describe("game state (client-design §3)", () => {
     expect(s.bag.items.map((i) => [i.instanceId, i.qty])).toEqual([["b1", 2]]);
     expect(s.potion("mp")).toBeUndefined();
     expect(calls).toBe(3);
+    // wearing: the bag entry leaves, the slot fills; taking off empties it again (step B4)
+    const hat = { instanceId: "h1", kind: "gear" as const, item: "s1_hat", name: "Mũ", qty: 1, slot: "hat" as const };
+    s.applyInventory({ soft: 25, add: [hat], update: [], remove: [] });
+    s.applyInventory({ soft: 25, add: [], update: [], remove: ["h1"], equip: { hat } });
+    expect(s.equipment.hat?.instanceId).toBe("h1");
+    expect(s.bag.items.some((i) => i.instanceId === "h1")).toBe(false);
+    s.applyInventory({ soft: 25, add: [hat], update: [], remove: [], equip: { hat: null } });
+    expect(s.equipment.hat).toBeUndefined();
+  });
+
+  it("marks NPCs: ! to accept or talk, ? to turn in (ui-ux §3.1)", async () => {
+    const { GameState } = await import("../src/state");
+    const s = new GameState(enter);
+    const npc = (id: string) => ({ id, name: id });
+    const q = {
+      id: "Q_MAIN_01",
+      title: "Buổi Sáng",
+      status: "AVAILABLE" as const,
+      levelMin: 1,
+      giver: npc("NPC001"),
+      turnIn: npc("NPC001"),
+      objectives: [
+        { type: "TALK" as const, target: "NPC002", label: "", count: 1, got: 0, map: "M001", mapName: "", where: "" },
+      ],
+      rewards: { exp: 50, soft: 100, items: [] },
+      text: { accept: "", progress: "" },
+    };
+    s.map = { id: "M001", zone: 1, name: "" };
+    s.quests = { main: q, done: 0, total: 12, chapterDone: false };
+    expect(s.npcMark("NPC001")).toEqual({ mark: "!", dim: false });
+    s.quests = { ...s.quests, main: { ...q, status: "ACTIVE" } };
+    expect(s.npcMark("NPC002")).toEqual({ mark: "!", dim: false });
+    expect(s.npcMark("NPC001")).toEqual({ mark: "?", dim: true });
+    s.quests = { ...s.quests, main: { ...q, status: "READY" } };
+    expect(s.npcMark("NPC001")).toEqual({ mark: "?", dim: false });
+    expect(s.npcMark("NPC002")).toBeNull();
   });
 });
 

@@ -2,7 +2,14 @@ import Phaser from "phaser";
 import {
   ErrorCode,
   Op,
+  type SBossAnnounce,
+  type SBossState,
   type SEnterWorld,
+  type SInstanceState,
+  type SNpcDialog,
+  type SQuestUpdate,
+  type SScene,
+  type SSkillsUpdate,
   type SError,
   type SInventoryDelta,
   type SKick,
@@ -13,8 +20,13 @@ import { Api, ApiError, type CharacterSummary } from "./net/api";
 import { Connection } from "./net/connection";
 import { WorldScene, type WorldData } from "./scenes/WorldScene";
 import { GameState } from "./state";
+import { BagWindow } from "./ui/bag";
 import { CharWindow } from "./ui/charwin";
+import { DialogBox } from "./ui/dialog";
+import { loadIcons } from "./ui/dom";
 import { Hud } from "./ui/hud";
+import { QuestUi } from "./ui/quests";
+import { RiteWindow } from "./ui/rite";
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const stage = $("stage"),
@@ -32,6 +44,23 @@ const GAME_ERRORS: Record<number, string> = {
   [ErrorCode.E_INVENTORY_FULL]: "Túi đầy.",
   [ErrorCode.E_LEVEL_REQUIRED]: "Chưa đủ cấp.",
   [ErrorCode.E_INTERNAL]: "Máy chủ chưa lưu được, thử lại.",
+  [ErrorCode.E_NOT_ENOUGH_SOFT]: "Không đủ Quan.",
+  [ErrorCode.E_ITEM_BOUND]: "Món này gắn với nhân vật: không tháo, không bán được.",
+  [ErrorCode.E_OUT_OF_RANGE]: "Lại gần hơn một chút.",
+  [ErrorCode.E_QUEST_NOT_AVAILABLE]: "Chưa nhận được nhiệm vụ này.",
+  [ErrorCode.E_QUEST_INCOMPLETE]: "Chưa xong mục tiêu nhiệm vụ.",
+};
+/** S_ERROR messages that say more than the code */
+const ERROR_TEXT: Record<string, string> = {
+  NOT_ENOUGH_POINTS: "Không đủ điểm tiềm năng.",
+  LEVEL_9: "Cần Lv9 để vào hầm ngục.",
+  CLASS_FIRE: "Chỉ Hỏa Kiếm Sĩ dùng được.",
+  CLASS_WATER: "Chỉ Thủy Pháp Sư dùng được.",
+  ALTAR_SILENT: "Đài Khai Thư im lặng.",
+  ALREADY_OPENED: "Bạn đã mở rương này.",
+  NOT_GROWN: "",
+  NOT_NEEDED: "",
+  TOO_FAR: "Lại gần hơn một chút.",
 };
 const ENTER_ERRORS: Record<number, string> = {
   [ErrorCode.E_VERSION]: "Phiên bản game cũ, hãy tải lại trang.",
@@ -213,7 +242,7 @@ async function enter(c: CharacterSummary, btn: HTMLButtonElement): Promise<void>
     startGame(net, e);
   });
   try {
-    await net.connect({ ticket: t.ticket, clientVersion: "0.3.0" });
+    await net.connect({ ticket: t.ticket, clientVersion: "0.4.0" });
   } catch (ex) {
     err.textContent = (ex as Error).message;
     btn.disabled = false;
@@ -227,31 +256,91 @@ function startGame(net: Connection, enterWorld: SEnterWorld): void {
   const state = new GameState(enterWorld);
   const hud = new Hud(stage, state, net);
   const cw = new CharWindow(stage, state, net);
+  const quests = new QuestUi(stage, state);
+  const bag = new BagWindow(stage, state, net);
+  const rite = new RiteWindow(stage, net);
+  const dialog = new DialogBox(stage, state, net);
   hud.onCharWindow = () => cw.toggle();
+  hud.onBag = () => bag.toggle();
+  hud.onQuests = () => quests.toggle();
+  dialog.onShop = (d) => bag.openShop(d.shop!);
+  dialog.onRite = (d) => rite.show(d.rite!);
+  dialog.onQuests = () => quests.toggle(true);
+  const busy = () => dialog.open || rite.open || bag.open;
   window.addEventListener("keydown", (e) => {
-    if ((e.key === "c" || e.key === "C") && document.activeElement !== hud.chatInput) cw.toggle();
-    if (e.key === "Escape" && cw.open) cw.toggle(false);
+    if (document.activeElement === hud.chatInput || dialog.open) return;
+    const k = e.key.toLowerCase();
+    if (k === "c") cw.toggle();
+    else if (k === "b") bag.toggle();
+    else if (k === "l") quests.toggle();
+    else if (e.key === "Escape") {
+      if (rite.open) rite.close();
+      else if (bag.open) bag.toggle(false);
+      else if (quests.open) quests.toggle(false);
+      else if (cw.open) cw.toggle(false);
+    }
   });
-  hud.chat("SYSTEM", `Chào ${state.name}! Đi qua cổng phải để ra Đồng Hoa đánh quái. Enter để chat.`);
+  const scene = () => game?.scene.getScene("world") as WorldScene | undefined;
+  hud.chat(
+    "SYSTEM",
+    `Chào ${state.name}! Đến gần NPC có dấu ! rồi nhấn F để nói chuyện. B: hành trang, L: nhiệm vụ, Enter: chat.`,
+  );
   if (state.stats.statPoints > 0)
     hud.chat("SYSTEM", `Bạn có ${state.stats.statPoints} điểm tiềm năng: nhấn C để cộng.`);
   net.on<SStatsUpdate>(Op.S_STATS_UPDATE, (s) => state.applyStats(s));
-  net.on<SInventoryDelta>(Op.S_INVENTORY_DELTA, (d) => state.applyInventory(d));
+  net.on<SInventoryDelta>(Op.S_INVENTORY_DELTA, (d) => {
+    state.applyInventory(d);
+    if (d.gained?.length)
+      hud.chat(
+        "SYSTEM",
+        `Nhận: ${d.gained.map((g) => (g.kind === "soft" ? `${g.qty} Quan` : `${g.name}${g.qty > 1 ? ` ×${g.qty}` : ""}`)).join(", ")}`,
+      );
+  });
   net.on<SError>(Op.S_ERROR, (e) => {
-    const text = e.message === "NOT_ENOUGH_POINTS" ? "Không đủ điểm tiềm năng." : GAME_ERRORS[e.code];
+    const text = e.message !== undefined && e.message in ERROR_TEXT ? ERROR_TEXT[e.message] : GAME_ERRORS[e.code];
     if (text) hud.toast(text);
   });
+  net.on<SNpcDialog>(Op.S_NPC_DIALOG, (d) => dialog.show(d));
+  net.on<SQuestUpdate>(Op.S_QUEST_UPDATE, (u) => {
+    quests.apply(u);
+    if (u.progress) hud.chat("SYSTEM", u.progress);
+    if (u.event?.kind === "completed") hud.chat("SYSTEM", `Hoàn thành nhiệm vụ: ${u.event.title}`);
+    scene()?.refreshObjects();
+  });
+  net.on<SScene>(Op.S_SCENE, (s) =>
+    dialog.playScene(
+      s,
+      `${state.appearance.origin}_${state.appearance.gender}_${state.cls === "FIRE" ? "fire" : state.cls === "WATER" ? "water" : "novice"}`.toLowerCase(),
+    ),
+  );
+  net.on<SSkillsUpdate>(Op.S_SKILLS_UPDATE, (u) => {
+    state.skills = u.skills;
+    state.cls = u.cls;
+    state.changed();
+    hud.chat(
+      "SYSTEM",
+      `Hệ phép: ${u.cls === "FIRE" ? "Hỏa Kiếm Sĩ" : "Thủy Pháp Sư"}. Phím 2: ${u.skills.find((k) => k.key === "2")?.name ?? ""}. Mặc vũ khí hệ trong Hành trang (B).`,
+    );
+  });
+  net.on<SBossState>(Op.S_BOSS_STATE, (b) => hud.boss(b));
+  net.on<SBossAnnounce>(Op.S_BOSS_ANNOUNCE, (a) => hud.toast(a.text));
+  net.on<SInstanceState>(Op.S_INSTANCE_STATE, (s) => hud.instance(s));
   net.on<SMapChange>(Op.S_MAP_CHANGE, (change) => {
     // hold the frames that follow until the new scene has loaded the map (client-design §5)
     net.hold();
     const zoneOnly = change.map.id === state.map.id;
     state.map = change.map;
+    state.npcs = change.npcs;
+    if (state.instance && state.instance.mapId !== change.map.id) hud.instance(null);
+    hud.boss({ id: 0, name: "", lv: 0, hpPct: 0, phase: 0, enraged: false, over: true });
+    dialog.close();
+    bag.toggle(false);
     state.changed();
     hud.chat(
       "SYSTEM",
       zoneOnly ? `Đã sang Khu ${change.map.zone}.` : `Đến ${change.map.name} · Khu ${change.map.zone}`,
     );
-    game!.scene.getScene("world").scene.restart({ net, state, hud, change } satisfies WorldData);
+    game!.scene.getScene("world").scene.restart({ net, state, hud, change, busy } satisfies WorldData);
   });
   net.on(Op.S_REVIVED, () => {
     state.dead = false;
@@ -269,12 +358,14 @@ function startGame(net: Connection, enterWorld: SEnterWorld): void {
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
     scene: [],
   });
-  game.scene.add("world", WorldScene, true, { net, state, hud, change: enterWorld } satisfies WorldData);
+  game.scene.add("world", WorldScene, true, { net, state, hud, change: enterWorld, busy } satisfies WorldData);
   (window as unknown as { __htkCharWindow: CharWindow }).__htkCharWindow = cw;
+  (window as unknown as { __htkUi: unknown }).__htkUi = { dialog, quests, bag, rite };
 }
 
 setupAuth();
 setupCharacters();
+void loadIcons();
 void (async () => {
   if (await api.refresh().catch(() => false)) await showCharacters();
   else show("auth");

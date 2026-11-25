@@ -260,6 +260,8 @@ export interface MapInfo {
 export interface NpcInfo {
   id: string;
   name: string;
+  /** row of sprites/npc_idle.png */
+  face: number;
   x: number;
   y: number;
 }
@@ -432,6 +434,7 @@ export interface RiteInfo {
 export interface SNpcDialog {
   npcId: string;
   name: string;
+  face: number;
   text: string;
   options: NpcOption[];
   shop?: ShopInfo;
@@ -440,6 +443,8 @@ export interface SNpcDialog {
 export interface SceneLine {
   who: string;
   name: string;
+  /** NPC portrait row; absent for the player */
+  face?: number;
   text: string;
 }
 export interface SScene {

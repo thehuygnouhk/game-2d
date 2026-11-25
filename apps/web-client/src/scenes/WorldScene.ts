@@ -11,7 +11,11 @@ import {
   Op,
   RULES,
   type SDamage,
+  type SBossState,
   type SDropSpawn,
+  type SInstanceState,
+  type SSkillsUpdate,
+  type Telegraph,
   type SEntityDied,
   type SHeal,
   type SInventoryDelta,
@@ -31,7 +35,12 @@ import { RemoteTrack } from "../world/remote";
 const ORIGINS = ["VILLAGER", "NOBLE", "ANCIENT"] as const;
 const GENDERS = ["MALE", "FEMALE"] as const;
 const MOBS = ["MOB001", "MOB002", "MOB003", "MOB004", "MOB005", "MOB006", "MOB007"];
-const lookKey = (a: Appearance) => `p_${a.origin}_${a.gender}_novice`.toLowerCase();
+/** boss sheets: frame size (4 columns: idle, move, attack, die, hurt, skill2 rows) */
+const BOSSES: Record<string, number> = { BOSS001: 160, BOSS001_SHARD: 64, BOSS034: 128, BOSS035: 128, BOSS036: 128 };
+const LOOKS = ["novice", "fire", "water"] as const;
+const lookKey = (a: Appearance, cls?: string | null) =>
+  `p_${a.origin}_${a.gender}_${cls === "FIRE" ? "fire" : cls === "WATER" ? "water" : "novice"}`.toLowerCase();
+const NPC_ORDER_ROWS = 9;
 const FALL_FRAME = 14;
 const RARITY_COLOR: Record<string, string> = { common: "#e8e8e8", good: "#6ee06e", rare: "#5aaeff", epic: "#c58bff" };
 const RARITY_NAME: Record<string, string> = { common: "", good: " (Tốt)", rare: " (Hiếm)", epic: " (Sử Thi)" };
@@ -52,6 +61,25 @@ interface Ent {
   barUntil: number;
   actUntil: number;
   dying: boolean;
+  /** frame height: name plate and bars sit on top */
+  h: number;
+  boss?: boolean;
+}
+interface NpcView {
+  id: string;
+  x: number;
+  y: number;
+  spr: Phaser.GameObjects.Sprite;
+  label: Phaser.GameObjects.Text;
+  mark: Phaser.GameObjects.Text;
+}
+interface ObjView {
+  id: string;
+  x: number;
+  y: number;
+  spr: Phaser.GameObjects.GameObject & { destroy(): void };
+  label: Phaser.GameObjects.Text;
+  until?: number;
 }
 interface DropView {
   id: number;
@@ -73,6 +101,8 @@ export interface WorldData {
   state: GameState;
   hud: Hud;
   change: SMapChange;
+  /** a window has the keyboard */
+  busy?: () => boolean;
 }
 
 /** Gameplay scene (step B2): one map zone, local prediction, remote interpolation, combat feedback. */
@@ -109,6 +139,12 @@ export class WorldScene extends Phaser.Scene {
   private readonly unsubs: (() => void)[] = [];
   /** monsters whose kill gave this player EXP on this map (debug, e2e) */
   private readonly kills: number[] = [];
+  private readonly npcs: NpcView[] = [];
+  private readonly objs: ObjView[] = [];
+  private tele!: Phaser.GameObjects.Graphics;
+  private teles: { t: Telegraph; start: number; end: number }[] = [];
+  /** true while a window has the keyboard (dialog, bag, rite…) */
+  uiBusy: () => boolean = () => false;
   lastError = 0;
 
   constructor() {
@@ -120,6 +156,7 @@ export class WorldScene extends Phaser.Scene {
     this.state = data.state;
     this.hud = data.hud;
     this.change = data.change;
+    this.uiBusy = data.busy ?? (() => false);
     this.ents.clear();
     this.drops.clear();
     this.kills.length = 0;
@@ -128,6 +165,9 @@ export class WorldScene extends Phaser.Scene {
     this.lastWall = 0;
     this.portalWait = 0;
     this.busyUntil = 0;
+    this.npcs.length = 0;
+    this.objs.length = 0;
+    this.teles = [];
   }
 
   preload(): void {
@@ -140,14 +180,24 @@ export class WorldScene extends Phaser.Scene {
     once("items", () => this.load.spritesheet("items", "sprites/items.png", { frameWidth: 32, frameHeight: 32 }));
     if (!this.cache.json.exists("icons")) this.load.json("icons", "sprites/items.json");
     for (const o of ORIGINS)
-      for (const g of GENDERS) {
-        const key = lookKey({ origin: o, gender: g });
-        once(key, () =>
-          this.load.spritesheet(key, `sprites/player/${key.slice(2)}.png`, { frameWidth: 96, frameHeight: 96 }),
-        );
-      }
+      for (const g of GENDERS)
+        for (const look of LOOKS) {
+          const key = lookKey({ origin: o, gender: g }, look === "fire" ? "FIRE" : look === "water" ? "WATER" : null);
+          once(key, () =>
+            this.load.spritesheet(key, `sprites/player/${key.slice(2)}.png`, { frameWidth: 96, frameHeight: 96 }),
+          );
+        }
     for (const id of MOBS)
       once(id, () => this.load.spritesheet(id, `sprites/${id.toLowerCase()}.png`, { frameWidth: 64, frameHeight: 64 }));
+    for (const [id, size] of Object.entries(BOSSES))
+      once(id, () =>
+        this.load.spritesheet(id, `sprites/${id.toLowerCase()}.png`, { frameWidth: size, frameHeight: size }),
+      );
+    once("npc", () => this.load.spritesheet("npc", "sprites/npc_idle.png", { frameWidth: 96, frameHeight: 96 }));
+    once("vfx", () => this.load.spritesheet("vfx", "sprites/vfx_hoa.png", { frameWidth: 96, frameHeight: 96 }));
+    once("vfx_thuy", () =>
+      this.load.spritesheet("vfx_thuy", "sprites/vfx_thuy.png", { frameWidth: 96, frameHeight: 96 }),
+    );
   }
 
   private listen<T>(op: number, fn: (p: T) => void): void {
@@ -203,7 +253,7 @@ export class WorldScene extends Phaser.Scene {
     this.serverSelf = { ...b, f: 1 };
     this.me = new Predictor(this.coll, start);
     this.inputSeq = this.change.ack;
-    this.meKey = lookKey(this.state.appearance);
+    this.meKey = lookKey(this.state.appearance, this.state.cls);
     this.meSpr = this.add
       .sprite(b.x, b.y + 4, this.meKey)
       .setOrigin(0.5, 1)
@@ -213,6 +263,9 @@ export class WorldScene extends Phaser.Scene {
     this.cameras.main.startFollow(this.meSpr, true, 0.15, 0.15);
     this.bars = this.add.graphics().setDepth(45);
     this.arrow = this.add.graphics().setDepth(46);
+    this.tele = this.add.graphics().setDepth(13);
+    for (const n of this.state.npcs) this.addNpc(n.id, n.name, n.face, n.x, n.y);
+    this.refreshObjects();
     for (const e of this.change.entities) this.addEnt(e);
     for (const d of this.change.drops) this.addDrop(d);
     if (this.state.dead) this.meSpr.setTint(0x555566).setAngle(-90);
@@ -230,17 +283,22 @@ export class WorldScene extends Phaser.Scene {
       dn: K.DOWN,
       j: K.J,
       one: K.ONE,
+      two: K.TWO,
+      three: K.THREE,
+      four: K.FOUR,
+      f: K.F,
       q: K.Q,
       e: K.E,
       tab: K.TAB,
     }) as Record<string, Phaser.Input.Keyboard.Key>;
     this.input.keyboard!.addCapture("SPACE,UP,DOWN,LEFT,RIGHT,TAB");
     this.keys.tab!.on("down", () => this.cycleTarget());
+    this.keys.f!.on("down", () => !this.uiBusy() && this.interact());
     for (const k of ["w", "up"]) this.keys[k]!.on("down", () => (this.latch.up = true));
     this.keys.sp!.on("down", () => (this.latch.jump = true));
     this.keys.q!.on("down", () => this.drink("hp"));
     this.keys.e!.on("down", () => this.drink("mp"));
-    this.input.on("pointerdown", (p: Phaser.Input.Pointer) => this.pickAt(p.worldX, p.worldY));
+    this.input.on("pointerdown", (p: Phaser.Input.Pointer) => !this.uiBusy() && this.pickAt(p.worldX, p.worldY));
     this.hud.onChatFocus = (on) => {
       this.input.keyboard!.enabled = !on;
       if (on) this.input.keyboard!.disableGlobalCapture();
@@ -249,7 +307,23 @@ export class WorldScene extends Phaser.Scene {
     };
     this.hud.onAction = (a) => (a === "hp" || a === "mp" ? this.drink(a) : this.cast(a));
 
-    this.listen<EntitySpawn>(Op.S_ENTITY_SPAWN, (e) => this.addEnt(e));
+    this.listen<EntitySpawn>(Op.S_ENTITY_SPAWN, (e) => {
+      const old = this.ents.get(e.id);
+      if (old && e.kind === "player" && old.key !== lookKey(e.appearance, e.cls)) this.removeEnt(e.id); // new class look
+      this.addEnt(e);
+    });
+    this.listen<SBossState>(Op.S_BOSS_STATE, (b) => {
+      const now = performance.now();
+      for (const t of b.telegraphs ?? []) this.teles.push({ t, start: now, end: now + t.ms });
+      if (b.over) this.teles = [];
+    });
+    this.listen<SInstanceState>(Op.S_INSTANCE_STATE, () => this.refreshObjects());
+    this.listen<SSkillsUpdate>(Op.S_SKILLS_UPDATE, () => {
+      this.meKey = lookKey(this.state.appearance, this.state.cls);
+      this.meSpr.setTexture(this.meKey).play(`${this.meKey}_idle`);
+      this.cameras.main.flash(300, 255, 240, 200);
+      this.boom(this.meSpr.x, this.meSpr.y - 30, this.state.cls === "WATER");
+    });
     this.listen<{ ids: number[] }>(Op.S_ENTITY_DESPAWN, (p) => p.ids.forEach((i) => this.removeEnt(i)));
     this.listen<SSnapshot>(Op.S_SNAPSHOT, (s) => this.onSnapshot(s));
     this.listen<SDropSpawn>(Op.S_DROP_SPAWN, (d) => this.addDrop(d));
@@ -261,7 +335,7 @@ export class WorldScene extends Phaser.Scene {
     );
     this.listen<SLevelUp>(Op.S_LEVEL_UP, (l) => {
       this.float(this.meSpr.x, this.meSpr.y - 96, `LÊN CẤP ${l.level}`, "#9eff8a", 22);
-      this.hud.chat("SYSTEM", `Lên cấp ${l.level}! +5 điểm tiềm năng (bản online B2 tự cộng theo gợi ý)`);
+      this.hud.chat("SYSTEM", `Lên cấp ${l.level}! +5 điểm tiềm năng (nhấn C để cộng)`);
       if (l.level === 5) this.hud.chat("SYSTEM", "Mở kỹ năng Tụ Mana Chấn (phím 1)");
     });
     this.listen<SInventoryDelta>(Op.S_INVENTORY_DELTA, (d) => {
@@ -279,7 +353,8 @@ export class WorldScene extends Phaser.Scene {
       this.input.keyboard?.removeAllListeners();
       this.input.removeAllListeners();
     });
-    (window as unknown as { __htk: unknown }).__htk = { scene: this, state: this.state, hud: this.hud };
+    const w = window as unknown as { __htk?: Record<string, unknown> };
+    w.__htk = { ...w.__htk, scene: this, state: this.state, hud: this.hud };
     this.net.release();
   }
 
@@ -309,22 +384,58 @@ export class WorldScene extends Phaser.Scene {
   private makeAnims(): void {
     if (this.anims.exists("MOB001_idle")) return;
     const row = (r: number, n: number, cols = 6) => Array.from({ length: n }, (_, i) => r * cols + i);
-    for (const o of ORIGINS)
-      for (const g of GENDERS) {
-        const key = lookKey({ origin: o, gender: g });
-        for (const [a, r, n, rate, rep] of [
-          ["idle", 0, 4, 6, -1],
-          ["walk", 1, 6, 10, -1],
-          ["attack", 3, 5, 16, 0],
-          ["cast", 4, 6, 14, 0],
-        ] as const)
+    for (let i = 0; i < NPC_ORDER_ROWS; i++)
+      this.anims.create({
+        key: `npc_${i}`,
+        frames: this.anims.generateFrameNumbers("npc", { frames: row(i, 4, 4) }),
+        frameRate: 5,
+        repeat: -1,
+      });
+    for (const [k, tex, fr, rate, rep] of [
+      ["fx_fireball", "vfx", [0, 1, 2, 3], 12, -1],
+      ["fx_boom", "vfx", [4, 5, 6, 7, 8, 9], 16, 0],
+      ["fx_water_proj", "vfx_thuy", [0, 1, 2, 3], 12, -1],
+      ["fx_water_boom", "vfx_thuy", [4, 5, 6, 7, 8, 9], 16, 0],
+    ] as const)
+      this.anims.create({
+        key: k,
+        frames: this.anims.generateFrameNumbers(tex, { frames: [...fr] }),
+        frameRate: rate,
+        repeat: rep,
+      });
+    for (const id of Object.keys(BOSSES))
+      for (const [a, r, n, rate, rep] of [
+        ["idle", 0, 4, 6, -1],
+        ["move", 1, 4, 8, -1],
+        ["attack", 2, 4, 10, 0],
+        ["die", 3, 4, 8, 0],
+        ["hurt", 4, 2, 10, 0],
+        ["skill2", 5, 4, 8, 0],
+      ] as const)
+        if (id !== "BOSS001_SHARD" || r < 5)
           this.anims.create({
-            key: `${key}_${a}`,
-            frames: this.anims.generateFrameNumbers(key, { frames: row(r, n) }),
+            key: `${id}_${a}`,
+            frames: this.anims.generateFrameNumbers(id, { frames: row(r, n, 4) }),
             frameRate: rate,
             repeat: rep,
           });
-      }
+    for (const o of ORIGINS)
+      for (const g of GENDERS)
+        for (const look of LOOKS) {
+          const key = lookKey({ origin: o, gender: g }, look === "fire" ? "FIRE" : look === "water" ? "WATER" : null);
+          for (const [a, r, n, rate, rep] of [
+            ["idle", 0, 4, 6, -1],
+            ["walk", 1, 6, 10, -1],
+            ["attack", 3, 5, 16, 0],
+            ["cast", 4, 6, 14, 0],
+          ] as const)
+            this.anims.create({
+              key: `${key}_${a}`,
+              frames: this.anims.generateFrameNumbers(key, { frames: row(r, n) }),
+              frameRate: rate,
+              repeat: rep,
+            });
+        }
     for (const id of MOBS)
       for (const [a, r, n, rate, rep] of [
         ["idle", 0, 4, 6, -1],
@@ -346,7 +457,7 @@ export class WorldScene extends Phaser.Scene {
     if (e.id === this.state.you || this.ents.has(e.id)) return;
     let ent: Ent;
     if (e.kind === "player") {
-      const key = lookKey(e.appearance);
+      const key = lookKey(e.appearance, e.cls);
       const spr = this.add
         .sprite(e.x, e.y + 4, key)
         .setOrigin(0.5, 1)
@@ -366,9 +477,11 @@ export class WorldScene extends Phaser.Scene {
         barUntil: 0,
         actUntil: 0,
         dying: false,
+        h: 92,
       };
     } else {
       const scale = e.tier === "leader" ? 1.3 : 1;
+      const size = BOSSES[e.templateId] ?? 64;
       const spr = this.add
         .sprite(e.x, e.y + 3, e.templateId)
         .setOrigin(0.5, 1)
@@ -376,8 +489,8 @@ export class WorldScene extends Phaser.Scene {
         .setScale(scale)
         .play(`${e.templateId}_idle`);
       if (e.tier !== "normal") spr.preFX?.addGlow(e.tier === "elite" ? 0xc58bff : 0xffa040, 3, 0, false, 0.1, 10);
-      const prefix = e.tier === "elite" ? "[Tinh anh] " : e.tier === "leader" ? "[Thủ lĩnh] " : "";
-      const color = e.tier === "elite" ? "#c58bff" : e.tier === "leader" ? "#ff8a4a" : "#ffffff";
+      const prefix = e.boss ? "[Boss] " : e.tier === "elite" ? "[Tinh anh] " : e.tier === "leader" ? "[Thủ lĩnh] " : "";
+      const color = e.boss ? "#ff5a5a" : e.tier === "elite" ? "#c58bff" : e.tier === "leader" ? "#ff8a4a" : "#ffffff";
       ent = {
         id: e.id,
         kind: "mob",
@@ -394,7 +507,10 @@ export class WorldScene extends Phaser.Scene {
         barUntil: 0,
         actUntil: 0,
         dying: false,
+        h: size * scale,
+        boss: e.boss,
       };
+      if (e.boss && size > 64) spr.setFlipX(true);
     }
     ent.track.push({ t: performance.now(), ...ent.last });
     this.ents.set(e.id, ent);
@@ -506,13 +622,12 @@ export class WorldScene extends Phaser.Scene {
     if (e.kind === "player") {
       e.spr.play(`${e.key}_${c.skillId === "SKL_BASIC" ? "attack" : "cast"}`, true);
       e.actUntil = performance.now() + (c.skillId === "SKL_BASIC" ? 330 : 440);
-      if (c.skillId === "SKL_BASIC")
-        this.time.delayedCall(110, () => this.slash(e.spr.x, e.spr.y - 30, c.f, 50, 0xffd84a, 6));
-      else this.time.delayedCall(260, () => this.ring(e.spr.x + c.f * RULES.burst.ahead, e.spr.y - 26, 0x7fd1ff));
+      this.skillFx(c.skillId, e.spr.x, e.spr.y, c.f);
       return;
     }
-    e.spr.play(`${e.key}_attack`, true);
-    e.actUntil = performance.now() + 420;
+    const skill2 = e.boss && c.skillId !== "BSKL_MELEE" && this.anims.exists(`${e.key}_skill2`);
+    e.spr.play(`${e.key}_${skill2 ? "skill2" : "attack"}`, true);
+    e.actUntil = performance.now() + (skill2 ? 700 : 420);
     if (c.shot) {
       const shot = c.shot;
       this.time.delayedCall(shot.delayMs, () => {
@@ -648,8 +763,154 @@ export class WorldScene extends Phaser.Scene {
     const basic = id === "SKL_BASIC";
     this.meSpr.play(`${this.meKey}_${basic ? "attack" : "cast"}`, true);
     this.busyUntil = now + (basic ? 330 : 440);
-    if (basic) this.time.delayedCall(110, () => this.slash(this.meSpr.x, this.meSpr.y - 30, f, 50, 0xffd84a, 6));
-    else this.time.delayedCall(260, () => this.ring(this.meSpr.x + f * RULES.burst.ahead, this.meSpr.y - 26, 0x7fd1ff));
+    this.skillFx(id, this.meSpr.x, this.meSpr.y, f);
+  }
+
+  /** what a skill looks like (classes §4: Hỏa Cầu and Thủy Đạn fly 400 px) */
+  private skillFx(id: string, x: number, y: number, f: number): void {
+    const shape = this.state.skill(id)?.shape ?? (id.endsWith("_1") ? "bolt" : id === "SKL_BASIC" ? "melee" : "burst");
+    const water = id.startsWith("SKL_WATER");
+    if (shape === "melee") this.time.delayedCall(110, () => this.slash(x, y - 30, f, 50, 0xffd84a, 6));
+    else if (shape === "burst")
+      this.time.delayedCall(260, () => this.ring(x + f * RULES.burst.ahead, y - 26, 0x7fd1ff));
+    else if (shape === "bolt")
+      this.time.delayedCall(180, () => {
+        const ball = this.add
+          .sprite(x + f * 20, y - 40, water ? "vfx_thuy" : "vfx")
+          .setDepth(22)
+          .setFlipX(f < 0)
+          .play(water ? "fx_water_proj" : "fx_fireball");
+        this.tweens.add({
+          targets: ball,
+          x: ball.x + f * 400,
+          duration: (400 / 520) * 1000,
+          onComplete: () => ball.destroy(),
+        });
+        this.time.addEvent({
+          delay: 30,
+          repeat: 25,
+          callback: () => {
+            if (!ball.active) return;
+            for (const e of this.ents.values())
+              if (
+                e.kind === "mob" &&
+                !e.dying &&
+                Math.abs(e.spr.x - ball.x) < 24 &&
+                Math.abs(e.spr.y - 20 - ball.y) < e.h
+              ) {
+                this.boom(ball.x, ball.y, water);
+                ball.destroy();
+                return;
+              }
+          },
+        });
+      });
+    else
+      this.time.delayedCall(200, () =>
+        this.slash(x, y - 30, f, shape === "slash" ? 80 : 130, water ? 0x7fd1ff : 0xff8a3a, 10),
+      );
+  }
+
+  private boom(x: number, y: number, water: boolean): void {
+    const fx = this.add
+      .sprite(x, y, water ? "vfx_thuy" : "vfx")
+      .setDepth(22)
+      .play(water ? "fx_water_boom" : "fx_boom");
+    fx.once("animationcomplete", () => fx.destroy());
+  }
+
+  /* ---------------- NPCs and map objects (step B4) ---------------- */
+  private addNpc(id: string, name: string, face: number, x: number, y: number): void {
+    const spr = this.add
+      .sprite(x, y + 4, "npc")
+      .setOrigin(0.5, 1)
+      .setDepth(10)
+      .play(`npc_${face}`);
+    const label = this.label(name, "#bff4ff", 12).setPosition(x, y - 84);
+    const mark = this.label("", "#ffd23f", 26).setPosition(x, y - 100);
+    this.tweens.add({ targets: mark, y: y - 106, duration: 600, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
+    spr.setInteractive({ useHandCursor: true });
+    this.npcs.push({ id, x, y, spr, label, mark });
+  }
+
+  private updateMarks(): void {
+    for (const n of this.npcs) {
+      const m = this.state.npcMark(n.id);
+      n.mark.setText(m?.mark ?? "").setColor(m?.dim ? "#9aa2bf" : "#ffd23f");
+    }
+  }
+
+  /** herbs of the current quest, the dungeon chest, the altar of the ceremony hall */
+  refreshObjects(): void {
+    for (const o of this.objs.splice(0)) {
+      o.spr.destroy();
+      o.label.destroy();
+    }
+    const mapId = this.change.map.id;
+    const nodes = this.state.quests.main?.nodes;
+    if (nodes?.mapId === mapId)
+      for (const p of nodes.points) {
+        const frame = Math.max(0, this.icons.indexOf("thao_duoc"));
+        const spr = this.add.sprite(p.x, p.y - 15, "items", frame).setDepth(12);
+        spr.preFX?.addGlow(0x7fe7ff, 3, 0, false, 0.1, 8);
+        this.tweens.add({ targets: spr, y: p.y - 19, duration: 900, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
+        const label = this.label("F: Hái", "#bff4ff", 12)
+          .setPosition(p.x, p.y - 34)
+          .setVisible(false);
+        this.objs.push({ id: p.id, x: p.x, y: p.y, spr, label });
+      }
+    const inst = this.state.instance;
+    if (inst?.mapId === mapId && inst.chest && !inst.chest.opened) {
+      const c = inst.chest;
+      const spr = this.add
+        .sprite(c.x, c.y - 30, "items", Math.max(0, this.icons.indexOf("ruong_tan_thu")))
+        .setScale(2)
+        .setDepth(12);
+      spr.preFX?.addGlow(0xffe08a, 4, 0, false, 0.1, 10);
+      const label = this.label("F: Mở rương", "#ffe08a", 13).setPosition(c.x, c.y - 66);
+      this.objs.push({ id: "CHEST", x: c.x, y: c.y, spr, label });
+    }
+    if (inst?.mapId === mapId && inst.altar) {
+      const a = inst.altar;
+      const g = this.add.graphics().setDepth(5);
+      g.fillStyle(0xffe08a, 0.25).fillEllipse(a.x, a.y - 30, 90, 60);
+      this.tweens.add({ targets: g, alpha: { from: 0.4, to: 1 }, duration: 900, yoyo: true, repeat: -1 });
+      const label = this.label("F: Đài Khai Thư", "#ffe08a", 13).setPosition(a.x, a.y - 70);
+      this.objs.push({ id: "ALTAR", x: a.x, y: a.y, spr: g, label });
+    }
+  }
+
+  private nearNpc(): NpcView | undefined {
+    const b = this.me.body;
+    return this.npcs
+      .filter((n) => Math.abs(n.x - b.x) < 90 && Math.abs(n.y - b.y) < 100)
+      .sort((a, c) => Math.abs(a.x - b.x) - Math.abs(c.x - b.x))[0];
+  }
+  private nearObj(): ObjView | undefined {
+    const b = this.me.body,
+      now = performance.now();
+    return this.objs.find((o) => Math.abs(o.x - b.x) < 60 && Math.abs(o.y - b.y) < 90 && !(o.until && now < o.until));
+  }
+
+  /** F / tap: talk to the nearest NPC, else use the nearest object */
+  interact(): void {
+    if (this.state.dead) return;
+    const o = this.nearObj();
+    const n = this.nearNpc();
+    if (o && (!n || Math.abs(o.x - this.me.body.x) < Math.abs(n.x - this.me.body.x))) {
+      this.net.send(Op.C_USE_OBJECT, { objectId: o.id });
+      if (o.id.startsWith("HERB:")) {
+        o.until = performance.now() + 20_000; // grows back after 20 s (quests §4.1)
+        (o.spr as Phaser.GameObjects.Sprite).setVisible(false);
+        this.time.delayedCall(
+          20_000,
+          () => (o.spr as Phaser.GameObjects.Sprite).active && (o.spr as Phaser.GameObjects.Sprite).setVisible(true),
+        );
+      }
+      return;
+    }
+    if (n) this.net.send(Op.C_NPC_INTERACT, { npcId: n.id });
+    else this.say("Không có ai gần đây");
   }
 
   private drink(kind: "hp" | "mp"): void {
@@ -673,6 +934,12 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private pickAt(x: number, y: number): void {
+    for (const n of this.npcs)
+      if (n.spr.getBounds().contains(x, y)) {
+        if (Math.abs(n.x - this.me.body.x) < 90) this.net.send(Op.C_NPC_INTERACT, { npcId: n.id });
+        else this.say(`Lại gần ${n.label.text} để nói chuyện`);
+        return;
+      }
     for (const e of this.ents.values())
       if (e.kind === "mob" && !e.dying && e.spr.getBounds().contains(x, y)) {
         this.target = this.target === e.id ? null : e.id;
@@ -705,7 +972,7 @@ export class WorldScene extends Phaser.Scene {
     while (this.acc >= TICK_MS) {
       this.acc -= TICK_MS;
       if (this.state.dead || wall < this.portalWait) continue;
-      const inp = this.readInput();
+      const inp = this.uiBusy() ? { dir: 0 as const, jump: false, down: false, up: false } : this.readInput();
       const upEdge = !!inp.up && (!this.prevUp || this.latch.up);
       this.latch.up = this.latch.jump = false;
       this.prevUp = !!inp.up;
@@ -726,9 +993,15 @@ export class WorldScene extends Phaser.Scene {
         tickClient: ++this.tickClient,
       });
     }
-    if (!this.state.dead && this.input.keyboard?.enabled) {
-      if (this.keys.j!.isDown) this.cast("SKL_BASIC");
-      if (this.keys.one!.isDown) this.cast("SKL_MANA_BURST");
+    if (!this.state.dead && this.input.keyboard?.enabled && !this.uiBusy()) {
+      const pressed: Record<string, boolean> = {
+        J: this.keys.j!.isDown,
+        "1": this.keys.one!.isDown,
+        "2": this.keys.two!.isDown,
+        "3": this.keys.three!.isDown,
+        "4": this.keys.four!.isDown,
+      };
+      for (const sk of this.state.skills) if (sk.key && pressed[sk.key]) this.cast(sk.id);
     }
     const k = this.acc / TICK_MS,
       a = this.me.prev,
@@ -756,12 +1029,37 @@ export class WorldScene extends Phaser.Scene {
     }
     this.pickUpNearby(b, wall);
     this.drawBarsAndArrow(wall);
+    this.updateMarks();
+    for (const o of this.objs)
+      if (o.id.startsWith("HERB:"))
+        o.label.setVisible(Math.abs(o.x - b.x) < 70 && Math.abs(o.y - b.y) < 90 && !(o.until && wall < o.until));
+    this.drawTelegraphs(wall);
+  }
+
+  /** boss attack areas fill up until they land (maps §5) */
+  private drawTelegraphs(now: number): void {
+    const g = this.tele;
+    g.clear();
+    this.teles = this.teles.filter((x) => now < x.end + 120);
+    for (const { t, start, end } of this.teles) {
+      const k = Math.min(1, (now - start) / Math.max(1, end - start));
+      const landed = now >= end;
+      g.lineStyle(2, 0xff3b3b, landed ? 1 : 0.8);
+      g.fillStyle(0xff3b3b, landed ? 0.55 : 0.12 + 0.25 * k);
+      if (t.shape === "circle") {
+        g.strokeCircle(t.x, t.y, t.r!);
+        g.fillCircle(t.x, t.y, t.r! * (landed ? 1 : k));
+      } else {
+        g.strokeRect(t.x, t.y, t.w!, t.h!);
+        g.fillRect(t.x, t.y, t.w! * (landed ? 1 : k), t.h!);
+      }
+    }
   }
 
   private poseEnt(e: Ent, st: number, f: number, x: number, y: number): void {
     if (e.kind === "mob") {
       e.spr.setPosition(x, y + 3).setFlipX(f > 0);
-      e.label.setPosition(x, y - 64 * e.scale + 4);
+      e.label.setPosition(x, y - e.h + 4);
       if (performance.now() >= e.actUntil) e.spr.play(`${e.key}_${st === MoveState.RUN ? "move" : "idle"}`, true);
       return;
     }
@@ -799,10 +1097,10 @@ export class WorldScene extends Phaser.Scene {
     const g = this.bars;
     g.clear();
     for (const e of this.ents.values()) {
-      if (e.kind !== "mob" || e.dying || (now > e.barUntil && e.id !== this.target)) continue;
+      if (e.kind !== "mob" || e.dying || e.boss || (now > e.barUntil && e.id !== this.target)) continue;
       const w = 40,
         x = e.spr.x - w / 2,
-        y = e.spr.y - 64 * e.scale + 8;
+        y = e.spr.y - e.h + 8;
       g.fillStyle(0x120e1a, 0.85).fillRect(x - 1, y - 1, w + 2, 6);
       g.fillStyle(0xe53935, 1).fillRect(x, y, (w * e.last.hp) / 255, 4);
     }
@@ -810,7 +1108,7 @@ export class WorldScene extends Phaser.Scene {
     const t = this.targetEnt();
     if (t) {
       const ax = t.spr.x,
-        ay = t.spr.y - 64 * t.scale - 12 + Math.sin(now / 160) * 3;
+        ay = t.spr.y - t.h - 12 + Math.sin(now / 160) * 3;
       this.arrow.fillStyle(0xffd23f, 1).fillTriangle(ax - 7, ay - 9, ax + 7, ay - 9, ax, ay);
       this.arrow.lineStyle(2, 0x3a2a00, 1).strokeTriangle(ax - 7, ay - 9, ax + 7, ay - 9, ax, ay);
     }
@@ -833,6 +1131,9 @@ export class WorldScene extends Phaser.Scene {
         .filter((e) => e.kind === "mob" && !e.dying)
         .map((e) => ({ id: e.id, name: e.name, lv: e.lv, x: e.last.x, y: e.last.y, hp: e.last.hp })),
       drops: [...this.drops.values()].map((d) => ({ id: d.id, x: d.info.x, y: d.info.y, what: d.info.what })),
+      npcs: this.npcs.map((n) => ({ id: n.id, x: n.x, y: n.y, mark: n.mark.text })),
+      objects: this.objs.map((o) => ({ id: o.id, x: o.x, y: o.y })),
+      look: this.meKey,
     };
   }
 }

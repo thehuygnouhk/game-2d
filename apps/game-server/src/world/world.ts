@@ -178,7 +178,7 @@ export class World {
     const s = p.state();
     const npcs = this.quests.npcsOn(p, z.mapId).map((n) => {
       const d = this.content.npcs.get(n.id);
-      return { id: n.id, name: d ? this.content.text(d.nameKey) : n.id, x: n.x, y: n.y };
+      return { id: n.id, name: d ? this.content.text(d.nameKey) : n.id, face: d?.face ?? 0, x: n.x, y: n.y };
     });
     return {
       map: { id: z.mapId, zone: z.zoneNo, name: this.content.text(z.map.nameKey) },

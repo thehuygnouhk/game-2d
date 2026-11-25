@@ -280,7 +280,7 @@ export class Quests {
     if (c.shops.has(npcId)) options.push({ id: "SHOP", label: c.text("dialog.opt_shop") });
     if (npcId === "NPC040") options.push({ id: "SCHEDULE", label: c.text("dialog.opt_schedule") });
     options.push({ id: "CLOSE", label: c.text("dialog.opt_close") });
-    return { npcId, name: c.text(npc.nameKey), text: override ?? text, options: options.slice(0, 6) };
+    return { npcId, name: c.text(npc.nameKey), face: npc.face, text: override ?? text, options: options.slice(0, 6) };
   }
 
   interact(p: Player, npcId: string, refSeq: number): void {
@@ -351,7 +351,6 @@ export class Quests {
     this.event(p, "TALK", q.giver); // meeting the giver on the right map counts (Q_MAIN_05)
     if (q.id === "Q_MAIN_11") p.out.send(Op.S_SCENE, this.scene(p, "Q_MAIN_11"));
     else if (q.id === "Q_MAIN_12") this.w.openCeremony(p);
-    else p.out.send(Op.S_NPC_DIALOG, this.dialog(p, q.giver, this.c.text(q.dialogue.accept)));
   }
 
   /** Rewards and the COMPLETED row in one transaction (CLAUDE.md rule 5), then EXP and the next quest. */
@@ -407,6 +406,7 @@ export class Quests {
       lines: sc.lines.map((l) => ({
         who: l.who,
         name: l.who === "PLAYER" ? p.name : this.npcName(l.who),
+        ...(l.who === "PLAYER" ? {} : { face: this.c.npcs.get(l.who)?.face ?? 0 }),
         text: this.c.text(l.textKey),
       })),
     };
