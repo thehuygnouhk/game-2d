@@ -322,7 +322,9 @@ describe("Chapter 1 online (step B4)", () => {
     ]);
     const card = (await end).chapterEnd!;
     expect(card).toMatchObject({ letter: "Đừng tìm thầy. Hãy tìm Mười Hai Quyển.", className: "Hỏa Kiếm Sĩ" });
-    expect(h.quest()).toMatchObject({ chapterDone: true, done: 12, main: null });
+    // Chapter 1 is over; the chain goes on with Chapter 2 at Bà Mơ (step B5.1)
+    expect(h.quest()).toMatchObject({ chapterDone: false, chapter: 2, done: 0, main: { id: "Q_MAIN_13" } });
+    expect(p.quests.size).toBeGreaterThanOrEqual(12);
     expect(p.bag.equip.tome).toMatchObject({ item: "huyen_thu_so_ban", bound: true, level: 10 });
     const fireSword = p.bag.items.find((i) => i.item === "kiem_lua_tap_su")!;
     c.send(Op.C_UNEQUIP, { slot: "tome" });

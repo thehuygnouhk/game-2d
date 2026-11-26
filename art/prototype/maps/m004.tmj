@@ -5981,7 +5981,7 @@
       {
        "name": "toX",
        "type": "int",
-       "value": 96
+       "value": 112
       },
       {
        "name": "toY",
@@ -8126,11 +8126,11 @@
    "name": "r01",
    "image": "tilesets/r01.png",
    "imagewidth": 512,
-   "imageheight": 864,
+   "imageheight": 1408,
    "tilewidth": 32,
    "tileheight": 32,
    "columns": 16,
-   "tilecount": 432,
+   "tilecount": 704,
    "margin": 0,
    "spacing": 0
   }

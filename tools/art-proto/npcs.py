@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from actors import G, _arrow, _brush, _cane, _fan, _hammer
 from hero import GOLD, LEATHER, SKIN
-from pix import fill, hex_rgb, paint, ramp
+from pix import dirv, fill, hex_rgb, paint, ramp
 
 BOOTS = ramp("#4a3426", light="#6a4c38", outline="#1a110b")
 
@@ -20,6 +20,26 @@ def _notebook(cv, hand, pose):
     m = G.rect(x - 2, y - 6, x + 3, y - 1)
     paint(cv, m, ramp("#6b4a2e", light="#8d6a48", outline="#2a1a0e"), shade=None)
     fill(cv, G.rect(x + 3, y - 5, x + 3, y - 2), hex_rgb("#f3ead2"))
+
+
+def _wind_fan(cv, hand, pose):
+    """Vien Chu Van Tuoc: a teal feather fan of the wind house (Vien Ton)."""
+    x, y = hand
+    fan = G.arc(x, y + 2, 9, 200, 330, 7)
+    paint(cv, fan, ramp("#2ec4b6", light="#a8f0e6", outline="#0e4a44"), shade=None)
+    for a in range(205, 330, 25):
+        dx, dy = dirv(a)
+        fill(cv, G.capsule(x, y + 2, x + dx * 8.5, y + 2 + dy * 8.5, 0.4), hex_rgb("#f2fffc"))
+
+
+def _scroll(cv, hand, pose):
+    """Giam Khao Tuyen Thu: the roll of candidates."""
+    x, y = hand
+    paint(cv, G.rect(x - 2, y - 9, x + 4, y + 4), ramp("#f3ead2", light="#fffaf0", outline="#6b5a3a"), shade=None)
+    for k in range(3):
+        fill(cv, G.rect(x - 1, y - 6 + k * 3, x + 3, y - 6 + k * 3), hex_rgb("#5a4a3a"))
+    for yy in (y - 10, y + 5):
+        paint(cv, G.capsule(x - 3, yy, x + 5, yy, 1.2), ramp("#8a5a2a"), shade=None)
 
 
 NPCS = {
@@ -63,4 +83,17 @@ NPCS = {
         name="Cụ Tiễn", uniform=outfit("tunic", "#56524a", sash="#c1121f", pants="#3a3631"),
         hair=ramp("#bfbfbf", outline="#5a5a5a"), hair_style="topknot", eyes="closed",
         beard=ramp("#d6d6d6", light="#ffffff", outline="#5a5a5a"), beard_len=8, quiver=True, prop=_arrow),
+    # Chapter 2 (step B5.1): appended so the rows of npc_idle.png already used keep their place
+    "NPC011_vien_chu_van_tuoc": dict(
+        name="Viện Chủ Vân Tước", uniform=outfit("robe", ramp("#e8f6f4", light="#ffffff", dark="#b8d8d2"),
+                                                  sash="#1f6f68"),
+        cape=ramp("#1f6f68", light="#2ec4b6", outline="#0a2a28"),
+        hair=ramp("#2a3a4a", light="#4a5e72", outline="#0e141c"), hair_style="long", iris="#2ec4b6",
+        tall=2, prop=_wind_fan),
+    "NPC046_giam_khao_tuyen_thu": dict(
+        name="Giám Khảo Tuyển Thư", uniform=outfit("robe", ramp("#5a2a6a", light="#7a428a", dark="#3a1a48"),
+                                                    sash="#c48a2e"),
+        hair=ramp("#3a3a3a", light="#5a5a5a", outline="#101010"), hair_style="short", iris="#6b4a2e",
+        hat="official", beard=ramp("#4a4a4a", light="#6a6a6a", outline="#1a1a1a"), beard_len=5, tall=0,
+        prop=_scroll),
 }

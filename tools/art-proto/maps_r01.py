@@ -38,11 +38,11 @@ def m001(S):
     B.scatter(["flowers_a", "flowers_b", "grass_tall_a", "fern"], 0.35, seed=1)
     B.scatter(["grass_tall_a", "fern"], 0.08, seed=2, layer="fg", avoid=[(10, 24)])
     B.player_spawn = (B.px(21), B.feet(21))
-    B.npc("NPC001", 13)     # Thay Bach Van, by the school
+    B.npc("NPC001", 13, hide_after="Q_MAIN_12")   # Thay Bach Van, by the school; gone after the ceremony
     B.npc("NPC002", 20)     # Ba Mo
     B.npc("NPC040", 27)     # Cu Truong, village board
-    B.npc("NPC003", 31)     # Lam Nhi
-    B.npc("NPC004", 41)     # Khoi, on the knoll
+    B.npc("NPC003", 31, hide_after="Q_MAIN_13")   # Lam Nhi, until the three friends leave for Thuong Do
+    B.npc("NPC004", 41, hide_after="Q_MAIN_13")   # Khoi, on the knoll
     B.portal("P01", 62, "M002", 0, 0)
     B.safe.append((0, 0, B.w * TS, B.h * TS))
     return B
@@ -87,8 +87,8 @@ def m002(S):
     B.scatter(["flowers_a", "flowers_b", "flowers_a", "grass_tall_a", "fern"], 0.5, seed=3)
     B.scatter(["grass_tall_a", "fern"], 0.1, seed=4, layer="fg")
     B.player_spawn = (B.px(3), B.feet(3))
-    B.npc("NPC003", 25)     # Lam Nhi (quest hub of the meadow)
-    B.npc("NPC004", 70)     # Khoi (Q_MAIN_05 sparring)
+    B.npc("NPC003", 25, hide_after="Q_MAIN_13")   # Lam Nhi (quest hub of the meadow)
+    B.npc("NPC004", 70, hide_after="Q_MAIN_13")   # Khoi (Q_MAIN_05 sparring)
     # level zones left -> right: Lv1-2 Nam Lun, then Lv2-4 Tho Dom
     B.spawn("MOB001", 10, 6, 5, 8, note="khu Lv1-2: Nam Lun")
     B.spawn("MOB001", 12, 2, 2, 8, y_tile=11, note="khu Lv1-2: Nam Lun tren dao co")
@@ -177,7 +177,7 @@ def m004(S):
     B.boss_spawn("BOSS036", 64, "EVT_BOSS_036")
     B.portal("P01", 1, "M003", 0, 0)
     B.portal("P03", 71, "DG01", 0, 0)      # Trang Lac lives only in the DG01 instance
-    B.portal("P02", 78, "M005", 96, 480)   # M005 Thuong Do is outside this prototype
+    B.portal("P02", 78, "M005", 0, 0)      # M005 Thuong Do (step B5.1)
     return B
 
 
@@ -233,7 +233,8 @@ def i001(S):
 
 
 def build_region(S):
-    maps = {B.id: B for B in (m001(S), m002(S), m003(S), m004(S), dg01(S), i001(S))}
+    from maps_r02 import build_chapter2
+    maps = {B.id: B for B in (m001(S), m002(S), m003(S), m004(S), dg01(S), i001(S), *build_chapter2(S))}
     # arrival points: two tiles inside the matching portal of the target map
     for B in maps.values():
         for p in B.portals:

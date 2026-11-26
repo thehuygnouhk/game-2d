@@ -106,7 +106,7 @@ export class DialogBox {
     );
   }
 
-  /** S_SCENE: one line at a time; the Q_MAIN_11 scene reports back, Q_MAIN_12 ends on the chapter card. */
+  /** S_SCENE: one line at a time; a quest scene (report) answers SCENE_DONE, Q_MAIN_12 ends on the chapter card. */
   playScene(s: SScene, sheet: string): void {
     let i = 0;
     const next = () => {
@@ -121,7 +121,8 @@ export class DialogBox {
               return next();
             }
             this.close();
-            if (s.key === "Q_MAIN_11") this.net.send(Op.C_NPC_CHOICE, { npcId: "NPC001", optionId: "SCENE_DONE" });
+            // the server finds the scene from the quest; npcId is only there to fit the message
+            if (s.report) this.net.send(Op.C_NPC_CHOICE, { npcId: "NPC001", optionId: "SCENE_DONE" });
             if (s.chapterEnd) this.chapterEnd(s.chapterEnd);
           },
         },

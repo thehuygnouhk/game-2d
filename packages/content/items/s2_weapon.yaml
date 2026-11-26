@@ -1,0 +1,8 @@
+# prototype item (step A1)
+id: s2_weapon
+type: WEAPON
+nameKey: item.s2_weapon.name
+icon: items/but_thu_lai
+slot: weapon
+set: S2
+levelBand: [10, 19]   # rolled from the monster level

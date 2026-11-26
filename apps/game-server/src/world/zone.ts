@@ -1,4 +1,4 @@
-import type { Dungeon, GameMap, MobSpawn as SpawnDef } from "@htk/content";
+import type { BossSpawn, Dungeon, GameMap, MobSpawn as SpawnDef } from "@htk/content";
 import {
   AOI_CELL,
   type Body,
@@ -75,6 +75,8 @@ export class Zone {
   readonly shots: Shot[] = [];
   readonly pshots: PlayerShot[] = [];
   private readonly slots: SpawnSlot[];
+  /** field bosses of this zone (maps §5, step B5.1): the one standing, or when it comes back */
+  private readonly fieldBosses: { at: BossSpawn; mob: Mob | null; respawnAt: number }[] = [];
 
   constructor(
     readonly world: World,
@@ -86,6 +88,9 @@ export class Zone {
   ) {
     this.slots = map.mobSpawns.map((def) => ({ def, alive: 0, respawnAt: [] }));
     for (const s of this.slots) for (let i = 0; i < s.def.count; i++) this.spawnMob(s, 0);
+    if (!inst)
+      for (const at of map.bossSpawns)
+        if (at.respawnMin && world.content.bosses.has(at.boss)) this.fieldBosses.push({ at, mob: null, respawnAt: 0 });
   }
 
   get key(): string {
@@ -250,6 +255,32 @@ export class Zone {
           this.spawnMob(s, now);
         }
     for (const d of this.drops.values()) if (now >= d.expiresAt) this.drops.delete(d.id);
+    for (const fb of this.fieldBosses)
+      if (!fb.mob && now >= fb.respawnAt) {
+        const def = this.world.content.bosses.get(fb.at.boss)!;
+        fb.mob = spawnBoss(this, def, fb.at, "FIELD");
+        if (fb.respawnAt > 0)
+          this.chatAll(
+            "SYSTEM",
+            this.world.content.text("boss_msg.field_spawn", {
+              boss: fb.mob.name,
+              map: this.world.content.text(this.map.nameKey),
+            }),
+          );
+      }
+  }
+
+  /** A field boss fell: it comes back after respawnMin minutes (maps §5, step B5.1). */
+  fieldBossDown(m: Mob, now: number): void {
+    const fb = this.fieldBosses.find((x) => x.mob === m);
+    if (!fb) return;
+    fb.mob = null;
+    fb.respawnAt = now + (fb.at.respawnMin ?? 3) * 60_000;
+  }
+
+  /** The field boss standing in this zone, if any (tests, logs). */
+  fieldBoss(id: string): Mob | null {
+    return this.fieldBosses.find((x) => x.at.boss === id)?.mob ?? null;
   }
 
   private move(p: Player): void {
@@ -367,7 +398,9 @@ export class Zone {
       ...(telegraphs ? { telegraphs } : {}),
       ...(over ? { over: true } : {}),
     };
-    for (const p of this.players.values()) p.out.send(Op.S_BOSS_STATE, st);
+    // a field boss is one fight among many on the map: only those who see it get its bar (the end goes to all)
+    const to = run.kind === "FIELD" && !over ? this.observers(m.id) : this.players.values();
+    for (const p of to) p.out.send(Op.S_BOSS_STATE, st);
   }
 
   /** The class look changed: everyone who sees the player gets the new spawn info. */

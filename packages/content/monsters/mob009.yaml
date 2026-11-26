@@ -1,0 +1,19 @@
+# Lun Cuop Dong: bi danh thi goi dong bon (prototype)
+id: MOB009
+nameKey: mob.mob009.name
+level: [11, 14]
+element: EARTH
+kind: NORMAL
+sprite: monsters/mob009
+size: { w: 36, h: 52 }
+ai:
+  type: PACK
+  aggroRange: 0
+  leash: 600
+  moveSpeed: 60
+  attackRange: 40
+  attackCooldownMs: 1600
+  callRange: 220                       # PACK: monsters of the same kind this close join the fight
+skills: [ MOBSKL_CLUB ]
+drops: DROP_R03_BASIC
+exp: formula                 # 8L + 10 (combat section 2.1)

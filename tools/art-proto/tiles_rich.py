@@ -942,6 +942,150 @@ def boss_altar(S, name):
         put(cv, x0 + 20 + k * 12, y0 + 40 - (k % 3) * 9, hex_rgb("#ffffff"))
 
 
+# ---------------------------------------------------------------- Chapter 2: Thuong Do (R02), Dong Bang (R03)
+
+PAVE = pal("#262430", "#4e4a5a", "#6c6878", "#8a8696", "#a8a4b4", "#cac6d4")         # cut granite of the capital
+PAVE_DEEP = pal("#1c1a24", "#3a3644", "#4e4a5a", "#625e70", "#787488", "#8e8a9e")
+ROYAL_ROOF = pal("#0c1430", "#16245a", "#203482", "#2c48a8", "#4466c8", "#7090e0")  # royal blue slate (art §5 R02)
+OCHRE_ROOF = pal("#2a1606", "#5e3410", "#86501a", "#a86c24", "#c88c34", "#e4b050")
+RICE = pal("#2a3a0a", "#4a6a14", "#6a8e1e", "#8cb02c", "#b0cc48", "#d8e878")
+RICE_RIPE = pal("#4a3a0a", "#8a6a14", "#b08a1e", "#d0aa30", "#e8c850", "#fff08a")
+
+
+def _paving(cv, g, x0, y0, p):
+    """Cobbled top of the capital's paving: rounded setts in two staggered rows."""
+    for row, oy in enumerate((2, 7)):
+        for k in range(-1, 5):
+            sx = x0 + k * 8 + (4 if row else 0)
+            m = g.ellipse(sx + 3.5, y0 + oy + 1.5, 3.4, 2.2) & g.rect(x0, y0, x0 + T - 1, y0 + T - 1)
+            fill(cv, m, p[4])
+            fill(cv, m & (g.py > y0 + oy + 2), p[3])
+            put(cv, sx + 2, y0 + oy, p[5])
+
+
+def pave_set(S, prefix, base, deep, seed):
+    """Stone terrain of the capital (same 14 tiles as cliff_set): granite blocks with a cobbled top."""
+    combos = [("tl", 1, 1, 0, 0), ("t", 1, 0, 0, 0), ("tr", 1, 0, 1, 0), ("l", 0, 1, 0, 0), ("m", 0, 0, 0, 0),
+              ("r", 0, 0, 1, 0), ("bl", 0, 1, 0, 1), ("b", 0, 0, 0, 1), ("br", 0, 0, 1, 1),
+              ("tlr", 1, 1, 1, 0), ("tb", 1, 0, 0, 1), ("tlb", 1, 1, 0, 1), ("trb", 1, 0, 1, 1)]
+    for k, (n, t, lft, rgt, btm) in enumerate(combos):
+        sx0, sy0 = S.alloc(f"{prefix}_{n}")
+        cv, g = canvas(T + 2, T + 2), Grid(T + 2, T + 2)
+        body = g.rect(1, 1, T, T)
+        wall_top = 1 + (12 if t else 0)
+        ashlar(cv, g, body & (g.py >= wall_top), base, 1, wall_top, T, T, block_w=16, block_h=10, seed=seed + k)
+        if t:   # cobbled walking surface, then the kerb line
+            fill(cv, g.rect(1, 1, T, 11), base[2])
+            _paving(cv, g, 1, 1, base)
+            fill(cv, g.rect(1, 11, T, 12), base[1])
+            fill(cv, g.rect(1, 1, T, 1), base[0])
+        if lft:
+            fill(cv, g.rect(1, 1, 2, T), base[4])
+            fill(cv, g.rect(1, 1, 1, T), base[0])
+        if rgt:
+            fill(cv, g.rect(T - 2, 1, T, T), base[1])
+            fill(cv, g.rect(T, 1, T, T), base[0])
+        if btm:
+            fill(cv, g.rect(1, T - 2, T, T), base[1])
+            fill(cv, g.rect(1, T, T, T), base[0])
+        S.cv[sy0:sy0 + T, sx0:sx0 + T] = cv[1:T + 1, 1:T + 1]
+    cliff_tile(S, f"{prefix}_deep", base, None, seed=seed + 99, fill_pal=deep)
+
+
+def guard_hall(S, name, w=12, h=10, seed=21):
+    """Tong Duong Phap Ve: wide granite hall, columned porch, double door, royal blue roof with a gold ridge."""
+    x0, y0 = S.alloc(name, w, h)
+    cv, g = S.cv, S.g
+    W, H = w * T, h * T
+    base = y0 + H - 1
+    top = y0 + 120
+    hx0, hx1 = x0 + 12, x0 + W - 13
+    hall = g.rect(hx0, top, hx1, base)
+    ashlar(cv, g, hall, PAVE, hx0, top, hx1, base, block_w=16, block_h=9, seed=seed)
+    fill(cv, dilate4(hall) & ~hall, PAVE[0])
+    cx = (hx0 + hx1) / 2
+    steps = g.rect(cx - 60, base - 8, cx + 60, base)
+    vol(cv, steps, PAVE, shadow=1, light=1)
+    fill(cv, g.rect(cx - 60, base - 4, cx + 60, base - 4), PAVE[2])
+    porch = g.rect(cx - 56, top + 34, cx + 56, base - 9)
+    fill(cv, porch, PAVE[1])
+    for k in range(5):   # columns of the porch
+        px = cx - 52 + k * 26
+        col = g.rect(px, top + 40, px + 7, base - 9)
+        vol(cv, col, PAVE, shadow=1, light=2, dirs=((1, 0), (-1, 0)))
+        vol(cv, g.rect(px - 2, top + 36, px + 9, top + 40), GOLD, shadow=1, light=1)
+    door_arch(cv, g, cx, base - 8, w=26, h=44, double=True)
+    for wx in (hx0 + 14, hx1 - 30):
+        arch_window(cv, g, wx, top + 60, 16, 30)
+    for bx in (hx0 + 40, hx1 - 56):
+        banner(cv, g, bx, top + 46, 40)
+    pedi = g.poly([(cx - 64, top + 34), (cx, top + 4), (cx + 64, top + 34)])
+    vol(cv, pedi, PAVE, shadow=1, light=1)
+    fill(cv, g.disc(cx, top + 22, 7), GOLD[3])
+    fill(cv, g.disc(cx, top + 22, 5), hex_rgb("#f6efdc"))
+    book = g.poly([(cx - 4, top + 21), (cx, top + 23), (cx + 4, top + 21), (cx + 4, top + 24), (cx, top + 26), (cx - 4, top + 24)])
+    fill(cv, book, GOLD[2])
+    roof_m = g.poly([(hx0 - 8, top + 4), (hx0 + 30, y0 + 30), (hx1 - 30, y0 + 30), (hx1 + 8, top + 4)])
+    fish_scale_roof(cv, g, roof_m & ~pedi, ROYAL_ROOF, hx0 - 8, y0 + 30, hx1 + 8, top + 4)
+    fill(cv, g.rect(hx0 + 30, y0 + 28, hx1 - 30, y0 + 31), GOLD[3])
+    for tx in (hx0 + 30, hx1 - 30):
+        spire = g.poly([(tx - 6, y0 + 32), (tx, y0 + 6), (tx + 6, y0 + 32)])
+        vol(cv, spire, GOLD, shadow=1, light=1)
+    mast = g.rect(cx - 0.5, y0 + 2, cx, y0 + 30)
+    fill(cv, mast, IRON[3])
+    flag = g.poly([(cx + 1, y0 + 3), (cx + 18, y0 + 7), (cx + 1, y0 + 12)])
+    vol(cv, flag, ROYAL_ROOF, shadow=1, light=1)
+    put(cv, cx + 6, y0 + 7, GOLD[5])
+
+
+def rice(S, name, p, seed=0):
+    """A row of rice stalks with drooping grain heads (paddy decor)."""
+    x0, y0 = S.alloc(name)
+    cv, g = S.cv, S.g
+    rng = np.random.default_rng(seed)
+    m = np.zeros(cv.shape[:2], bool)
+    heads = []
+    for k in range(8):
+        bx = x0 + 2 + k * 4 + rng.integers(0, 2)
+        h = rng.integers(16, 25)
+        lean = rng.integers(-2, 3)
+        m |= g.poly([(bx - 1, y0 + 32), (bx + lean, y0 + 31 - h), (bx + 1, y0 + 32)])
+        heads.append((bx + lean, y0 + 31 - h))
+    vol(cv, m, RICE, shadow=1, light=1, dirs=((1, 0), (-1, 0)))
+    for hx, hy in heads:
+        grain = g.ellipse(hx + 2, hy + 3, 1.6, 3.4)
+        vol(cv, grain, p, shadow=1, light=1, outline=False)
+
+
+def scarecrow(S, name):
+    x0, y0 = S.alloc(name, 1, 2)
+    cv, g = S.cv, S.g
+    post = g.rect(x0 + 15, y0 + 14, x0 + 17, y0 + 63)
+    vol(cv, post, WOOD, shadow=1, light=1)
+    arms = g.rect(x0 + 3, y0 + 26, x0 + 29, y0 + 28)
+    vol(cv, arms, WOOD, shadow=1, light=1)
+    coat = g.poly([(x0 + 8, y0 + 24), (x0 + 24, y0 + 24), (x0 + 26, y0 + 46), (x0 + 6, y0 + 46)])
+    vol(cv, coat, pal("#2a1a12", "#5a3424", "#7a4a30", "#9a6440", "#b88050", "#d4a070"), shadow=1, light=1)
+    for k in range(3):
+        put(cv, x0 + 10 + k * 6, y0 + 46 + (k % 2), RICE[4])
+    head = g.disc(x0 + 16, y0 + 16, 6)
+    vol(cv, head, pal("#5a3f10", "#a8782a", "#c8962e", "#e2b84a", "#f4d478", "#fff0b0"), shadow=1, light=1)
+    hat = g.poly([(x0 + 4, y0 + 12), (x0 + 16, y0 + 1), (x0 + 28, y0 + 12)])
+    vol(cv, hat, pal("#3a2a0a", "#7a5a1a", "#9a7424", "#ba9030", "#d4ac48", "#ecc870"), shadow=1, light=1)
+    put(cv, x0 + 14, y0 + 16, hex_rgb("#160f1c"))
+    put(cv, x0 + 18, y0 + 16, hex_rgb("#160f1c"))
+
+
+def banner_pole(S, name):
+    """Free-standing pole with the kingdom banner (capital streets)."""
+    x0, y0 = S.alloc(name, 1, 3)
+    cv, g = S.cv, S.g
+    pole = g.rect(x0 + 6, y0 + 2, x0 + 8, y0 + 95) | g.rect(x0 + 3, y0 + 90, x0 + 11, y0 + 95)
+    vol(cv, pole, IRON, shadow=1, light=1)
+    fill(cv, g.disc(x0 + 7, y0 + 3, 2.4), GOLD[4])
+    banner(cv, g, x0 + 9, y0 + 12, 40)
+
+
 def build_r01():
     S = Sheet(rows=48)
     cliff_set(S, "grass", EARTH, EARTH_DEEP, GRASS, seed=1)
@@ -981,4 +1125,14 @@ def build_r01():
     windmill(S, "windmill", 5, 8)
     haystack(S, "haystack")
     boss_altar(S, "boss_altar")
+    # Chapter 2 (step B5.1). Appended after the R01 tiles so their ids in the R01 maps never move.
+    pave_set(S, "pave", PAVE, PAVE_DEEP, seed=70)
+    town_house(S, "house_c", 6, 8, roof=ROYAL_ROOF, shutter=pal("#3a2a08", "#6a4a10", "#9a6e1a", "#c4922a", "#e0b448", "#f6d880"),
+               sign_rgb=hex_rgb("#2c48a8"), seed=3)
+    town_house(S, "house_d", 5, 7, roof=OCHRE_ROOF, seed=4)
+    guard_hall(S, "hall", 12, 10)
+    banner_pole(S, "banner_pole")
+    rice(S, "rice_a", RICE, seed=1)
+    rice(S, "rice_b", RICE_RIPE, seed=2)
+    scarecrow(S, "scarecrow")
     return S.finish()

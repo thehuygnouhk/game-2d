@@ -134,6 +134,7 @@ export const RULES = {
   mobKnockback: 90, // px/s during the stagger
   mobMeleeWindupMs: 220,
   mobMeleeHit: 56, // px: a melee swing still hits within this distance after the windup
+  mobChargeStop: 30, // px: a charging monster (ai.charge) stops this far from its target
   mobShotWindupMs: 250,
   shotSpeed: 260, // px/s
   shotRange: 260, // px

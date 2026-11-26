@@ -35,13 +35,20 @@ import { RemoteTrack } from "../world/remote";
 
 const ORIGINS = ["VILLAGER", "NOBLE", "ANCIENT"] as const;
 const GENDERS = ["MALE", "FEMALE"] as const;
-const MOBS = ["MOB001", "MOB002", "MOB003", "MOB004", "MOB005", "MOB006", "MOB007"];
+const MOBS = ["MOB001", "MOB002", "MOB003", "MOB004", "MOB005", "MOB006", "MOB007", "MOB008", "MOB009"];
 /** boss sheets: frame size (4 columns: idle, move, attack, die, hurt, skill2 rows) */
-const BOSSES: Record<string, number> = { BOSS001: 160, BOSS001_SHARD: 64, BOSS034: 128, BOSS035: 128, BOSS036: 128 };
+const BOSSES: Record<string, number> = {
+  BOSS001: 160,
+  BOSS001_SHARD: 64,
+  BOSS034: 128,
+  BOSS035: 128,
+  BOSS036: 128,
+  BOSS002: 128,
+};
 const LOOKS = ["novice", "fire", "water"] as const;
 const lookKey = (a: Appearance, cls?: string | null) =>
   `p_${a.origin}_${a.gender}_${cls === "FIRE" ? "fire" : cls === "WATER" ? "water" : "novice"}`.toLowerCase();
-const NPC_ORDER_ROWS = 9;
+const NPC_ORDER_ROWS = 11; // rows of sprites/npc_idle.png (tools/art-proto/npcs.py order)
 const FALL_FRAME = 14;
 const RARITY_COLOR: Record<string, string> = { common: "#e8e8e8", good: "#6ee06e", rare: "#5aaeff", epic: "#c58bff" };
 const RARITY_NAME: Record<string, string> = { common: "", good: " (Tốt)", rare: " (Hiếm)", epic: " (Sử Thi)" };

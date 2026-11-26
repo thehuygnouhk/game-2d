@@ -90,11 +90,55 @@ quest:
     accept: "Huyền Thư đang chờ con. Theo thầy vào lễ đường."
     progress: "Đài Khai Thư ở giữa lễ đường. Lại gần rồi nhấn F."
     complete: ""
+  main.13:
+    title: "Lá Thư Để Lại"
+    objectives:
+      - "Đọc lá thư của Thầy cùng Bà Mơ, Lam Nhi và Khôi"
+    accept: "Thầy để lại lá thư trên bàn. Gọi Lam Nhi với Khôi vào đây, cả nhà mình cùng đọc."
+    progress: "Bà đang đợi ở nhà học, lá thư vẫn nằm trên bàn."
+    complete: "Bà gói ít bánh với mấy bình thuốc rồi đây. Lên tới Thượng Đô thì nhớ viết thư về."
+    where:
+      - "Nhà Học Suối Mơ, cùng Bà Mơ"
+  main.14:
+    title: "Lên Thượng Đô"
+    objectives:
+      - "Gặp Viện Chủ Vân Tước ở Thượng Đô"
+      - "Ghi danh với Giám Khảo Tuyển Thư"
+    accept: "Lên Thượng Đô thì chào Viện Chủ Vân Tước ở quảng trường trước, rồi vào Tổng Đường Pháp Vệ ghi danh Mùa Tuyển Thư."
+    progress: "Thượng Đô ở sau cổng cuối Hang Giếng Cạn. Tổng Đường là cổng giữa hai cột cờ."
+    complete: "Tên, quê quán, hệ phép… Được rồi, ghi danh xong. Vòng 1 bắt đầu ngay ngoài đồng lúa."
+    talk.npc011: "Học trò của Bạch Vân à? Ta có nghe danh thầy con. Vào Tổng Đường ghi danh đi, ta sẽ để mắt tới con."
+    talk.npc046: "Thí sinh mới? Đọc tên đi. Hệ phép gì? Ừm… xong, đứng sang bên kia."
+    where:
+      - "Thượng Đô · trên quảng trường"
+      - "Tổng Đường Pháp Vệ · cổng giữa hai cột cờ ở Thượng Đô"
+  main.15:
+    title: "Vòng 1: Tìm Sách"
+    objectives:
+      - "Hạ Lợn Rừng Đồng"
+      - "Đòi lại Trang Sách Thất Lạc"
+    accept: "Vòng 1: lợn rừng phá ruộng, còn lũ Lùn Cướp Đồng nhét trang sách đề thi vào bao. Hạ mười lăm con lợn, gom đủ mười trang."
+    progress: "Đồng Lúa ở cổng phải Thượng Đô. Đánh một con Lùn Cướp Đồng là cả bọn xông ra, cẩn thận."
+    complete: "Mười trang, không sót trang nào. Đề thi năm nay suýt thành giấy gói xôi. Thí sinh này được đấy."
+  main.16:
+    title: "Vòng 1: Lợn Rừng Chúa"
+    objectives:
+      - "Hạ Lợn Rừng Chúa"
+    accept: "Phần cuối Vòng 1: Lợn Rừng Chúa ngự trên bờ đê giữa đồng. Hạ nó, một mình hay cùng bạn đều được."
+    progress: "Lợn Rừng Chúa húc theo đường thẳng, có vùng báo hiệu đỏ. Thấy vùng đỏ thì nhảy hoặc tránh sang bên."
+    complete: "Hạ được Lợn Rừng Chúa rồi à? Vòng 1 đậu! Vòng 2 cần chuẩn bị thêm, xong ta sẽ gọi."
+    where:
+      - "Đồng Lúa Lục Nguyên · bờ đê giữa đồng, hồi sinh 3 phút sau khi bị hạ"
+  wait.1: "Hết Chương 1. Bà Mơ đang đợi ở nhà học."
+  wait.2: "Vòng 1 Mùa Tuyển Thư đã xong. Vòng 2 (Bóng Giám Khảo) mở ở bản cập nhật sau."
+  chapter.1: "Chương 1: Làng Suối Mơ"
+  chapter.2: "Chương 2: Thượng Đô"
 item:
   cu_cai_non.name: "Củ Cải Non"
   thao_duoc.name: "Thảo Dược Suối Mơ"
   bao_tai.name: "Bao Tải Bị Lấy"
   manh_trang.name: "Mảnh Trang"
+  trang_sach.name: "Trang Sách Thất Lạc"
   potion_hp.name: "Bình HP Nhỏ"
   potion_hp_m.name: "Bình HP Vừa"
   potion_mp.name: "Bình MP Nhỏ"
@@ -111,6 +155,12 @@ item:
   huyen_thu_so_ban.name: "Huyền Thư Sơ Bản"
   kiem_lua_tap_su.name: "Kiếm Lửa Tập Sự"
   truong_thuy_tap_su.name: "Trượng Thủy Tập Sự"
+  s2_weapon.name: "Bút Thư Lại"
+  s2_hat.name: "Mũ Thư Lại"
+  s2_armor.name: "Áo Thư Lại"
+  s2_boots.name: "Giày Thư Lại"
+  mu_thi_sinh.name: "Mũ Thí Sinh"
+  giay_thi_sinh.name: "Giày Thí Sinh"
 scene:
   q_main_11.1: "Ngồi xuống đây cả ba. Mai là Lễ Khai Thư rồi."   # NPC001
   q_main_11.2: "Con hồi hộp quá thầy ạ. Lỡ Huyền Thư của con chẳng chịu mở thì sao?"   # NPC003
@@ -121,6 +171,12 @@ scene:
   q_main_12.1: "Huyền Thư đã nhận con. Từ nay con tự viết đường đi của mình."   # NPC001
   q_main_12.2: "Thầy còn vài trang sách cũ phải đi tìm lại. Đừng lo cho thầy."   # NPC001
   letter: "Đừng tìm thầy. Hãy tìm Mười Hai Quyển."
+  q_main_13.1: "Thư thầy để lại đây. Chữ vẫn nghiêng nghiêng như mọi khi."   # NPC002
+  q_main_13.2: "“Đừng tìm thầy. Hãy tìm Mười Hai Quyển.” Mười Hai Quyển là gì vậy bà?"   # NPC003
+  q_main_13.3: "Bà chỉ nghe kể thôi. Muốn biết thật thì phải lên Thượng Đô, nơi Pháp Vệ Đoàn giữ hồ sơ."   # NPC002
+  q_main_13.4: "Mùa Tuyển Thư của Pháp Vệ Đoàn sắp mở. Đậu thì được vào thư khố."   # NPC004
+  q_main_13.5: "Vậy mình cùng đi. Thầy bảo đừng tìm thầy, chứ đâu có cấm tìm sách."   # PLAYER
+  q_main_13.6: "Đi đường cẩn thận. Hết Hang Giếng Cạn là tới đường lên Thượng Đô."   # NPC002
 origin:
   villager.name: "Dân Làng"
   villager.passive: "Không Lùi Bước: Khi HP dưới 30%: +15% ATK và DEF trong 8 giây (hồi 60 giây)"
@@ -172,12 +228,15 @@ mob:
   mob005.name: "Nhện Mực"
   mob006.name: "Dơi Giếng"
   mob007.name: "Rùa Đá Giếng"
+  mob008.name: "Lợn Rừng Đồng"
+  mob009.name: "Lùn Cướp Đồng"
 boss:
   boss001.name: "Trang Lạc"
   boss034.name: "Vua Nấm Lùn"
   boss035.name: "Chó Rừng Đầu Đàn"
   boss036.name: "Dơi Chúa Giếng"
   boss001_shard.name: "Mảnh Trang"
+  boss002.name: "Lợn Rừng Chúa"
 map:
   dg01.name: "Hầm Ngục Hang Giếng Cạn"
   i001.name: "Lễ Đường Khai Thư"
@@ -185,6 +244,10 @@ map:
   m002.name: "Đồng Hoa Suối Mơ"
   m003.name: "Rừng Mơ Non"
   m004.name: "Hang Giếng Cạn"
+  m005.name: "Thượng Đô"
+  m008.name: "Tổng Đường Pháp Vệ"
+  m009.name: "Đồng Lúa Lục Nguyên"
+  m010.name: "Đồi Cối Xay Gió"
 npc:
   npc001.name: "Thầy Bạch Vân"
   npc001.line: "Mỗi trang sách đều có chỗ của nó. Đi săn cẩn thận nhé."
@@ -196,6 +259,14 @@ npc:
   npc004.line: "Ra Đồng Hoa đi, Vua Nấm Lùn hay xuất hiện ở đó lắm."
   npc040.name: "Cụ Trương"
   npc040.line: "Lịch boss dán trên bảng tin làng đây, xem đi con."
+  npc005.name: "Chấp Bút Hạc Minh"
+  npc005.line: "Khò… Hả? Ta không ngủ đâu, ta đang đọc sách bằng mắt nhắm thôi."
+  npc011.name: "Viện Chủ Vân Tước"
+  npc011.line: "Gió Thượng Đô đổi hướng nhanh lắm. Đi đâu cũng nhớ nhìn đường."
+  npc046.name: "Giám Khảo Tuyển Thư"
+  npc046.line: "Mùa Tuyển Thư năm nay ba vòng. Ai muốn ghi danh thì xếp hàng."
+  npc003.line_m005: "Thượng Đô cái gì cũng đắt! May mà mình mang theo nồi chế thuốc. Mua bình không?"
+  npc004.line_m009: "Lợn rừng ở đây húc đau hơn chó rừng nhiều. Thấy nó cúi đầu là nhảy lên né."
 # lines the server puts together in NPC dialogs (step B4)
 dialog:
   ready: "Xong rồi à? Để ta xem nào…"
@@ -209,6 +280,7 @@ dialog:
   opt_ceremony: "Vào lễ đường"
   opt_altar: "Đặt tay lên Đài Khai Thư"
   opt_rite: "Đổi hệ phép (miễn phí trong 24 giờ)"
+  opt_scene: "Ngồi nghe tiếp câu chuyện"
   opt_close: "Đóng"
   schedule_head: "Lịch boss hôm nay (giờ Việt Nam):"
   schedule_live: "{boss} Lv{lv} · {map} · ĐANG XUẤT HIỆN ở khu {zone}"
@@ -226,3 +298,5 @@ boss_msg:
   wake: "Trang Lạc thức dậy từ những trang giấy bị xóa!"
   dg_down: "Đã hạ Trang Lạc! Mở Rương Tân Thủ rồi ra cổng bên phải."
   dg_timeout: "Hết giờ hầm ngục. Bạn được đưa về cổng."
+  field_spawn: "{boss} lại xuất hiện ở {map}!"
+  field_reset: "{boss} không còn ai để đánh, quay về bờ đê và hồi lại sức."

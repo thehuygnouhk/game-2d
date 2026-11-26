@@ -1,0 +1,8 @@
+# prototype item (step A1)
+id: giay_thi_sinh
+type: ARMOR
+nameKey: item.giay_thi_sinh.name
+icon: items/giay_thu_lai
+slot: boots
+levelReq: 12
+rarity: good

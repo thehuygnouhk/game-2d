@@ -182,8 +182,18 @@ MOB_DATA = {
     "MOB005": ([6, 7], "DARK", "NORMAL", "AGGRESSIVE", 200, 60, ["MOBSKL_INK_SPIT"], 52, 32, "Nhen Muc: gay Doc nhe"),
     "MOB006": ([7, 8], "DARK", "NORMAL", "AGGRESSIVE", 220, 80, ["MOBSKL_DIVE"], 44, 36, "Doi Gieng: bay, lao xuong"),
     "MOB007": ([8, 9], "EARTH", "NORMAL", "AGGRESSIVE", 140, 30, ["MOBSKL_SHELL_BASH"], 56, 34, "Rua Da Gieng: DEF cao"),
+    # Chapter 2, region R03 (step B5.1)
+    "MOB008": ([10, 12], "EARTH", "NORMAL", "AGGRESSIVE", 170, 70, ["MOBSKL_CHARGE"], 54, 38, "Lon Rung Dong: hich dau lao toi"),
+    "MOB009": ([11, 14], "EARTH", "NORMAL", "PACK", 0, 60, ["MOBSKL_CLUB"], 36, 52, "Lun Cuop Dong: bi danh thi goi dong bon"),
 }
 RANGED_MOBS = ("MOB004", "MOB005")
+R01_MOBS = ("MOB001", "MOB002", "MOB003", "MOB004", "MOB005", "MOB006", "MOB007")
+# extra AI lines (combat section 5.2, step B5.1): MOB008 charges at its target, MOB009 calls its pack when hit
+MOB_EXTRA = {
+    "MOB008": "  charge: { speed: 300, dist: 110 }   # rushes this far at this speed before the hit lands",
+    "MOB009": "  callRange: 220                       # PACK: monsters of the same kind this close join the fight",
+}
+MOB_DROPS = {"MOB008": "DROP_R03_BASIC", "MOB009": "DROP_R03_BASIC"}
 BOSS_DATA = {
     # id: (level, element, kind, hp_mult_note, skills, w, h, where, note)
     "BOSS001": (9, "NONE", "MINIBOSS", ["BSKL_PAGE_SWIPE", "BSKL_PAGE_STORM", "BSKL_TEAR_APART"], 110, 140,
@@ -194,7 +204,10 @@ BOSS_DATA = {
                 "Cho Rung Dau Dan: hu goi 2 Cho Rung Non; lao can co vung bao hieu"),
     "BOSS036": (10, "DARK", "BOSS", ["BSKL_DIVE_CIRCLE", "BSKL_CRYSTAL_WING"], 120, 90, "M004 (theo gio)",
                 "Doi Chua Gieng: bay cao, sa xuong theo vong tron bao hieu"),
+    "BOSS002": (12, "EARTH", "MINIBOSS", ["BSKL_LUNGE", "BSKL_STOMP_WAVE"], 100, 76, "M009 (boss khu vuc, hoi sinh 3 phut)",
+                "Lon Rung Chua: huc theo duong thang co vung bao hieu, dam dat; goi 2 Lon Rung Dong o 50% HP"),
 }
+BOSS_DROPS = {"BOSS002": "DROP_R03_BOSS"}
 EVENTS = {
     "EVT_BOSS_034": ("BOSS034", ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00"], ["M002"], "RANDOM_ONE"),
     "EVT_BOSS_035": ("BOSS035", ["11:00", "17:00", "21:00"], ["M003"], "RANDOM_ONE"),
@@ -226,6 +239,13 @@ moveSpeed: 70
 skillDefs:
   BSKL_DIVE_CIRCLE: { mult: 2.0, telegraphMs: 1200, shape: circle, r: 70, cooldownMs: 5000 }
   BSKL_CRYSTAL_WING: { mult: 1.2, telegraphMs: 1000, shape: circles, r: 34, count: 5, every: 3, cooldownMs: 5000 }
+""",
+    "BOSS002": """flying: false
+moveSpeed: 70
+aggroRange: 420
+skillDefs:
+  BSKL_LUNGE: { mult: 1.6, telegraphMs: 1000, shape: rect, w: 300, h: 50, cooldownMs: 4600 }
+  BSKL_STOMP_WAVE: { mult: 1.5, telegraphMs: 1200, shape: circle, r: 130, every: 3, cooldownMs: 5200 }
 """,
 }
 BOSS001_SHARD = """# Manh Trang: one of the four pages Trang Lac tears into at 50% HP (maps section 5.3)
@@ -262,9 +282,9 @@ ai:
   leash: 600
   moveSpeed: {spd}{chr(10) + "  flying: true" if mid == "MOB006" else ""}{chr(10) + "  fleeBelowHp: 0.3" if mid == "MOB002" else ""}
   attackRange: {190 if mid in RANGED_MOBS else 40}{"        # ranged: a shot flies 260 px/s" if mid in RANGED_MOBS else ""}
-  attackCooldownMs: 1600
+  attackCooldownMs: 1600{chr(10) + MOB_EXTRA[mid] if mid in MOB_EXTRA else ""}
 skills: [ {", ".join(skills)} ]
-drops: DROP_R01_BASIC
+drops: {MOB_DROPS.get(mid, "DROP_R01_BASIC")}
 exp: formula                 # 8L + 10 (combat section 2.1)
 """)
     for bid, (lv, el, kind, skills, w, h, where, note) in BOSS_DATA.items():
@@ -275,6 +295,8 @@ exp: formula                 # 8L + 10 (combat section 2.1)
             extra = "phases:\n  - { atHp: 0.6, action: SUMMON, mob: MOB001, count: 3 }\n  - { atHp: 0.3, action: SUMMON, mob: MOB001, count: 3 }\n"
         if bid == "BOSS035":
             extra = "phases:\n  - { atHp: 0.7, action: SUMMON, mob: MOB003, count: 2 }\n  - { atHp: 0.35, action: SUMMON, mob: MOB003, count: 2 }\n"
+        if bid == "BOSS002":
+            extra = "phases:\n  - { atHp: 0.5, action: SUMMON, mob: MOB008, count: 2 }\n"
         with open(os.path.join(d["bosses"], f"{bid.lower()}.yaml"), "w") as f:
             f.write(f"""# {note}; {where} (prototype)
 id: {bid}
@@ -285,7 +307,7 @@ kind: {kind}                  # HP/EXP multiplier per combat section 2.1 (Boss x
 sprite: bosses/{bid.lower()}
 size: {{ w: {w}, h: {h} }}
 skills: [ {", ".join(skills)} ]
-{extra}drops: DROP_R01_BOSS
+{extra}drops: {BOSS_DROPS.get(bid, "DROP_R01_BOSS")}
 enrageAfterMin: 10
 {BOSS_ONLINE[bid]}""")
     for eid, (boss, times, maps, zones) in EVENTS.items():
@@ -320,7 +342,7 @@ rewardMaxLevelGap: 10
 def build_monsters():
     from monsters import ALL_ANIMS, MONSTERS, monster_frames
     pk, sh, pv = mk("piskel"), mk("sheets"), mk("preview")
-    lineup_small, boss_gifs = [], {}
+    lineup_small, lineup_ch2, boss_gifs = [], [], {}
     for mid, (_, size, name, lv) in MONSTERS.items():
         fr = monster_frames(mid)
         rows = [a for a in ALL_ANIMS if a in fr]
@@ -331,8 +353,10 @@ def build_monsters():
         save_piskel(os.path.join(pk, fn + ".piskel"), f"{mid} {name} (Lv{lv})", [("Quai", seq)], fps=8,
                     description=desc)
         sheet([fr[a] for a in rows]).save(os.path.join(sh, fn + ".png"))
-        if size == 64:
+        if size == 64 and mid in R01_MOBS + ("BOSS001_SHARD",):
             lineup_small.append(fr)
+        elif size == 64:
+            lineup_ch2.append(fr)
         else:
             loop = fr["idle"] * 2 + fr["move"] * 2 + fr["attack"] * 2 + fr["hurt"] * 2 + fr["skill2"] * 2 + fr["die"]
             save_gif(loop, os.path.join(pv, fn + ".gif"), 125, scale=2)
@@ -344,6 +368,14 @@ def build_monsters():
             over(cv, fr[anim][k % 4], (j % 4) * 64, (j // 4) * 64)
         frames.append(cv)
     save_gif(frames, os.path.join(pv, "quai_chuong1.gif"), 140, scale=3)
+    frames = []
+    for k in range(16):
+        cv = canvas(64 * len(lineup_ch2), 64)
+        for j, fr in enumerate(lineup_ch2):
+            anim = ("idle", "move", "attack", "move")[k // 4]
+            over(cv, fr[anim][k % 4], j * 64, 0)
+        frames.append(cv)
+    save_gif(frames, os.path.join(pv, "quai_chuong2.gif"), 140, scale=3)
 
 
 VI_NAMES = {
@@ -354,6 +386,10 @@ VI_NAMES = {
     "M001": "Nhà Học Suối Mơ", "M002": "Đồng Hoa Suối Mơ", "M003": "Rừng Mơ Non", "M004": "Hang Giếng Cạn",
     "NPC001": "Thầy Bạch Vân", "NPC002": "Bà Mơ", "NPC003": "Lam Nhi", "NPC004": "Khôi", "NPC005": "Chấp Bút Hạc Minh",
     "NPC040": "Cụ Trương", "NPC042": "Thợ Rèn Tư", "NPC024": "Cô Kim Thoa", "NPC053": "Cụ Tiễn",
+    # Chapter 2 (step B5.1)
+    "MOB008": "Lợn Rừng Đồng", "MOB009": "Lùn Cướp Đồng", "BOSS002": "Lợn Rừng Chúa",
+    "M005": "Thượng Đô", "M008": "Tổng Đường Pháp Vệ", "M009": "Đồng Lúa Lục Nguyên", "M010": "Đồi Cối Xay Gió",
+    "NPC011": "Viện Chủ Vân Tước", "NPC046": "Giám Khảo Tuyển Thư",
 }
 
 
@@ -364,6 +400,7 @@ QUEST_ITEMS = {   # quest items: only drop while the quest needs them (quests §
     "thao_duoc": ("Thảo Dược Suối Mơ", {"node": "M002", "respawnSec": 20, "cols": [7, 13, 24, 33, 44, 51, 70, 79]}),
     "bao_tai": ("Bao Tải Bị Lấy", {"mob": "MOB004", "chance": 0.25}),
     "manh_trang": ("Mảnh Trang", {"mob": "MOB007", "chance": 0.3}),
+    "trang_sach": ("Trang Sách Thất Lạc", {"mob": "MOB009", "chance": 0.5}),   # Q_MAIN_15 (step B5.1)
 }
 REWARD_ITEMS = {"potion_hp": "Bình HP Nhỏ", "kiem_go_tap": "Kiếm Gỗ Tập", "ao_suoi_mo": "Áo Suối Mơ"}
 QUEST_DATA = [
@@ -396,7 +433,20 @@ QUEST_DATA = [
      dict(exp=1200, unlockLevel=10), True),
     ("Q_MAIN_12", 10, "NPC001", "NPC001", [dict(type="REACH", target="I001", map="I001")],
      dict(), True),
+    # Chapter 2, step B5.1 (quests §5; EXP and the Lv11 gate of Q_MAIN_15 from docs/reports/chapter2-pacing.md).
+    # Online only: the browser prototype stops at Q_MAIN_12.
+    ("Q_MAIN_13", 10, "NPC002", "NPC002", [dict(type="SCENE", target="Q_MAIN_13", map="M001")],
+     dict(exp=1500, soft=300), False),
+    ("Q_MAIN_14", 10, "NPC002", "NPC046", [dict(type="TALK", target="NPC011", map="M005"),
+                                           dict(type="TALK", target="NPC046", map="M008")],
+     dict(exp=3000, soft=400, items=[("potion_hp_m", 5)]), False),
+    ("Q_MAIN_15", 11, "NPC046", "NPC046", [dict(type="KILL", target="MOB008", count=15, map="M009"),
+                                           dict(type="COLLECT", target="trang_sach", count=10, map="M009")],
+     dict(exp=6000, soft=600, items=[("mu_thi_sinh", 1)]), False),
+    ("Q_MAIN_16", 12, "NPC046", "NPC046", [dict(type="BOSS", target="BOSS002", count=1, map="M009")],
+     dict(exp=5000, soft=800, items=[("giay_thi_sinh", 1)]), False),
 ]
+CHAPTER1_QUESTS = 12   # the browser prototype (data.json) keeps only Chapter 1
 QUEST_TEXT = {   # i18n vi: title, objective labels, dialogue (accept / progress / complete / extra talk)
     "Q_MAIN_01": ("Buổi Sáng Ở Nhà Học", ["Chào Bà Mơ ở bếp nhà học"],
                   "Sáng nay con đến sớm đấy. Ghé chào Bà Mơ ở bếp rồi quay lại đây, ta có việc nhờ.",
@@ -446,6 +496,29 @@ QUEST_TEXT = {   # i18n vi: title, objective labels, dialogue (accept / progress
     "Q_MAIN_12": ("Lễ Khai Thư", ["Đặt tay lên Đài Khai Thư, chọn hệ phép"],
                   "Huyền Thư đang chờ con. Theo thầy vào lễ đường.",
                   "Đài Khai Thư ở giữa lễ đường. Lại gần rồi nhấn F.", "", {}),
+    "Q_MAIN_13": ("Lá Thư Để Lại", ["Đọc lá thư của Thầy cùng Bà Mơ, Lam Nhi và Khôi"],
+                  "Thầy để lại lá thư trên bàn. Gọi Lam Nhi với Khôi vào đây, cả nhà mình cùng đọc.",
+                  "Bà đang đợi ở nhà học, lá thư vẫn nằm trên bàn.",
+                  "Bà gói ít bánh với mấy bình thuốc rồi đây. Lên tới Thượng Đô thì nhớ viết thư về.", {}),
+    "Q_MAIN_14": ("Lên Thượng Đô", ["Gặp Viện Chủ Vân Tước ở Thượng Đô", "Ghi danh với Giám Khảo Tuyển Thư"],
+                  "Lên Thượng Đô thì chào Viện Chủ Vân Tước ở quảng trường trước, rồi vào Tổng Đường Pháp Vệ ghi danh Mùa Tuyển Thư.",
+                  "Thượng Đô ở sau cổng cuối Hang Giếng Cạn. Tổng Đường là cổng giữa hai cột cờ.",
+                  "Tên, quê quán, hệ phép… Được rồi, ghi danh xong. Vòng 1 bắt đầu ngay ngoài đồng lúa.",
+                  {"NPC011": "Học trò của Bạch Vân à? Ta có nghe danh thầy con. Vào Tổng Đường ghi danh đi, ta sẽ để mắt tới con.",
+                   "NPC046": "Thí sinh mới? Đọc tên đi. Hệ phép gì? Ừm… xong, đứng sang bên kia."}),
+    "Q_MAIN_15": ("Vòng 1: Tìm Sách", ["Hạ Lợn Rừng Đồng", "Đòi lại Trang Sách Thất Lạc"],
+                  "Vòng 1: lợn rừng phá ruộng, còn lũ Lùn Cướp Đồng nhét trang sách đề thi vào bao. Hạ mười lăm con lợn, gom đủ mười trang.",
+                  "Đồng Lúa ở cổng phải Thượng Đô. Đánh một con Lùn Cướp Đồng là cả bọn xông ra, cẩn thận.",
+                  "Mười trang, không sót trang nào. Đề thi năm nay suýt thành giấy gói xôi. Thí sinh này được đấy.", {}),
+    "Q_MAIN_16": ("Vòng 1: Lợn Rừng Chúa", ["Hạ Lợn Rừng Chúa"],
+                  "Phần cuối Vòng 1: Lợn Rừng Chúa ngự trên bờ đê giữa đồng. Hạ nó, một mình hay cùng bạn đều được.",
+                  "Lợn Rừng Chúa húc theo đường thẳng, có vùng báo hiệu đỏ. Thấy vùng đỏ thì nhảy hoặc tránh sang bên.",
+                  "Hạ được Lợn Rừng Chúa rồi à? Vòng 1 đậu! Vòng 2 cần chuẩn bị thêm, xong ta sẽ gọi.", {}),
+}
+QUEST_WHERE = {   # objective hints shown under the label (ui-ux §6.4); the server builds the others
+    "Q_MAIN_13": ["Nhà Học Suối Mơ, cùng Bà Mơ"],
+    "Q_MAIN_14": ["Thượng Đô · trên quảng trường", "Tổng Đường Pháp Vệ · cổng giữa hai cột cờ ở Thượng Đô"],
+    "Q_MAIN_16": ["Đồng Lúa Lục Nguyên · bờ đê giữa đồng, hồi sinh 3 phút sau khi bị hạ"],
 }
 
 
@@ -469,6 +542,13 @@ ITEM_DEFS = {
     "huyen_thu_so_ban": dict(type="TOME", slot="tome", name="Huyền Thư Sơ Bản", icon="huyen_thu_so_ban", level=10, rarity="common", bound=True),
     "kiem_lua_tap_su": dict(type="WEAPON", slot="weapon", cls="FIRE", name="Kiếm Lửa Tập Sự", icon="weapon_fire", level=10, rarity="common"),
     "truong_thuy_tap_su": dict(type="WEAPON", slot="weapon", cls="WATER", name="Trượng Thủy Tập Sự", icon="weapon_water", level=10, rarity="common"),
+    # set S2 "Thu Lai" (items §5): Lv10-19, monsters of R03 and the exam rounds (step B5.1)
+    "s2_weapon": dict(type="WEAPON", slot="weapon", set="S2", name="Bút Thư Lại", icon="but_thu_lai", levelBand=[10, 19]),
+    "s2_hat": dict(type="ARMOR", slot="hat", set="S2", name="Mũ Thư Lại", icon="mu_thu_lai", levelBand=[10, 19]),
+    "s2_armor": dict(type="ARMOR", slot="armor", set="S2", name="Áo Thư Lại", icon="ao_thu_lai", levelBand=[10, 19]),
+    "s2_boots": dict(type="ARMOR", slot="boots", set="S2", name="Giày Thư Lại", icon="giay_thu_lai", levelBand=[10, 19]),
+    "mu_thi_sinh": dict(type="ARMOR", slot="hat", name="Mũ Thí Sinh", icon="mu_thu_lai", level=12, rarity="good"),
+    "giay_thi_sinh": dict(type="ARMOR", slot="boots", name="Giày Thí Sinh", icon="giay_thu_lai", level=12, rarity="good"),
 }
 # Origins and classes for step A2 (classes §2-4). Display text lives in i18n.
 ORIGIN_DATA = {
@@ -516,9 +596,17 @@ SCENES = {
     "Q_MAIN_12": [["NPC001", "Huyền Thư đã nhận con. Từ nay con tự viết đường đi của mình."],
                   ["NPC001", "Thầy còn vài trang sách cũ phải đi tìm lại. Đừng lo cho thầy."]],
     "LETTER": "Đừng tìm thầy. Hãy tìm Mười Hai Quyển.",
+    # Chapter 2 (step B5.1, lore ch.2 beat 1)
+    "Q_MAIN_13": [["NPC002", "Thư thầy để lại đây. Chữ vẫn nghiêng nghiêng như mọi khi."],
+                  ["NPC003", "“Đừng tìm thầy. Hãy tìm Mười Hai Quyển.” Mười Hai Quyển là gì vậy bà?"],
+                  ["NPC002", "Bà chỉ nghe kể thôi. Muốn biết thật thì phải lên Thượng Đô, nơi Pháp Vệ Đoàn giữ hồ sơ."],
+                  ["NPC004", "Mùa Tuyển Thư của Pháp Vệ Đoàn sắp mở. Đậu thì được vào thư khố."],
+                  ["PLAYER", "Vậy mình cùng đi. Thầy bảo đừng tìm thầy, chứ đâu có cấm tìm sách."],
+                  ["NPC002", "Đi đường cẩn thận. Hết Hang Giếng Cạn là tới đường lên Thượng Đô."]],
 }
 LOCKED_CLASSES = {"WIND": "Phong Kiếm Khách", "BOLT": "Lôi Chiến Binh", "EARTH": "Thổ Hộ Vệ", "PLANT": "Mộc Thuật Sư", "DARK": "Ám Pháp Sư"}
-SETS = {"S1": dict(name="Dân Làng", bonus={"2": "+5% HP", "4": "+8% ATK, +8% DEF"})}
+SETS = {"S1": dict(name="Dân Làng", bonus={"2": "+5% HP", "4": "+8% ATK, +8% DEF"}),
+        "S2": dict(name="Thư Lại", bonus={"2": "+5% HP", "4": "+8% ATK, +8% DEF"})}
 NOVICE = dict(name="Tân thủ", skills=[   # classes section 3 (novice skills), combat section 4.1 (no GCD on the basic attack)
     dict(id="SKL_BASIC", name="Đòn Thường", lv=1, mp=0, cd=1.0, mult=1.0, kind="melee", gcd=False),
     dict(id="SKL_MANA_BURST", name="Tụ Mana Chấn", lv=5, mp=6, cd=3, mult=1.2, kind="burst", gcd=True),
@@ -532,6 +620,21 @@ entries:
 gear:
   items: [ s1_weapon, s1_hat, s1_armor, s1_boots ]   # set S1, takes the monster level
   levelBand: [1, 9]
+  chance: { common: 0.06, good: 0.02, rare: 0.003, epic: 0.0003 }
+tiers:
+  elite: { softChance: 1, rolls: 2, gear: { common: 0.06, good: 0.10, rare: 0.015, epic: 0.0015 } }
+  leader: { softChance: 1, rolls: 2, gear: { common: 0.06, good: 0.25, rare: 0.05, epic: 0.005 }, guaranteed: dong_luyen_2 }
+"""
+DROP_R03_BASIC = """# Basic drop table of region R03 Dong Bang Luc Nguyen (step B5.1): same rates as R01, set S2 Thu Lai,
+# medium potions join the small ones (combat section 6, items section 5 and 8).
+id: DROP_R03_BASIC
+soft: { chance: 0.9, perLevel: 4, spread: 0.2 }
+entries:
+  - { chance: 0.25, item: dong_luyen_1 }
+  - { chance: 0.08, pick: { potion_hp: 0.35, potion_hp_m: 0.25, potion_mp: 0.25, potion_mp_m: 0.15 } }
+gear:
+  items: [ s2_weapon, s2_hat, s2_armor, s2_boots ]   # set S2, takes the monster level
+  levelBand: [10, 19]
   chance: { common: 0.06, good: 0.02, rare: 0.003, epic: 0.0003 }
 tiers:
   elite: { softChance: 1, rolls: 2, gear: { common: 0.06, good: 0.10, rare: 0.015, epic: 0.0015 } }
@@ -584,6 +687,8 @@ def build_item_content():
                     f"cooldownSec: {sk['cd']}, atkMult: {sk['mult']}, shape: {sk['kind']}, gcd: {str(sk['gcd']).lower()} }}\n")
     with open(os.path.join(mkc("drops"), "drop_r01_basic.yaml"), "w", encoding="utf-8") as f:
         f.write(DROP_R01_BASIC)
+    with open(os.path.join(mkc("drops"), "drop_r03_basic.yaml"), "w", encoding="utf-8") as f:
+        f.write(DROP_R03_BASIC)
     with open(os.path.join(mkc("shops"), "npc003.yaml"), "w", encoding="utf-8") as f:
         f.write("# Lam Nhi sells potions and buys items back at 25% (economy section 3), prototype step A1\n"
                 "npc: NPC003\nnameKey: shop.npc003.name\ncurrency: SOFT\n"
@@ -608,13 +713,36 @@ tiers:
   elite: { softChance: 1, rolls: 1, gear: { common: 0.3, good: 0.5, rare: 0.15, epic: 0.02 } }
   leader: { softChance: 1, rolls: 2, gear: { common: 0.25, good: 0.5, rare: 0.2, epic: 0.04 } }
 """
+DROP_R03_BOSS = """# Lon Rung Chua, field boss of M009 (step B5.1), rolled once per kill with the leader row below.
+# The loot drops on the ground for the top damage dealer (as the scheduled bosses of R01, roadmap 8.3).
+id: DROP_R03_BOSS
+soft: { chance: 1, perLevel: 16, spread: 0.2 }
+entries:
+  - { chance: 1, item: dong_luyen_2 }
+  - { chance: 0.6, pick: { potion_hp_m: 0.6, potion_mp_m: 0.4 }, qty: [1, 3] }
+gear:
+  items: [ s2_weapon, s2_hat, s2_armor, s2_boots ]
+  levelBand: [10, 19]
+  chance: { common: 0.3, good: 0.5, rare: 0.15, epic: 0.02 }
+tiers:
+  elite: { softChance: 1, rolls: 1, gear: { common: 0.3, good: 0.5, rare: 0.15, epic: 0.02 } }
+  leader: { softChance: 1, rolls: 2, gear: { common: 0.25, good: 0.5, rare: 0.2, epic: 0.04 } }
+"""
 NPC_FACES = {"NPC001": 0, "NPC002": 1, "NPC003": 2, "NPC004": 3, "NPC040": 5}   # rows of sprites/npc_idle.png
+NPC_FACES_R02 = {"NPC005": 4, "NPC011": 9, "NPC046": 10}   # Thuong Do (step B5.1)
 NPC_LINES = {
     "NPC001": "Mỗi trang sách đều có chỗ của nó. Đi săn cẩn thận nhé.",
     "NPC002": "Ăn no rồi hẵng đi, con.",
     "NPC003": "Mình vừa chế xong mẻ thuốc mới. Cần bình máu thì ghé mua nhé!",
     "NPC004": "Ra Đồng Hoa đi, Vua Nấm Lùn hay xuất hiện ở đó lắm.",
     "NPC040": "Lịch boss dán trên bảng tin làng đây, xem đi con.",
+    "NPC005": "Khò… Hả? Ta không ngủ đâu, ta đang đọc sách bằng mắt nhắm thôi.",
+    "NPC011": "Gió Thượng Đô đổi hướng nhanh lắm. Đi đâu cũng nhớ nhìn đường.",
+    "NPC046": "Mùa Tuyển Thư năm nay ba vòng. Ai muốn ghi danh thì xếp hàng.",
+}
+NPC_LINES_BY_MAP = {   # the same NPC elsewhere says something else (step B5.1: the friends in Thuong Do)
+    ("NPC003", "M005"): "Thượng Đô cái gì cũng đắt! May mà mình mang theo nồi chế thuốc. Mua bình không?",
+    ("NPC004", "M009"): "Lợn rừng ở đây húc đau hơn chó rừng nhiều. Thấy nó cúi đầu là nhảy lên né.",
 }
 
 
@@ -622,6 +750,8 @@ def build_story_content():
     dg = DUNGEONS["DG01"]
     with open(os.path.join(mkc("drops"), "drop_r01_boss.yaml"), "w", encoding="utf-8") as f:
         f.write(DROP_R01_BOSS)
+    with open(os.path.join(mkc("drops"), "drop_r03_boss.yaml"), "w", encoding="utf-8") as f:
+        f.write(DROP_R03_BOSS)
     with open(os.path.join(mkc("dungeons"), "dg01.yaml"), "w", encoding="utf-8") as f:
         f.write(f"""# DG01 Hang Gieng Can, tutorial dungeon (maps section 6.2)
 id: DG01
@@ -641,6 +771,11 @@ chest:
         for k, row in NPC_FACES.items():
             n = k.lower()
             f.write(f"  - {{ id: {k}, nameKey: npc.{n}.name, lineKey: npc.{n}.line, face: {row} }}\n")
+    with open(os.path.join(mkc("npcs"), "r02.yaml"), "w", encoding="utf-8") as f:
+        f.write("# NPCs of region R02 Thuong Do (characters section 3-4), step B5.1. face = row of sprites/npc_idle.png\nnpcs:\n")
+        for k, row in NPC_FACES_R02.items():
+            n = k.lower()
+            f.write(f"  - {{ id: {k}, nameKey: npc.{n}.name, lineKey: npc.{n}.line, face: {row} }}\n")
     with open(os.path.join(mkc("scenes"), "chapter1.yaml"), "w", encoding="utf-8") as f:
         f.write("# Cutscenes of Chapter 1 (quests section 4). who: an NPC id or PLAYER\nscenes:\n")
         for k in ("Q_MAIN_11", "Q_MAIN_12"):
@@ -649,6 +784,12 @@ chest:
                 f.write(f"      - {{ who: {who}, textKey: scene.{k.lower()}.{i + 1} }}\n")
             if k == "Q_MAIN_12":
                 f.write("    letterKey: scene.letter\n")
+    with open(os.path.join(mkc("scenes"), "chapter2.yaml"), "w", encoding="utf-8") as f:
+        f.write("# Cutscenes of Chapter 2 (quests section 5, lore ch.2), step B5.1. who: an NPC id or PLAYER\nscenes:\n")
+        for k in ("Q_MAIN_13",):
+            f.write(f"  - id: {k}\n    lines:\n")
+            for i, (who, _) in enumerate(SCENES[k]):
+                f.write(f"      - {{ who: {who}, textKey: scene.{k.lower()}.{i + 1} }}\n")
 
 
 def _yaml_obj(o):
@@ -669,6 +810,7 @@ dialog:
   opt_ceremony: "Vào lễ đường"
   opt_altar: "Đặt tay lên Đài Khai Thư"
   opt_rite: "Đổi hệ phép (miễn phí trong 24 giờ)"
+  opt_scene: "Ngồi nghe tiếp câu chuyện"
   opt_close: "Đóng"
   schedule_head: "Lịch boss hôm nay (giờ Việt Nam):"
   schedule_live: "{boss} Lv{lv} · {map} · ĐANG XUẤT HIỆN ở khu {zone}"
@@ -686,6 +828,8 @@ boss_msg:
   wake: "Trang Lạc thức dậy từ những trang giấy bị xóa!"
   dg_down: "Đã hạ Trang Lạc! Mở Rương Tân Thủ rồi ra cổng bên phải."
   dg_timeout: "Hết giờ hầm ngục. Bạn được đưa về cổng."
+  field_spawn: "{boss} lại xuất hiện ở {map}!"
+  field_reset: "{boss} không còn ai để đánh, quay về bờ đê và hồi lại sức."
 """
 
 
@@ -709,7 +853,7 @@ def build_quests():
             f.write(f"""{note}id: {qid}
 type: MAIN
 nameKey: quest.main.{n}.title
-chapter: 1
+chapter: {1 if int(n) <= CHAPTER1_QUESTS else 2}
 levelMin: {lv}
 prerequisites: [{prev or ""}]
 giver: {giver}
@@ -728,6 +872,13 @@ dialogue:
         lines += [f"    accept: \"{acc}\"", f"    progress: \"{prog}\"", f"    complete: \"{comp}\""]
         for npc, t in extra.items():
             lines.append(f"    talk.{npc.lower()}: \"{t}\"")
+        if qid in QUEST_WHERE:
+            lines.append("    where:")
+            lines += [f"      - \"{t}\"" for t in QUEST_WHERE[qid]]
+    lines += ["  wait.1: \"Hết Chương 1. Bà Mơ đang đợi ở nhà học.\"",
+              "  wait.2: \"Vòng 1 Mùa Tuyển Thư đã xong. Vòng 2 (Bóng Giám Khảo) mở ở bản cập nhật sau.\"",
+              "  chapter.1: \"Chương 1: Làng Suối Mơ\"",
+              "  chapter.2: \"Chương 2: Thượng Đô\""]
     lines.append("item:")
     for k, (name, _) in QUEST_ITEMS.items():
         lines.append(f"  {k}.name: \"{name}\"")
@@ -769,6 +920,8 @@ dialogue:
     lines.append("npc:")
     for k, line in NPC_LINES.items():
         lines += [f"  {k.lower()}.name: \"{VI_NAMES[k]}\"", f"  {k.lower()}.line: \"{line}\""]
+    for (k, m), line in NPC_LINES_BY_MAP.items():
+        lines.append(f"  {k.lower()}.line_{m.lower()}: \"{line}\"")
     with open(os.path.join(i18n, "vi.yaml"), "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n" + I18N_SERVER)
     with open(os.path.join(mkc("quests"), "quest_items.yaml"), "w", encoding="utf-8") as f:
@@ -779,7 +932,7 @@ dialogue:
 
 def quest_json():
     out = []
-    for qid, lv, giver, turn_in, objs, rew, ready in QUEST_DATA:
+    for qid, lv, giver, turn_in, objs, rew, ready in QUEST_DATA[:CHAPTER1_QUESTS]:
         title, olabels, acc, prog, comp, extra = QUEST_TEXT[qid]
         out.append(dict(id=qid, lv=lv, giver=giver, turnIn=turn_in, ready=ready, title=title,
                         objectives=[dict(o, label=olabels[i], count=o.get("count", 1)) for i, o in enumerate(objs)],
@@ -800,7 +953,7 @@ def build_playable():
     for sub in ("maps/tilesets", "maps/backgrounds", "sprites"):
         os.makedirs(os.path.join(root, sub), exist_ok=True)
     src_maps = os.path.join(OUT, "maps")
-    for n in ("m001", "m002", "m003", "m004", "dg01", "i001"):
+    for n in ("m001", "m002", "m003", "m004", "dg01", "i001", "m005", "m008", "m009"):
         shutil.copy(os.path.join(src_maps, f"{n}.tmj"), os.path.join(root, "maps", f"{n}.tmj"))
         for k in ("far", "mid", "near"):
             shutil.copy(os.path.join(src_maps, "backgrounds", f"{n}_{k}.png"), os.path.join(root, "maps", "backgrounds"))
@@ -814,7 +967,7 @@ def build_playable():
     build_player_sheets(os.path.join(root, "sprites", "player"))
     mob_rows = {}
     for mid in ("MOB001", "MOB002", "MOB003", "MOB004", "MOB005", "MOB006", "MOB007", "BOSS001", "BOSS001_SHARD",
-                "BOSS034", "BOSS035", "BOSS036"):
+                "BOSS034", "BOSS035", "BOSS036", "MOB008", "MOB009", "BOSS002"):
         fr = monster_frames(mid)
         rows = [a for a in ALL_ANIMS if a in fr]
         sheet([fr[a] for a in rows]).save(os.path.join(root, "sprites", f"{mid.lower()}.png"))
@@ -834,9 +987,9 @@ def build_playable():
         "npcOrder": [k.split("_")[0] for k in NPCS],
         "mobs": {mid: dict(level=v[0], element=v[1], kind=v[2], ai=v[3], aggro=v[4], speed=v[5], skills=v[6],
                            flying=mid == "MOB006", fleeBelowHp=0.3 if mid == "MOB002" else 0,
-                           ranged=mid in RANGED_MOBS, sprite=mob_rows[mid]) for mid, v in MOB_DATA.items()},
+                           ranged=mid in RANGED_MOBS, sprite=mob_rows[mid]) for mid, v in MOB_DATA.items() if mid in R01_MOBS},
         "bosses": {bid: dict(level=v[0], element=v[1], kind=v[2], skills=v[3], sprite=mob_rows.get(bid),
-                             flying=bid == "BOSS036") for bid, v in BOSS_DATA.items() if bid in mob_rows},
+                             flying=bid == "BOSS036") for bid, v in BOSS_DATA.items() if bid in mob_rows and bid != "BOSS002"},
         "minions": {"BOSS001_SHARD": dict(level=[9, 9], element="NONE", kind="MINION", ai="AGGRESSIVE", aggro=600, speed=110,
                                           skills=["MOBSKL_PAGE_CUT"], flying=True, fleeBelowHp=0, ranged=False,
                                           sprite=mob_rows["BOSS001_SHARD"])},
@@ -848,7 +1001,7 @@ def build_playable():
                               start="20:00", end="21:00", everyMin=20)],
         "items": [n for n, _ in all_icons()],
         "quests": quest_json(),
-        "questItems": {k: dict(name=v[0], **v[1]) for k, v in QUEST_ITEMS.items()},
+        "questItems": {k: dict(name=v[0], **v[1]) for k, v in QUEST_ITEMS.items() if k != "trang_sach"},
         "rewardItems": REWARD_ITEMS,
         "itemDefs": ITEM_DEFS,
         "sets": SETS,
@@ -907,7 +1060,7 @@ def build_maps():
     hero = layered_frames(HEROES["fire"], idle("sword")[:1])[1][0]
     from monsters import monster_frames
     mob_spr = {m: monster_frames(m) for m in ("MOB001", "MOB002", "MOB003", "MOB004", "MOB005", "MOB006", "MOB007",
-                                              "BOSS001", "BOSS034", "BOSS035", "BOSS036")}
+                                              "BOSS001", "BOSS034", "BOSS035", "BOSS036", "MOB008", "MOB009", "BOSS002")}
     flying = {"MOB006": 27, "BOSS036": 54}
     region = build_region(S)
     problems = []

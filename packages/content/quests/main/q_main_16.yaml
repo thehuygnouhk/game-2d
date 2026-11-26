@@ -1,0 +1,16 @@
+# not playable in the browser prototype yet
+id: Q_MAIN_16
+type: MAIN
+nameKey: quest.main.16.title
+chapter: 2
+levelMin: 12
+prerequisites: [Q_MAIN_15]
+giver: NPC046
+turnIn: NPC046
+objectives:
+  - { type: BOSS, target: BOSS002, count: 1, map: M009 }
+rewards: { exp: 5000, soft: 800, items: [ { id: giay_thi_sinh, count: 1 } ] }
+dialogue:
+  accept: quest.main.16.accept
+  progress: quest.main.16.progress
+  complete: quest.main.16.complete

@@ -1,0 +1,5 @@
+# NPCs of region R02 Thuong Do (characters section 3-4), step B5.1. face = row of sprites/npc_idle.png
+npcs:
+  - { id: NPC005, nameKey: npc.npc005.name, lineKey: npc.npc005.line, face: 4 }
+  - { id: NPC011, nameKey: npc.npc011.name, lineKey: npc.npc011.line, face: 9 }
+  - { id: NPC046, nameKey: npc.npc046.name, lineKey: npc.npc046.line, face: 10 }

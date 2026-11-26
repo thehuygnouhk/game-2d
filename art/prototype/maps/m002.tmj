@@ -5613,6 +5613,11 @@
        "name": "id",
        "type": "string",
        "value": "NPC003"
+      },
+      {
+       "name": "hideAfter",
+       "type": "string",
+       "value": "Q_MAIN_13"
       }
      ]
     },
@@ -5632,6 +5637,11 @@
        "name": "id",
        "type": "string",
        "value": "NPC004"
+      },
+      {
+       "name": "hideAfter",
+       "type": "string",
+       "value": "Q_MAIN_13"
       }
      ]
     },
@@ -7685,11 +7695,11 @@
    "name": "r01",
    "image": "tilesets/r01.png",
    "imagewidth": 512,
-   "imageheight": 864,
+   "imageheight": 1408,
    "tilewidth": 32,
    "tileheight": 32,
    "columns": 16,
-   "tilecount": 432,
+   "tilecount": 704,
    "margin": 0,
    "spacing": 0
   }

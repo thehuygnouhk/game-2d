@@ -1,0 +1,19 @@
+# Lon Rung Dong: hich dau lao toi (prototype)
+id: MOB008
+nameKey: mob.mob008.name
+level: [10, 12]
+element: EARTH
+kind: NORMAL
+sprite: monsters/mob008
+size: { w: 54, h: 38 }
+ai:
+  type: AGGRESSIVE
+  aggroRange: 170
+  leash: 600
+  moveSpeed: 70
+  attackRange: 40
+  attackCooldownMs: 1600
+  charge: { speed: 300, dist: 110 }   # rushes this far at this speed before the hit lands
+skills: [ MOBSKL_CHARGE ]
+drops: DROP_R03_BASIC
+exp: formula                 # 8L + 10 (combat section 2.1)

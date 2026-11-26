@@ -36,3 +36,8 @@
 35	potion_hp_m
 36	potion_mp_m
 37	ruong_tan_thu
+38	but_thu_lai
+39	mu_thu_lai
+40	ao_thu_lai
+41	giay_thu_lai
+42	trang_sach

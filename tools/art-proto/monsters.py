@@ -706,6 +706,140 @@ def manh_trang(cv, g, a, i):
 
 # ---------------------------------------------------------------- registry
 
+# ---------------------------------------------------------------- Chapter 2 (R03): MOB008, MOB009, BOSS002
+
+BOAR = pal("#1e120a", "#46301e", "#5e4028", "#7a5434", "#986c44", "#b88a5c")      # bristly field boar
+BOAR_KING = pal("#140a06", "#3a1e12", "#52301c", "#6c4026", "#8a5434", "#ac6e48")
+TUSK = pal("#4a3e2a", "#b8aa88", "#d2c6a6", "#ece2c8", "#f8f2e2", "#ffffff")
+SACK = pal("#2a2010", "#5a4628", "#766036", "#927a46", "#ae965a", "#ccb478")
+BANDANA = pal("#1a0606", "#4a1010", "#6a1a1a", "#8e2626", "#b23a36", "#d4584e")
+
+
+def boar(cv, g, a, i, s=1.0, king=False):
+    """Field boar of Dong Lua: low heavy body, bristle ridge, tusks; charges head down (attack, skill2)."""
+    W, H = cv.shape[1], cv.shape[0]
+    cx, base = W * (0.36 if king else 0.42), H - 3 * s
+    fur = BOAR_KING if king else BOAR
+    dx = dy = 0
+    phase = i * math.pi / 2
+    head_dip = 0
+    if a == "idle":
+        dy = (0, 0, 1, 1)[i] * s
+        head_dip = (0, 1, 1, 0)[i] * s
+    if a == "move":
+        dy = -abs(math.sin(phase)) * 2 * s
+    if a in ("attack", "skill2"):   # charge: lean back, then rush forward head down
+        dx = (-4, -6, 10, 6)[i] * (0.6 if king else 1) * s
+        head_dip = (0, 1, 4, 3)[i] * s
+    if a == "die":
+        dy = 2 * s
+    cx += dx
+    by = base - 14 * s + dy
+    for k, (lx, ph) in enumerate(((-12, 0), (9, math.pi), (-8, math.pi), (12, 0))):
+        far = k >= 2
+        off = math.sin(phase + ph) * 4 * s if a == "move" else (3 * s if a in ("attack", "skill2") and i >= 2 else 0)
+        top = (cx + lx * s, by + 4 * s)
+        foot = (cx + lx * s + off, base)
+        leg = g.capsule(*top, *foot, 2.8 * s)
+        vol(cv, leg, darker(fur) if far else fur, shadow=1, light=1)
+        fill(cv, g.ellipse(foot[0] + 1 * s, base - 0.5 * s, 2.6 * s, 1.4 * s), INK)
+    tail = g.polyline([(cx - 18 * s, by - 3 * s), (cx - 22 * s, by - 6 * s + (i % 2) * s), (cx - 21 * s, by - 9 * s)], 1.0 * s)
+    fill(cv, tail, fur[2])
+    body = g.ellipse(cx, by, 19 * s, 11 * s)
+    vol(cv, body, fur, shadow=int(3 * s), light=int(1 * s))
+    fill(cv, g.ellipse(cx + 1 * s, by + 6 * s, 13 * s, 3.4 * s) & body, fur[4])
+    for k in range(9):   # bristle ridge along the back
+        bx = cx - 14 * s + k * 3.6 * s
+        bt = by - 10 * s - abs(math.sin(k * 0.9)) * 3 * s
+        fill(cv, g.poly([(bx - 1.6 * s, by - 8 * s), (bx + 0.5 * s, bt - 3 * s), (bx + 1.8 * s, by - 8 * s)]),
+             fur[1] if not king else hex_rgb("#ff8a2a"))
+    if king:   # earth runes of the boar king and a scarred flank
+        runes(cv, g, body, "#ff8a2a", seed=7, n=5, size=2.4 * s)
+        fill(cv, g.polyline([(cx - 6 * s, by - 4 * s), (cx + 2 * s, by + 2 * s)], 0.7 * s), fur[0])
+    hx, hy = cx + 19 * s, by - 3 * s + head_dip + (3 * s if a == "die" else 0)
+    head = g.ellipse(hx, hy, 9 * s, 8 * s)
+    snout = g.ellipse(hx + 9 * s, hy + 2.5 * s, 4.6 * s, 4 * s)
+    vol(cv, head, fur, shadow=2, light=1)
+    vol(cv, snout, pal("#2a1410", "#6a3a30", "#8a5244", "#a86a58", "#c48672", "#dca48e"), shadow=1, light=1)
+    fill(cv, g.disc(hx + 11 * s, hy + 1.5 * s, 0.9 * s) | g.disc(hx + 11 * s, hy + 3.8 * s, 0.9 * s), INK)
+    ear = g.poly([(hx - 5 * s, hy - 5 * s), (hx - 9 * s, hy - 12 * s), (hx - 1 * s, hy - 7 * s)])
+    vol(cv, ear, fur, shadow=1, light=1)
+    for tk in ((hx + 6 * s, hy + 5 * s),) + (((hx + 4 * s, hy + 6 * s),) if king else ()):
+        tusk = g.poly([(tk[0] - 1.4 * s, tk[1]), (tk[0] + 1.4 * s, tk[1]), (tk[0] + 4 * s, tk[1] - 6 * s * (1.4 if king else 1))])
+        vol(cv, tusk, TUSK, shadow=1, light=1)
+    if a == "die":
+        fill(cv, g.polyline([(hx - 1 * s, hy - 3 * s), (hx + 2 * s, hy)], 0.6 * s) |
+             g.polyline([(hx - 1 * s, hy), (hx + 2 * s, hy - 3 * s)], 0.6 * s), INK)
+    else:
+        glow_eye(cv, g, hx + 1 * s, hy - 2 * s, 2.0 * s, "#ff8a2a" if king else "#ffd23f", slant=-1)
+    if a in ("attack", "skill2") and i >= 2:   # dust kicked up behind the charge
+        for k in range(3):
+            fill(cv, g.disc(cx - 22 * s - k * 5 * s, base - 3 * s - k * 2 * s, (2.6 - k * 0.6) * s), hex_rgb("#c8b490"))
+    if a == "skill2" and king:   # stomp: earth cracks and dust running out along the ground
+        for k in range(i + 1):
+            for side in (-1, 1):
+                gx = cx + side * (18 + k * 9) * s
+                fill(cv, g.polyline([(gx - 3 * s, base - 1), (gx, base - 4 * s), (gx + 3 * s, base - 1)], 0.8 * s),
+                     hex_rgb("#ff8a2a"))
+                fill(cv, g.disc(gx, base - 2 * s, (1.8 - k * 0.3) * s), hex_rgb("#c8b490"))
+    if king and a != "die":
+        aura(cv, g, cx, by - 2 * s, 26 * s, "#ff8a2a", i, n=6)
+
+
+def lun_cuop(cv, g, a, i):
+    """Lun Cuop Dong: field-bandit gnome with a red bandana, a club and a sack of stolen pages."""
+    cx, base = 30, 61
+    dy = 0
+    swing = -20
+    if a == "idle":
+        dy = (0, 0, 1, 1)[i]
+    if a == "move":
+        dy = (0, -2, 0, -2)[i]
+    step = (0, 3, 0, -3)[i] if a == "move" else 0
+    if a == "attack":
+        swing = (-60, -95, 40, 70)[i]
+    sack = g.ellipse(cx - 10, base - 20 + dy, 8, 9)
+    vol(cv, sack, SACK, shadow=2, light=1)
+    fill(cv, g.rect(cx - 12, base - 29 + dy, cx - 8, base - 27 + dy), SACK[1])
+    for k in range(2):   # page corners sticking out of the sack
+        px = cx - 13 + k * 5
+        fill(cv, g.poly([(px, base - 28 + dy), (px + 3, base - 34 + dy - k), (px + 5, base - 28 + dy)]), PAPER[4])
+    for k, (lx, st) in enumerate(((-4, -step), (4, step))):
+        leg = g.capsule(cx + lx, base - 9 + dy, cx + lx + st, base - 1, 2.6)
+        vol(cv, leg, TUNIC, shadow=1, light=1)
+        vol(cv, g.ellipse(cx + lx + st + 1.5, base - 1, 3.6, 2), FUR_BROWN, shadow=1, light=1)
+    body = g.ellipse(cx, base - 16 + dy, 10, 10)
+    vol(cv, body, pal("#141a0a", "#2e3a1a", "#3e4e24", "#52642e", "#6a7e3c", "#86984e"), shadow=3, light=1)
+    fill(cv, g.rect(cx - 9, base - 13 + dy, cx + 9, base - 12 + dy) & body, SACK[2])
+    hx, hy = cx + 2, base - 32 + dy
+    head = g.ellipse(hx, hy, 9, 8.5)
+    vol(cv, head, GNOME_SKIN, shadow=2, light=1)
+    nose = g.ellipse(hx + 8, hy + 2, 4.5, 3.2)
+    vol(cv, nose, GNOME_SKIN, shadow=1, light=1)
+    ear = g.poly([(hx - 6, hy - 1), (hx - 16, hy - 6), (hx - 6, hy + 3)])
+    vol(cv, ear, GNOME_SKIN, shadow=1, light=1)
+    band = g.ellipse(hx - 1, hy - 5, 10, 4) & (g.py < hy - 3)
+    vol(cv, band, BANDANA, shadow=1, light=1)
+    fill(cv, g.poly([(hx - 9, hy - 5), (hx - 15, hy - 1 + (i % 2)), (hx - 12, hy - 7)]), BANDANA[3])
+    if a == "die":
+        fill(cv, g.polyline([(hx + 1, hy - 2), (hx + 4, hy + 1)], 0.6) | g.polyline([(hx + 1, hy + 1), (hx + 4, hy - 2)], 0.6), INK)
+    else:
+        glow_eye(cv, g, hx + 3, hy - 1, 2.0, "#ffd23f")
+    fill(cv, g.polyline([(hx + 1, hy + 5), (hx + 7, hy + 6)], 0.6), INK)
+    fangs(cv, g, hx + 3, hy + 5.5, n=2, h=1.8, gap=3)
+    sx, sy = cx + 6, base - 21 + dy
+    ex = sx + math.sin(math.radians(swing + 90)) * 8
+    ey = sy - math.cos(math.radians(swing + 90)) * 8
+    vol(cv, g.capsule(sx, sy, ex, ey, 2.4), GNOME_SKIN, shadow=1, light=1)
+    if a != "die":
+        cx2 = ex + math.sin(math.radians(swing + 60)) * 14
+        cy2 = ey - math.cos(math.radians(swing + 60)) * 14
+        club = g.capsule(ex, ey, cx2, cy2, 2.0) | g.disc(cx2, cy2, 3.6)
+        vol(cv, club, pal("#1e1208", "#4a2e14", "#664020", "#82562c", "#a0703a", "#bc8c50"), shadow=1, light=1)
+        if a == "attack" and i == 2:
+            fill(cv, g.arc(ex, ey, 16, 300, 60, 1.0), hex_rgb("#ffd23f"))
+
+
 MONSTERS = {
     # id: (draw fn, frame size, display name, level)
     "MOB001": (lambda cv, g, a, i: nam_lun(cv, g, a, i), 64, "Nam Lun", "1-2"),
@@ -720,10 +854,14 @@ MONSTERS = {
     "BOSS034": (lambda cv, g, a, i: nam_lun(cv, g, a, i, 2.4, king=True), 128, "Vua Nam Lun", "5"),
     "BOSS035": (lambda cv, g, a, i: wolf(cv, g, a, i, 1.75, alpha=True), 128, "Cho Rung Dau Dan", "8"),
     "BOSS036": (lambda cv, g, a, i: bat(cv, g, a, i, 1.9, queen=True), 128, "Doi Chua Gieng", "10"),
+    # Chapter 2 (step B5.1)
+    "MOB008": (lambda cv, g, a, i: boar(cv, g, a, i, 0.9), 64, "Lon Rung Dong", "10-12"),
+    "MOB009": (lun_cuop, 64, "Lun Cuop Dong", "11-14"),
+    "BOSS002": (lambda cv, g, a, i: boar(cv, g, a, i, 1.85, king=True), 128, "Lon Rung Chua", "12"),
 }
 
 
-BOSSES = ("BOSS001", "BOSS034", "BOSS035", "BOSS036")
+BOSSES = ("BOSS001", "BOSS034", "BOSS035", "BOSS036", "BOSS002")
 
 
 def monster_frames(mid):

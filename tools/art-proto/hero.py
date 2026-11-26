@@ -84,6 +84,14 @@ def draw_head(L, cx, cy, spec):
     if spec.get("headband"):
         band = G.ellipse(x + 8, y + 3, 11.5, 1.0) & ~G.ellipse(x + 15, y + 3, 5, 5)
         fill(L["hair"], band, hex_rgb(spec["headband"]))
+    if spec.get("hat") == "official":   # examiner's black cap with two short side flaps (step B5.1)
+        cap = G.rect(x - 1, y - 6, x + 17, y + 3) | G.ellipse(x + 8, y - 6, 9, 3)
+        hr = ramp("#2a2a34", light="#4a4a5a", dark="#16161e", outline="#08080c")
+        paint(L["hair"], cap, hr, shade=(0, 1, 1))
+        for side in (-1, 1):
+            flap = G.ellipse(x + 8 + side * 13, y - 3, 4.5, 1.6)
+            paint(L["hair"], flap, hr, shade=None)
+        fill(L["hair"], G.rect(x - 1, y + 1, x + 17, y + 2), hex_rgb("#c48a2e"))
     if spec.get("hat") == "conical":
         hat = G.poly([(x - 6, y + 4), (x + 10, y - 10), (x + 26, y + 4)])
         hr = ramp("#e2c27d", light="#f6e2a6", dark="#b8964f", outline="#6b4b1c")

@@ -1,0 +1,14 @@
+# Lon Rung Chua, field boss of M009 (step B5.1), rolled once per kill with the leader row below.
+# The loot drops on the ground for the top damage dealer (as the scheduled bosses of R01, roadmap 8.3).
+id: DROP_R03_BOSS
+soft: { chance: 1, perLevel: 16, spread: 0.2 }
+entries:
+  - { chance: 1, item: dong_luyen_2 }
+  - { chance: 0.6, pick: { potion_hp_m: 0.6, potion_mp_m: 0.4 }, qty: [1, 3] }
+gear:
+  items: [ s2_weapon, s2_hat, s2_armor, s2_boots ]
+  levelBand: [10, 19]
+  chance: { common: 0.3, good: 0.5, rare: 0.15, epic: 0.02 }
+tiers:
+  elite: { softChance: 1, rolls: 1, gear: { common: 0.3, good: 0.5, rare: 0.15, epic: 0.02 } }
+  leader: { softChance: 1, rolls: 2, gear: { common: 0.25, good: 0.5, rare: 0.2, epic: 0.04 } }

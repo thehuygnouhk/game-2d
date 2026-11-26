@@ -71,16 +71,36 @@ export interface Rect {
   w: number;
   h: number;
 }
+export interface MapNpc {
+  id: string;
+  x: number;
+  y: number;
+  /** the NPC stands here only once this main quest is completed (step B5.1: the friends move to Thượng Đô) */
+  showAfter?: string;
+  /** …or only until this main quest is completed */
+  hideAfter?: string;
+}
+export interface BossSpawn {
+  boss: string;
+  x: number;
+  y: number;
+  /** schedule (events/) or dungeon id; empty for a field boss */
+  event: string;
+  /** field boss (step B5.1): stands in every zone and comes back this many minutes after it falls */
+  respawnMin?: number;
+}
 export interface GameMap extends MapMetaT {
   /** raw Tiled JSON: the client draws it, the server reads its collision layer */
   tiled: unknown;
   spawn: { x: number; y: number };
   portals: Portal[];
   mobSpawns: MobSpawn[];
-  npcs: { id: string; x: number; y: number }[];
+  npcs: MapNpc[];
   safeZones: Rect[];
-  /** where scheduled or dungeon bosses appear (content-pipeline §5.2) */
-  bossSpawns: { boss: string; x: number; y: number; event: string }[];
+  /** where scheduled, dungeon and field bosses appear (content-pipeline §5.2) */
+  bossSpawns: BossSpawn[];
+  /** revive town for a map outside its region's town (combat §7), e.g. the R03 fields → M005 */
+  town?: string;
 }
 export interface Content {
   monsters: Map<string, MonsterT>;
@@ -196,10 +216,29 @@ function mapObjects(tiled: TiledJson) {
       }),
     npcs: objs
       .filter((o) => o.type === "npc")
-      .map((o) => ({ id: prop<string>(o, "id") ?? o.name ?? "", x: o.x, y: o.y })),
+      .map((o) => {
+        const show = prop<string>(o, "showAfter"),
+          hide = prop<string>(o, "hideAfter");
+        return {
+          id: prop<string>(o, "id") ?? o.name ?? "",
+          x: o.x,
+          y: o.y,
+          ...(show ? { showAfter: show } : {}),
+          ...(hide ? { hideAfter: hide } : {}),
+        };
+      }),
     bossSpawns: objs
       .filter((o) => o.type === "boss_spawn")
-      .map((o) => ({ boss: prop<string>(o, "boss") ?? "", x: o.x, y: o.y, event: prop<string>(o, "event") ?? "" })),
+      .map((o) => {
+        const respawn = prop<number>(o, "respawnMin");
+        return {
+          boss: prop<string>(o, "boss") ?? "",
+          x: o.x,
+          y: o.y,
+          event: prop<string>(o, "event") ?? "",
+          ...(respawn ? { respawnMin: respawn } : {}),
+        };
+      }),
     safeZones: objs
       .filter((o) => o.type === "zone_safe")
       .map((o) => ({ x: o.x, y: o.y, w: o.width ?? 0, h: o.height ?? 0 })),
@@ -367,7 +406,16 @@ export function loadContent(opts: { dir?: string; mapDir?: string; warnings?: st
   for (const c of classes.values()) if (c.weapon) ref(items.has(c.weapon), `class ${c.id}: weapon ${c.weapon}`);
   for (const sc of scenes.values())
     for (const l of sc.lines) ref(l.who === "PLAYER" || npcs.has(l.who), `scene ${sc.id}: speaker ${l.who}`);
-  for (const m of maps.values()) for (const n of m.npcs) ref(npcs.has(n.id), `map ${m.id}: unknown NPC ${n.id}`);
+  for (const m of maps.values()) {
+    for (const n of m.npcs) {
+      ref(npcs.has(n.id), `map ${m.id}: unknown NPC ${n.id}`);
+      for (const qid of [n.showAfter, n.hideAfter].filter((x): x is string => !!x))
+        ref(quests.has(qid), `map ${m.id}: NPC ${n.id} waits for unknown quest ${qid}`);
+    }
+    for (const b of m.bossSpawns)
+      if (b.respawnMin) ref(bosses.has(b.boss), `map ${m.id}: field boss ${b.boss} does not exist`);
+    if (m.town) ref(maps.get(m.town)?.type === "TOWN", `map ${m.id}: revive town ${m.town} is not a town`);
+  }
 
   // V004: every *Key has a vi text
   const keyRefs = (node: unknown, where: string): void => {

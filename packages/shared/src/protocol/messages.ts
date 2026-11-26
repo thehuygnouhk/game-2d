@@ -397,7 +397,13 @@ export interface SQuestUpdate {
   /** main quests completed and in the chapter */
   done: number;
   total: number;
+  /** every main quest written so far is completed (no current quest) */
   chapterDone: boolean;
+  /** chapter of the current (or last completed) main quest and its title (step B5.1) */
+  chapter?: number;
+  chapterName?: string;
+  /** when no quest is left: what the player waits for ("Vòng 2 mở ở bản cập nhật sau") */
+  wait?: string;
   /** objective progress text to float over the player ("Hạ Nấm Lùn 3/5") */
   progress?: string;
   /** "accepted" | "ready" | "completed": banner on the client */
@@ -450,6 +456,8 @@ export interface SceneLine {
 export interface SScene {
   key: string;
   lines: SceneLine[];
+  /** the client answers C_NPC_CHOICE SCENE_DONE when the last line is read (the scene is a quest objective) */
+  report?: boolean;
   /** the "Hết Chương 1" card shown after the lines */
   chapterEnd?: { letter: string; minutes: number; lv: number; power: number; className: string };
 }

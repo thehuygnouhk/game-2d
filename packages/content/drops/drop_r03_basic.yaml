@@ -1,0 +1,14 @@
+# Basic drop table of region R03 Dong Bang Luc Nguyen (step B5.1): same rates as R01, set S2 Thu Lai,
+# medium potions join the small ones (combat section 6, items section 5 and 8).
+id: DROP_R03_BASIC
+soft: { chance: 0.9, perLevel: 4, spread: 0.2 }
+entries:
+  - { chance: 0.25, item: dong_luyen_1 }
+  - { chance: 0.08, pick: { potion_hp: 0.35, potion_hp_m: 0.25, potion_mp: 0.25, potion_mp_m: 0.15 } }
+gear:
+  items: [ s2_weapon, s2_hat, s2_armor, s2_boots ]   # set S2, takes the monster level
+  levelBand: [10, 19]
+  chance: { common: 0.06, good: 0.02, rare: 0.003, epic: 0.0003 }
+tiers:
+  elite: { softChance: 1, rolls: 2, gear: { common: 0.06, good: 0.10, rare: 0.015, epic: 0.0015 } }
+  leader: { softChance: 1, rolls: 2, gear: { common: 0.06, good: 0.25, rare: 0.05, epic: 0.005 }, guaranteed: dong_luyen_2 }

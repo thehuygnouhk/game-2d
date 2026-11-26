@@ -1,0 +1,16 @@
+# not playable in the browser prototype yet
+id: Q_MAIN_13
+type: MAIN
+nameKey: quest.main.13.title
+chapter: 2
+levelMin: 10
+prerequisites: [Q_MAIN_12]
+giver: NPC002
+turnIn: NPC002
+objectives:
+  - { type: SCENE, target: Q_MAIN_13, map: M001 }
+rewards: { exp: 1500, soft: 300 }
+dialogue:
+  accept: quest.main.13.accept
+  progress: quest.main.13.progress
+  complete: quest.main.13.complete

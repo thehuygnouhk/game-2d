@@ -3,3 +3,4 @@ cu_cai_non: { mob: MOB002, chance: 0.5 }
 thao_duoc: { node: M002, respawnSec: 20, cols: [7, 13, 24, 33, 44, 51, 70, 79] }
 bao_tai: { mob: MOB004, chance: 0.25 }
 manh_trang: { mob: MOB007, chance: 0.3 }
+trang_sach: { mob: MOB009, chance: 0.5 }

@@ -44,7 +44,15 @@ function startAttack(zone: Zone, m: Mob, t: Player, now: number): void {
   const ai = m.def.ai;
   m.atkReadyAt = now + ai.attackCooldownMs;
   const ranged = ai.attackRange > 100;
-  m.windup = { at: now + (ranged ? RULES.mobShotWindupMs : RULES.mobMeleeWindupMs), targetId: t.id };
+  let windupMs: number = ranged ? RULES.mobShotWindupMs : RULES.mobMeleeWindupMs;
+  const gap = Math.abs(t.body.x - m.x) - RULES.mobChargeStop;
+  if (ai.charge && !m.flying && gap > 0) {
+    // combat §5.2 (Lợn Rừng Đồng): head down, rush at the target, the hit lands at the end of the run
+    const left = Math.min(ai.charge.dist, gap);
+    m.dash = { dir: m.facing, left, speed: ai.charge.speed };
+    windupMs = Math.max(windupMs, Math.round((left / ai.charge.speed) * 1000));
+  }
+  m.windup = { at: now + windupMs, targetId: t.id };
   const cast: SSkillCast = { casterId: m.id, skillId: m.def.skills[0] ?? "MOBSKL_TACKLE", f: m.facing, targetId: t.id };
   if (ranged) cast.shot = { vx: m.facing * RULES.shotSpeed, range: RULES.shotRange, delayMs: RULES.mobShotWindupMs };
   for (const o of zone.observers(m.id)) o.out.send(Op.S_SKILL_CAST, cast);
@@ -53,6 +61,7 @@ function startAttack(zone: Zone, m: Mob, t: Player, now: number): void {
 function finishWindup(zone: Zone, m: Mob, now: number): void {
   const w = m.windup!;
   m.windup = null;
+  m.dash = null;
   const t = zone.players.get(w.targetId);
   if (m.def.ai.attackRange > 100) {
     zone.shots.push({ mob: m, x: m.x, y: m.y - m.h / 2, vx: m.facing * RULES.shotSpeed, left: RULES.shotRange });
@@ -127,7 +136,15 @@ export function tickMob(zone: Zone, m: Mob, now: number): void {
     else walk(zone, m, -Math.sign(dx || 1) * ai.moveSpeed * RULES.mobFlee * DT);
     return;
   }
-  if (m.windup) return; // swinging
+  if (m.windup) {
+    if (m.dash) {
+      // charging: rush on until the run is over or something blocks the way
+      const step = Math.min(m.dash.left, m.dash.speed * DT);
+      m.dash.left -= step;
+      if (!walk(zone, m, m.dash.dir * step, false) || m.dash.left <= 0) m.dash = null;
+    }
+    return; // swinging
+  }
   if (m.flying) {
     const dy = t.body.y - 34 - m.y;
     if (Math.abs(dx) < 40 && Math.abs(dy) < 50) {
@@ -137,8 +154,24 @@ export function tickMob(zone: Zone, m: Mob, now: number): void {
     return;
   }
   m.facing = dx >= 0 ? 1 : -1;
-  if (Math.abs(dx) > ai.attackRange) walk(zone, m, Math.sign(dx) * ai.moveSpeed * RULES.mobChase * DT);
+  const reach = ai.attackRange + (ai.charge?.dist ?? 0);
+  if (Math.abs(dx) > reach || (Math.abs(dx) > ai.attackRange && now < m.atkReadyAt))
+    walk(zone, m, Math.sign(dx) * ai.moveSpeed * RULES.mobChase * DT);
   else if (now >= m.atkReadyAt && Math.abs(t.body.y - m.y) < 90) startAttack(zone, m, t, now);
+}
+
+/**
+ * PACK (combat §5.2, Lùn Cướp Đồng): when one is hit, the others of its kind within callRange that are not
+ * busy turn on the attacker. They join the fight but share nothing until they are hit themselves.
+ */
+export function callPack(zone: Zone, m: Mob, attacker: Player): void {
+  const range = m.def.ai.callRange ?? 200;
+  for (const o of zone.mobs.values()) {
+    if (o === m || !o.alive || o.boss || o.def.id !== m.def.id || o.mode === "return" || o.targetId) continue;
+    if (Math.abs(o.x - m.x) > range || Math.abs(o.y - m.y) > RULES.aggroDy) continue;
+    o.targetId = attacker.id;
+    o.mode = "chase";
+  }
 }
 
 function wander(zone: Zone, m: Mob, now: number): void {

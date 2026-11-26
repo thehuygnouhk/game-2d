@@ -1,0 +1,10 @@
+# Cutscenes of Chapter 2 (quests section 5, lore ch.2), step B5.1. who: an NPC id or PLAYER
+scenes:
+  - id: Q_MAIN_13
+    lines:
+      - { who: NPC002, textKey: scene.q_main_13.1 }
+      - { who: NPC003, textKey: scene.q_main_13.2 }
+      - { who: NPC002, textKey: scene.q_main_13.3 }
+      - { who: NPC004, textKey: scene.q_main_13.4 }
+      - { who: PLAYER, textKey: scene.q_main_13.5 }
+      - { who: NPC002, textKey: scene.q_main_13.6 }

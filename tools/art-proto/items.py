@@ -376,6 +376,71 @@ def chest():
     return cv
 
 
+# ---- set S2 "Thu Lai" (items §5, step B5.1) and the lost book page of Q_MAIN_15 ----
+def brush_pen():
+    """Weapon of the clerks: a long brush-pen with a brass ferrule, ink still wet on the tip."""
+    cv = canvas(S, S)
+    shaft = g.capsule(6, 27, 23, 8, 1.8)
+    paint(cv, shaft, ramp("#5a2a6a", light="#8a52a0", dark="#3a1a48", outline="#160a1e"), shade=(1, 1, 2))
+    paint(cv, g.capsule(20, 11, 23, 8, 2.2), ramp("#c48a2e", light="#f4cc70", outline="#4a2a0e"), shade=None)
+    tip = g.poly([(22, 7), (28, 2), (26, 9)])
+    paint(cv, tip, ramp("#1f1a2e", light="#3a3355", outline="#08060e"), shade=None)
+    put(cv, 27, 3, hex_rgb("#7fd1ff"))
+    for k in range(3):
+        put(cv, 9 + k * 4, 24 - k * 4, hex_rgb("#c48a2e"))
+    return cv
+
+
+def scholar_cap():
+    cv = canvas(S, S)
+    felt = ramp("#2a2a34", light="#4a4a5a", dark="#16161e", outline="#08080c")
+    crown = g.rect(9, 9, 23, 20) | g.ellipse(16, 9, 7, 3)
+    paint(cv, crown, felt, shade=(1, 1, 2))
+    for side in (-1, 1):
+        paint(cv, g.ellipse(16 + side * 11, 14, 4.5, 1.8), felt, shade=None)
+    fill(cv, g.rect(9, 18, 23, 19), hex_rgb("#c48a2e"))
+    put(cv, 16, 13, hex_rgb("#c48a2e"))
+    return cv
+
+
+def clerk_robe():
+    cv = canvas(S, S)
+    cloth = ramp("#5a2a6a", light="#8a52a0", dark="#3a1a48", outline="#160a1e")
+    body = g.poly([(11, 5), (21, 5), (28, 10), (25, 16), (22, 14), (24, 28), (8, 28), (10, 14), (7, 16), (4, 10)])
+    paint(cv, body, cloth, shade=(1, 1, 2))
+    gold = hex_rgb("#c48a2e")
+    fill(cv, g.poly([(13, 5), (19, 5), (16, 12)]), hex_rgb("#f3e2b8"))
+    fill(cv, g.capsule(16, 12, 16, 27, 0.4), gold)
+    fill(cv, g.capsule(9, 19, 23, 19, 0.8) & body, gold)
+    return cv
+
+
+def clerk_boots():
+    cv = canvas(S, S)
+    leather = ramp("#3a3a4a", light="#5e5e74", dark="#22222e", outline="#0a0a10")
+    for dx in (0, 11):
+        shaft = g.rect(6 + dx, 8, 12 + dx, 21)
+        foot = g.poly([(6 + dx, 19), (13 + dx, 19), (17 + dx, 23), (17 + dx, 27), (5 + dx, 27)])
+        paint(cv, shaft | foot, leather, shade=(1, 1, 2))
+        fill(cv, g.rect(6 + dx, 8, 12 + dx, 9) & shaft, hex_rgb("#8a52a0"))
+        fill(cv, g.rect(5 + dx, 26, 17 + dx, 27) & foot, hex_rgb("#08080c"))
+        put(cv, 9 + dx, 14, hex_rgb("#c48a2e"))
+    return cv
+
+
+def book_page():
+    """Trang Sach That Lac: a written page of the exam books, corner torn, a seal in red."""
+    cv = canvas(S, S)
+    paper = ramp("#f3ead2", light="#fffaf0", dark="#d2c29a", outline="#5a4a2e")
+    page = g.poly([(6, 4), (25, 4), (26, 27), (12, 28), (6, 22)])
+    paint(cv, page, paper, shade=(1, 1, 1))
+    for y in (9, 12, 15, 18, 21):
+        fill(cv, g.capsule(10, y, 22, y, 0.3) & page, hex_rgb("#5a4a3a"))
+    fill(cv, g.disc(21, 24, 2.6), hex_rgb("#c1121f"))
+    put(cv, 21, 24, hex_rgb("#ff8a8a"))
+    return cv
+
+
 def all_icons():
     icons = []
     for name in CLASSES:
@@ -393,4 +458,6 @@ def all_icons():
     icons += [("kiem_dan_lang", iron_sword()), ("mu_dan_lang", cap()), ("ao_dan_lang", villager_tunic()),
               ("giay_dan_lang", boots()), ("potion_hp_m", potion_big("#e63946")), ("potion_mp_m", potion_big("#3a86ff")),
               ("ruong_tan_thu", chest())]
+    icons += [("but_thu_lai", brush_pen()), ("mu_thu_lai", scholar_cap()), ("ao_thu_lai", clerk_robe()),
+              ("giay_thu_lai", clerk_boots()), ("trang_sach", book_page())]
     return icons

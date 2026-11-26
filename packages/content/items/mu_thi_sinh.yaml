@@ -1,0 +1,8 @@
+# prototype item (step A1)
+id: mu_thi_sinh
+type: ARMOR
+nameKey: item.mu_thi_sinh.name
+icon: items/mu_thu_lai
+slot: hat
+levelReq: 12
+rarity: good

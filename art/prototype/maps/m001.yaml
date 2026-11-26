@@ -12,11 +12,11 @@ size: { widthTiles: 64, heightTiles: 18 }
 portals:
   - { id: P01, x: 2000, y: 480, to: M002, toX: 112, toY: 512 }
 npcs:
-  - { id: NPC001, x: 432, y: 480 }
+  - { id: NPC001, x: 432, y: 480, hideAfter: Q_MAIN_12 }
   - { id: NPC002, x: 656, y: 480 }
   - { id: NPC040, x: 880, y: 480 }
-  - { id: NPC003, x: 1008, y: 480 }
-  - { id: NPC004, x: 1328, y: 416 }
+  - { id: NPC003, x: 1008, y: 480, hideAfter: Q_MAIN_13 }
+  - { id: NPC004, x: 1328, y: 416, hideAfter: Q_MAIN_13 }
 spawns: []
 bossSpawns: []
 skyZones: []

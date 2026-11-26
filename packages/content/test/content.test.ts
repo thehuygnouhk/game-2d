@@ -25,7 +25,7 @@ describe("content package", () => {
 
   it("loads the Chapter 1 story records of step B4", () => {
     const c = loadContent();
-    expect(c.mainQuests.map((q) => q.id)).toEqual(
+    expect(c.mainQuests.filter((q) => q.chapter === 1).map((q) => q.id)).toEqual(
       Array.from({ length: 12 }, (_, i) => `Q_MAIN_${String(i + 1).padStart(2, "0")}`),
     );
     expect(c.quests.get("Q_MAIN_03")?.objectives[1]).toEqual({
@@ -43,6 +43,39 @@ describe("content package", () => {
     expect(c.scenes.get("Q_MAIN_11")?.lines).toHaveLength(6);
     expect(c.classes.get("FIRE")?.weapon).toBe("kiem_lua_tap_su");
     expect(c.text("dialog.level", { lv: 5, title: "X" })).toBe("Đạt Lv 5 rồi quay lại nhận “X”.");
+  });
+
+  it("loads the Chapter 2 records of step B5.1", () => {
+    const c = loadContent();
+    expect(c.mainQuests.filter((q) => q.chapter === 2).map((q) => q.id)).toEqual([
+      "Q_MAIN_13",
+      "Q_MAIN_14",
+      "Q_MAIN_15",
+      "Q_MAIN_16",
+    ]);
+    expect(c.quests.get("Q_MAIN_13")).toMatchObject({ giver: "NPC002", prerequisites: ["Q_MAIN_12"] });
+    expect(c.quests.get("Q_MAIN_14")?.objectives.map((o) => [o.type, o.target, o.map])).toEqual([
+      ["TALK", "NPC011", "M005"],
+      ["TALK", "NPC046", "M008"],
+    ]);
+    expect(c.questItems.trang_sach).toEqual({ mob: "MOB009", chance: 0.5 });
+    expect(c.scenes.get("Q_MAIN_13")?.lines).toHaveLength(6);
+    // maps: the friends move to Thượng Đô after Q_MAIN_13, the R03 fields revive in Thượng Đô
+    const npc = (map: string, id: string) => c.maps.get(map)!.npcs.find((n) => n.id === id);
+    expect(npc("M001", "NPC001")?.hideAfter).toBe("Q_MAIN_12");
+    expect(npc("M001", "NPC003")?.hideAfter).toBe("Q_MAIN_13");
+    expect(npc("M005", "NPC003")?.showAfter).toBe("Q_MAIN_13");
+    expect(c.maps.get("M009")).toMatchObject({ type: "FIELD", region: "R03", town: "M005" });
+    expect(c.maps.get("M009")!.bossSpawns).toEqual([expect.objectContaining({ boss: "BOSS002", respawnMin: 3 })]);
+    expect(c.maps.get("M004")!.portals.find((p) => p.to === "M005")).toBeTruthy();
+    // monsters: charge, pack call, field boss
+    expect(c.monsters.get("MOB008")?.ai.charge).toEqual({ speed: 300, dist: 110 });
+    expect(c.monsters.get("MOB009")?.ai).toMatchObject({ type: "PACK", callRange: 220 });
+    expect(c.bosses.get("BOSS002")).toMatchObject({ kind: "MINIBOSS", drops: "DROP_R03_BOSS" });
+    expect(c.drops.get("DROP_R03_BASIC")?.gear).toMatchObject({ levelBand: [10, 19] });
+    expect(c.items.get("s2_weapon")).toMatchObject({ set: "S2", slot: "weapon" });
+    expect(c.text(c.npcs.get("NPC046")!.nameKey)).toBe("Giám Khảo Tuyển Thư");
+    expect(c.text("npc.npc003.line_m005")).toContain("Thượng Đô");
   });
 
   it("flattens nested i18n keys", () => {

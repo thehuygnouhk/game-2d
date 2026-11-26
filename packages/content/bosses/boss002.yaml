@@ -1,0 +1,19 @@
+# Lon Rung Chua: huc theo duong thang co vung bao hieu, dam dat; goi 2 Lon Rung Dong o 50% HP; M009 (boss khu vuc, hoi sinh 3 phut) (prototype)
+id: BOSS002
+nameKey: boss.boss002.name
+level: [12, 12]
+element: EARTH
+kind: MINIBOSS                  # HP/EXP multiplier per combat section 2.1 (Boss x40, Mini-boss x10)
+sprite: bosses/boss002
+size: { w: 100, h: 76 }
+skills: [ BSKL_LUNGE, BSKL_STOMP_WAVE ]
+phases:
+  - { atHp: 0.5, action: SUMMON, mob: MOB008, count: 2 }
+drops: DROP_R03_BOSS
+enrageAfterMin: 10
+flying: false
+moveSpeed: 70
+aggroRange: 420
+skillDefs:
+  BSKL_LUNGE: { mult: 1.6, telegraphMs: 1000, shape: rect, w: 300, h: 50, cooldownMs: 4600 }
+  BSKL_STOMP_WAVE: { mult: 1.5, telegraphMs: 1200, shape: circle, r: 130, every: 3, cooldownMs: 5200 }

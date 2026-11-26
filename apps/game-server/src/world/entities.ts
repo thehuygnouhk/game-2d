@@ -262,6 +262,8 @@ export class Mob implements Replicated {
   readonly threat = new Map<number, number>();
   atkReadyAt = 0;
   windup: { at: number; targetId: number } | null = null;
+  /** a charge in progress (ai.charge): px left to rush, direction, speed */
+  dash: { dir: number; left: number; speed: number } | null = null;
   hurtUntil = 0;
   knockDir: 1 | -1 = 1;
   hoverY: number;
@@ -363,7 +365,8 @@ export class Drop {
 /** A boss fight in progress (maps §5): attack cycle, telegraphs waiting to land, phases done. */
 export interface BossRun {
   def: Boss;
-  kind: "WORLD" | "DUNGEON";
+  /** WORLD: scheduled (events/), DUNGEON: in an instance, FIELD: stands in every zone and respawns (step B5.1) */
+  kind: "WORLD" | "DUNGEON" | "FIELD";
   cycle: number;
   nextAt: number;
   busyUntil: number;
@@ -377,6 +380,8 @@ export interface BossRun {
   piecesMax: number;
   /** world boss: event key and wall clock times */
   eventKey?: string;
+  /** field boss: since when nobody is in reach (it heals and goes home after a while) */
+  idleSince?: number;
   /** damage by player over the whole fight (pages included) */
   readonly damage: Map<number, number>;
 }

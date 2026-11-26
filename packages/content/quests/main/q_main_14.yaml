@@ -1,0 +1,17 @@
+# not playable in the browser prototype yet
+id: Q_MAIN_14
+type: MAIN
+nameKey: quest.main.14.title
+chapter: 2
+levelMin: 10
+prerequisites: [Q_MAIN_13]
+giver: NPC002
+turnIn: NPC046
+objectives:
+  - { type: TALK, target: NPC011, map: M005 }
+  - { type: TALK, target: NPC046, map: M008 }
+rewards: { exp: 3000, soft: 400, items: [ { id: potion_hp_m, count: 5 } ] }
+dialogue:
+  accept: quest.main.14.accept
+  progress: quest.main.14.progress
+  complete: quest.main.14.complete

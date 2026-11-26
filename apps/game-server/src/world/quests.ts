@@ -23,8 +23,9 @@ import type { Player } from "./entities";
 import type { World } from "./world";
 
 /**
- * Main quest chain of Chapter 1 on the server (docs/game-design/06-quests-and-missions.md §2-4, step B4).
- * Quest state lives in character_quests; the client only sees views and asks through NPC choices.
+ * Main quest chain on the server (docs/game-design/06-quests-and-missions.md §2-5): Chapter 1 (step B4) and
+ * Chapter 2 so far (step B5.1). Quest state lives in character_quests; the client only sees views and asks
+ * through NPC choices.
  */
 
 /** Đài Khai Thư in the ceremony hall I001 (tile 14, three tiles wide), quests §4. */
@@ -55,6 +56,10 @@ export class Quests {
   }
   chapterDone(p: Player): boolean {
     return this.current(p) === null;
+  }
+  /** Lễ Khai Thư is over: Thầy has left, Bà Mơ takes over the class change (quests §4, classes §5). */
+  pastCeremony(p: Player): boolean {
+    return p.questDone("Q_MAIN_12");
   }
   /** quests §4: Lv10 waits for Q_MAIN_11 */
   levelCap(p: Player): number {
@@ -93,10 +98,15 @@ export class Quests {
       } else where = `hái ở bụi thảo dược phát sáng (F) · ${where}`;
     }
     if (o.type === "USE_SKILL") where = `phím 1 trúng quái · ${where}`;
-    if (o.type === "BOSS")
-      where = `${where} · cổng ở cuối Hang Giếng Cạn, cần Lv${this.c.dungeons.get(o.map)?.minLevel ?? 1}`;
+    if (o.type === "BOSS") {
+      const dg = this.c.dungeons.get(o.map);
+      if (dg) where = `${where} · cổng ở cuối ${this.mapName(dg.entry.map)}, cần Lv${dg.minLevel}`;
+      else x = map?.bossSpawns.find((b) => b.boss === o.target)?.x;
+    }
     if (o.type === "SCENE") where = "Nhà Học Suối Mơ, buổi tối";
     if (o.type === "REACH") where = `${where} · Đài Khai Thư`;
+    const hint = `${prefix(q)}.where.${k}`; // a written hint wins (step B5.1)
+    if (this.c.i18n.has(hint)) where = this.c.text(hint);
     const got = p.quests.get(q.id)?.progress[k] ?? 0;
     return {
       type: o.type,
@@ -153,11 +163,18 @@ export class Quests {
 
   update(p: Player, extra: Partial<SQuestUpdate> = {}): SQuestUpdate {
     const q = this.current(p);
+    const all = this.c.mainQuests;
+    // the chapter of the current quest, or of the last one when everything written so far is done
+    const chapter = q?.chapter ?? all[all.length - 1]?.chapter ?? 1;
+    const inChapter = all.filter((x) => x.chapter === chapter);
     return {
       main: q ? this.view(p, q) : null,
-      done: this.c.mainQuests.filter((x) => p.questDone(x.id)).length,
-      total: this.c.mainQuests.length,
+      done: inChapter.filter((x) => p.questDone(x.id)).length,
+      total: inChapter.length,
       chapterDone: !q,
+      chapter,
+      chapterName: this.c.text(`quest.chapter.${chapter}`),
+      ...(q ? {} : { wait: this.c.text(`quest.wait.${chapter}`) }),
       ...extra,
     };
   }
@@ -221,11 +238,16 @@ export class Quests {
     return Math.abs(p.body.x - n.x) <= NPC_RANGE + RULES.rangeTolerance && Math.abs(p.body.y - n.y) <= 140;
   }
 
-  /** NPCs shown on a map: Thầy Bạch Vân leaves the school after Chapter 1 (quests §4). */
+  /**
+   * NPCs shown on a map for this player (map objects showAfter / hideAfter): Thầy Bạch Vân leaves the school
+   * after the ceremony (quests §4); Lam Nhi and Khôi go to Thượng Đô after Q_MAIN_13 (step B5.1).
+   */
   npcsOn(p: Player, mapId: string) {
     const m = this.c.maps.get(mapId);
     if (!m) return [];
-    return m.npcs.filter((n) => !(n.id === "NPC001" && mapId === "M001" && this.chapterDone(p)));
+    return m.npcs.filter(
+      (n) => (!n.showAfter || p.questDone(n.showAfter)) && (!n.hideAfter || !p.questDone(n.hideAfter)),
+    );
   }
 
   private talkHere(p: Player, npcId: string): number {
@@ -245,7 +267,8 @@ export class Quests {
   dialog(p: Player, npcId: string, override?: string): SNpcDialog {
     const c = this.c,
       npc = c.npcs.get(npcId)!;
-    let text = c.text(npc.lineKey);
+    const here = `${npc.lineKey}_${(p.zone?.mapId ?? "").toLowerCase()}`; // the line for this map, if written
+    let text = c.text(c.i18n.has(here) ? here : npc.lineKey);
     const options: NpcOption[] = [];
     const q = this.current(p);
     const title = q ? c.text(q.nameKey) : "";
@@ -266,6 +289,7 @@ export class Quests {
       options.push({ id: "TURNIN", label: c.text("dialog.opt_turnin", { title }), mark: "?", style: "ok" });
     } else if (q && st === "ACTIVE" && q.turnIn === npcId && ti < 0) {
       text = c.text(q.dialogue.progress);
+      if (this.sceneLeft(p, q)) options.push({ id: "SCENE", label: c.text("dialog.opt_scene"), mark: "!" });
       options.push({ id: "QUESTS", label: c.text("dialog.opt_quests", { title }), mark: "?", style: "dim" });
     }
     const inHall = p.zone?.inst?.kind === "CEREMONY";
@@ -275,7 +299,7 @@ export class Quests {
         options.unshift({ id: "ALTAR", label: c.text("dialog.opt_altar"), mark: "!" });
       } else options.unshift({ id: "CEREMONY", label: c.text("dialog.opt_ceremony"), mark: "!" });
     }
-    if (npcId === (this.chapterDone(p) ? "NPC002" : "NPC001") && this.canRechoose(p) && !inHall)
+    if (npcId === (this.pastCeremony(p) ? "NPC002" : "NPC001") && this.canRechoose(p) && !inHall)
       options.push({ id: "RITE", label: c.text("dialog.opt_rite") });
     if (c.shops.has(npcId)) options.push({ id: "SHOP", label: c.text("dialog.opt_shop") });
     if (npcId === "NPC040") options.push({ id: "SCHEDULE", label: c.text("dialog.opt_schedule") });
@@ -328,6 +352,12 @@ export class Quests {
       }
       case "SCHEDULE":
         return p.out.send(Op.S_NPC_DIALOG, this.dialog(p, npcId, this.w.bosses.scheduleText()));
+      case "SCENE": {
+        // the quest scene again (it was closed or the connection dropped before its last line)
+        const left = q && this.status(p, q) === "ACTIVE" && q.turnIn === npcId ? this.sceneLeft(p, q) : null;
+        if (!left) return fail(p, ErrorCode.E_QUEST_NOT_AVAILABLE, refSeq, "NO_SCENE");
+        return p.out.send(Op.S_SCENE, this.scene(p, left, true));
+      }
       case "CEREMONY":
         if (q?.id !== "Q_MAIN_12" || this.status(p, q) !== "ACTIVE")
           return fail(p, ErrorCode.E_QUEST_NOT_AVAILABLE, refSeq, "QUEST_NOT_AVAILABLE");
@@ -349,8 +379,17 @@ export class Quests {
     this.w.log("quest.accept", { player: p.id, quest: q.id });
     this.send(p, { event: { kind: "accepted", title: this.c.text(q.nameKey) } });
     this.event(p, "TALK", q.giver); // meeting the giver on the right map counts (Q_MAIN_05)
-    if (q.id === "Q_MAIN_11") p.out.send(Op.S_SCENE, this.scene(p, "Q_MAIN_11"));
+    const sc = this.sceneLeft(p, q);
+    if (sc)
+      p.out.send(Op.S_SCENE, this.scene(p, sc, true)); // Q_MAIN_11, Q_MAIN_13: the scene is the quest
     else if (q.id === "Q_MAIN_12") this.w.openCeremony(p);
+  }
+
+  /** The scene a quest still waits for (a SCENE objective not done yet), or null. */
+  private sceneLeft(p: Player, q: Quest): string | null {
+    const r = p.quests.get(q.id);
+    const k = q.objectives.findIndex((o, i) => o.type === "SCENE" && (r?.progress[i] ?? 0) < o.count);
+    return k >= 0 ? q.objectives[k]!.target : null;
   }
 
   /** Rewards and the COMPLETED row in one transaction (CLAUDE.md rule 5), then EXP and the next quest. */
@@ -399,10 +438,12 @@ export class Quests {
   }
 
   /* ---------------- scenes and the ceremony ---------------- */
-  scene(p: Player, key: string): SScene {
+  /** `report`: the scene is a quest objective, the client answers SCENE_DONE after the last line. */
+  scene(p: Player, key: string, report = false): SScene {
     const sc = this.c.scenes.get(key)!;
     return {
       key,
+      ...(report ? { report } : {}),
       lines: sc.lines.map((l) => ({
         who: l.who,
         name: l.who === "PLAYER" ? p.name : this.npcName(l.who),
@@ -412,12 +453,12 @@ export class Quests {
     };
   }
 
-  /** The client finished the Q_MAIN_11 scene: the objective counts and the quest completes by itself. */
+  /** The client finished a quest scene (Q_MAIN_11, Q_MAIN_13): the objective counts, the quest completes by itself. */
   private sceneDone(p: Player, refSeq: number): void {
     const q = this.current(p);
-    if (q?.id !== "Q_MAIN_11" || this.status(p, q) === "AVAILABLE")
-      return fail(p, ErrorCode.E_QUEST_NOT_AVAILABLE, refSeq, "NO_SCENE");
-    this.event(p, "SCENE", "Q_MAIN_11");
+    const sc = q && this.status(p, q) !== "AVAILABLE" ? this.sceneLeft(p, q) : null;
+    if (!q || !sc) return fail(p, ErrorCode.E_QUEST_NOT_AVAILABLE, refSeq, "NO_SCENE");
+    this.event(p, "SCENE", sc);
     if (this.status(p, q) === "READY") void this.turnIn(p, q, null, refSeq);
   }
 
@@ -478,7 +519,7 @@ export class Quests {
         return fail(p, ErrorCode.E_QUEST_NOT_AVAILABLE, refSeq, "NOT_AT_ALTAR");
     } else {
       if (!this.canRechoose(p)) return fail(p, ErrorCode.E_QUEST_NOT_AVAILABLE, refSeq, "CLASS_CHANGE_CLOSED");
-      if (!this.near(p, this.chapterDone(p) ? "NPC002" : "NPC001"))
+      if (!this.near(p, this.pastCeremony(p) ? "NPC002" : "NPC001"))
         return fail(p, ErrorCode.E_OUT_OF_RANGE, refSeq, "NPC_TOO_FAR");
       if (p.cls === cls) return fail(p, ErrorCode.E_INVALID_TARGET, refSeq, "SAME_CLASS");
     }

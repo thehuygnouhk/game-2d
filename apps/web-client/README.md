@@ -23,6 +23,7 @@ Phaser 3 + Vite + TypeScript ([client-design](../../docs/architecture/client-des
 | `e2e/accounts.spec.ts` | Tiêu chí bậc B3: đăng ký, cộng điểm, đóng trang rồi vào lại thấy nhân vật ở chỗ cũ, đăng xuất, đăng nhập |
 | `e2e/mobile.spec.ts` | Điện thoại (giả lập Pixel 7): đăng ký khi cầm dọc; cầm ngang đi bằng cần điều khiển, nói chuyện, nhận nhiệm vụ, đánh; cầm dọc thì nhắc xoay máy |
 | `e2e/chapter1.spec.ts` | Tiêu chí bậc B4: hộp thoại Thầy và Bà Mơ, trả Q_MAIN_01, mua ở tiệm Lam Nhi, săn Nấm Lùn cho Q_MAIN_02, mặc Kiếm Gỗ Tập |
+| `e2e/chapter2.spec.ts` | Tiêu chí bậc B5.1: nhân vật đã xong Chương 1 (ghi thẳng vào cơ sở dữ liệu e2e, `seedProgress`) tới Thượng Đô, gặp Lam Nhi và Viện Chủ Vân Tước, qua cổng giữa vào Tổng Đường Pháp Vệ, ghi danh với Giám Khảo (trả Q_MAIN_14), xuống Đồng Lúa thấy Khôi và Lợn Rừng Đồng |
 
 Test e2e chạy cả API, game server và client với PostgreSQL và Redis thật (`E2E_DATABASE_URL`, `E2E_REDIS_URL`); cơ sở dữ liệu e2e bị xóa sạch mỗi lần chạy.
 

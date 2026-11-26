@@ -26,7 +26,16 @@
   "NPC040": "Cụ Trương",
   "NPC042": "Thợ Rèn Tư",
   "NPC024": "Cô Kim Thoa",
-  "NPC053": "Cụ Tiễn"
+  "NPC053": "Cụ Tiễn",
+  "MOB008": "Lợn Rừng Đồng",
+  "MOB009": "Lùn Cướp Đồng",
+  "BOSS002": "Lợn Rừng Chúa",
+  "M005": "Thượng Đô",
+  "M008": "Tổng Đường Pháp Vệ",
+  "M009": "Đồng Lúa Lục Nguyên",
+  "M010": "Đồi Cối Xay Gió",
+  "NPC011": "Viện Chủ Vân Tước",
+  "NPC046": "Giám Khảo Tuyển Thư"
  },
  "npcOrder": [
   "NPC001",
@@ -37,7 +46,9 @@
   "NPC040",
   "NPC042",
   "NPC024",
-  "NPC053"
+  "NPC053",
+  "NPC011",
+  "NPC046"
  ],
  "mobs": {
   "MOB001": {
@@ -629,7 +640,33 @@
     "Thầy còn vài trang sách cũ phải đi tìm lại. Đừng lo cho thầy."
    ]
   ],
-  "LETTER": "Đừng tìm thầy. Hãy tìm Mười Hai Quyển."
+  "LETTER": "Đừng tìm thầy. Hãy tìm Mười Hai Quyển.",
+  "Q_MAIN_13": [
+   [
+    "NPC002",
+    "Thư thầy để lại đây. Chữ vẫn nghiêng nghiêng như mọi khi."
+   ],
+   [
+    "NPC003",
+    "“Đừng tìm thầy. Hãy tìm Mười Hai Quyển.” Mười Hai Quyển là gì vậy bà?"
+   ],
+   [
+    "NPC002",
+    "Bà chỉ nghe kể thôi. Muốn biết thật thì phải lên Thượng Đô, nơi Pháp Vệ Đoàn giữ hồ sơ."
+   ],
+   [
+    "NPC004",
+    "Mùa Tuyển Thư của Pháp Vệ Đoàn sắp mở. Đậu thì được vào thư khố."
+   ],
+   [
+    "PLAYER",
+    "Vậy mình cùng đi. Thầy bảo đừng tìm thầy, chứ đâu có cấm tìm sách."
+   ],
+   [
+    "NPC002",
+    "Đi đường cẩn thận. Hết Hang Giếng Cạn là tới đường lên Thượng Đô."
+   ]
+  ]
  },
  "events": {
   "EVT_BOSS_034": {
@@ -723,7 +760,12 @@
   "giay_dan_lang",
   "potion_hp_m",
   "potion_mp_m",
-  "ruong_tan_thu"
+  "ruong_tan_thu",
+  "but_thu_lai",
+  "mu_thu_lai",
+  "ao_thu_lai",
+  "giay_thu_lai",
+  "trang_sach"
  ],
  "quests": [
   {
@@ -1266,11 +1308,78 @@
    "icon": "weapon_water",
    "level": 10,
    "rarity": "common"
+  },
+  "s2_weapon": {
+   "type": "WEAPON",
+   "slot": "weapon",
+   "set": "S2",
+   "name": "Bút Thư Lại",
+   "icon": "but_thu_lai",
+   "levelBand": [
+    10,
+    19
+   ]
+  },
+  "s2_hat": {
+   "type": "ARMOR",
+   "slot": "hat",
+   "set": "S2",
+   "name": "Mũ Thư Lại",
+   "icon": "mu_thu_lai",
+   "levelBand": [
+    10,
+    19
+   ]
+  },
+  "s2_armor": {
+   "type": "ARMOR",
+   "slot": "armor",
+   "set": "S2",
+   "name": "Áo Thư Lại",
+   "icon": "ao_thu_lai",
+   "levelBand": [
+    10,
+    19
+   ]
+  },
+  "s2_boots": {
+   "type": "ARMOR",
+   "slot": "boots",
+   "set": "S2",
+   "name": "Giày Thư Lại",
+   "icon": "giay_thu_lai",
+   "levelBand": [
+    10,
+    19
+   ]
+  },
+  "mu_thi_sinh": {
+   "type": "ARMOR",
+   "slot": "hat",
+   "name": "Mũ Thí Sinh",
+   "icon": "mu_thu_lai",
+   "level": 12,
+   "rarity": "good"
+  },
+  "giay_thi_sinh": {
+   "type": "ARMOR",
+   "slot": "boots",
+   "name": "Giày Thí Sinh",
+   "icon": "giay_thu_lai",
+   "level": 12,
+   "rarity": "good"
   }
  },
  "sets": {
   "S1": {
    "name": "Dân Làng",
+   "bonus": {
+    "2": "+5% HP",
+    "4": "+8% ATK, +8% DEF"
+   }
+  },
+  "S2": {
+   "name": "Thư Lại",
    "bonus": {
     "2": "+5% HP",
     "4": "+8% ATK, +8% DEF"

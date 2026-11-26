@@ -107,7 +107,8 @@ describe("game server, step B1 (movement)", () => {
 
 describe("game server, step B2 (monsters, combat, zones, chat)", () => {
   it("hosts R01 with three zones per map and monsters from the content", () => {
-    expect([...server.world.zones.keys()].sort()).toEqual(["M001", "M002", "M003", "M004"]);
+    // R01, then Thượng Đô (R02) and Đồng Lúa (R03) from step B5.1
+    expect([...server.world.zones.keys()].sort()).toEqual(["M001", "M002", "M003", "M004", "M005", "M008", "M009"]);
     const z = server.world.zone("M002", 2)!;
     const kinds = new Set([...z.mobs.values()].map((m) => m.def.id));
     expect(kinds).toEqual(new Set(["MOB001", "MOB002"]));
@@ -215,16 +216,17 @@ describe("game server, step B2 (monsters, combat, zones, chat)", () => {
     p.lastCombat = server.world.now;
     c.send(Op.C_CHANGE_ZONE, { zoneNo: 1 });
     await c.wait<{ code: number }>(Op.S_ERROR, (e) => e.code === ErrorCode.E_IN_COMBAT);
-    const m4 = server.world.content.maps.get("M004")!;
-    const toM5 = m4.portals.find((x) => x.to === "M005")!;
-    teleport(p, "M004", 1, toM5.x + 32, toM5.y + toM5.h);
+    // M009 Đồng Lúa leads on to M010, which opens in step B5.2
+    const m9 = server.world.content.maps.get("M009")!;
+    const toM10 = m9.portals.find((x) => x.to === "M010")!;
+    teleport(p, "M009", 1, toM10.x + 32, toM10.y + toM10.h);
     await c.next(Op.S_MAP_CHANGE);
-    c.send(Op.C_USE_PORTAL, { portalId: toM5.id, seq: 0 });
+    c.send(Op.C_USE_PORTAL, { portalId: toM10.id, seq: 0 });
     const locked = await c.wait<{ code: number; message: string }>(
       Op.S_ERROR,
       (e) => e.code === ErrorCode.E_MAP_LOCKED,
     );
-    expect(locked.message).toBe("MAP_NOT_OPEN:M005");
+    expect(locked.message).toBe("MAP_NOT_OPEN:M010");
     c.close();
   });
 

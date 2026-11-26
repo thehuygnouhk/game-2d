@@ -85,7 +85,7 @@ export function spawnBoss(
     damage: new Map(),
   };
   zone.mobs.set(m.id, m);
-  zone.bossState(m);
+  if (kind !== "FIELD") zone.bossState(m); // a field boss shows its bar once someone fights it
   return m;
 }
 
@@ -182,6 +182,26 @@ function bossAtk(m: Mob, p: Player, mult: number, zone: Zone, now: number): void
   damagePlayer(zone, p, r, m.id, now);
 }
 
+/** A field boss stays near its spot (maps §5, step B5.1). */
+const FIELD_LEASH = 800;
+/** ms with nobody in reach before a field boss heals up and walks home */
+const FIELD_RESET_MS = 8000;
+
+/** Nobody fights the field boss any more: back to full health, a fresh fight, walk home (maps §5, step B5.1). */
+function fieldIdle(zone: Zone, m: Mob, now: number): void {
+  const run = m.boss!;
+  run.idleSince ??= now;
+  if (Math.abs(m.x - m.homeX) > 20) walk(zone, m, Math.sign(m.homeX - m.x) * m.def.ai.moveSpeed * DT);
+  if (now - run.idleSince < FIELD_RESET_MS || (m.hp >= m.max.hp && !run.damage.size)) return;
+  m.hp = m.max.hp;
+  run.damage.clear();
+  run.phasesDone.clear();
+  run.pending = [];
+  run.cycle = 0;
+  zone.chatAll("SYSTEM", zone.world.content.text("boss_msg.field_reset", { boss: m.name }));
+  zone.bossState(m, true);
+}
+
 /** One tick of a boss: land the telegraphs that are due, then attack, chase or hover. */
 export function tickBoss(zone: Zone, m: Mob, now: number): void {
   const run = m.boss!;
@@ -197,6 +217,7 @@ export function tickBoss(zone: Zone, m: Mob, now: number): void {
   if (now < run.busyUntil) return;
   let target: Player | undefined,
     best = Infinity;
+  const field = run.kind === "FIELD";
   for (const p of zone.players.values()) {
     const dx = Math.abs(p.body.x - m.x);
     if (
@@ -204,6 +225,7 @@ export function tickBoss(zone: Zone, m: Mob, now: number): void {
       now >= p.invulnUntil &&
       dx < m.def.ai.aggroRange &&
       (m.flying || Math.abs(p.body.y - m.y) < 220) &&
+      (!field || Math.abs(p.body.x - m.homeX) < FIELD_LEASH) &&
       dx < best
     ) {
       best = dx;
@@ -211,9 +233,11 @@ export function tickBoss(zone: Zone, m: Mob, now: number): void {
     }
   }
   if (!target) {
+    if (field) return fieldIdle(zone, m, now);
     if (m.flying) fly(zone, m, m.homeX, m.hoverY, m.def.ai.moveSpeed);
     return;
   }
+  run.idleSince = undefined;
   const dx = target.body.x - m.x,
     dist = Math.abs(dx);
   m.facing = dx >= 0 ? 1 : -1;

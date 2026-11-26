@@ -25,6 +25,7 @@ import {
 } from "@htk/shared";
 import { bossHit } from "./boss";
 import { Drop, type Mob, type Player } from "./entities";
+import { callPack } from "./mob-ai";
 import type { Zone } from "./zone";
 
 /** Combat on the server (server-design §6, combat §2-7). The client only sends intents. */
@@ -194,6 +195,7 @@ export function hitMob(
     for (const [id, v] of m.threat) if (v > best && zone.players.get(id)?.alive) [top, best] = [id, v];
     m.targetId = top;
     m.mode = "chase";
+    if (m.def.ai.type === "PACK" && !m.boss) callPack(zone, m, p);
   }
   if (!r.miss) {
     m.hp -= r.amount;
@@ -539,7 +541,8 @@ function worldBossDown(zone: Zone, m: Mob, killer: Player, now: number): void {
     dropAll(zone, loot, m.x, m.y, owner, now);
   }
   zone.bossState(m, true);
-  w.bosses.killed(m, killer);
+  if (run.kind === "FIELD") zone.fieldBossDown(m, now);
+  else w.bosses.killed(m, killer);
 }
 
 /** A page of Trang Lạc falls; the last one brings the boss down (maps §5.3). */

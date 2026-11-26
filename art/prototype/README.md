@@ -8,8 +8,8 @@ Toàn bộ được vẽ bằng code ở [`tools/art-proto`](../../tools/art-pro
 
 | Thư mục | Nội dung |
 |---------|----------|
-| `piskel/` | **File sửa được** trong Piskel: 8 nhân vật theo hệ, 9 NPC, 8 hiệu ứng chiêu, 1 bộ vật phẩm, 1 tileset vùng R01 |
-| `maps/` | **4 bản đồ vùng R01 (Chương 1)** cho Tiled và Phaser: `.tmj`, `.yaml`, tileset, nền parallax, ảnh xem trước (§1.5) |
+| `piskel/` | **File sửa được** trong Piskel: 8 nhân vật theo hệ, 11 NPC, 8 hiệu ứng chiêu, 1 bộ vật phẩm, 1 tileset (R01, thêm phần Chương 2) |
+| `maps/` | **4 bản đồ vùng R01 (Chương 1)** và **3 bản đồ đầu Chương 2** (M005, M008, M009) cho Tiled và Phaser: `.tmj`, `.yaml`, tileset, nền parallax, ảnh xem trước (§1.5, §1.7) |
 | `content/` | **Đã chuyển** sang [`packages/content`](../../docs/workflows/content-pipeline.md) ở bậc B2 (quái, boss, sự kiện, vật phẩm, kỹ năng, bảng rơi, nhiệm vụ, i18n); `build.py` ghi thẳng vào đó |
 | `sheets/` | Sprite sheet PNG nền trong suốt, dùng cho game hoặc mở bằng Aseprite/LibreSprite |
 | `preview/` | GIF xem nhanh: chiêu thức, di chuyển, NPC, Huyền Thư; ảnh tổng hợp vật phẩm |
@@ -82,7 +82,7 @@ Theo [content-pipeline §5](../../docs/workflows/content-pipeline.md):
 - **Đối tượng:** `spawn_player`, `portal` (`id`, `to`, `toX`, `toY`), `npc`, `mob_spawn` (`mob`, `count`, `radius`, `respawnSec`), `boss_spawn` (`boss`, `event`), `zone_safe`.
 - **Đi tới được:** bậc lên tối đa 2 ô, đảo cỏ là nền một chiều (nhảy xuyên từ dưới), cầu gỗ qua thác và thang dây ở hồ (M002). `build.py` chạy kiểm tra V016 (nhảy 3 ô) và **dừng build** nếu có cổng, NPC, điểm sinh quái hoặc điểm boss không tới được. Đã thử thêm bằng engine: đi từ điểm xuất hiện tới cổng cuối của cả 4 map.
 - **Khu cấp độ:** quái xếp theo cấp tăng dần từ cổng vào tới cổng ra (M002: Nấm Lùn → Thỏ Đốm; M003: Chó Rừng Non → Lùn Ném Đá → Nhện Mực; M004: Dơi Giếng → Rùa Đá Giếng). Ảnh xem trước có vẽ quái tại điểm sinh và boss tại điểm `boss_spawn` để minh họa; trong game boss chỉ xuất hiện theo lịch.
-- **YAML** cùng tên theo schema [content-pipeline §3.1](../../docs/workflows/content-pipeline.md). Cổng giữa các map đã nối toạ độ hai chiều; cổng M004 → M005 dùng toạ độ tạm vì M005 chưa vẽ.
+- **YAML** cùng tên theo schema [content-pipeline §3.1](../../docs/workflows/content-pipeline.md). Cổng giữa các map đã nối toạ độ hai chiều, cả cổng M004 → M005 (bậc B5.1).
 - Tileset được **nhúng** vào `.tmj` (Phaser không đọc tileset rời). `maps/tilesets/r01_index.txt` liệt kê tên và vị trí từng ô.
 
 **Đã kiểm tra:** nạp cả 4 map bằng **Phaser 3.80.1** trong Chromium headless: tạo được mọi lớp, đọc đúng tileset, đối tượng và số ô va chạm, vẽ ra không lỗi.
@@ -110,6 +110,24 @@ Phong cách **quái thú ma lực**: thú bị ma lực thấm vào, mắt khe p
 | BOSS036 | Dơi Chúa Giếng | 10 | 128 | M004, 12:30/19:30; Đêm Giếng Sáng | Cánh gai pha lê, gân mana xanh |
 
 Mỗi con có `idle` 1–4, `move` 5–8, `attack` 9–12, `die` 13–16, **`hurt` 17–18** (lùi lại, lóe trắng rồi ửng đỏ); boss có thêm **`skill2` 19–22** (Vua Nấm Lùn giơ gậy gọi nấm, Chó Rừng Đầu Đàn hú, Dơi Chúa Giếng bắn pha lê, Trang Lạc bão trang giấy). `.piskel` một lớp; sheet PNG mỗi hàng một hoạt ảnh. Vùng báo hiệu chiêu boss vẽ bằng engine ([art §4](../../docs/game-design/12-art-audio-direction.md)). Xem nhanh: `preview/quai_chuong1.gif`, `preview/boss_*.gif`.
+
+### 1.7 Đầu Chương 2: Thượng Đô và Đồng Lúa (bậc B5.1)
+
+| Map | Loại, cấp | Kích thước (ô) | Bố cục | Nội dung |
+|-----|-----------|----------------|--------|----------|
+| `m005` Thượng Đô | Town 10+ | 80 × 18 | Đường lát đá, quảng trường nâng 2 ô có giếng; cổng giữa hai cột cờ vào Tổng Đường | Lam Nhi (sau Q_MAIN_13), Viện Chủ Vân Tước; cổng M004, M008, M009 |
+| `m008` Tổng Đường Pháp Vệ | Town 10+ | 44 × 16 | Sân trước tòa Tổng Đường mái xanh, cột vàng | Giám Khảo Tuyển Thư, Chấp Bút Hạc Minh; cổng về M005 |
+| `m009` Đồng Lúa Lục Nguyên | Field 10–14 | 110 × 20 | Ruộng ngập nước một ô, bờ đê nâng, đảo cỏ, bù nhìn, cối xay | Khôi (sau Q_MAIN_13); Lợn Rừng Đồng → Lùn Cướp Đồng; boss khu vực Lợn Rừng Chúa trên bờ đê; hồi sinh về M005 |
+
+Tileset thêm (sau các ô R01, nên số ô của map R01 không đổi): đá lát kinh đô (`pave_*`), nhà mái xanh hoàng gia (`house_c`) và mái vàng đất (`house_d`), tòa **Tổng Đường** (`hall`), cột cờ (`banner_pole`), lúa xanh và lúa chín (`rice_a`, `rice_b`), bù nhìn (`scarecrow`). Nền parallax mới: `capital` (tường thành, dãy mái nhà, lâu đài lớn) và `paddy` (ruộng bậc thang, cối xay xa).
+
+| ID | Tên | Cấp | Khung | Nơi | Ghi chú hình |
+|----|-----|-----|-------|-----|--------------|
+| MOB008 | Lợn Rừng Đồng | 10–12 | 64 | M009 | Lợn rừng lông bờm, nanh trắng; khi húc cúi đầu, bụi bốc sau lưng |
+| MOB009 | Lùn Cướp Đồng | 11–14 | 64 | M009 | Yêu lùn khăn đỏ, chùy gỗ, bao tải lòi trang sách |
+| BOSS002 | Lợn Rừng Chúa | 12 | 128 | M009 (boss khu vực) | Lợn chúa bờm lửa cam, hai cặp nanh, sẹo, ấn đất; `skill2` dậm đất nứt |
+
+NPC mới: **Viện Chủ Vân Tước** (áo trắng xanh ngọc, quạt lông gió) và **Giám Khảo Tuyển Thư** (áo tím, mũ quan đen, cuộn danh sách). Xem nhanh: `preview/quai_chuong2.gif`, `preview/boss_boss002.gif`, `maps/preview/m005_view.png`, `m008_view.png`, `m009_view.png`.
 
 **Dữ liệu thử** (nay ở `packages/content`): `monsters/mob001–007.yaml`, `bosses/boss001.yaml` (chỉ trong instance DG01, tách 4 mảnh ở 50% HP), `boss034–036.yaml` (gọi đệ theo mốc HP), `events/evt_boss_034–036.yaml` (lịch, 1 khu ngẫu nhiên, bỏ đi sau 30 phút, bảo vệ tân thủ 10 cấp) và `evt_r01_well_night.yaml` (Đêm Giếng Sáng). Quy tắc: [maps §5.1–5.2](../../docs/game-design/05-world-maps-monsters.md#52-quy-tắc-boss-theo-giờ).
 

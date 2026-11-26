@@ -26,6 +26,10 @@ export const Monster = z
         fleeBelowHp: z.number().min(0).max(1).default(0),
         attackRange: z.number().positive(),
         attackCooldownMs: z.number().int().positive(),
+        /** rushes at its target before the hit lands (Lợn Rừng Đồng, step B5.1) */
+        charge: z.object({ speed: z.number().positive(), dist: z.number().positive() }).optional(),
+        /** PACK: monsters of the same kind within this many px join when one is hit (Lùn Cướp Đồng) */
+        callRange: z.number().positive().optional(),
       })
       .passthrough(),
     skills: z.array(z.string()),
@@ -134,6 +138,11 @@ export const MapMeta = z
     tmj: z.string(),
     pk: z.enum(["PEACE", "OPTIONAL", "FORCED"]),
     zoneCap: z.number().int().positive().optional(),
+    /** revive town (combat §7) when it is not the town of the map's own region (step B5.1) */
+    town: z
+      .string()
+      .regex(/^M\d{3}$/)
+      .optional(),
   })
   .passthrough();
 export type MapMeta = z.infer<typeof MapMeta>;

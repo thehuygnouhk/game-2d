@@ -1,0 +1,17 @@
+# not playable in the browser prototype yet
+id: Q_MAIN_15
+type: MAIN
+nameKey: quest.main.15.title
+chapter: 2
+levelMin: 11
+prerequisites: [Q_MAIN_14]
+giver: NPC046
+turnIn: NPC046
+objectives:
+  - { type: KILL, target: MOB008, count: 15, map: M009 }
+  - { type: COLLECT, target: trang_sach, count: 10, map: M009 }
+rewards: { exp: 6000, soft: 600, items: [ { id: mu_thi_sinh, count: 1 } ] }
+dialogue:
+  accept: quest.main.15.accept
+  progress: quest.main.15.progress
+  complete: quest.main.15.complete

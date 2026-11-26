@@ -55,7 +55,11 @@ export class QuestUi {
     head.append(el("span", "", "Nhiệm vụ"), el("kbd", "", "L"));
     const rows: HTMLElement[] = [head];
     this.tracker.className = `qtrack ${q?.status === "READY" ? "ready" : q?.status === "AVAILABLE" ? "avail" : ""}`;
-    if (!q) rows.push(el("span", "qn", "Chương 1"), el("span", "qo dim", "Đã xong Chương 1. Chương 2 sắp có."));
+    if (!q)
+      rows.push(
+        el("span", "qn", u.chapterName ?? "Chính tuyến"),
+        el("span", "qo dim", u.wait ?? "Hết nội dung hiện có."),
+      );
     else {
       rows.push(el("span", "qn", q.title));
       if (q.status === "LOCKED") rows.push(el("span", "qo dim", `Đạt Lv ${q.levelMin} để nhận`));
@@ -80,11 +84,11 @@ export class QuestUi {
       q = u.main;
     const head = el("div", "qw-head");
     head.append(
-      el("b", "", `Chính tuyến · Chương 1 (${u.done}/${u.total})`),
+      el("b", "", `Chính tuyến · ${u.chapterName ?? `Chương ${u.chapter ?? 1}`} (${u.done}/${u.total})`),
       button("×", () => this.toggle(false), "x"),
     );
     const body = el("div", "qw-body");
-    if (!q) body.append(el("p", "", "Bạn đã hoàn thành Chương 1. Lá thư của Thầy nằm trên bàn nhà học…"));
+    if (!q) body.append(el("p", "", u.wait ?? "Bạn đã đi hết chuỗi chính tuyến hiện có."));
     else {
       body.append(el("h3", "", q.title));
       const who = el("p", "npc");

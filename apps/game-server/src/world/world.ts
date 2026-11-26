@@ -355,7 +355,9 @@ export class World {
     return this.town(from);
   }
 
+  /** combat §7: the map's own revive town (R03 fields → Thượng Đô), else the town of its region, else the start. */
   private town(from: GameMap): GameMap {
+    if (from.town && this.zones.has(from.town)) return this.content.maps.get(from.town)!;
     const maps = [...this.content.maps.values()].filter((m) => m.type === "TOWN" && this.zones.has(m.id));
     return maps.find((m) => m.region === from.region) ?? this.content.maps.get(this.startMap)!;
   }
