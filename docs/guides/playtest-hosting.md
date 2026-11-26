@@ -60,7 +60,12 @@ Lần đầu mất vài phút. Compose sẽ:
 ## 3. Mời người chơi
 
 - Gửi đường link `https://<DOMAIN>`. Mỗi người tự đăng ký (tên tài khoản, email, mật khẩu từ 8 ký tự).
-- **Bản online hiện cần bàn phím**: chơi trên máy tính. Phím ảo cho điện thoại có ở bản chơi thử nhưng chưa có ở bản online (bậc C, "bản điện thoại").
+- **Chơi được trên máy tính và trình duyệt điện thoại.** Điện thoại cầm ngang, có phím ảo:
+  - cần điều khiển bên trái;
+  - nút Đánh, Nhảy, Nói, ◎ bên phải;
+  - kỹ năng và bình thuốc ở thanh dưới.
+  
+  Nút ⛶ bật toàn màn hình (Android). Trên iPhone, Safari không cho trang web toàn màn hình; nên dùng "Thêm vào Màn hình chính" để có chỗ rộng hơn.
 - Nên gửi kèm phím điều khiển: A/D hoặc ← → đi, Space nhảy, W hoặc ↑ leo thang và qua cổng, J đánh, 1 Tụ Mana Chấn (Lv5), 2 kỹ năng hệ (sau Lễ Khai Thư), Q/E bình HP/MP, F nói chuyện với NPC (hái thảo dược, mở rương), B hành trang, L nhiệm vụ, C cộng điểm tiềm năng, Enter chat (nút "Khu/Thế giới" để đổi kênh).
 - Nội dung hiện có (bậc B4): trọn **Chương 1** (khoảng 50 phút): 4 map của Làng Suối Mơ, NPC và 12 nhiệm vụ chính tuyến, mặc trang bị, tiệm của Lam Nhi, hầm ngục DG01 với Trang Lạc, Lễ Khai Thư chọn Hỏa hoặc Thủy. Ba boss theo giờ Việt Nam (Vua Nấm Lùn mỗi 2 giờ chẵn 08:00–22:00, Chó Rừng Đầu Đàn 11:00/17:00/21:00, Dơi Chúa Giếng 12:30/19:30); xem lịch ở Cụ Trương. Nên hẹn người chơi thử vào gần giờ boss để đánh cùng nhau.
 - Nói rõ với người chơi thử:

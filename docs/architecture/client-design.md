@@ -138,7 +138,11 @@ Hiện thực (bậc B2, `apps/web-client/src/scenes/WorldScene.ts`, `src/ui/hud
 
 **HUD**
 - HUD là DOM nằm trên canvas, dùng đơn vị `cqw` như bản chơi thử: khung nhân vật (HP, MP, EXP, Quan, Lực Chiến), nút tên map và khu (mở danh sách khu), ô chat và nhật ký, 4 ô hành động (J, 1, Q, E) có lớp phủ hồi chiêu, bảng "Bạn đã gục ngã" có nút về làng.
-- Chưa có phím ảo cho điện thoại (để ở bậc C, "bản điện thoại").
+- Phím ảo cho điện thoại (`src/ui/touch.ts`, [ui-ux §3.2](../game-design/11-ui-ux-spec.md)):
+  - bật khi màn hình cảm ứng (`pointer: coarse`), khi một ngón tay chạm vào game, hoặc bằng `?touch=1`;
+  - cần điều khiển và nút Đánh/Nhảy ghi vào `VirtualInput`, scene đọc cùng bàn phím;
+  - nút Nói và ◎ gọi thẳng `interact()` và `cycleTarget()` của scene;
+  - khi bật, HUD xếp lại cho ngón tay, khung game không cao quá màn hình, và cầm dọc thì hiện lời nhắc xoay ngang.
 
 Hiện thực (bậc B3, `src/main.ts`, `src/net/api.ts`, `src/ui/charwin.ts`):
 

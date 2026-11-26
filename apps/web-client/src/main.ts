@@ -27,6 +27,7 @@ import { loadIcons } from "./ui/dom";
 import { Hud } from "./ui/hud";
 import { QuestUi } from "./ui/quests";
 import { RiteWindow } from "./ui/rite";
+import { TouchPad, touchWanted } from "./ui/touch";
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const stage = $("stage"),
@@ -281,12 +282,29 @@ function startGame(net: Connection, enterWorld: SEnterWorld): void {
     }
   });
   const scene = () => game?.scene.getScene("world") as WorldScene | undefined;
+  // phím ảo: on for touch screens, or as soon as a finger touches the game (tablets with a mouse too)
+  const pad = new TouchPad(stage);
+  pad.onInteract = () => !busy() && scene()?.interact();
+  pad.onTarget = () => scene()?.cycleTarget();
+  pad.enable(touchWanted());
+  hud.render();
+  stage.addEventListener("pointerdown", (e) => {
+    if (e.pointerType !== "touch" || pad.enabled) return;
+    pad.enable();
+    hud.render();
+  });
+  document.body.classList.add("playing");
   hud.chat(
     "SYSTEM",
-    `Chào ${state.name}! Đến gần NPC có dấu ! rồi nhấn F để nói chuyện. B: hành trang, L: nhiệm vụ, Enter: chat.`,
+    pad.enabled
+      ? `Chào ${state.name}! Kéo cần bên trái để đi (đẩy lên: nhảy, leo thang, qua cổng). Đến gần NPC có dấu ! rồi bấm "Nói".`
+      : `Chào ${state.name}! Đến gần NPC có dấu ! rồi nhấn F để nói chuyện. B: hành trang, L: nhiệm vụ, Enter: chat.`,
   );
   if (state.stats.statPoints > 0)
-    hud.chat("SYSTEM", `Bạn có ${state.stats.statPoints} điểm tiềm năng: nhấn C để cộng.`);
+    hud.chat(
+      "SYSTEM",
+      `Bạn có ${state.stats.statPoints} điểm tiềm năng: ${pad.enabled ? "bấm nút Nhân vật" : "nhấn C"} để cộng.`,
+    );
   net.on<SStatsUpdate>(Op.S_STATS_UPDATE, (s) => state.applyStats(s));
   net.on<SInventoryDelta>(Op.S_INVENTORY_DELTA, (d) => {
     state.applyInventory(d);
@@ -340,7 +358,7 @@ function startGame(net: Connection, enterWorld: SEnterWorld): void {
       "SYSTEM",
       zoneOnly ? `Đã sang Khu ${change.map.zone}.` : `Đến ${change.map.name} · Khu ${change.map.zone}`,
     );
-    game!.scene.getScene("world").scene.restart({ net, state, hud, change, busy } satisfies WorldData);
+    game!.scene.getScene("world").scene.restart({ net, state, hud, change, busy, pad: pad.v } satisfies WorldData);
   });
   net.on(Op.S_REVIVED, () => {
     state.dead = false;
@@ -358,7 +376,14 @@ function startGame(net: Connection, enterWorld: SEnterWorld): void {
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
     scene: [],
   });
-  game.scene.add("world", WorldScene, true, { net, state, hud, change: enterWorld, busy } satisfies WorldData);
+  game.scene.add("world", WorldScene, true, {
+    net,
+    state,
+    hud,
+    change: enterWorld,
+    busy,
+    pad: pad.v,
+  } satisfies WorldData);
   (window as unknown as { __htkCharWindow: CharWindow }).__htkCharWindow = cw;
   (window as unknown as { __htkUi: unknown }).__htkUi = { dialog, quests, bag, rite };
 }

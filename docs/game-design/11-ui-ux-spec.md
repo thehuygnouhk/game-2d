@@ -123,6 +123,15 @@ Phím **1** Tụ Mana Chấn (Lv5); phím **2, 3, 4** là kỹ năng 1–3 của
 - Nút **Đánh** to ở góc phải dưới; 6 nút kỹ năng bao quanh theo vòng cung, kèm nút **Nhảy** và 2 ô bình thuốc. Trên cụm nút: **Tự đánh**, **Treo máy**, **Đổi mục tiêu** ([combat §8](04-combat-and-progression.md)).
 - **Cần điều khiển ảo** bên trái: kéo ngang để đi, kéo lên để nhảy, leo thang hoặc qua cổng, kéo xuống để xuống nền.
 - Chạm quái để **khóa mục tiêu**; chạm lại để bỏ khóa. Bản PC dùng cùng cụm nút này (bấm chuột được), phím tắt ghi trên nút.
+- **Bản online hiện tại** (`apps/web-client/src/ui/touch.ts`):
+  - phím ảo bật trên màn hình cảm ứng, hoặc ngay khi một ngón tay chạm vào game;
+  - cần điều khiển ở trái dưới;
+  - bên phải có nút **Đánh** (giữ để đánh liên tục), **Nhảy**, **Nói** (nói chuyện, hái, mở rương, Đài Khai Thư), **◎** (đổi mục tiêu);
+  - kỹ năng và bình thuốc là các ô của thanh hành động (chạm được);
+  - nút **⛶** bật toàn màn hình và xoay ngang khi trình duyệt cho phép;
+  - cầm dọc thì game nhắc xoay ngang; màn đăng nhập và tạo nhân vật dùng được khi cầm dọc.
+  
+  Chưa có mini-map, Tự đánh và Treo máy.
 
 ### 3.3 Mục tiêu (như Ninja School)
 
@@ -171,7 +180,7 @@ Phím **1** Tụ Mana Chấn (Lv5); phím **2, 3, 4** là kỹ năng 1–3 của
 | Joystick ảo | Di chuyển, kéo lên để nhảy |
 | Chạm nút | Dùng kỹ năng |
 | Vuốt xuống trên joystick | Xuống nền |
-| Chạm kép NPC | Mở thoại |
+| Chạm kép NPC | Mở thoại (bản online hiện tại: chạm một lần khi đứng gần, hoặc nút **Nói**) |
 | Giữ vật phẩm | Xem chi tiết/khóa |
 | Chụm hai ngón | Phóng/thu bản đồ |
 

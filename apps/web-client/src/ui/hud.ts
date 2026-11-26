@@ -30,8 +30,8 @@ export class Hud {
   private readonly channelBtn = el("button", "chat-ch", "Khu");
   private readonly menu = el("div", "hud-menu");
   readonly charBtn = el("button", "menu-btn");
-  readonly bagBtn = el("button", "menu-btn", "Hành trang (B)");
-  readonly questBtn = el("button", "menu-btn", "Nhiệm vụ (L)");
+  readonly bagBtn = el("button", "menu-btn");
+  readonly questBtn = el("button", "menu-btn");
   private readonly bossBar = el("div", "hud-boss");
   private readonly inst = el("div", "hud-inst");
   private instEnds = 0;
@@ -258,7 +258,11 @@ export class Hud {
     soft.append(el("span", "pw", ` · Lực Chiến ${s.power.toLocaleString("vi-VN")}`));
     this.me.append(soft);
     this.zoneBtn.textContent = `${this.state.map.name} · Khu ${this.state.map.zone} ▾`;
-    this.charBtn.replaceChildren(document.createTextNode("Nhân vật (C)"));
+    // keyboard hints only where there is a keyboard (phím ảo: body.touch-on)
+    const keys = !document.body.classList.contains("touch-on");
+    this.charBtn.replaceChildren(document.createTextNode(keys ? "Nhân vật (C)" : "Nhân vật"));
+    this.bagBtn.textContent = keys ? "Hành trang (B)" : "Hành trang";
+    this.questBtn.textContent = keys ? "Nhiệm vụ (L)" : "Nhiệm vụ";
     if (s.statPoints > 0) this.charBtn.append(el("b", "badge", `+${s.statPoints}`));
     for (const b of this.bar.querySelectorAll<HTMLButtonElement>(".act")) {
       const id = b.dataset.id!;

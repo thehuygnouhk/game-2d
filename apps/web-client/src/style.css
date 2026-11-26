@@ -1206,3 +1206,208 @@ button.x {
 .hud-inst small {
   color: #ffd98a;
 }
+
+/* ---------- phím ảo and phone layout (ui-ux §3.2) ---------- */
+body {
+  touch-action: manipulation;
+}
+/* the stage never gets taller than the screen: on a phone held sideways it fills the height */
+#stage {
+  width: min(100%, calc((100dvh - 24px) * 16 / 9));
+  margin: 0 auto;
+}
+/* sign-in screens on a phone held upright: the card needs room, not a 16:9 strip */
+@media (orientation: portrait) {
+  body:not(.playing) #stage {
+    aspect-ratio: auto;
+    min-height: min(calc(100dvh - 24px), 680px);
+  }
+}
+body.touch-on .wrap {
+  padding: 0;
+  max-width: none;
+}
+body.touch-on #stage {
+  width: min(100vw, calc(100dvh * 16 / 9));
+  border-radius: 0;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+body.touch-on .keys {
+  display: none;
+}
+.tpad {
+  display: none;
+}
+#stage.touch-on .tpad {
+  display: block;
+}
+.tpad .joy {
+  position: absolute;
+  left: 2cqw;
+  bottom: 3cqw;
+  width: 16cqw;
+  height: 16cqw;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+  border: 0.25cqw solid rgba(255, 255, 255, 0.25);
+  pointer-events: auto;
+  touch-action: none;
+  z-index: 3;
+}
+.tpad .knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6.5cqw;
+  height: 6.5cqw;
+  margin: -3.25cqw 0 0 -3.25cqw;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #fff6dc, #c9a45a);
+  box-shadow: 0 0.3cqw 0.8cqw rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+.tpad .tbtns {
+  position: absolute;
+  right: 1.5cqw;
+  bottom: 9cqw;
+  width: 22cqw;
+  height: 18cqw;
+  z-index: 3;
+}
+.tpad .tb {
+  position: absolute;
+  border-radius: 50%;
+  border: 0.25cqw solid rgba(255, 224, 138, 0.7);
+  background: radial-gradient(circle at 50% 35%, rgba(70, 58, 100, 0.92), rgba(26, 22, 38, 0.92));
+  color: var(--ink);
+  font: inherit;
+  font-size: 1.4cqw;
+  font-weight: 800;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.tpad .tb.on,
+.tpad .tb:active {
+  filter: brightness(1.4);
+  transform: scale(0.94);
+}
+.tpad .atk {
+  right: 0;
+  bottom: 0;
+  width: 10cqw;
+  height: 10cqw;
+  font-size: 1.8cqw;
+  border-color: #ffd23f;
+}
+.tpad .jump {
+  right: 11cqw;
+  bottom: 0;
+  width: 7cqw;
+  height: 7cqw;
+}
+.tpad .talk {
+  right: 1.5cqw;
+  bottom: 11cqw;
+  width: 7cqw;
+  height: 7cqw;
+  border-color: #7fe7ff;
+}
+.tpad .tgt {
+  right: 12cqw;
+  bottom: 8cqw;
+  width: 5.5cqw;
+  height: 5.5cqw;
+  font-size: 2cqw;
+}
+.tpad .tfull {
+  position: absolute;
+  right: 1cqw;
+  top: 1cqw;
+  width: 3cqw;
+  height: 3cqw;
+  padding: 0;
+  border-radius: 0.6cqw;
+  border: 1px solid #5b4a2a;
+  background: var(--panel);
+  color: var(--ink);
+  font-size: 1.6cqw;
+  pointer-events: auto;
+  z-index: 3;
+}
+.tpad .rotate {
+  display: none;
+}
+/* touch layout: chat moves up out of the joystick's way; menu and action buttons grow for fingers */
+#stage.touch-on .hud-chat {
+  bottom: auto;
+  top: 12.5cqw;
+  width: 26cqw;
+}
+#stage.touch-on .chat-log .ln:nth-last-child(n + 5) {
+  display: none;
+}
+#stage.touch-on .chat-log,
+#stage.touch-on .chat-in,
+#stage.touch-on .chat-ch {
+  font-size: 1.3cqw !important;
+}
+#stage.touch-on .hud-net {
+  right: 5cqw;
+}
+#stage.touch-on .hud-menu {
+  top: 4.4cqw;
+}
+#stage.touch-on .menu-btn {
+  font-size: 1.35cqw !important;
+  padding: 0.6cqw 1cqw;
+}
+#stage.touch-on .qtrack {
+  top: 8.6cqw;
+  font-size: 1.25cqw;
+}
+#stage.touch-on .hud-actions .act {
+  width: 7cqw;
+  height: 7cqw;
+}
+#stage.touch-on .hud-actions .act .nm {
+  font-size: 1.05cqw;
+}
+#stage.touch-on .dlg {
+  bottom: 4cqw;
+  width: 64cqw;
+  font-size: 1.5cqw;
+}
+#stage.touch-on .dlg-menu button {
+  padding: 0.7cqw 1cqw;
+}
+#stage.touch-on .bagwin,
+#stage.touch-on .rite,
+#stage.touch-on .qwin {
+  font-size: 1.35cqw;
+  z-index: 6;
+}
+@media (orientation: portrait) {
+  body.touch-on.playing #stage .rotate {
+    display: grid;
+    place-items: center;
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(13, 16, 32, 0.94);
+    color: var(--gold);
+    font-size: 20px;
+    font-weight: 800;
+    pointer-events: auto;
+  }
+}
+@media (pointer: coarse) {
+  .keys {
+    display: none;
+  }
+}

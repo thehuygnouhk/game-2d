@@ -29,6 +29,7 @@ import {
 import type { Connection } from "../net/connection";
 import type { GameState } from "../state";
 import type { Hud } from "../ui/hud";
+import type { VirtualInput } from "../ui/touch";
 import { Predictor } from "../world/prediction";
 import { RemoteTrack } from "../world/remote";
 
@@ -103,6 +104,8 @@ export interface WorldData {
   change: SMapChange;
   /** a window has the keyboard */
   busy?: () => boolean;
+  /** phím ảo (touch screens) */
+  pad?: VirtualInput;
 }
 
 /** Gameplay scene (step B2): one map zone, local prediction, remote interpolation, combat feedback. */
@@ -145,6 +148,7 @@ export class WorldScene extends Phaser.Scene {
   private teles: { t: Telegraph; start: number; end: number }[] = [];
   /** true while a window has the keyboard (dialog, bag, rite…) */
   uiBusy: () => boolean = () => false;
+  private pad: VirtualInput | null = null;
   lastError = 0;
 
   constructor() {
@@ -157,6 +161,7 @@ export class WorldScene extends Phaser.Scene {
     this.hud = data.hud;
     this.change = data.change;
     this.uiBusy = data.busy ?? (() => false);
+    this.pad = data.pad ?? null;
     this.ents.clear();
     this.drops.clear();
     this.kills.length = 0;
@@ -335,7 +340,10 @@ export class WorldScene extends Phaser.Scene {
     );
     this.listen<SLevelUp>(Op.S_LEVEL_UP, (l) => {
       this.float(this.meSpr.x, this.meSpr.y - 96, `LÊN CẤP ${l.level}`, "#9eff8a", 22);
-      this.hud.chat("SYSTEM", `Lên cấp ${l.level}! +5 điểm tiềm năng (nhấn C để cộng)`);
+      this.hud.chat(
+        "SYSTEM",
+        `Lên cấp ${l.level}! +5 điểm tiềm năng (${document.body.classList.contains("touch-on") ? "bấm Nhân vật" : "nhấn C"} để cộng)`,
+      );
       if (l.level === 5) this.hud.chat("SYSTEM", "Mở kỹ năng Tụ Mana Chấn (phím 1)");
     });
     this.listen<SInventoryDelta>(Op.S_INVENTORY_DELTA, (d) => {
@@ -923,7 +931,7 @@ export class WorldScene extends Phaser.Scene {
     this.net.send(Op.C_USE_ITEM, { instanceId: it.instanceId });
   }
 
-  private cycleTarget(): void {
+  cycleTarget(): void {
     const me = this.me.body;
     const list = [...this.ents.values()]
       .filter((e) => e.kind === "mob" && !e.dying && Math.abs(e.last.x - me.x) < 700)
@@ -952,14 +960,15 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private readInput(): MoveInput {
-    const k = this.keys;
-    const left = k.a!.isDown || k.l!.isDown,
-      right = k.d!.isDown || k.r!.isDown;
+    const k = this.keys,
+      v = this.pad;
+    const left = k.a!.isDown || k.l!.isDown || !!v?.left,
+      right = k.d!.isDown || k.r!.isDown || !!v?.right;
     return {
       dir: left === right ? 0 : left ? -1 : 1,
-      jump: k.sp!.isDown || this.latch.jump,
-      down: k.s!.isDown || k.dn!.isDown,
-      up: k.w!.isDown || k.up!.isDown || this.latch.up,
+      jump: k.sp!.isDown || this.latch.jump || !!v?.jump,
+      down: k.s!.isDown || k.dn!.isDown || !!v?.down,
+      up: k.w!.isDown || k.up!.isDown || this.latch.up || !!v?.up,
     };
   }
 
@@ -995,7 +1004,7 @@ export class WorldScene extends Phaser.Scene {
     }
     if (!this.state.dead && this.input.keyboard?.enabled && !this.uiBusy()) {
       const pressed: Record<string, boolean> = {
-        J: this.keys.j!.isDown,
+        J: this.keys.j!.isDown || !!this.pad?.attack,
         "1": this.keys.one!.isDown,
         "2": this.keys.two!.isDown,
         "3": this.keys.three!.isDown,
