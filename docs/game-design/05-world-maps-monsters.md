@@ -115,8 +115,8 @@ Cấp quái và hệ xác định công thức chỉ số ở [combat §5](04-co
 
 | ID | Tên | Cấp | Hệ | Hành vi |
 |----|-----|-----|----|---------|
-| MOB008 | Lợn Rừng Đồng | 10–12 | Thổ | Húc đẩy lùi |
-| MOB009 | Lùn Cướp Đồng | 11–14 | Thổ | Có thể gọi đồng bọn |
+| MOB008 | Lợn Rừng Đồng | 10–12 | Thổ | Chủ động; cúi đầu lao tới tối đa 110 px (300 px/s) rồi húc. Bậc B5.1 chưa đẩy lùi người chơi ([roadmap §8.4](../product/roadmap.md)) |
+| MOB009 | Lùn Cướp Đồng | 11–14 | Thổ | Không chủ động; bị đánh thì **gọi đồng bọn**: Lùn Cướp Đồng khác trong 220 px cùng xông vào. Giữ Trang Sách Thất Lạc (Q_MAIN_15) |
 | MOB010 | Chim Cắt Gió | 14–16 | Phong | Bay, đánh từ xa |
 | MOB011 | Sói Đồi | 15–18 | Phong | Tốc độ cao |
 | MOB012 | Hươu Sấm | 16–18 | Lôi | Gây Tê liệt |
@@ -193,7 +193,7 @@ Cấp quái và hệ xác định công thức chỉ số ở [combat §5](04-co
 | ID | Tên | Cấp | Loại | Map | Cơ chế chính |
 |----|-----|-----|------|-----|--------------|
 | BOSS001 | **Trang Lạc** | 9 | Mini (instance) | Hầm ngục DG01 (cửa vào ở M004) | Rách thành 4 Mảnh Trang ở 50% HP. Chỉ có trong instance riêng nên Q_MAIN_10 làm được bất cứ lúc nào; **không** đứng thường trực ngoài map. Chi tiết ở §5.3 |
-| BOSS002 | Lợn Rừng Chúa | 12 | Mini | M009 | Húc theo đường thẳng, vùng báo hiệu |
+| BOSS002 | Lợn Rừng Chúa | 12 | Mini (boss khu vực) | M009 | Húc theo đường thẳng 300 × 50 px, báo hiệu 1 giây; cứ 3 chiêu dậm đất một lần (vòng tròn bán kính 130 px); gọi 2 Lợn Rừng Đồng ở 50% HP. Chi tiết ở §5.4 |
 | BOSS003 | Người Đá Nghiên Chúa | 22 | Mini | M011 | Đập đất, đá rơi |
 | BOSS004 | Kẻ Trộm Quyển | 24 | Boss | M011 | Hút MP, dịch chuyển |
 | BOSS005 | Bóng Giám Khảo | 24 | Boss (instance) | Instance Mùa Tuyển Thư | Sao chép kỹ năng người chơi |
@@ -260,6 +260,19 @@ Sinh vật làm từ trang giấy bị xóa. Chỉ số: Mini-boss Lv9 ([combat 
 
 Hạ đủ 4 Mảnh Trang là hạ Trang Lạc. Các mảnh không cho EXP riêng; boss trả thưởng một lần khi mảnh cuối rơi.
 
+### 5.4 Boss khu vực (bậc B5.1)
+
+Boss cốt truyện **đứng ngoài map Field** thay vì ở hầm ngục, như Lợn Rừng Chúa (BOSS002) ở bờ đê giữa Đồng Lúa Lục Nguyên. Ai cũng đánh được, nên nhiệm vụ cần boss này (Q_MAIN_16) không bao giờ bị khóa.
+
+| Quy tắc | Giá trị |
+|---------|---------|
+| Nơi xuất hiện | Điểm `boss_spawn` có `respawnMin` của map; **mỗi khu một con** |
+| Hồi sinh | `respawnMin` phút sau khi bị hạ (BOSS002: 3 phút); cả khu nhận dòng thông báo khi boss trở lại |
+| Phạm vi | Chỉ đuổi người chơi cách điểm đứng dưới 800 px. Không còn ai trong tầm 8 giây: hồi đầy máu, bỏ hết sát thương đã nhận, đi về chỗ cũ |
+| Chỉ số | Hệ số Mini-boss ([combat §2.1](04-combat-and-progression.md)): HP ×10, ATK ×1,3, DEF ×1,2. Không co giãn theo số người |
+| Thanh máu | Chỉ người đang thấy boss (vùng quan sát, server-design §5) nhận thanh máu, để người săn quái thường ở đầu map không bị che màn hình |
+| Phần thưởng | Như boss theo giờ khi chưa có thư (§5.2, [roadmap §8.3](../product/roadmap.md)): EXP chia theo sát thương, đồ rơi khóa cho người gây nhiều sát thương nhất; ai gây ≥ 10% sát thương được tính mục tiêu `BOSS` |
+
 ## 6. Hầm Ngục & Raid
 
 | ID | Tên | Nhóm | Cấp | Giới hạn vào | Boss cuối | Thưởng đặc trưng |
@@ -310,7 +323,7 @@ Hạ đủ 4 Mảnh Trang là hạ Trang Lạc. Các mảnh không cho EXP riên
 |---------|---------|
 | Điểm xuất hiện | Định nghĩa trong file map (`spawns[]`) |
 | **Khu cấp độ** | Như Ninja School: trong một map Field, các điểm sinh xếp theo **cấp tăng dần từ cổng vào tới cổng ra**; map kế tiếp bắt đầu đúng cấp map trước kết thúc. Mỗi vùng cấp có quái riêng |
-| Boss | Boss **không** nằm trong `spawns[]`. Boss cốt truyện ở hầm ngục (instance); boss theo giờ ở `events/` + điểm `boss_spawn` (§5.2) |
+| Boss | Boss **không** nằm trong `spawns[]`. Boss cốt truyện ở hầm ngục (instance) hoặc là boss khu vực (điểm `boss_spawn` có `respawnMin`, §5.4); boss theo giờ ở `events/` + điểm `boss_spawn` (§5.2) |
 | Mật độ | 6–12 quái/khu cho map Field, tối đa 40 |
 | Thời gian hồi | 8–20s (tăng 20% ở khu đông) |
 | Tinh anh / Thủ lĩnh | Mỗi lần hồi sinh: 1/15 thành **Tinh anh**, 1/60 thành **Thủ lĩnh** (tối đa 1 thủ lĩnh mỗi khu). Hệ số và đồ rơi ở [combat §2.1.1](04-combat-and-progression.md) |

@@ -164,7 +164,7 @@ So với Ninja School, thiếu lớn nhất là hai thứ: **vòng lặp đồ**
 | **B2 Đánh quái online** ✔ xong | Nhiều người cùng đánh quái trong 1 khu của 4 map R01 (M001–M004), qua cổng, leo thang, tránh bẫy gai. Quái, sát thương, EXP, cấp, chết và hồi sinh, đồ rơi, nhặt đồ, bình thuốc do server tính. Chọn khu 1–3, chat map | Công thức vào `packages/shared` có test; `packages/content` (YAML, schema, `pnpm content:validate`); AI quái trên server; AOI; khu 1–3. Túi đồ chỉ sống trong phiên, chưa lưu (lưu ở B3) | [combat](../game-design/04-combat-and-progression.md), [network](../architecture/network-protocol.md), [server](../architecture/server-design.md) |
 | **B3 Tài khoản** ✔ xong | Đăng ký, đăng nhập, tối đa 3 nhân vật. Nhân vật, điểm tiềm năng (cửa sổ Nhân vật), vị trí, túi đồ và Quan lưu ở PostgreSQL; nhặt Quan có sổ cái. Chat thế giới. Có bộ chạy thử công khai có HTTPS để **mời 10–20 người chơi thử** ([hướng dẫn](../guides/playtest-hosting.md)) | `apps/api` (Fastify, Argon2id, JWT 15 phút, refresh token xoay vòng, vé 30 s qua Redis); `packages/db` (migration SQL từ tài liệu, sổ cái, idemKey); lưu định kỳ và khi thoát; đá phiên trùng. Nhiệm vụ chưa online nên chưa có gì để lưu: chuyển sang B4 | [database](../architecture/database-schema.md), [security](../architecture/security-and-anticheat.md) |
 | **B4 Chương 1 online** ✔ xong | Chơi trọn Chương 1 trên bản online như bản chơi thử: NPC và hộp thoại, chuỗi Q_MAIN_01–12 lưu tiến độ, mặc trang bị, tiệm của Lam Nhi, hầm ngục DG01 và Trang Lạc, Lễ Khai Thư chọn Hỏa hoặc Thủy với 3 kỹ năng hệ, 3 boss theo giờ | Nhiệm vụ và hộp thoại ở server (`character_quests`); kho đồ có 5 ô trang bị (`item_instances` vị trí `EQUIP`); mua bán qua sổ cái; instance DG01 và lễ đường I001; boss theo giờ Việt Nam có báo trước, vùng báo hiệu, cuồng nộ. Phần làm gọn ở §8.3 | [quests](../game-design/06-quests-and-missions.md), [items](../game-design/07-items-and-equipment.md), [maps §5–6](../game-design/05-world-maps-monsters.md) |
-| **B5 Chương 2: Thượng Đô** | Nội dung Chương 2 (Lv10–24): Thượng Đô và các map mới, Mùa Tuyển Thư, Q_MAIN_13–24, boss Chương 2, hầm ngục DG02 | Map, quái, nhiệm vụ mới trong `packages/content`; Đội (Lv20) làm cùng bậc này hoặc ngay sau | [lore ch.2](../game-design/01-lore-and-story.md), [quests §5](../game-design/06-quests-and-missions.md) |
+| **B5 Chương 2: Thượng Đô** | Nội dung Chương 2 (Lv10–24): Thượng Đô và các map mới, Mùa Tuyển Thư, Q_MAIN_13–24, boss Chương 2, hầm ngục DG02. Chia thành 4 bậc nhỏ B5.1–B5.4 (§8.4), mỗi bậc xong là chơi được | Map, quái, nhiệm vụ mới trong `packages/content`; Đội (Lv20) ở B5.4 | [lore ch.2](../game-design/01-lore-and-story.md), [quests §5](../game-design/06-quests-and-missions.md) |
 | **C Mở rộng kiểu NSO** | Mỗi mục là một bản phát hành nhỏ: nhóm và chia EXP; giao dịch; cường hóa +1…+16 và khảm; Thượng Đô và chợ; Đội; Cờ PK; nhiệm vụ ngày; boss thế giới; Chổi Bay; bản điện thoại (phím ảo cho trình duyệt điện thoại đã có từ sau bậc B4; còn lại: ứng dụng cài đặt, Tự đánh, Treo máy, mini-map) | Theo Phase 2–4 (§3) | |
 
 ### 8.3 Bậc B4: phần làm gọn so với tài liệu thiết kế
@@ -180,6 +180,28 @@ Những chỗ dưới đây chạy được và an toàn (server quyết định
 | Đổi hệ sau 24 giờ tốn 100 Nén Bạc ([classes §5](../game-design/03-origins-classes-skills.md)) | Chỉ đổi miễn phí trong 24 giờ đầu | Khi có Nén Bạc |
 | Giày +2% tốc chạy | Chỉ hiển thị; tốc chạy vẫn theo vật lý chung của client và server | Khi vật lý nhận hệ số tốc độ |
 | Điểm Kỹ Năng của Q_MAIN_12 | Chưa cộng | Hệ nâng kỹ năng |
+
+### 8.4 Bậc B5: Chương 2 chia nhỏ
+
+Chương 2 lớn gấp đôi Chương 1, nên chia theo nhịp truyện ([lore ch.2](../game-design/01-lore-and-story.md)). Mỗi bậc nối tiếp chuỗi chính tuyến; nhiệm vụ cuối của bậc trước dẫn sang bậc sau.
+
+| Bậc | Chơi được gì khi xong | Nội dung |
+|-----|------------------------|----------|
+| **B5.1 Lên Thượng Đô** ✔ xong ([báo cáo nhịp chơi](../reports/chapter2-pacing.md)) | Đọc lá thư của thầy cùng Bà Mơ, Lam Nhi, Khôi; đi hết Hang Giếng Cạn lên **Thượng Đô**; gặp Viện Chủ Vân Tước, ghi danh **Mùa Tuyển Thư** ở Tổng Đường Pháp Vệ; Vòng 1 ở Đồng Lúa Lục Nguyên: săn Lợn Rừng Đồng, đòi lại trang sách từ Lùn Cướp Đồng, hạ **Lợn Rừng Chúa** (Lv10–13) | Q_MAIN_13–16; M005 Thượng Đô, M008 Tổng Đường Pháp Vệ, M009 Đồng Lúa Lục Nguyên; MOB008–009, BOSS002 (boss khu vực, hồi sinh theo phút); bộ S2 Thư Lại; NPC đổi chỗ theo tiến độ nhiệm vụ; hồi sinh ở Thượng Đô khi gục ở R03 |
+| **B5.2 Vòng 2 và Đồi Cối Xay Gió** | Vòng 2 đấu **Bóng Giám Khảo** (instance, sao chép kỹ năng người chơi); hộ tống thủ thư qua Đồi Cối Xay Gió; Chợ Thượng Đô (Lv14–18) | Q_MAIN_17–18; M006, M010; MOB010–012, BOSS005; mục tiêu `ESCORT` |
+| **B5.3 Mỏ Đá Nghiên** | Vòng 3 Hộ Tống Quyển qua hầm ngục **DG02**; Kẻ Trộm Quyển cướp Quyển Gốc, Mặc Ảnh xuất hiện; Thị Trấn Cửa Biển (Lv18–24) | Q_MAIN_19, 22–24; M011, M012, DG02; MOB013–015, BOSS003, BOSS004; boss thế giới BOSS030 |
+| **B5.4 Viện và Đội** | Nhận thư mời của các Viện, chọn Viện ban đầu; lập hoặc gia nhập **Đội** ở Lv20 | Q_MAIN_20–21; Cô Ký Đội (NPC047), Danh Vọng Viện mức đầu |
+
+**Bậc B5.1: phần làm gọn so với tài liệu thiết kế**
+
+| Thiết kế | Bậc B5.1 | Làm tiếp |
+|----------|----------|----------|
+| Lợn Rừng Đồng "húc đẩy lùi" ([maps §4](../game-design/05-world-maps-monsters.md)) | Lao tới rồi húc; người chơi chưa bị đẩy lùi (vật lý chung của client và server chưa nhận lực đẩy) | Khi vật lý có lực đẩy |
+| Cửa hàng cơ bản của Bác Theo ở Chợ Thượng Đô (M006) | Lam Nhi bày tiệm thuốc ở Thượng Đô (cùng hàng như ở làng); chưa có M006 | B5.2 (Chợ Thượng Đô) |
+| Thượng Đô nối M004, M006, M008, M009 | Có cổng M004, M008, M009; cổng M006 chưa đặt. Cổng phải Đồng Lúa sang M010 báo "chưa mở" | B5.2 |
+| Bộ set 6 món ([items §5](../game-design/07-items-and-equipment.md)) | S2 Thư Lại 4 món theo 4 ô đang mở, như S1 | Khi mở ô Quần, Găng |
+| Q_MAIN_15 cần Lv12 ([quests §5](../game-design/06-quests-and-missions.md)) | Cần Lv11, theo [báo cáo nhịp chơi Chương 2](../reports/chapter2-pacing.md) | Đối chiếu với playtest |
+| Art Thượng Đô và Đồng Bằng | Art thử vẽ bằng code (tileset R01 thêm đá lát, nhà mái xanh/vàng, Tổng Đường, lúa, bù nhìn; nền "kinh đô" và "đồng lúa") | Art chính thức sau duyệt ([reskin-spec §9](reskin-spec.md)) |
 
 **Quy tắc chung mỗi bậc:**
 - Không dùng nút "thử" thay cho tính năng chính.

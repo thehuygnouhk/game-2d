@@ -15,9 +15,9 @@
 |----|-----|---------|--------|-----------------|
 | NPC001 | **Thầy Bạch Vân** | Thầy lang du hành, người dạy nhà học | M001; mất tích sau Lễ Khai Thư, trở lại ở Chương 7 | Hướng dẫn tân thủ, nhiệm vụ Chương 1, **Lễ Khai Thư** (Lv10) |
 | NPC002 | **Bà Mơ** | Người giữ nhà học | M001 | Nhiệm vụ làng sau khi thầy đi, **đổi tên nhân vật** (tốn Nén Bạc); sau khi thầy đi, nhận việc **đổi hệ phép miễn phí** trong 24 giờ đầu ([classes §5](03-origins-classes-skills.md)) |
-| NPC003 | **Lam Nhi** | Bạn, học trò thầy lang | M001–M004, sau xuất hiện ở các chương | Chuỗi **Bạn Đồng Hành**, chế thuốc nhỏ; **tiệm thuốc ở làng**: bán Bình HP/MP Nhỏ và Vừa, mua lại đồ (cửa hàng duy nhất trước Thượng Đô) |
-| NPC004 | **Khôi** | Bạn, người thừa kế bí mật của Xích Sa | M001, M005; trục Chương 5 | Chuỗi **Bạn Đồng Hành** |
-| NPC005 | **Chấp Bút Hạc Minh** | Người đứng đầu Pháp Vệ Đoàn | M008 | Nhiệm vụ chính cấp cao, lễ phong hạng, **Mùa Giải** |
+| NPC003 | **Lam Nhi** | Bạn, học trò thầy lang | M001–M002; từ khi xong Q_MAIN_13 ở M005 (Thượng Đô); sau xuất hiện ở các chương | Chuỗi **Bạn Đồng Hành**, chế thuốc nhỏ; **tiệm thuốc**: bán Bình HP/MP Nhỏ và Vừa, mua lại đồ (ở làng, rồi theo người chơi lên Thượng Đô) |
+| NPC004 | **Khôi** | Bạn, người thừa kế bí mật của Xích Sa | M001–M002; từ khi xong Q_MAIN_13 ở M009 (đầu Đồng Lúa); trục Chương 5 | Chuỗi **Bạn Đồng Hành** |
+| NPC005 | **Chấp Bút Hạc Minh** | Người đứng đầu Pháp Vệ Đoàn | M008 (ngủ gật cạnh Tổng Đường) | Nhiệm vụ chính cấp cao (Q_MAIN_23), lễ phong hạng, **Mùa Giải** |
 | NPC006 | **Viện Chủ Mạc Uyên** | Đứng đầu Viện Đoài | M008 | Huấn luyện hệ **Ám**, dạy **Khải Thể**, nhiệm vụ Chương 3 |
 | NPC007 | **Viện Chủ Tôn Kiệt** | Đứng đầu Viện Càn | M008 | Danh Vọng Viện Càn |
 | NPC008 | **Viện Chủ Đan Hồng** | Đứng đầu Viện Ly | M008 | Huấn luyện hệ **Hỏa**, Danh Vọng Viện Ly |
@@ -66,7 +66,7 @@
 | NPC043 | **Thợ Khảm** | M006 | Khảm Hạt Nguyên |
 | NPC044 | **Cô Út Chợ** | M006 | **Chợ Ký Gửi** |
 | NPC045 | **Thầy Ký Bảng** | M008 | **Bảng Nhiệm Vụ Pháp Vệ** hằng ngày/tuần |
-| NPC046 | **Giám Khảo Tuyển Thư** | M008 | Mùa Tuyển Thư, kiểm tra thăng hạng |
+| NPC046 | **Giám Khảo Tuyển Thư** | M008 | Mùa Tuyển Thư (ghi danh Q_MAIN_14, giao và nhận các vòng thi Q_MAIN_15–19), kiểm tra thăng hạng |
 | NPC047 | **Cô Ký Đội** | M008 | Lập/giải tán Đội, nộp Điểm Cống Hiến |
 | NPC048 | **Người Dắt Đệ Tử** | M005 | **Khế ước Đệ Tử** |
 | NPC049 | **Bác Chổi** | M005 | Mua/sửa **Chổi Bay**, Linh Thú |

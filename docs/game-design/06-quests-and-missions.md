@@ -36,6 +36,7 @@ stateDiagram-v2
 - Trạng thái lưu trong `character_quests` (xem [database](../architecture/database-schema.md)).
 - Tiến độ cập nhật qua **sự kiện game** (event bus) như `mob.killed`, `item.acquired`, `npc.talked`, `map.entered`.
 - Tối đa **20 nhiệm vụ** đang nhận. Chính tuyến luôn có chỗ riêng.
+- Gợi ý chỗ làm mục tiêu (dòng nhỏ dưới mục tiêu ở cửa sổ Nhiệm vụ) do server ghép; nhiệm vụ có thể viết sẵn gợi ý riêng (`quest.main.NN.where`, [content-pipeline](../workflows/content-pipeline.md)).
 
 ## 3. Loại mục tiêu
 
@@ -102,6 +103,7 @@ Vật phẩm nhiệm vụ **chỉ rơi khi người chơi đang nhận nhiệm v
 | Thảo Dược Suối Mơ | Q_MAIN_04 | 8 bụi thảo dược phát sáng trên Đồng Hoa (M002). Chỉ người đang nhận nhiệm vụ thấy; hái bằng F hoặc chạm; mọc lại sau 20 giây |
 | Bao Tải Bị Lấy | Q_MAIN_07 | Lùn Ném Đá, 25% |
 | Mảnh Trang | Q_MAIN_09 | Rùa Đá Giếng, 30% |
+| Trang Sách Thất Lạc | Q_MAIN_15 | Lùn Cướp Đồng, 50% (bọn chúng nhét trang đề thi vào bao) |
 
 Dữ liệu thử của chuỗi Chương 1 (định dạng §11) nằm ở `packages/content/quests` ([content-pipeline §2.1](../workflows/content-pipeline.md)); chữ hiển thị ở `packages/content/i18n/vi.yaml`.
 
@@ -111,7 +113,7 @@ Dữ liệu thử của chuỗi Chương 1 (định dạng §11) nằm ở `pack
 |----|-----|-----|----------|
 | Q_MAIN_13 | Lá Thư Để Lại | 10 | Đọc thư của thầy cùng **Bà Mơ**, Lam Nhi, Khôi; quyết định lên Thượng Đô |
 | Q_MAIN_14 | Lên Thượng Đô | 10 | Đến M005, gặp **Viện Chủ Vân Tước**; ghi danh **Mùa Tuyển Thư** tại **Giám Khảo Tuyển Thư** (M008) |
-| Q_MAIN_15 | Vòng 1: Tìm Sách | 12 | Hạ 15 Lợn Rừng Đồng, thu 10 trang sách thất lạc (M009) |
+| Q_MAIN_15 | Vòng 1: Tìm Sách | 11 | Hạ 15 Lợn Rừng Đồng, thu 10 trang sách thất lạc (M009) |
 | Q_MAIN_16 | Vòng 1: Lợn Rừng Chúa | 12 | Hạ BOSS002 |
 | Q_MAIN_17 | Vòng 2: Bóng Giám Khảo | 15 | Hạ **Bóng Giám Khảo** (instance) |
 | Q_MAIN_18 | Đồi Cối Xay Gió | 16 | Hộ tống 3 thủ thư qua đồi |
@@ -121,6 +123,20 @@ Dữ liệu thử của chuỗi Chương 1 (định dạng §11) nằm ở `pack
 | Q_MAIN_22 | Kẻ Trộm Quyển | 24 | Hạ BOSS004; thấy **Mặc Ảnh** lấy Quyển Gốc |
 | Q_MAIN_23 | Cuộc Gặp Chấp Bút | 24 | **Chấp Bút Hạc Minh** kể về Mười Hai Quyển Gốc |
 | Q_MAIN_24 | Tới Cảng Thư Khố | 25 | Mở khóa Chương 3 |
+
+### 5.1 Q_MAIN_13–16 chi tiết (bậc B5.1)
+
+| ID | NPC giao → trả | Mục tiêu | Thưởng |
+|----|----------------|----------|--------|
+| Q_MAIN_13 | Bà Mơ → Bà Mơ (M001) | Cảnh đọc lá thư cùng Bà Mơ, Lam Nhi, Khôi (6 lời) | 1.500 EXP, 300 Quan |
+| Q_MAIN_14 | Bà Mơ (M001) → Giám Khảo Tuyển Thư (M008) | Gặp Viện Chủ Vân Tước (M005); ghi danh với Giám Khảo Tuyển Thư (M008) | 3.000 EXP, 400 Quan, 5 Bình HP Vừa |
+| Q_MAIN_15 | Giám Khảo Tuyển Thư (M008) | Hạ 15 Lợn Rừng Đồng; thu 10 Trang Sách Thất Lạc (M009) | 6.000 EXP, 600 Quan, Mũ Thí Sinh (Lv12 Tốt) |
+| Q_MAIN_16 | Giám Khảo Tuyển Thư (M008) | Hạ Lợn Rừng Chúa (boss khu vực ở M009) | 5.000 EXP, 800 Quan, Giày Thí Sinh (Lv12 Tốt) |
+
+- **Q_MAIN_13** giống Q_MAIN_11: nhận nhiệm vụ là chạy ngay cảnh; đọc hết thì nhiệm vụ tự hoàn thành. Đóng cảnh giữa chừng (hoặc rớt mạng) thì nói lại với Bà Mơ, chọn *Ngồi nghe tiếp câu chuyện* để xem lại.
+- Hết Q_MAIN_13, **Lam Nhi và Khôi rời làng** cùng người chơi: Lam Nhi bày tiệm thuốc ở Thượng Đô (M005), Khôi đi săn ở đầu Đồng Lúa (M009). Ở Làng Suối Mơ chỉ còn Bà Mơ và Cụ Trương ([characters](02-characters-and-npcs.md)).
+- **Cấp Q_MAIN_15 hạ từ 12 xuống 11** để không có bức tường cày gần 10 phút ngay khi vào chương mới; EXP bốn nhiệm vụ đặt theo [báo cáo nhịp chơi Chương 2](../reports/chapter2-pacing.md). Ước tính trọn B5.1 khoảng 14 phút, kết thúc ở Lv13.
+- Hết Q_MAIN_16 thì bảng nhiệm vụ báo Vòng 2 mở ở bản cập nhật sau (bậc B5.2, [roadmap §8.4](../product/roadmap.md)).
 
 ## 6. Số lượng chính tuyến theo chương
 

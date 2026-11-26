@@ -68,6 +68,7 @@ Lần đầu mất vài phút. Compose sẽ:
   Nút ⛶ bật toàn màn hình (Android). Trên iPhone, Safari không cho trang web toàn màn hình; nên dùng "Thêm vào Màn hình chính" để có chỗ rộng hơn.
 - Nên gửi kèm phím điều khiển: A/D hoặc ← → đi, Space nhảy, W hoặc ↑ leo thang và qua cổng, J đánh, 1 Tụ Mana Chấn (Lv5), 2 kỹ năng hệ (sau Lễ Khai Thư), Q/E bình HP/MP, F nói chuyện với NPC (hái thảo dược, mở rương), B hành trang, L nhiệm vụ, C cộng điểm tiềm năng, Enter chat (nút "Khu/Thế giới" để đổi kênh).
 - Nội dung hiện có (bậc B4): trọn **Chương 1** (khoảng 50 phút): 4 map của Làng Suối Mơ, NPC và 12 nhiệm vụ chính tuyến, mặc trang bị, tiệm của Lam Nhi, hầm ngục DG01 với Trang Lạc, Lễ Khai Thư chọn Hỏa hoặc Thủy. Ba boss theo giờ Việt Nam (Vua Nấm Lùn mỗi 2 giờ chẵn 08:00–22:00, Chó Rừng Đầu Đàn 11:00/17:00/21:00, Dơi Chúa Giếng 12:30/19:30); xem lịch ở Cụ Trương. Nên hẹn người chơi thử vào gần giờ boss để đánh cùng nhau.
+- Thêm từ bậc B5.1: đầu **Chương 2** (khoảng 15 phút, Lv10–13): đọc lá thư của thầy với Bà Mơ, lên Thượng Đô (cổng cuối Hang Giếng Cạn), ghi danh Mùa Tuyển Thư ở Tổng Đường Pháp Vệ, Vòng 1 ở Đồng Lúa Lục Nguyên với boss khu vực Lợn Rừng Chúa (mỗi khu một con, hồi sinh 3 phút).
 - Nói rõ với người chơi thử:
   - game lưu tên tài khoản, email, mật khẩu đã băm (Argon2id) và tiến độ nhân vật;
   - dữ liệu có thể bị xóa khi kết thúc đợt thử.

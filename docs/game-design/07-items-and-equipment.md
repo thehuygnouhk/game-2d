@@ -127,6 +127,8 @@ Mỗi bậc set có 6 mảnh (Vũ khí, Mũ, Áo, Quần, Găng, Giày). Chủ �
 
 Bộ **S1 Dân Làng** không theo hệ, dùng được cả trước và sau Lễ Khai Thư. Ở bậc A1 bộ có 4 món theo 4 ô đang mở; bonus 2 và 4 món áp dụng như trên. Vật phẩm nhiệm vụ Chương 1: **Kiếm Gỗ Tập** (Vũ khí Lv1 Thường, Q_MAIN_02) và **Áo Suối Mơ** (Áo Lv9 Tốt, Q_MAIN_10) không thuộc bộ.
 
+Bộ **S2 Thư Lại** (bậc B5.1) cũng 4 món theo 4 ô đang mở (Bút Thư Lại, Mũ, Áo, Giày Thư Lại), không theo hệ; rơi từ quái R03 (bảng `DROP_R03_BASIC`) và Lợn Rừng Chúa. Thưởng Vòng 1 Mùa Tuyển Thư: **Mũ Thí Sinh** (Q_MAIN_15) và **Giày Thí Sinh** (Q_MAIN_16), Lv12 Tốt, không thuộc bộ.
+
 Ba mảnh đầu của set bất kỳ cùng hệ được tính **Set kích hoạt** (giống set kích hoạt NRO): +10% sát thương kỹ năng cùng hệ.
 
 ## 6. Cường hóa (+1 → +16)

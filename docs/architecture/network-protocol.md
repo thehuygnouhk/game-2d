@@ -136,14 +136,14 @@ Món trong túi (`BagItem`) có thêm `type`, và với trang bị: `slot`, `mai
 
 **NPC và nhiệm vụ.** Client chỉ hỏi; server tự kiểm tra NPC có ở map đó và người chơi đứng gần (120 px, cộng dung sai 50 px):
 1. `C_NPC_INTERACT {npcId}` → `S_NPC_DIALOG {npcId, name, face, text, options[{id, label, mark?, style?}]}`. Nói chuyện có thể hoàn thành mục tiêu `TALK`.
-2. `C_NPC_CHOICE {npcId, optionId}`. Lựa chọn: `ACCEPT`, `TURNIN`, `SHOP` (trả `S_NPC_DIALOG` có `shop`), `SCHEDULE` (lịch boss trong `text`), `CEREMONY`, `ALTAR` và `RITE` (trả `S_NPC_DIALOG` có `rite`), `SCENE_DONE` (client đã xem xong cảnh Q_MAIN_11). `CLOSE` và `QUESTS` chỉ xử lý ở client.
-3. `S_QUEST_UPDATE {main, done, total, chapterDone, progress?, event?}`: `main` là nhiệm vụ chính tuyến hiện tại (`LOCKED`, `AVAILABLE`, `ACTIVE`, `READY`) với mục tiêu, nơi tìm, phần thưởng, lời thoại, và điểm hái thảo dược (`nodes`) khi còn cần.
+2. `C_NPC_CHOICE {npcId, optionId}`. Lựa chọn: `ACCEPT`, `TURNIN`, `SHOP` (trả `S_NPC_DIALOG` có `shop`), `SCHEDULE` (lịch boss trong `text`), `CEREMONY`, `ALTAR` và `RITE` (trả `S_NPC_DIALOG` có `rite`), `SCENE` (xem lại cảnh của nhiệm vụ đang làm, trả `S_SCENE`; bậc B5.1), `SCENE_DONE` (client đã xem xong cảnh của nhiệm vụ: Q_MAIN_11, Q_MAIN_13; server tìm cảnh theo nhiệm vụ hiện tại, `npcId` không dùng). `CLOSE` và `QUESTS` chỉ xử lý ở client.
+3. `S_QUEST_UPDATE {main, done, total, chapterDone, chapter?, chapterName?, wait?, progress?, event?}`: `main` là nhiệm vụ chính tuyến hiện tại (`LOCKED`, `AVAILABLE`, `ACTIVE`, `READY`) với mục tiêu, nơi tìm, phần thưởng, lời thoại, và điểm hái thảo dược (`nodes`) khi còn cần. Từ bậc B5.1: `done`/`total` đếm trong chương của nhiệm vụ hiện tại (`chapter`, tên ở `chapterName`); khi đã làm hết các nhiệm vụ đang có (`chapterDone`), `wait` là câu báo phần tiếp theo.
 
 Bậc B4 không dùng `C_QUEST_ACCEPT` và `C_QUEST_TURNIN`: nhận và trả đi qua `C_NPC_CHOICE`. Trả nhiệm vụ không cần `idemKey` từ client: dòng `character_quests` chỉ chuyển sang `COMPLETED` một lần, và khóa sổ cái của phần thưởng suy ra từ nhân vật và nhiệm vụ ([database §6.6](database-schema.md)).
 
 **Vật thể trên map.** `C_USE_OBJECT {objectId}` với `HERB:<n>` (thảo dược Q_MAIN_04), `CHEST` (Rương Tân Thủ của DG01), `ALTAR` (Đài Khai Thư ở I001).
 
-**Cảnh.** `S_SCENE {key, lines[{who, name, face?, text}], chapterEnd?}`. Cảnh `Q_MAIN_12` kèm thẻ "Hết Chương 1" (`letter, minutes, lv, power, className`).
+**Cảnh.** `S_SCENE {key, lines[{who, name, face?, text}], report?, chapterEnd?}`. `report: true` khi cảnh là mục tiêu của nhiệm vụ (Q_MAIN_11, Q_MAIN_13): đọc xong dòng cuối thì client gửi `C_NPC_CHOICE SCENE_DONE`. Cảnh `Q_MAIN_12` kèm thẻ "Hết Chương 1" (`letter, minutes, lv, power, className`).
 
 **Hệ phép.** `C_CHOOSE_CLASS {classId}`: lần đầu chỉ ở Đài Khai Thư khi đang làm Q_MAIN_12; sau đó đổi miễn phí trong 24 giờ ở Thầy (sau Chương 1 là Bà Mơ). Server trả `S_INVENTORY_DELTA` (Huyền Thư Sơ Bản mặc sẵn, vũ khí hệ vào túi), `S_SKILLS_UPDATE {skills, cls}` (kỹ năng có `key` J, 1–4 và `shape`), `S_STATS_UPDATE`; người khác nhận lại `S_ENTITY_SPAWN` có `cls` để đổi ngoại hình.
 
@@ -303,7 +303,7 @@ Ký hiệu: `C_` client → server, `S_` server → client. **Hướng** `↔` n
 | 0x0607 | `S_QUEST_UPDATE` | S→C | `questId, status, progress[]` |
 | 0x0608 | `S_QUEST_LIST` | S→C | toàn bộ nhiệm vụ đang có |
 | 0x0609 | `C_USE_OBJECT` | C→S | `objectId` (`HERB:<n>`, `CHEST`, `ALTAR`; bậc B4) |
-| 0x060A | `S_SCENE` | S→C | `key, lines[], chapterEnd?` (bậc B4) |
+| 0x060A | `S_SCENE` | S→C | `key, lines[], report?, chapterEnd?` (bậc B4; `report` từ B5.1) |
 
 ### 6.7 Cửa hàng, giao dịch, chợ (0x07xx)
 

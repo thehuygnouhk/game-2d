@@ -59,6 +59,7 @@ packages/content/
 - Map (`.tmj` và `.yaml`) vẫn ở `art/prototype/maps`, do bộ dựng map tạo ra. Chúng chuyển vào `packages/content/maps` cùng với bộ dựng đó. Game server đọc qua `MAP_DIR`.
 - `i18n` là một file `vi.yaml` lồng nhau. Khóa phẳng là đường dẫn có dấu chấm, ví dụ `mob.mob001.name`.
 - Tên vật phẩm thử dùng dạng `potion_hp`, chưa theo định dạng `ITMxxxxx`.
+- Lời NPC theo map: khóa `npc.<id>.line_<map>` (ví dụ `npc.npc003.line_m005`) thay cho `npc.<id>.line` khi NPC đứng ở map đó. Gợi ý chỗ làm mục tiêu nhiệm vụ: `quest.main.NN.where` (danh sách theo thứ tự mục tiêu), nếu không có thì server tự ghép (bậc B5.1).
 
 ## 3. Định dạng dữ liệu (ví dụ)
 
@@ -107,6 +108,9 @@ ai:
   aggroRange: 0
   leash: 600
   moveSpeed: 40
+  # tùy chọn (bậc B5.1):
+  # charge: { speed: 300, dist: 110 }   # lao tới mục tiêu trước khi đòn đánh trúng (Lợn Rừng Đồng)
+  # callRange: 220                       # PACK: bị đánh thì quái cùng loại trong tầm này xông vào (Lùn Cướp Đồng)
 skills: [ MOBSKL_TACKLE ]
 drops: DROP_R01_BASIC
 exp: formula                 # dùng công thức mặc định: 8L + 10
@@ -296,12 +300,14 @@ Bậc B2:
 |------|------------|
 | `spawn_player` | `default: bool` |
 | `portal` | `id` |
-| `npc` | `id` |
+| `npc` | `id`; tùy chọn `showAfter` / `hideAfter` (mã nhiệm vụ chính): NPC chỉ đứng đây **sau khi** / **cho tới khi** người chơi xong nhiệm vụ đó. Ví dụ Lam Nhi ở M001 có `hideAfter: Q_MAIN_13`, ở M005 có `showAfter: Q_MAIN_13` (bậc B5.1) |
 | `mob_spawn` | `mob, count, radius, respawnSec` |
 | `zone_safe` | Vùng an toàn |
 | `zone_sky` | Vùng bay Chổi Vàng |
 | `zone_trigger` | `event` (cutscene, boss phase) |
-| `boss_spawn` | `boss`, `event`: điểm boss theo giờ có thể xuất hiện ([maps §5.2](../game-design/05-world-maps-monsters.md)) |
+| `boss_spawn` | `boss`, `event`: điểm boss theo giờ có thể xuất hiện ([maps §5.2](../game-design/05-world-maps-monsters.md)); hoặc `boss`, `respawnMin`: **boss khu vực**, mỗi khu một con, hồi sinh sau số phút đó ([maps §5.4](../game-design/05-world-maps-monsters.md)) |
+
+Thuộc tính của map (file `.yaml` của map): `town` là thành hồi sinh khi map nằm ở vùng chưa có thành mở, ví dụ `town: M005` cho Đồng Lúa Lục Nguyên (R03). V003 kiểm `town` là một map Town, `showAfter`/`hideAfter` là nhiệm vụ có thật, boss khu vực có bản ghi trong `bosses/`.
 
 Quy trình: vẽ trong Tiled → xuất `.tmj` → `pnpm map:check` (kiểm tra lớp, kích thước, tile) → liên kết với `maps/*.yaml`.
 

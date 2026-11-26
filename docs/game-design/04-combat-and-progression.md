@@ -287,7 +287,7 @@ stateDiagram-v2
 
 | Tình huống | Hậu quả |
 |-----------|---------|
-| Chết do quái | Mất **2% EXP** của cấp hiện tại (không tụt cấp), hồi sinh miễn phí tại **thành gần nhất** |
+| Chết do quái | Mất **2% EXP** của cấp hiện tại (không tụt cấp), hồi sinh miễn phí tại **thành gần nhất**: thành của vùng, hoặc thành ghi trong map (`town`) khi vùng chưa có thành mở, ví dụ các map R03 về Thượng Đô (M005) |
 | Hồi sinh tại chỗ | Dùng **Lá Hồi Sinh** hoặc **5 Nén Bạc** (hồi 50% HP, bất khả xâm phạm 3s) |
 | Chết do người chơi (Cờ PK) | Không mất EXP; người giết nhận Điểm Tội Lỗi nếu mục tiêu không bật cờ (xem [social](09-social-squad-pvp-events.md)) |
 | Chết trong hầm ngục | Hồi sinh theo **điểm lưu** hầm ngục, tối đa 3 lần/lượt (thêm bằng Lá Hồi Sinh). Không phụ thuộc hệ phép nào |

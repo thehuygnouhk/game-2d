@@ -209,11 +209,13 @@ validate(player, skillId, target, seq):
   - đuổi ×1,3 tốc chạy, lang thang ×0,6, quay về ×1,5, chạy trốn ×1,4;
   - khựng 220 ms khi trúng đòn;
   - đòn cận chiến vung 220 ms và trúng nếu mục tiêu còn trong 56 px;
-  - đòn đánh xa (Lùn Ném Đá, Nhện Mực) bắn đạn 260 px/s, xa 260 px.
+  - đòn đánh xa (Lùn Ném Đá, Nhện Mực) bắn đạn 260 px/s, xa 260 px;
+  - lao tới (`ai.charge`, Lợn Rừng Đồng, bậc B5.1): khi mục tiêu trong tầm đánh + `dist`, quái chạy `speed` px/s về phía mục tiêu, dừng cách 30 px (`RULES.mobChargeStop`) rồi mới húc; thời gian vung kéo dài bằng thời gian lao;
+  - gọi bầy (`ai.type: PACK`, Lùn Cướp Đồng): bị đánh thì quái cùng loại trong `ai.callRange` px (và lệch cao dưới 120 px) đang rảnh nhận người đánh làm mục tiêu.
 
 **Chết và hồi sinh**
 - Gục ngã: mất 2% EXP của cấp ([combat §7](../game-design/04-combat-and-progression.md)). Quái bỏ mục tiêu.
-- `C_REVIVE {mode: "TOWN"}`: về làng của vùng (R01: M001), đầy HP và MP, bất khả xâm phạm 1 s.
+- `C_REVIVE {mode: "TOWN"}`: về thành của map (`town` trong file map, ví dụ R03 → M005) hoặc của vùng (R01: M001), đầy HP và MP, bất khả xâm phạm 1 s.
 
 ## 7. Domain: Inventory, Shop, Trade, Market
 
@@ -277,6 +279,13 @@ Mỗi lệnh thay đổi tài sản có `idemKey` (UUID từ client). Server lư
 - **Instance** (`World.instances`): một `Zone` riêng của map `DUNGEON` hoặc `INSTANCE`, tick chung với các khu công khai. DG01 mở khi đi qua cổng P03 (cần Lv9), quái nhân hệ số một người ([maps §6.1](../game-design/05-world-maps-monsters.md)), không hồi sinh, đồng hồ 30 phút; Trang Lạc thức khi có người cách điểm boss dưới 420 px. Lễ đường I001 mở khi nhận Q_MAIN_12. Instance đóng khi không còn ai.
 - **Boss theo giờ** (`src/world/boss.ts`): đồng hồ thật theo `Asia/Ho_Chi_Minh`, kiểm tra mỗi giây; báo trước 5 phút, xuất hiện ở 1 khu ngẫu nhiên (sự kiện có thể là mọi khu), cuồng nộ sau 10 phút (ATK ×2), bỏ đi sau 30 phút. Mỗi chiêu là vùng báo hiệu (`S_BOSS_STATE.telegraphs`) rơi xuống sau 0,9–1,3 s; ai đứng trong vùng lúc đó mới trúng. Dưới 50% HP boss ra chiêu nhanh hơn (hồi chiêu ×0,7).
 - **Nhiệm vụ** (`src/world/quests.ts`): sự kiện game (hạ quái, nói chuyện, hái, dùng chiêu, hạ boss, xem cảnh, tới nơi) gọi `Quests.event`. Hạ quái được tính cho mọi người có phần EXP của con quái đó (≥ 10% sát thương). Giới hạn Lv9 mở khi xong Q_MAIN_11.
+
+### 8.2 Bậc B5.1: Chương 2 bắt đầu
+
+- **Boss khu vực** (`Zone.fieldBosses`): mỗi điểm `boss_spawn` có `respawnMin` sinh một boss ở **mỗi khu công khai** của map (Lợn Rừng Chúa ở M009). Bị hạ thì `Zone.fieldBossDown` hẹn giờ hồi sinh; đến giờ boss trở lại và cả khu nhận dòng hệ thống. Boss chỉ đuổi người cách điểm đứng dưới 800 px; 8 giây không ai trong tầm thì hồi đầy máu, xóa bảng sát thương và các pha, đi về chỗ cũ. `S_BOSS_STATE` của boss khu vực chỉ gửi cho người đang thấy nó (AOI); gói kết thúc (`over`) gửi cả khu. Thưởng và mục tiêu `BOSS` theo cùng đường với boss theo giờ ([maps §5.4](../game-design/05-world-maps-monsters.md)).
+- **NPC theo tiến độ**: `Quests.npcsOn` lọc NPC của map theo `showAfter` / `hideAfter` của từng điểm đặt. Thầy Bạch Vân rời nhà học sau Q_MAIN_12, Lam Nhi và Khôi lên Thượng Đô sau Q_MAIN_13; lời của NPC đổi theo map nếu có khóa `npc.<id>.line_<map>`.
+- **Cảnh nhiệm vụ**: nhiệm vụ có mục tiêu `SCENE` gửi cảnh ngay khi nhận (`S_SCENE.report`); `SCENE_DONE` tính mục tiêu và tự trả nhiệm vụ. Còn dở cảnh thì NPC trả nhiệm vụ có lựa chọn `SCENE` để xem lại.
+- **Bảng nhiệm vụ theo chương**: `S_QUEST_UPDATE` mang `chapter`, `chapterName`, đếm `done`/`total` trong chương, và `wait` khi đã hết nhiệm vụ đang có.
 
 ## 9. Sự kiện miền (domain events)
 
